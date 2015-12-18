@@ -1,0 +1,5555 @@
+Attribute VB_Name = "Module2"
+Option Explicit
+Public k1 As Long, kForm As Boolean
+Public Type basket
+    x As Long  ' for hotspot
+    y As Long  '
+    XGRAPH As Long  ' graphic cursor
+    YGRAPH As Long
+    MAXXGRAPH As Long
+    MAXYGRAPH As Long
+    dv15 As Long  ' not used
+    curpos As Long   ' text cursor
+    currow As Long
+    mypen As Long
+    mysplit As Long
+    Paper As Long
+    italics As Boolean  ' removed from process, only in "current
+    bold As Boolean
+    double As Boolean
+    osplit As Long  '(for double size letters)
+    Column As Long
+    OCOLUMN As Long
+    pageframe As Long
+    basicpageframe As Long
+    MineLineSpace As Long
+    uMineLineSpace As Long
+    LastReportLines As Double
+    SZ As Single
+    UseDouble As Single
+    Xt As Long
+    Yt As Long
+    mx As Long
+    My As Long
+    FontName As String
+    charset As Long
+    FTEXT As Long
+    FTXT As String
+    lastprint As Boolean  ' if true then we have to place letters using currentX
+End Type
+Private stopwatch As Long
+Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800
+Private Const LOCALE_USER_DEFAULT As Long = &H800
+Private Const C3_DIACRITIC As Long = &H2
+Private Const CT_CTYPE3 As Byte = &H4
+Private Declare Function GetStringTypeExW Lib "kernel32.dll" (ByVal Locale As Long, ByVal dwInfoType As Long, ByVal lpSrcStr As Long, ByVal cchSrc As Long, ByRef lpCharType As Byte) As Long
+Private Declare Function SetTextCharacterExtra Lib "gdi32" (ByVal hDC As Long, ByVal nCharExtra As Long) As Long
+Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal codepage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
+Private Declare Function GdiFlush Lib "gdi32" () As Long
+Public iamactive As Boolean
+Declare Function MultiByteToWideChar& Lib "kernel32" (ByVal codepage&, ByVal dwFlags&, MultiBytes As Any, ByVal cBytes&, ByVal pWideChars&, ByVal cWideChars&)
+Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
+
+Public Type RECT
+        Left As Long
+        top As Long
+        Right As Long
+        Bottom As Long
+End Type
+Private Declare Function timeGetTime Lib "winmm.dll" () As Long
+Private Const DT_BOTTOM As Long = &H8&
+Private Const DT_CALCRECT As Long = &H400&
+Private Const DT_CENTER As Long = &H1&
+Private Const DT_EDITCONTROL As Long = &H2000&
+Private Const DT_END_ELLIPSIS As Long = &H8000&
+Private Const DT_EXPANDTABS As Long = &H40&
+Private Const DT_EXTERNALLEADING As Long = &H200&
+Private Const DT_HIDEPREFIX As Long = &H100000
+Private Const DT_INTERNAL As Long = &H1000&
+Private Const DT_LEFT As Long = &H0&
+Private Const DT_MODIFYSTRING As Long = &H10000
+Private Const DT_NOCLIP As Long = &H100&
+Private Const DT_NOFULLWIDTHCHARBREAK As Long = &H80000
+Private Const DT_NOPREFIX As Long = &H800&
+Private Const DT_PATH_ELLIPSIS As Long = &H4000&
+Private Const DT_PREFIXONLY As Long = &H200000
+Private Const DT_RIGHT As Long = &H2&
+Private Const DT_SINGLELINE As Long = &H20&
+Private Const DT_TABSTOP As Long = &H80&
+Private Const DT_TOP As Long = &H0&
+Private Const DT_VCENTER As Long = &H4&
+Private Const DT_WORDBREAK As Long = &H10&
+Private Const DT_WORD_ELLIPSIS As Long = &H40000
+Public Declare Function DestroyCaret Lib "user32" () As Long
+Public Declare Function CreateCaret Lib "user32" (ByVal hWnd As Long, ByVal hBitmap As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Public Declare Function ShowCaret Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function GetFocus Lib "user32" () As Long
+Public Declare Function SetCaretPos Lib "user32" (ByVal x As Long, ByVal y As Long) As Long
+Public Declare Function HideCaret Lib "user32" (ByVal hWnd As Long) As Long
+Const dv = 0.877551020408163
+Public QUERYLIST As String
+Public LASTQUERYLIST As Long
+Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
+Public releasemouse As Boolean
+Public LASTPROG$
+Public NORUN1 As Boolean
+Public UseEnter As Boolean
+Public dv20 As Single  ' = 24.5
+Public dv15 As Long
+Public mHelp As Boolean
+Public abt As Boolean
+Public vH_title$
+Public vH_doc$
+Public vH_x As Long
+Public vH_y As Long
+Public ttl As Boolean
+Public Const SRCCOPY = &HCC0020
+Public release As Boolean
+Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Declare Function RoundRect Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
+Declare Function UpdateWindow Lib "user32" (ByVal hWnd As Long) As Long
+Declare Function ScrollDC Lib "user32" (ByVal hDC As Long, ByVal dX As Long, ByVal dy As Long, lprcScroll As RECT, lprcClip As RECT, ByVal hrgnUpdate As Long, lprcUpdate As RECT) As Long
+Public LastErName As String
+Public LastErNameGR As String
+Public LastErNum As Long
+Public LastErNum1 As Long
+
+
+Type POINTAPI
+        x As Long
+        y As Long
+End Type
+Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Declare Function PaintDesktop Lib "user32" (ByVal hDC As Long) As Long
+Declare Function SelectClipPath Lib "gdi32" (ByVal hDC As Long, ByVal iMode As Long) As Long
+  Public Const RGN_AND = 1
+    Public Const RGN_COPY = 5
+    Public Const RGN_DIFF = 4
+    Public Const RGN_MAX = RGN_COPY
+    Public Const RGN_MIN = RGN_AND
+    Public Const RGN_OR = 2
+    Public Const RGN_XOR = 3
+Declare Function StrokePath Lib "gdi32" (ByVal hDC As Long) As Long
+Declare Function Polygon Lib "gdi32" (ByVal hDC As Long, lpPoint As POINTAPI, ByVal nCount As Long) As Long
+Declare Function PolyBezier Lib "gdi32.dll" (ByVal hDC As Long, lppt As POINTAPI, ByVal cPoints As Long) As Long
+Declare Function PolyBezierTo Lib "gdi32.dll" (ByVal hDC As Long, lppt As POINTAPI, ByVal cCount As Long) As Long
+Declare Function BeginPath Lib "gdi32" (ByVal hDC As Long) As Long
+Declare Function EndPath Lib "gdi32" (ByVal hDC As Long) As Long
+Declare Function FillPath Lib "gdi32" (ByVal hDC As Long) As Long
+Declare Function StrokeAndFillPath Lib "gdi32" (ByVal hDC As Long) As Long
+
+Public PLG() As POINTAPI
+Public lckfrm As Long
+Public NERR As Boolean
+Public moux As Single, mouy As Single, MOUB As Long
+Public mouxb As Single, mouyb As Single, MOUBb As Long
+Public vol As Long
+Public MYFONT As String, myCharSet As Integer, myBold As Boolean
+Public FFONT As String
+
+Public escok As Boolean
+Public NOEDIT As Boolean
+Public CancelEDIT As Boolean
+
+Global Const HWND_TOP = 0
+
+Global Const HWND_TOPMOST = -1
+Global Const HWND_NOTOPMOST = -2
+Global Const SWP_NOACTIVATE = &H10
+Global Const SWP_SHOWWINDOW = &H40
+Declare Sub SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long)
+Declare Function ExtFloodFill Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal wFillType As Long) As Long
+Public Const FLOODFILLSURFACE = 1
+Public Const FLOODFILLBORDER = 0
+
+Public avifile As String
+Public Const Pi = 3.14159265358979
+Public Const PI2 = 6.28318530717958
+Public result As Long
+Public mcd As String
+Public NOEXECUTION As Boolean
+Public QRY As Boolean, GFQRY As Boolean
+Public nomore As Boolean
+
+
+'== MCI Wave API Declarations ================================================
+Public ExTarget As Boolean
+''Public pageframe As Long
+''Public basicpageframe As Long
+
+Public q() As target
+Public Targets As Boolean
+Public SzOne As Single
+Public PenOne As Long
+Public NoAction As Boolean
+Public StartLine As Boolean
+Public www&
+Public WWX&, ins&
+Public INK$, UINK$, MINK$
+Public MKEY$
+Public Type target
+    Comm As String
+    Tag As String ' specified by id
+    Id As Long ' function id
+    ' THIS IS POINTS AT CHARACTER RESOLUTION
+    SZ As Single
+    ' SO WE NEED SZ
+    Lx As Long
+    ly As Long
+    tx As Long
+    ty As Long
+    back As Long 'background fill color' -1 no fill
+    fore As Long 'border line ' -1 no line
+    enable As Boolean ' in use
+    Pen As Long
+    layer As Long
+    Xt As Long
+    Yt As Long
+    sUAddTwipsTop As Long
+End Type
+
+Public HERE$, PaperOne As Long
+Const PROOF_QUALITY = 2
+Const NONANTIALIASED_QUALITY = 3
+Private Type LOGFONT
+  lfHeight As Long
+  lfWidth As Long
+  lfEscapement As Long
+  lfOrientation As Long
+  lfWeight As Long
+  lfItalic As Byte
+  lfUnderline As Byte
+  lfStrikeOut As Byte
+  lfCharSet As Byte
+  lfOutPrecision As Byte
+  lfClipPrecision As Byte
+  lfQuality As Byte
+  lfPitchAndFamily As Byte
+' lfFaceName(LF_FACESIZE) As Byte 'THIS WAS DEFINED IN API-CHANGES MY OWN
+  lfFaceName As String * 33
+End Type
+Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
+
+Private Declare Function PathToRegion Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
+Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As LOGFONT) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+' OCTOBER 2000
+Public dstyle As Long
+' Jule 2001
+Const DC_ACTIVE = &H1
+Const DC_ICON = &H4
+Const DC_TEXT = &H8
+Const BDR_SUNKENOUTER = &H2
+Const BDR_RAISEDINNER = &H4
+Const EDGE_ETCHED = (BDR_SUNKENOUTER Or BDR_RAISEDINNER)
+Const BF_BOTTOM = &H8
+Const BF_LEFT = &H1
+Const BF_RIGHT = &H4
+Const BF_TOP = &H2
+Const BF_RECT = (BF_LEFT Or BF_TOP Or BF_RIGHT Or BF_BOTTOM)
+Const DFC_BUTTON = 4
+Const DFC_POPUPMENU = 5            'Only Win98/2000 !!
+Const DFCS_BUTTON3STATE = &H10
+Const DC_GRADIENT = &H20          'Only Win98/2000 !!
+
+Private Declare Function DrawCaption Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, pcRect As RECT, ByVal un As Long) As Long
+Private Declare Function DrawEdge Lib "user32" (ByVal hDC As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
+Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
+Private Declare Function DrawFrameControl Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal un1 As Long, ByVal un2 As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
+''API declarations
+Private Declare Function AddFontResource Lib "gdi32" Alias "AddFontResourceA" (ByVal lpFileName As String) As Long
+Private Declare Function RemoveFontResource Lib "gdi32" Alias "RemoveFontResourceA" (ByVal lpFileName As String) As Long
+Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
+Private Declare Function GetAsyncKeyState Lib "user32" _
+    (ByVal vKey As Long) As Long
+Public TextEditLineHeight As Long
+Public LablelEditLineHeight As Long
+Private Const Utf8CodePage As Long = 65001
+Public Function Utf16toUtf8(s As String) As Byte()
+    ' code from vbforum
+    ' UTF-8 returned to VB6 as a byte array (zero based) because it's pretty useless to VB6 as anything else.
+    Dim iLen As Long
+    Dim bbBuf() As Byte
+    '
+    iLen = WideCharToMultiByte(Utf8CodePage, 0, StrPtr(s), Len(s), 0, 0, 0, 0)
+    ReDim bbBuf(0 To iLen - 1) ' Will be initialized as all &h00.
+    iLen = WideCharToMultiByte(Utf8CodePage, 0, StrPtr(s), Len(s), VarPtr(bbBuf(0)), iLen, 0, 0)
+    Utf16toUtf8 = bbBuf
+End Function
+Public Function KeyPressedLong(ByVal VirtKeyCode As Long) As Long
+On Error GoTo KEXIT
+If Not Screen.ActiveForm Is Nothing Then
+If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+KeyPressedLong = GetAsyncKeyState(VirtKeyCode)
+End If
+End If
+KEXIT:
+End Function
+Public Function KeyPressed(ByVal VirtKeyCode As Long) As Boolean
+On Error GoTo KEXIT
+If Not Screen.ActiveForm Is Nothing Then
+If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+KeyPressed = CBool((GetAsyncKeyState(VirtKeyCode) And &H8000&) = &H8000&)
+End If
+End If
+KEXIT:
+End Function
+Public Function mouse() As Long
+On Error GoTo MEXIT
+If Not Screen.ActiveForm Is Nothing Then
+If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+
+mouse = (UINT(GetAsyncKeyState((1))) And &HFF) + (UINT(GetAsyncKeyState((2))) And &HFF) * 2 + (UINT(GetAsyncKeyState((4))) And &HFF) * 4
+End If
+End If
+MEXIT:
+End Function
+
+Public Function MOUSEX(Optional offset As Long = 0) As Long
+Static x As Long
+On Error GoTo MOUSEX
+Dim tP As POINTAPI
+MOUSEX = x
+If Not Screen.ActiveForm Is Nothing Then
+If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+   GetCursorPos tP
+x = tP.x * dv15 - offset
+  MOUSEX = x
+  End If
+End If
+MOUSEX:
+End Function
+Public Function MOUSEY(Optional offset As Long = 0) As Long
+Static y As Long
+On Error GoTo MOUSEY
+Dim tP As POINTAPI
+MOUSEY = y
+If Not Screen.ActiveForm Is Nothing Then
+If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+   GetCursorPos tP
+   y = tP.y * dv15 - offset
+   MOUSEY = y
+  End If
+End If
+MOUSEY:
+End Function
+'code
+Public Sub MyEr(er$, ergr$)
+
+If er$ = "" Then
+LastErNum = 0
+LastErNum1 = 0
+LastErName = ""
+LastErNameGR = ""
+Else
+ er$ = Split(er$, ChrW(&H1FFF))(0)
+ergr$ = Split(ergr$, ChrW(&H1FFF))(0)
+If rinstr(er$, " ") = 0 Then
+LastErNum = 1001
+Else
+LastErNum = Val(" " & Mid$(er$, rinstr(er$, " ")) + ".0")
+End If
+If LastErNum = 0 Then LastErNum = -1 ' general
+LastErNum1 = LastErNum
+''If iRVAL(HERE$, 0) < 1 Then
+If InStr("*" + LastErName, LTrim(er$)) = 0 Then
+LastErName = RTrim(LastErName) & " " & LTrim(er$)
+LastErNameGR = RTrim(LastErNameGR) & " " & LTrim(ergr$)
+End If
+''End If
+End If
+End Sub
+
+
+Public Function LoadFont(FntFileName As String) As Boolean
+    Dim FntRC As Long
+        FntRC = AddFontResource(FntFileName)
+        If FntRC = 0 Then 'no success
+         LoadFont = False
+        Else 'success
+         LoadFont = True
+        End If
+End Function
+'FntFileName includes also path
+Public Function RemoveFont(FntFileName As String) As Boolean
+     Dim rc As Long
+
+     Do
+       rc = RemoveFontResource(FntFileName)
+     Loop Until rc = 0
+
+End Function
+
+
+Sub MyForm(m As Object, x As Long, y As Long, x1 As Long, y1 As Long, Optional t As Boolean = False, Optional factor As Single = 1)
+Dim hRgn As Long
+m.Move x, y, x1, y1
+If Int(25 * factor) > 2 Then
+m.ScaleMode = vbPixels
+
+hRgn = CreateRoundRectRgn(0, 0, m.ScaleX(x1, 1, 3), m.ScaleY(y1, 1, 3), 25 * factor, 25 * factor)
+'hRgn = PathToRegion(m.hdc)
+SetWindowRgn m.hWnd, hRgn, t
+DeleteObject hRgn
+m.ScaleMode = vbTwips
+''M.Cls
+m.Line (0, 0)-(m.ScaleWidth - dv15, m.ScaleHeight - dv15), m.BackColor, BF
+End If
+End Sub
+
+Sub MyRect(m As Object, mb As basket, x1 As Long, y1 As Long, way As Long, par As Variant, Optional zoom As Long = 0)
+Dim r As RECT, b$
+With mb
+Dim x0&, y0&, x As Long, y As Long
+GetXYb m, mb, x0&, y0&
+x = m.ScaleX(x0& * .Xt - DXP, 1, 3)
+y = m.ScaleY(y0& * .Yt - DYP, 1, 3)
+If x1 >= .mx Then x1 = m.ScaleX(m.ScaleWidth, 1, 3) Else x1 = m.ScaleX(x1 * .Xt, 1, 3)
+If y1 >= .My Then y1 = m.ScaleY(m.ScaleHeight, 1, 3) Else y1 = m.ScaleY(y1 * .Yt + .Yt, 1, 3)
+
+SetRect r, x + zoom, y + zoom, x1 - zoom, y1 - zoom
+Select Case way
+Case 0
+DrawEdge m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+Case 1
+DrawCaption m.hWnd, m.hDC, r, CLng(par)
+Case 2
+DrawEdge m.hDC, r, CLng(par), BF_RECT
+Case 3
+DrawFocusRect m.hDC, r
+Case 4
+DrawFrameControl m.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
+Case 5
+b$ = CStr(par)
+DrawText m.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
+Case 6
+DrawFrameControl m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+Case Else
+k1 = 0
+MyDoEvents1 Form1
+End Select
+LCTbasket m, mb, y0&, x0&
+End With
+End Sub
+Sub MyFill(m As Object, x1 As Long, y1 As Long, way As Long, par As Variant, Optional zoom As Long = 0)
+Dim r As RECT, b$
+Dim x As Long, y As Long
+With players(GetCode(m))
+x1 = .XGRAPH + x1
+y1 = .YGRAPH + y1
+x1 = m.ScaleX(x1, 1, 3)
+y1 = m.ScaleY(y1, 1, 3)
+x = m.ScaleX(.XGRAPH, 1, 3)
+y = m.ScaleY(.YGRAPH, 1, 3)
+SetRect r, x + zoom, y + zoom, x1 - zoom, y1 - zoom
+Select Case way
+Case 0
+DrawEdge m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+Case 1
+DrawCaption m.hWnd, m.hDC, r, CLng(par)
+Case 2
+DrawEdge m.hDC, r, CLng(par), BF_RECT
+Case 3
+DrawFocusRect m.hDC, r
+Case 4
+DrawFrameControl m.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
+Case 5
+b$ = CStr(par)
+
+DrawText m.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
+Case 6
+DrawFrameControl m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+Case Else
+k1 = 0
+MyDoEvents1 Form1
+End Select
+End With
+End Sub
+' ***************
+
+
+Public Sub TextColor(D As Object, tc As Long)
+D.ForeColor = tc
+End Sub
+Public Sub TextColorB(D As Object, mb As basket, tc As Long)
+D.ForeColor = tc
+mb.mypen = D.ForeColor
+End Sub
+
+Public Sub LCTNo(DqQQ As Object, ByVal y As Long, ByVal x As Long)
+
+''DqQQ.CurrentX = x * Xt
+''DqQQ.CurrentY = y * Yt + UAddTwipsTop
+''xPos = x
+''yPos = y
+End Sub
+
+Public Sub LCTbasketCur(DqQQ As Object, mybasket As basket)
+With mybasket
+DqQQ.CurrentX = .curpos * .Xt
+DqQQ.CurrentY = .currow * .Yt + .uMineLineSpace
+
+End With
+End Sub
+Public Sub LCTbasket(DqQQ As Object, mybasket As basket, ByVal y As Long, ByVal x As Long)
+DqQQ.CurrentX = x * mybasket.Xt
+DqQQ.CurrentY = y * mybasket.Yt + mybasket.uMineLineSpace
+mybasket.curpos = x
+mybasket.currow = y
+End Sub
+Public Sub nomoveLCTC(dqq As Object, mb As basket, y As Long, x As Long, t&)
+Dim oldx&, oldy&
+With mb
+oldx& = dqq.CurrentX
+oldy& = dqq.CurrentY
+dqq.DrawMode = vbInvert
+If t& = 1 Then
+dqq.Line (x * .Xt, y * .Yt + .uMineLineSpace)-(x * .Xt + .Xt - DXP, y * .Yt - .uMineLineSpace + .Yt - DYP), , BF
+Else
+dqq.Line (x * .Xt, y * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace)-(x * .Xt + .Xt - DXP, y * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace + Int((.Yt - .uMineLineSpace * 2) * 0.2) - DYP), , BF
+End If
+dqq.DrawMode = vbCopyPen
+dqq.CurrentX = oldx&
+dqq.CurrentY = oldy&
+End With
+End Sub
+
+Public Sub oldLCTCB(dqq As Object, mb As basket, t&)
+dqq.DrawMode = vbInvert
+With mb
+'QRY = Not QRY
+If t& = 1 Then
+dqq.Line (.curpos * .Xt, .currow * .Yt + .uMineLineSpace)-(.curpos * .Xt + .Xt, .currow * .Yt - .uMineLineSpace + .Yt), , BF
+Else
+dqq.Line (.curpos * .Xt, .currow * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace)-(.curpos * .Xt + .Xt - DXP, .currow * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace + Int((.Yt - .uMineLineSpace * 2) * 0.2) - DYP), , BF
+End If
+'' mydoevents********************
+End With
+dqq.DrawMode = vbCopyPen
+End Sub
+Public Sub LCTCnew(dqq As Object, mb As basket, y As Long, x As Long)
+DestroyCaret
+With mb
+CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpace * 2) * 0.2, 1, 3)
+SetCaretPos dqq.ScaleX(x * .Xt, 1, 3), dqq.ScaleY((y + 0.8) * .Yt, 1, 3)
+End With
+End Sub
+Public Sub LCTCB(dqq As Object, mb As basket, t&)
+With mb
+If t& = -1 Or Not Form1.ActiveControl Is dqq Then
+        If Not t& = -1 Then
+        
+        Else
+        If Form1.ActiveControl Is Nothing Then
+        Else
+            CreateCaret Form1.ActiveControl.hWnd, 0, -1, 0
+            End If
+            CreateCaret dqq.hWnd, 0, -1, 0
+        End If
+        Exit Sub
+End If
+If t& = 1 Then
+        CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpace * 2), 1, 3)
+        SetCaretPos dqq.ScaleX(.curpos * .Xt, 1, 3), dqq.ScaleY(.currow * .Yt + .uMineLineSpace, 1, 3)
+        On Error Resume Next
+        If Not extreme Then If INK$ = "" Then dqq.refresh
+Else
+        CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY(Int((.Yt - .uMineLineSpace * 2) * 0.2), 1, 3)
+        SetCaretPos dqq.ScaleX(.curpos * .Xt, 1, 3), dqq.ScaleY(.currow * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace, 1, 3)
+        On Error Resume Next
+        If Not extreme Then If INK$ = "" Then dqq.refresh
+End If
+dqq.DrawMode = vbCopyPen
+dqq.CurrentX = .curpos * .Xt
+dqq.CurrentY = .currow * .Yt + .uMineLineSpace
+End With
+End Sub
+Public Sub SetDouble(dq As Object)
+
+SetTextSZ dq, players(GetCode(dq)).SZ, 2
+
+
+End Sub
+
+Public Sub SetNormal(dq As Object)
+SetTextSZ dq, players(GetCode(dq)).SZ, 1
+End Sub
+
+
+Sub BOXbasket(dqq As Object, mybasket As basket, b$, c As Long)
+With mybasket
+    dqq.Line (.x * .Xt - DXP, .y * .Yt - DYP)-((.x + Len(b$)) * .Xt, .y * .Yt + .Yt), mycolor(c), B
+End With
+End Sub
+
+Sub BoxBigNew(dqq As Object, mb As basket, x1&, y1&, c As Long)
+
+With mb
+dqq.Line (.curpos * .Xt - DXP, .currow * .Yt - DYP)-(x1& * .Xt - DXP + .Xt, y1& * .Yt + .Yt - DYP), mycolor(c), B
+End With
+
+End Sub
+Sub CircleBig(dqq As Object, mb As basket, x1&, y1&, c As Long, eL As Boolean)
+Dim x&, y&
+
+With mb
+x& = .curpos
+y& = .currow
+dqq.FillColor = mycolor(c)
+dqq.FillStyle = vbFSSolid
+If eL Then
+dqq.Circle (((x& + x1& + 1) / 2 * .Xt) - DXP, ((y& + y1& + 1) / 2 * .Yt) - DYP), RMAX((x1& - x& + 1) * .Xt, (y1& - y& + 1) * .Yt) / 2 - DYP, mycolor(c), , , ((y1& - y& + 1) * .Yt - DYP) / ((x1& - x& + 1) * .Xt - DXP)
+Else
+dqq.Circle (((x& + x1& + 1) / 2 * .Xt) - DXP, ((y& + y1& + 1) / 2 * .Yt) - DYP), (RMIN((x1& - x& + 1) * .Xt, (y1& - y& + 1) * .Yt) / 2 - DYP), mycolor(c)
+
+End If
+dqq.FillStyle = vbFSTransparent
+End With
+End Sub
+Sub Ffill(dqq As Object, x1 As Long, y1 As Long, c As Long, V As Boolean)
+Dim osm
+With players(GetCode(dqq))
+osm = dqq.ScaleMode
+dqq.ScaleMode = vbPixels
+dqq.FillColor = mycolor(c)
+dqq.FillStyle = vbFSSolid
+If V Then
+ExtFloodFill dqq.hDC, dqq.ScaleX(x1, 1, 3), dqq.ScaleY(y1, 1, 3), dqq.Point(dqq.ScaleX(x1, 1, 3), dqq.ScaleY(y1, 1, 3)), FLOODFILLSURFACE
+Else
+ExtFloodFill dqq.hDC, dqq.ScaleX(x1, 1, 3), dqq.ScaleY(y1, 1, 3), mycolor(.mypen), FLOODFILLBORDER
+End If
+dqq.ScaleMode = osm
+dqq.FillStyle = vbFSTransparent
+End With
+'LCT Dqq, y&, x&
+End Sub
+
+Sub BoxColorNew(dqq As Object, mb As basket, x1&, y1&, c As Long)
+Dim addpixels As Long
+With mb
+If Form3.InternalLeadingSpace = 0 And .MineLineSpace = 0 Then
+addpixels = 0
+Else
+addpixels = 2
+End If
+
+dqq.Line (.curpos * .Xt, .currow * .Yt)-(x1& * .Xt + .Xt - 2 * DXP, y1& * .Yt + .Yt - addpixels * DYP), mycolor(c), BF
+End With
+End Sub
+Sub BoxImage(d1 As Object, mb As basket, x1&, y1&, f As String, df&, s As Boolean)
+'
+Dim p As Picture, scl As Double, x2&, dib As Object
+
+If df& > 0 Then
+df& = df& * DXP '* 20
+
+Else
+
+df& = 0
+End If
+With mb
+x1& = .curpos + x1& - 1
+x2& = x1&
+y1& = .currow + y1& - 1
+On Error Resume Next
+ If (Left$(f$, 4) = "cDIB" And Len(f$) > 12) Then
+   Set dib = New cDIBSection
+  If Not cDib(f$, dib) Then
+    dib.Create x1&, y1&
+    dib.Cls d1.BackColor
+  End If
+      Set p = dib.Picture
+    Set dib = Nothing
+ Else
+        If ExtractType(f, 0) = "" Then
+        f = f + ".bmp"
+        End If
+        FixPath f
+        
+    If CFname(f) <> "" Then
+    f = CFname(f)
+    Set p = LoadPicture(GetDosPath(f))
+    Else
+    Set dib = New cDIBSection
+    dib.Create x1&, y1&
+    dib.Cls d1.BackColor
+    Set p = dib.Picture
+    Set dib = Nothing
+    End If
+End If
+
+If Err.Number > 0 Then Exit Sub
+
+If s Then
+scl = (y1& - .currow + 1) * .Yt - df&
+If p.Type = vbPicTypeBitmap Then
+d1.PaintPicture p, .curpos * .Xt, .currow * .Yt, (x1& - .curpos + 1) * .Xt - df&, scl, , , , , vbSrcCopy
+Else
+d1.PaintPicture p, .curpos * .Xt, .currow * .Yt, (x1& - .curpos + 1) * .Xt - df&, scl
+End If
+Else
+scl = p.Height * ((x1& - .curpos + 1) * .Xt - df&) / p.Width
+If p.Type = vbPicTypeBitmap Then
+d1.PaintPicture p, .curpos * .Xt, .currow * .Yt, (x1& - .curpos + 1) * .Xt - df&, scl, , , , , vbSrcCopy
+Else
+d1.PaintPicture p, .curpos * .Xt, .currow * .Yt, (x1& - .curpos + 1) * .Xt - df&, scl
+End If
+End If
+y1& = -Int(-((scl) / .Yt))
+Set p = Nothing
+''LCT d1, .currow, .curpos
+End With
+End Sub
+Sub sprite(bstack As basetask, ByVal f As String, rst As String)
+On Error GoTo SPerror
+Dim d1 As Object, amask$
+Set d1 = bstack.Owner
+Dim raster As Object
+Set raster = New cDIBSection
+Dim p As Double, i As Long, ROT As Double, sp As Double
+Dim Pcw As Long, Pch As Long, blend As Double
+    If FastSymbol(rst$, ",") Then
+    If IsExp(bstack, rst$, p) Then i = CLng(p) Else i = -players(GetCode(d1)).Paper 'SZ = False
+    Else
+
+
+
+If Not cDib(f, raster) Then
+    If CFname(f) <> "" Then
+        f = CFname(f)
+        raster.CreateFromPicture LoadPicture(GetDosPath(f))
+                     If raster.bitsPerPixel <> 24 Then
+                        Conv24 raster
+                        Else
+                        CheckOrientation raster, f
+                        End If
+    Else
+        Exit Sub
+    End If
+End If
+If raster.Width = 0 Then
+ BACKSPRITE = ""
+Set raster = Nothing: Exit Sub
+End If
+Pcw = raster.Width \ 2
+Pch = raster.Height \ 2
+With players(GetCode(d1))
+raster.PaintPicture d1.hDC, Int(d1.ScaleX(.XGRAPH, 1, 3) - Pcw), Int(d1.ScaleX(.YGRAPH, 1, 3) - Pch)
+End With
+
+
+
+
+Exit Sub
+    End If
+    If FastSymbol(rst$, ",") Then If IsExp(bstack, rst$, p) Then ROT = p
+    sp = 100
+    If FastSymbol(rst$, ",") Then If Not IsExp(bstack, rst$, sp) Then sp = 100
+    If sp <= 0 Then sp = 0
+     blend = 100
+    If FastSymbol(rst$, ",") Then
+        If IsExp(bstack, rst$, blend) Then
+        
+        blend = Abs(Int(blend)) Mod 101
+        Else
+             blend = 100
+        If Not IsStrExp(bstack, rst$, amask$) Then Exit Sub
+        End If
+        
+    End If
+    If i > 0 Then i = QBColor(i) Else i = -i
+    If sp = 0 Or f = "" Then
+         BACKSPRITE = ""
+    Exit Sub
+    End If
+
+
+On Error Resume Next
+
+If Not cDib(f, raster) Then
+    If CFname(f) <> "" Then
+        f = CFname(f)
+        raster.CreateFromPicture LoadPicture(GetDosPath(f))
+                     If raster.bitsPerPixel <> 24 Then
+                        Conv24 raster
+                        Else
+                        CheckOrientation raster, f
+                        End If
+    Else
+        Exit Sub
+    End If
+End If
+If raster.Width = 0 Then
+ BACKSPRITE = ""
+Set raster = Nothing: Exit Sub
+End If
+
+RotateDib bstack, raster, ROT, sp, i, True, (blend), , , amask$
+Pcw = raster.Width \ 2
+Pch = raster.Height \ 2
+With players(GetCode(d1))
+raster.PaintPicture d1.hDC, Int(d1.ScaleX(.XGRAPH, 1, 3) - Pcw), Int(d1.ScaleX(.YGRAPH, 1, 3) - Pch)
+End With
+If Not bstack.toprinter Then
+GdiFlush
+End If
+Set raster = Nothing
+Exit Sub
+SPerror:
+ BACKSPRITE = ""
+Set raster = Nothing
+End Sub
+Sub SImage(d1 As Object, x1 As Long, y1 As Long, f As String)
+'
+Dim p As Picture
+On Error Resume Next
+With players(GetCode(d1))
+If Left$(f, 4) = "cDIB" And Len(f) > 12 Then
+Dim ph As New cDIBSection
+If cDib(f, ph) Then
+If x1 = 0 Then
+ph.PaintPicture d1.hDC, CLng(d1.ScaleX(.XGRAPH, 1, 3)), CLng(d1.ScaleX(.YGRAPH, 1, 3))
+Exit Sub
+Else
+If y1 = 0 Then y1 = Abs(ph.Height * x1 / ph.Width)
+ph.StretchPictureH d1.hDC, CLng(d1.ScaleX(.XGRAPH, 1, 3)), CLng(d1.ScaleX(.YGRAPH, 1, 3)), CLng(d1.ScaleX(x1, 1, 3)), CLng(d1.ScaleX(y1, 1, 3))
+Exit Sub
+End If
+End If
+ElseIf CFname(f) <> "" Then
+f = CFname(f)
+Set p = LoadPicture(GetDosPath(f))
+Else
+If y1 = 0 Then y1 = x1
+d1.Line (.XGRAPH, .YGRAPH)-(x1, y1), .Paper, BF
+d1.CurrentX = .XGRAPH
+d1.CurrentY = .YGRAPH
+Exit Sub
+End If
+If x1 = 0 Then x1 = p.Width
+If y1 = 0 Then y1 = p.Height * x1 / p.Width
+If Err.Number > 0 Then Exit Sub
+
+If p.Type = vbPicTypeBitmap Then
+d1.PaintPicture p, .XGRAPH, .YGRAPH, x1, y1, , , , , vbSrcCopy
+Else
+d1.PaintPicture p, .XGRAPH, .YGRAPH, x1, y1
+End If
+Set p = Nothing
+End With
+' UpdateWindow d1.hwnd
+
+ 
+End Sub
+Public Function GetTextWidth(dd As Object, c As String, r As RECT) As Long
+' using current.x and current.y to define r
+
+
+End Function
+Public Sub PrintLineControl(mHdc As Long, c As String, r As RECT)
+    DrawText mHdc, StrPtr(c), -1, r, 0
+End Sub
+Public Sub CalcRect(mHdc As Long, c As String, r As RECT)
+r.top = 0
+r.Left = 0
+DrawText mHdc, StrPtr(c), -1, r, DT_CALCRECT Or DT_NOPREFIX Or DT_SINGLELINE Or DT_NOCLIP
+End Sub
+
+Public Sub PrintLineControlSingle(mHdc As Long, c As String, r As RECT)
+    DrawText mHdc, StrPtr(c), -1, r, DT_SINGLELINE Or DT_NOPREFIX Or DT_NOCLIP
+    End Sub
+'
+Public Sub MyPrintNew(ddd As Object, UAddTwipsTop, s$, Optional cr As Boolean = False, Optional fake As Boolean = False)
+
+Dim nr As RECT, nl As Long
+If s$ = "" Then
+nr.Left = 0: nr.Right = 0: nr.top = 0: nr.Bottom = 0
+CalcRect ddd.hDC, " ", nr
+nr.Left = ddd.CurrentX / dv15
+nr.Right = nr.Right + nr.Left
+nr.top = ddd.CurrentY / dv15
+nr.Bottom = nr.top + nr.Bottom
+nl = (nr.Bottom + 1) * dv15
+If cr Then
+ddd.CurrentY = (nr.Bottom + 1) * dv15 + UAddTwipsTop ''2
+ddd.CurrentX = 0
+Else
+ddd.CurrentX = nr.Right * dv15
+End If
+Else
+nr.Left = 0: nr.Right = 0: nr.top = 0: nr.Bottom = 0
+CalcRect ddd.hDC, s$, nr
+nr.Left = ddd.CurrentX / dv15
+nr.Right = nr.Right + nr.Left
+nr.top = ddd.CurrentY / dv15
+nr.Bottom = nr.top + nr.Bottom
+nl = (nr.Bottom + 1) * dv15
+If Not fake Then
+If nr.Left * dv15 < ddd.Width Then PrintLineControlSingle ddd.hDC, s$, nr
+End If
+If cr Then
+ddd.CurrentY = nl + UAddTwipsTop ''* 2
+ddd.CurrentX = 0
+Else
+ddd.CurrentX = nr.Right * dv15
+End If
+End If
+
+End Sub
+Public Sub MyPrintOLD(ddd As Object, mb As basket, s$, Optional cr As Boolean = False, Optional fake As Boolean = False, Optional lastpart As Boolean = False)
+
+Dim nr As RECT, nl As Long
+With mb
+If s$ = "" Then
+
+nr.Left = 0: nr.Right = 0: nr.top = 0: nr.Bottom = 0
+CalcRect ddd.hDC, " ", nr
+nr.Left = ddd.CurrentX / dv15
+nr.Right = nr.Right + nr.Left
+nr.top = ddd.CurrentY / dv15
+nr.Bottom = nr.top + nr.Bottom
+nl = (nr.Bottom + 1) * dv15
+If cr Then
+ddd.CurrentY = (nr.Bottom + 1) * dv15 + .uMineLineSpace
+ddd.CurrentX = 0
+Else
+ddd.CurrentX = nr.Right * dv15
+End If
+Else
+nr.Left = 0: nr.Right = 0: nr.top = 0: nr.Bottom = 0
+CalcRect ddd.hDC, s$, nr
+nr.Left = ddd.CurrentX / dv15
+nr.Right = nr.Right + nr.Left
+nr.top = ddd.CurrentY / dv15
+nr.Bottom = nr.top + nr.Bottom
+nl = (nr.Bottom + 1) * dv15
+If Not fake Then
+If nr.Left * dv15 < ddd.Width Then PrintLineControlSingle ddd.hDC, s$, nr
+End If
+If cr Then
+ddd.CurrentY = nl + .uMineLineSpace
+ddd.CurrentX = 0
+Else
+If lastpart Then
+If Trim$(s$) = "" Then
+ddd.CurrentX = ((nr.Right * dv15 + .Xt \ 2) \ .Xt) * .Xt
+Else
+ddd.CurrentX = ((nr.Right * dv15 + .Xt \ 1.2) \ .Xt) * .Xt
+End If
+Else
+ddd.CurrentX = nr.Right * dv15
+End If
+End If
+End If
+
+End With
+End Sub
+
+Public Sub MyPrint(ddd As Object, s$)
+Dim nr As RECT, nl As Long
+If s$ = "" Then
+    nr.Left = 0: nr.Right = 0: nr.top = 0: nr.Bottom = 0
+    CalcRect ddd.hDC, " ", nr
+    nr.Left = ddd.CurrentX / dv15
+    nr.Right = nr.Right + nr.Left
+    nr.top = ddd.CurrentY / dv15
+    nr.Bottom = nr.top + nr.Bottom
+    nl = (nr.Bottom + 1) * dv15
+    ddd.CurrentY = (nr.Bottom + 1) * dv15
+    ddd.CurrentX = 0
+Else
+nr.Left = 0: nr.Right = 0: nr.top = 0: nr.Bottom = 0
+CalcRect ddd.hDC, s$, nr
+nr.Left = ddd.CurrentX / dv15
+nr.Right = nr.Right + nr.Left
+nr.top = ddd.CurrentY / dv15
+nr.Bottom = nr.top + nr.Bottom
+nl = (nr.Bottom + 1) * dv15
+If nr.Left * dv15 < ddd.Width Then PrintLineControlSingle ddd.hDC, s$, nr
+ddd.CurrentY = nl
+ddd.CurrentX = 0
+End If
+End Sub
+Public Function TextWidth(ddd As Object, A$) As Long
+Dim nr As RECT
+CalcRect ddd.hDC, A$, nr
+TextWidth = nr.Right * dv15
+End Function
+Private Function TextHeight(ddd As Object, A$) As Long
+Dim nr As RECT
+CalcRect ddd.hDC, A$, nr
+
+TextHeight = nr.Bottom * dv15
+End Function
+
+Public Sub PrintLine(dd As Object, c As String, r As RECT)
+DrawText dd.hDC, StrPtr(c), -1, r, DT_CENTER
+End Sub
+Public Sub PrintUnicodeStandardWidthAddXT(dd As Object, c As String, r As RECT)
+''dd.CurrentX = dd.CurrentX + Xt
+
+DrawText dd.hDC, StrPtr(c), -1, r, DT_SINGLELINE Or DT_CENTER Or DT_NOPREFIX
+End Sub
+
+Public Sub PlainOLD(ddd As Object, mb As basket, ByVal what As String, Optional ONELINE As Boolean = False, Optional NoCR As Boolean = False, Optional plusone As Long = 2)
+Dim PX As Long, PY As Long, r As Long, p$, c$, LEAVEME As Boolean, nr As RECT, nr2 As RECT
+Dim p2 As Long
+With mb
+p2 = .uMineLineSpace \ dv15 * 2
+LEAVEME = False
+ PX = .curpos
+ PY = .currow
+Dim pixX As Long, pixY As Long
+pixX = .Xt / dv15
+pixY = .Yt / dv15
+Dim rTop As Long, rBottom As Long
+ With nr
+ .Left = PX * pixX
+ .Right = .Left + pixX
+ .top = PY * pixY + mb.uMineLineSpace \ dv15
+ 
+ .Bottom = .top + pixY - mb.uMineLineSpace \ dv15 * 2
+ End With
+rTop = PY * pixY
+rBottom = rTop + pixY - plusone
+Do While Len(what) >= .mx - PX And (.mx - PX) > 0
+ p$ = Left$(what, .mx - PX)
+ 
+  With nr2
+ .Left = PX * pixX
+ 
+ .Right = (PX + Len(p$)) * pixX + 1
+ .top = rTop
+ .Bottom = rBottom
+ 
+ End With
+ 
+ If ddd.FontTransparent = False Then
+ FillBack ddd.hDC, nr2, ddd.BackColor
+ End If
+ For r = 0 To Len(p$) - 1
+If ONELINE And NoCR And PX > .mx Then what = "": Exit For
+ c$ = Mid$(p$, r + 1, 1)
+
+If c$ >= " " Then ddd.CurrentX = ddd.CurrentX + .Xt: PrintUnicodeStandardWidthAddXT ddd, c$, nr
+ With nr
+ .Left = .Right
+ .Right = .Left + pixX
+ End With
+
+  Next r
+ LCTbasket ddd, mb, PY, PX + r
+   
+   
+what = Mid$(what, .mx - PX + 1)
+
+If Not ONELINE Then PX = 0
+
+If NoCR Then Exit Do Else PY = PY + 1
+
+If PY >= .My And Not ONELINE Then
+
+If ddd.name = "PrinterDocument1" Then
+getnextpage
+ With nr
+ .top = PY * pixY + mb.uMineLineSpace
+  .Bottom = .top + pixY - p2
+ End With
+PY = 1
+Else
+ScrollUpNew ddd, mb
+End If
+
+PY = PY - 1
+End If
+If ONELINE Then
+LCTbasket ddd, mb, PY, PX
+LEAVEME = True
+Exit Do
+Else
+ With nr
+ .Left = PX * pixX
+ .Right = .Left + pixX
+ .top = PY * pixY + mb.uMineLineSpace
+ .Bottom = .top + pixY - p2
+ End With
+rTop = PY * pixY
+rBottom = rTop + pixY - plusone
+End If
+Loop
+If LEAVEME Then Exit Sub
+
+ If ddd.FontTransparent = False Then
+     With nr2
+ .Left = PX * pixX
+ .Right = (PX + Len(what$)) * pixX + 1
+ .top = rTop
+ .Bottom = rBottom
+ 
+ End With
+ FillBack ddd.hDC, nr2, ddd.BackColor
+ End If
+ 
+If what$ <> "" Then
+.currow = PY
+.curpos = PX
+LCTbasketCur ddd, mb
+  For r = 0 To Len(what$) - 1
+ c$ = Mid$(what$, r + 1, 1)
+ If c$ >= " " Then ddd.CurrentX = ddd.CurrentX + .Xt: PrintUnicodeStandardWidthAddXT ddd, c$, nr
+ With nr
+ .Left = .Right
+ .Right = .Left + pixX
+ End With
+ 
+  Next r
+  LCTbasket ddd, mb, PY, PX + r
+End If
+
+GetXYb ddd, mb, .curpos, .currow
+End With
+End Sub
+
+
+Public Sub PlainBaSket(ddd As Object, mybasket As basket, ByVal what As String, Optional ONELINE As Boolean = False, Optional NoCR As Boolean = False, Optional plusone As Long = 2)
+Dim PX As Long, PY As Long, r As Long, p$, c$, LEAVEME As Boolean, nr As RECT, nr2 As RECT
+Dim p2 As Long, mUAddPixelsTop As Long
+Dim pixX As Long, pixY As Long
+Dim rTop As Long, rBottom As Long
+Dim lenw&, realR&, realstop&, ctype As Long, WHAT1$
+ctype = CT_CTYPE3
+Dim A() As Byte
+'' LEAVEME = False -  NOT NEEDED
+With mybasket
+    mUAddPixelsTop = mybasket.uMineLineSpace \ dv15  ' for now
+    PX = .curpos
+    PY = .currow
+    p2 = mUAddPixelsTop * 2
+    pixX = .Xt / dv15
+    pixY = .Yt / dv15
+    With nr
+        .Left = PX * pixX
+        .Right = .Left + pixX
+        .top = PY * pixY + mUAddPixelsTop
+         .Bottom = .top + pixY - mUAddPixelsTop * 2
+    End With
+    rTop = PY * pixY
+    rBottom = rTop + pixY - plusone
+    lenw& = Len(what)
+    WHAT1$ = what + " "
+     ReDim A(Len(WHAT1$) * 2 + 20)
+     Dim skip As Boolean
+     skip = GetStringTypeExW(&HB, ctype, StrPtr(WHAT1$), -1, A(0)) = 0
+        Do While (lenw& - r) >= .mx - PX And (.mx - PX) > 0
+        
+        '' p$ = Left$(what, .mx - PX)
+       '' realstop& = .mx - PX
+        With nr2
+                .Left = PX * pixX
+                 .Right = mybasket.mx * pixX + 1
+                .top = rTop
+                .Bottom = rBottom
+        End With
+        If ddd.FontTransparent = False Then FillBack ddd.hDC, nr2, .Paper
+        ddd.CurrentX = PX * .Xt
+        ddd.CurrentY = PY * .Yt + .uMineLineSpace
+     
+        Do
+            If ONELINE And NoCR And PX > .mx Then what = "": Exit Do
+            c$ = Mid$(WHAT1$, r + 1, 1)
+      
+            If c$ >= " " Then
+            
+            '    realstop& = AscW(Mid$(WHAT1$, r + 2, 1))
+               ' If (realstop& And &H300) = &H300 Then
+               If Not skip Then
+             If A(r * 2 + 3) = 0 Then
+                     Do
+                         If A(r * 2 + 2) < 8 Then
+                            
+                            c$ = c$ + Mid$(WHAT1$, r + 2, 1)
+                             r = r + 1
+                           '  lenw& = lenw& - 1
+                           
+                         Else
+                             Exit Do
+                         End If
+                     Loop Until A(r * 2 + 3) <> 0
+                 End If
+                 End If
+                 DrawText ddd.hDC, StrPtr(c$), -1, nr, DT_SINGLELINE Or DT_CENTER Or DT_NOPREFIX
+            End If
+           r = r + 1
+            With nr
+            .Left = .Right
+            .Right = .Left + pixX
+            End With
+           ddd.CurrentX = (PX + realR) * .Xt
+        realR = realR + 1
+     
+        If r >= lenw& Then
+         r = lenw& + 1
+        lenw& = lenw& - 1
+        Exit Do
+        End If
+        If realR > .mx + PX - 1 Then Exit Do
+        
+         Loop
+        .curpos = PX + realR
+       '' what = Mid$(what, r + 1)
+        If Not ONELINE Then PX = 0
+        
+        If NoCR Then Exit Sub Else PY = PY + 1
+        
+        If PY >= .My And Not ONELINE Then
+        
+        If ddd.name = "PrinterDocument1" Then
+        getnextpage
+         With nr
+         .top = PY * pixY + mUAddPixelsTop
+          .Bottom = .top + pixY - p2
+         End With
+        PY = 1
+        Else
+        
+        ScrollUpNew ddd, mybasket
+        End If
+        
+        PY = PY - 1
+       
+        End If
+        If ONELINE Then
+
+            LEAVEME = True
+            Exit Do
+        Else
+            With nr
+               .Left = PX * pixX
+               .Right = .Left + pixX
+               .top = PY * pixY + mUAddPixelsTop
+               .Bottom = .top + pixY - p2 'mUAddPixelsTop * 2
+            End With
+            rTop = PY * pixY
+            rBottom = rTop + pixY - plusone
+        End If
+        realR& = 0
+    Loop
+    If LEAVEME Then
+                With mybasket
+                .curpos = PX
+                .currow = PY
+            End With
+    Exit Sub
+    End If
+     If ddd.FontTransparent = False Then
+        With nr2
+            .Left = PX * pixX
+            .Right = (PX + Len(what$)) * pixX + 1
+            .top = rTop
+            .Bottom = rBottom
+        End With
+        FillBack ddd.hDC, nr2, mybasket.Paper
+    End If
+realR& = 0
+    If Len(what$) > r Then
+
+       ddd.CurrentX = PX * .Xt
+    
+    ddd.CurrentY = PY * .Yt + .uMineLineSpace
+
+    For r = r To Len(what$) - 1
+        c$ = Mid$(WHAT1$, r + 1, 1)
+        If c$ >= " " Then
+             If Not skip Then
+             If A(r * 2 + 3) = 0 Then
+                     Do
+                         If A(r * 2 + 2) < 8 Then
+                            
+                            c$ = c$ + Mid$(WHAT1$, r + 2, 1)
+                             r = r + 1
+                           '  lenw& = lenw& - 1
+                           
+                         Else
+                             Exit Do
+                         End If
+                     Loop Until A(r * 2 + 3) <> 0
+                 End If
+                 End If
+               
+      ddd.CurrentX = ddd.CurrentX + .Xt
+        End If
+        PrintUnicodeStandardWidthAddXT ddd, c$, nr
+        realR& = realR + 1
+         With nr
+           .Left = .Right
+           .Right = .Left + pixX
+        End With
+    Next r
+     .curpos = PX + realR
+     .currow = PY
+     Exit Sub
+    End If
+
+  .curpos = PX
+ .currow = PY
+  End With
+            
+End Sub
+
+Public Function nTextY(basestack As basetask, ByVal what As String, ByVal Font As String, ByVal Size As Single, Optional ByVal degree As Double = 0#)
+Dim ddd As Object
+Set ddd = basestack.Owner
+Dim PX As Long, PY As Long, OLDFONT As String, OLDSIZE As String, DE#
+Dim f As LOGFONT, hPrevFont As Long, hFont As Long
+Dim BFONT As String
+Dim prive As Long
+prive = GetCode(ddd)
+On Error Resume Next
+With players(prive)
+BFONT = ddd.Font.name
+If Font <> "" Then
+If Size = 0 Then Size = ddd.FontSize
+Form3.StoreFont Font, Size, .charset
+ddd.Font.charset = 0
+ddd.FontSize = 9
+ddd.FontName = .FontName
+ddd.Font.charset = .charset
+ddd.FontSize = Size
+Else
+Font = .FontName
+End If
+
+DE# = (degree) * 180# / Pi
+   f.lfItalic = Abs(.italics)
+f.lfWeight = Abs(.bold) * 800
+  f.lfEscapement = CLng(10 * DE#)
+  f.lfFaceName = Left$(Font, 30) + Chr$(0)
+  f.lfCharSet = .charset
+  f.lfQuality = 3 ' PROOF_QUALITY
+  f.lfHeight = (Size * -20) / DYP
+
+  hFont = CreateFontIndirect(f)
+  hPrevFont = SelectObject(ddd.hDC, hFont)
+nTextY = Int(TextWidth(ddd, what$) * Sin(degree) + TextHeight(ddd, what$) * Cos(degree))
+
+
+
+
+
+  hFont = SelectObject(ddd.hDC, hPrevFont)
+  DeleteObject hFont
+
+End With
+PlaceBasket ddd, players(prive)
+
+End Function
+Public Function nText(basestack As basetask, ByVal what As String, ByVal Font As String, ByVal Size As Single, Optional ByVal degree As Double = 0#)
+Dim ddd As Object
+Set ddd = basestack.Owner
+Dim PX As Long, PY As Long, OLDFONT As String, OLDSIZE As String, DE#
+Dim f As LOGFONT, hPrevFont As Long, hFont As Long
+Dim BFONT As String
+Dim prive As Long
+prive = GetCode(ddd)
+On Error Resume Next
+With players(prive)
+BFONT = ddd.Font.name
+If Font <> "" Then
+If Size = 0 Then Size = ddd.FontSize
+Form3.StoreFont Font, Size, .charset
+ddd.Font.charset = 0
+ddd.FontSize = 9
+ddd.FontName = .FontName
+ddd.Font.charset = .charset
+ddd.FontSize = Size
+Else
+Font = .FontName
+End If
+
+DE# = (degree) * 180# / Pi
+   f.lfItalic = Abs(.italics)
+f.lfWeight = Abs(.bold) * 800
+  f.lfEscapement = CLng(10 * DE#)
+  f.lfFaceName = Left$(Font, 30) + Chr$(0)
+  f.lfCharSet = .charset
+  f.lfQuality = 3 ' PROOF_QUALITY
+  f.lfHeight = (Size * -20) / DYP
+
+  hFont = CreateFontIndirect(f)
+  hPrevFont = SelectObject(ddd.hDC, hFont)
+nText = Int(TextWidth(ddd, what$) * Cos(degree) + TextHeight(ddd, what$) * Sin(degree))
+
+
+  hFont = SelectObject(ddd.hDC, hPrevFont)
+  DeleteObject hFont
+
+End With
+PlaceBasket ddd, players(prive)
+
+
+End Function
+Public Sub fullPlain(dd As Object, mb As basket, ByVal wh$, ByVal wi, Optional fake As Boolean = False)
+Dim whNoSpace$, Displ As Long, DisplLeft As Long, i As Long, whSpace$, INTD As Long, MinDispl As Long, some As Long
+Dim st As Long
+st = DXP
+MinDispl = (TextWidth(dd, "A") \ 2) \ st
+If MinDispl <= 1 Then MinDispl = 3
+MinDispl = st * MinDispl
+INTD = TextWidth(dd, Space$(Len(wh$) - Len(LTrim(wh$))))
+dd.CurrentX = dd.CurrentX + INTD
+
+wi = wi - INTD
+wh$ = LTrim(wh$)
+INTD = wi + dd.CurrentX
+
+whNoSpace$ = ReplaceStr(" ", "", wh$)
+Dim magicratio As Double, whsp As Long, whl As Double
+
+
+If whNoSpace$ = wh$ Then
+MyPrintNew dd, mb.uMineLineSpace, wh$, True, fake
+
+    'dd.Print wh$
+Else
+ If Len(whNoSpace$) > 0 Then
+   whSpace$ = Space$(Len(Trim$(wh$)) - Len(whNoSpace$))
+   
+        Displ = st * ((wi - TextWidth(dd, whNoSpace)) \ (Len(whSpace)) \ st)
+        some = (wi - TextWidth(dd, whNoSpace) - Len(whSpace) * Displ) \ st  ' ((Displ - MinDispl) * Len(whSpace)) \ st
+        magicratio = some / Len(whNoSpace)
+        whsp = Len(whSpace)
+                whNoSpace$ = ""
+                
+        For i = 1 To Len(wh$)
+            If Mid$(wh$, i, 1) = " " Then
+            whsp = whsp - 1
+            
+               If whNoSpace$ <> "" Then
+               whl = Len(whNoSpace$) * magicratio + whl
+                    MyPrintNew dd, mb.uMineLineSpace, whNoSpace$, , fake
+                whNoSpace$ = ""
+                End If
+                If some > 0 Then
+                '
+                some = some - whl
+                dd.CurrentX = ((dd.CurrentX + Displ) \ st) * st + CLng(whl) * st
+                whl = whl - CLng(whl)
+                Else
+              dd.CurrentX = ((dd.CurrentX + Displ) \ st) * st
+              End If
+            Else
+                whNoSpace$ = whNoSpace$ & Mid$(wh$, i, 1)
+            End If
+        Next i
+
+          whl = Len(whNoSpace$) * magicratio + whl
+      dd.CurrentX = dd.CurrentX + CLng(whl) * st
+                   MyPrintNew dd, mb.uMineLineSpace, whNoSpace$, , fake
+    Else
+
+            MyPrintNew dd, mb.uMineLineSpace, wh$, True, fake
+    End If
+End If
+End Sub
+Public Sub fullPlainWhere(dd As Object, mb As basket, ByVal wh$, ByVal wi As Long, whr As Long, Optional fake As Boolean = False)
+Dim whNoSpace$, Displ As Long, DisplLeft As Long, i As Long, whSpace$, INTD As Long, MinDispl As Long
+MinDispl = (TextWidth(dd, "A") \ 2) \ DXP
+If MinDispl <= 1 Then MinDispl = 3
+MinDispl = DXP * MinDispl
+If whr = 3 Or whr = 0 Then INTD = TextWidth(dd, Space$(Len(wh$) - Len(LTrim(wh$))))
+dd.CurrentX = dd.CurrentX + INTD
+wi = wi - INTD
+wh$ = LTrim(wh$)
+INTD = wi + dd.CurrentX
+whNoSpace$ = ReplaceStr(" ", "", wh$)
+If whr = 2 Then
+wh$ = Trim(wh$)
+whNoSpace$ = ReplaceStr(" ", "", wh$)
+dd.CurrentX = dd.CurrentX + ((wi - TextWidth(dd, whNoSpace) - (Len(wh$) - Len(whNoSpace)) * MinDispl)) / 2
+ElseIf whr = 1 Then
+dd.CurrentX = dd.CurrentX + (wi - TextWidth(dd, whNoSpace) - (Len(wh$) - Len(whNoSpace)) * MinDispl)
+Else
+INTD = (wi - TextWidth(dd, whNoSpace)) * 0.2 + dd.CurrentX
+
+End If
+If whNoSpace$ = wh$ Then
+ MyPrintNew dd, mb.uMineLineSpace, wh$, True, fake
+Else
+ If Len(whNoSpace$) > 0 Then
+   whSpace$ = Space$(Len(Trim$(wh$)) - Len(whNoSpace$))
+   INTD = TextWidth(dd, whSpace$) + dd.CurrentX
+   
+   wh$ = Trim$(wh$)
+   Displ = MinDispl
+   If Displ * Len(whSpace$) + TextWidth(dd, whNoSpace$) > wi Then
+   Displ = (wi - TextWidth(dd, whNoSpace$)) / (Len(wh$))
+   
+   End If
+     
+    
+                whNoSpace$ = ""
+        For i = 1 To Len(wh$)
+            If Mid$(wh$, i, 1) = " " Then
+            whSpace$ = Mid$(whSpace$, 2)
+            
+               If whNoSpace$ <> "" Then
+                 MyPrintNew dd, mb.uMineLineSpace, whNoSpace$, , fake
+                whNoSpace$ = ""
+                End If
+              dd.CurrentX = dd.CurrentX + Displ
+              
+            Else
+                whNoSpace$ = whNoSpace$ & Mid$(wh$, i, 1)
+            End If
+        Next i
+        If whNoSpace$ <> "" Then
+
+        End If
+          MyPrintNew dd, mb.uMineLineSpace, whNoSpace$, True, fake
+    Else
+    MyPrintNew dd, mb.uMineLineSpace, wh$, True, fake
+    End If
+End If
+End Sub
+
+Public Sub wPlain(ddd As Object, mb As basket, ByVal what As String, ByVal wi&, ByVal Hi&)
+Dim PX As Long, PY As Long, ttt As Long, ruller&
+Dim buf$, b$, npy As Long ', npx As long
+With mb
+PlaceBasket ddd, mb
+If what = "" Then Exit Sub
+PX = .curpos
+PY = .currow
+If .mx - PX < wi& Then wi& = .mx - PX
+If .My - PY < Hi& Then Hi& = .My - PY
+If wi& = 0 Or Hi& < 0 Then Exit Sub
+npy = PY
+ruller& = wi&
+For ttt = 1 To Len(what)
+    b$ = Mid$(what, ttt, 1)
+    Select Case Asc(b$)
+    Case Is > 31
+    If TextWidth(ddd, buf$ & b$) <= (wi& * .Xt) Then
+    buf$ = buf$ & b$
+    End If
+    Case Is = 13
+    
+    MyPrintNew ddd, mb.uMineLineSpace, buf$, True
+    
+    buf$ = ""
+    Hi& = Hi& - 1
+    npy = npy + 1
+    LCTbasket ddd, mb, npy, PX
+    Case Else
+    End Select
+    If Hi& < 0 Then Exit For
+Next ttt
+If Hi& >= 0 And buf$ <> "" Then MyPrintNew ddd, mb.uMineLineSpace, buf$, True
+LCTbasket ddd, mb, PY, PX
+End With
+End Sub
+Public Sub wwPlain(bstack As basetask, mybasket As basket, ByVal what As String, ByVal wi As Long, ByVal Hi As Long, Optional scrollme As Boolean = False, Optional nosettext As Boolean = False, Optional frmt As Long = 0, Optional ByVal skip As Long = 0, Optional res As Long, Optional isAcolumn As Boolean = False, Optional collectit As Boolean = False)
+Dim ddd As Object, mdoc As Object
+    If collectit Then
+                Set mdoc = New Document
+                 End If
+Set ddd = bstack.Owner
+Dim PX As Long, PY As Long, ttt As Long, ruller&, last As Boolean, INTD As Long, nowait As Boolean
+Dim nopage As Boolean
+Dim buf$, b$, npy As Long, KK&, lCount As Long, SCRnum2stop As Long, itnd As Long
+Dim nopr As Boolean, nohi As Long, spcc As Long
+Dim dv2x15 As Long
+dv2x15 = dv15 * 2
+If what = "" Then Exit Sub
+With mybasket
+If Not nosettext Then
+PX = .curpos
+PY = .currow
+If PX >= .mx Then
+nowait = True
+PX = 0
+End If
+LCTbasket ddd, mybasket, PY, PX
+Else
+PX = .curpos
+PY = .currow
+End If
+If PX > .mx Then nowait = True
+If wi = 0 Then
+If nowait Then wi = .Xt * (.mx - PX) Else wi = .mx * .Xt
+
+Else
+If wi <= .mx Then wi = wi * .Xt
+End If
+
+wi = wi - CLng(dv2x15)
+
+ddd.CurrentX = ddd.CurrentX + dv2x15
+If Not scrollme Then
+If Hi >= 0 Then
+If (.My - PY) * .Yt < Hi Then Hi = (.My - PY) * .Yt
+End If
+Else
+
+If Hi > 1 Then
+If .pageframe <> 0 Then
+lCount = holdcontrol(ddd, mybasket)
+.pageframe = 0
+End If
+SCRnum2stop = holdcontrol(ddd, mybasket)
+End If
+End If
+If wi = 0 Then Exit Sub
+npy = PY
+Dim w2 As Long, kkl As Long, MinDispl As Long, OverDispl As Long
+MinDispl = (TextWidth(ddd, "A") \ 2) \ DXP
+If MinDispl <= 1 Then MinDispl = 3
+MinDispl = DXP * MinDispl
+ w2 = wi '- TextWidth( ddd, "i") +  dv2x15
+ If w2 < 0 Then Exit Sub
+ If Left$(what, 1) = " " Then INTD = 1
+ Dim kku&
+ OverDispl = MinDispl
+If Hi < 0 Then
+Hi = -Hi - 2
+nohi = Hi
+nopr = True
+End If
+Dim paragr As Boolean, help1 As Long, help2 As Long, hstr$
+
+paragr = True
+If bstack.IamThread Then nopage = True
+For ttt = 1 To Len(what)
+If NOEXECUTION Then Exit For
+b$ = Mid$(what, ttt, 1)
+If paragr Then INTD = Len(buf$ & b$) - Len(LTrim(buf$ & b$))
+Select Case Asc(b$)
+Case Is > 31
+spcc = (Len(buf$ & b$) - Len(ReplaceStr(" ", "", Trim$(buf$ & b$))))
+
+kkl = spcc * OverDispl
+hstr$ = ReplaceStr(" ", "", buf$ & b$)
+help1 = TextWidth(ddd, Space(INTD) + hstr$)
+KK& = (help1 + help2) < (w2 - kkl)
+    If KK& Then '- 15 * Len(buf$) Then
+        buf$ = buf$ & b$
+    Else
+         KK& = rinstr(Mid$(buf$, INTD + 1), " ") + INTD
+         kku& = rinstr(Mid$(buf$, INTD + 1), "_") + INTD
+         If kku& > KK& Then KK& = kku&
+         If KK& = INTD Then KK& = Len(buf$) + 1
+         If CDbl((Len(buf$) - INTD)) > 0 Then
+         If (KK& - INTD) / CDbl((Len(buf$) - INTD)) > 0.5 And kkl / wi > 0.2 Then
+         If InStr(Mid$(what, ttt), " ") < (Len(buf$) - KK&) Then
+                                KK& = Len(buf$) + 1
+                            If OverDispl > 5 * DXP Then
+                                   OverDispl = MinDispl - 2 * DXP
+                   
+                              End If
+                      buf$ = buf$ & b$
+                      GoTo thmagic
+                       ElseIf InStr(Mid$(what, ttt), "_") < (Len(buf$) - KK&) And InStr(Mid$(what, ttt), "_") <> 0 Then
+      KK& = Len(buf$) + 1
+                    If OverDispl > 5 * DXP Then
+                         OverDispl = MinDispl - 2 * DXP
+                   
+                    End If
+                      buf$ = buf$ & b$
+                       GoTo thmagic
+                       
+               End If
+         End If
+         paragr = False: INTD = 0
+         If b$ = "." Or b$ = "_" Or b$ = "," Then
+         KK& = Len(buf$) + 1
+       buf$ = buf$ & b$
+       b$ = ""
+         End If
+       End If
+        If KK& > 0 And KK& < Len(buf$) Then
+            b$ = Mid$(buf$, KK& + 1) + b$
+                If last Then
+                buf$ = Trim$(Left$(buf$, KK&))
+                Else
+            
+                buf$ = Left$(buf$, KK&)
+                
+                End If
+                End If
+ 
+          skip = skip - 1
+        If skip < 0 Then
+        
+            If last Then
+             If frmt > 0 Then
+                    If Not nopr Then fullPlainWhere ddd, mybasket, Trim$(buf$), w2, frmt, nowait
+               Else
+                    If Not nopr Then fullPlain ddd, mybasket, Trim$(buf$), w2, nowait   'DDD.Width ' w2
+                 End If
+                 If collectit Then
+                 mdoc.AppendParagraphOneLine Trim$(buf$)
+                 End If
+            Else
+                If frmt > 0 Then
+                    If Not nopr Then fullPlainWhere ddd, mybasket, RTrim$(buf$), w2, frmt, nowait  ' rtrim
+                Else
+                    If Not nopr Then fullPlain ddd, mybasket, RTrim$(buf$), w2, nowait
+                    ' npy
+                          End If
+              If collectit Then
+                 mdoc.AppendParagraphOneLine RTrim$(buf$)
+                 End If
+            End If
+        End If
+        If isAcolumn Then Exit Sub
+        last = True
+        buf$ = b$
+        If skip < 0 Or scrollme Then
+            Hi = Hi - 1
+            lCount = lCount + 1
+            npy = npy + 1
+            
+            If npy >= .My And scrollme Then
+            If Not nopr Then
+                If SCRnum2stop > 0 Then
+                    If lCount >= SCRnum2stop Then
+                      If Not bstack.toprinter Then
+                       If Not nowait Then
+                    
+                    If Not nopage Then
+                     ddd.refresh
+                        Do
+   
+                            mywait bstack, 10
+                       
+                        Loop Until INKEY$ <> "" Or mouse <> 0 Or NOEXECUTION
+                        End If
+                        End If
+                        End If
+                        SCRnum2stop = .pageframe
+                        lCount = 1
+                    
+                    End If
+                End If
+                           If Not bstack.toprinter Then
+                                ddd.refresh
+                                ScrollUpNew ddd, mybasket
+                              ''If Not isAcolumn Then
+                               ''    ddd.CurrentY = .My * .Yt - .Yt
+                             '' End If
+                            Else
+                              getnextpage
+                              npy = 1
+                          End If
+                End If
+                npy = npy - 1
+                      ''
+         ElseIf npy >= .My Then
+         
+        If Not nopr Then crNew bstack, mybasket
+               npy = npy - 1
+              
+          
+      End If
+If Not nopr Then LCTbasket ddd, mybasket, npy, PX: ddd.CurrentX = ddd.CurrentX + dv2x15
+  End If
+    End If
+Case Is = 13
+paragr = True
+ skip = skip - 1
+ 
+        If skip < 0 Or scrollme Then
+        
+If last Then
+    If frmt > 0 Then
+        If Not nopr Then fullPlainWhere ddd, mybasket, Trim$(buf$), w2, frmt, nowait
+    Else
+    
+        If Not nopr Then fullPlainWhere ddd, mybasket, Trim$(buf$), w2, 3, nowait
+    End If
+        If collectit Then
+                 mdoc.AppendParagraphOneLine Trim$(buf$)
+                 End If
+Else
+If frmt > 0 Then
+If Not nopr Then fullPlainWhere ddd, mybasket, RTrim(buf$), w2, frmt, nowait  'rtrim
+Else
+
+If Not nopr Then fullPlainWhere ddd, mybasket, RTrim(buf$), w2, 3, nowait  ' rtrim
+End If
+    If collectit Then
+                 mdoc.AppendParagraphOneLine RTrim$(buf$)
+                 End If
+End If
+End If
+last = False
+
+buf$ = ""
+'''''''''''''''''''''''''
+If isAcolumn Then Exit Sub
+If skip < 0 Or scrollme Then
+lCount = lCount + 1
+    Hi = Hi - 1
+ npy = npy + 1
+    If npy >= .My And scrollme Then
+    If Not nopr Then
+            If SCRnum2stop > 0 Then
+                If lCount >= SCRnum2stop Then
+                     If Not bstack.toprinter Then
+                     If Not nowait Then
+                     If Not nopage Then
+                     ddd.refresh
+                        Do
+      
+                            mywait bstack, 10
+                        Loop Until INKEY$ <> "" Or mouse <> 0 Or NOEXECUTION
+                         End If
+                         End If
+                         End If
+                                    SCRnum2stop = .pageframe
+                        lCount = 1
+                End If
+            End If
+            
+                  If Not bstack.toprinter Then
+                            ddd.refresh
+                            ScrollUpNew ddd, mybasket
+                ''     If Not isAcolumn Then
+                        ddd.CurrentY = .My * .Yt - .Yt
+                         ''  End If
+                          Else
+                          getnextpage
+                          npy = 1
+                          End If
+            End If
+            npy = npy - 1
+    ElseIf npy >= .My Then
+            
+If Not nopr Then crNew bstack, mybasket
+            ' 1ST
+            npy = npy - 1
+    End If
+If Not nopr Then GetXYb2 ddd, mybasket, ruller&, npy
+conthere:
+If Not nopr Then LCTbasket ddd, mybasket, npy, PX: ddd.CurrentX = ddd.CurrentX + dv2x15
+End If
+Case Else
+End Select
+
+If Hi < 0 Then
+' Exit For
+'
+skip = 1000
+scrollme = False
+End If
+ OverDispl = MinDispl
+thmagic:
+Next ttt
+If Hi >= 0 And buf$ <> "" Then
+ skip = skip - 1
+        If skip < 0 Then
+If frmt = 2 Then
+If Not nopr Then fullPlainWhere ddd, mybasket, RTrim(buf$), w2, frmt, nowait
+            If collectit Then
+                 mdoc.AppendParagraphOneLine RTrim$(buf$)
+                 End If
+Else
+If Hi = 0 And frmt = 0 And Not scrollme Then
+If Not nopr Then
+
+MyPrintNew ddd, mybasket.uMineLineSpace, buf$, , nowait     ';   '************************************************************************************
+
+res = ddd.CurrentX
+        If Trim$(buf$) = "" Then
+        ddd.CurrentX = ((ddd.CurrentX + .Xt \ 2) \ .Xt) * .Xt
+        Else
+        ddd.CurrentX = ((ddd.CurrentX + .Xt \ 1.2) \ .Xt) * .Xt
+        End If
+End If
+            If collectit Then
+                 mdoc.AppendParagraphOneLine buf$
+                 End If
+
+
+Exit Sub
+Else
+If Not nopr Then
+fullPlainWhere ddd, mybasket, RTrim(buf$), w2, frmt, nowait
+End If
+    If collectit Then
+                 mdoc.AppendParagraphOneLine buf$
+                 End If
+End If
+End If
+End If
+If skip < 0 Or scrollme Then
+    Hi = Hi - 1
+    lCount = lCount + 1
+   If Not isAcolumn Then npy = npy + 1
+        If npy >= .My And scrollme Then
+
+            If Not nopr Then  ' NOPT -> NOPR
+                If SCRnum2stop > 0 Then
+                    If lCount >= SCRnum2stop Then
+                      If Not bstack.toprinter Then
+                      If Not nowait Then
+                      If Not nopage Then
+                     ddd.refresh
+                    Do
+            
+                            mywait bstack, 10
+                    Loop Until INKEY$ <> "" Or mouse <> 0 Or NOEXECUTION
+                    End If
+                    End If
+                    End If
+                                SCRnum2stop = .pageframe
+                        lCount = 1
+                    End If
+                End If
+                      If Not bstack.toprinter Then
+                            ddd.refresh
+                            
+                          ScrollUpNew ddd, mybasket
+                             
+                                   ddd.CurrentY = .My * .Yt - .Yt
+                             
+                          Else
+                          getnextpage
+                          npy = 1
+                          End If
+            End If
+            npy = npy - 1
+         ElseIf npy >= .My Then
+          
+            If npy >= .My Then
+            
+           If Not (nopr Or isAcolumn) Then crNew bstack, mybasket
+            npy = npy - 1
+            End If
+        End If
+    If Not nopr Then LCTbasket ddd, mybasket, npy, PX: ddd.CurrentX = ddd.CurrentX + dv2x15
+    End If
+End If
+If scrollme Then
+
+HoldReset lCount, mybasket
+End If
+res = nohi - Hi
+
+wi = ddd.CurrentX
+    If collectit Then
+    Dim aa As Document
+   bstack.Soros.PushStr mdoc.textDoc
+        Set mdoc = Nothing
+                 End If
+''GetXYb ddd, mybasket, .curpos, .currow
+End With
+End Sub
+
+Public Sub FeedFont2Stack(basestack As basetask, ok As Boolean)
+Dim ms As New mStiva
+If ok Then
+ms.PushVal CDbl(ReturnBold)
+ms.PushVal CDbl(ReturnItalic)
+ms.PushVal CDbl(ReturnCharset)
+ms.PushVal CDbl(ReturnSize)
+ms.PushStr ReturnFontName
+ms.PushVal CDbl(1)
+Else
+ms.PushVal CDbl(0)
+End If
+basestack.Soros.MergeTop ms
+End Sub
+Public Sub nPlain(basestack As basetask, ByVal what As String, ByVal Font As String, ByVal Size As Single, Optional ByVal degree As Double = 0#, Optional ByVal JUSTIFY As Long = 0, Optional ByVal qual As Boolean = True, Optional ByVal ExtraWidth As Long = 0)
+Dim ddd As Object
+Set ddd = basestack.Owner
+Dim PX As Long, PY As Long, OLDFONT As String, OLDSIZE As Long, DEGR As Double
+Dim f As LOGFONT, hPrevFont As Long, hFont As Long, fline$, ruler As Long
+Dim BFONT As String
+On Error Resume Next
+BFONT = ddd.Font.name
+If ExtraWidth <> 0 Then
+SetTextCharacterExtra ddd.hDC, ExtraWidth
+End If
+DEGR = (degree) * 180# / Pi
+  f.lfItalic = Abs(basestack.myitalic)
+  f.lfWeight = Abs(basestack.myBold) * 800
+  f.lfEscapement = CLng(10 * DEGR)
+  f.lfFaceName = Left$(Font, 30) + Chr$(0)
+  f.lfCharSet = basestack.myCharSet
+  If qual Then
+  f.lfQuality = PROOF_QUALITY 'NONANTIALIASED_QUALITY '
+  Else
+  f.lfQuality = NONANTIALIASED_QUALITY
+  End If
+  f.lfHeight = (Size * -20) / DYP
+  hFont = CreateFontIndirect(f)
+  hPrevFont = SelectObject(ddd.hDC, hFont)
+Dim icx As Long, icy As Long, x As Long, y As Long, icH As Long
+icH = TextHeight(ddd, "fj")    '' Aq"
+icy = CLng(Cos(degree) * icH)
+icx = CLng(Sin(degree) * icH)
+With players(GetCode(ddd))
+y = .YGRAPH - icy
+x = .XGRAPH - icx
+End With
+what$ = ReplaceStr(vbCrLf, vbCr, what) + vbCr
+Do While what$ <> ""
+If Left$(what$, 1) = vbCr Then
+fline$ = ""
+what$ = Mid$(what$, 2)
+Else
+fline$ = GetStrUntil(vbCr, what$)
+End If
+x = x + icx
+y = y + icy
+If JUSTIFY = 1 Then
+    ddd.CurrentX = x - Int(TextWidth(ddd, fline$) * Cos(degree) + TextHeight(ddd, fline$) * Sin(degree))
+    ddd.CurrentY = y + Int(TextWidth(ddd, fline$) * Sin(degree) - TextHeight(ddd, fline$) * Cos(degree))
+ElseIf JUSTIFY = 2 Then
+    ddd.CurrentX = x - Int(TextWidth(ddd, fline$) * Cos(degree) + TextHeight(ddd, fline$) * Sin(degree)) \ 2
+    ddd.CurrentY = y + Int(TextWidth(ddd, fline$) * Sin(degree) - TextHeight(ddd, fline$) * Cos(degree)) \ 2
+Else
+    ddd.CurrentX = x
+    ddd.CurrentY = y
+End If
+MyPrint ddd, fline$
+Loop
+  hFont = SelectObject(ddd.hDC, hPrevFont)
+  DeleteObject hFont
+If ExtraWidth <> 0 Then SetTextCharacterExtra ddd.hDC, 0
+End Sub
+
+Public Sub nForm(bstack As basetask, TheSize As Single, nW As Long, nH As Long, myLineSpace As Long)
+    Form3.StoreFont bstack.Owner.Font.name, TheSize, bstack.myCharSet
+    nH = Form3.TextHeight("Wq") + myLineSpace * 2
+    nW = Form3.TextWidth("W") + dv15
+End Sub
+
+Sub crNew(bstack As basetask, mb As basket)
+Dim D As Object
+Set D = bstack.Owner
+With mb
+Dim PX As Long, PY As Long, r As Long
+PX = .curpos
+PY = .currow
+PX = 0
+PY = PY + 1
+If PY >= .My Then
+
+If Not bstack.toprinter Then
+''MyDoEvents2 d           'r = UpdateWindow(d.hWnd)
+ScrollUpNew D, mb
+PY = .My - 1
+Else
+' next page
+PY = 0
+PX = 0
+' d.NewPage
+getnextpage
+End If
+Else
+
+''If Not extreme Then MyDoEvents2 d
+'MyDoEvents '
+End If
+.curpos = PX
+.currow = PY
+
+''LCT d, PY, PX
+''GetXY d, xPos, yPos
+End With
+End Sub
+
+Public Sub CdESK()
+Dim x, y, ff As Form, useform1 As Boolean
+If Form1.Visible Then
+    If Form5.Visible Then
+    Set ff = Form5
+    Form5.BackColor = 0
+    useform1 = True
+    Else
+    Set ff = Form1
+    End If
+    x = ff.Left / DXP
+    y = ff.top / DYP
+    If useform1 Then Form1.Hide
+    ff.Hide
+    
+    Sleep 20
+    k1 = 0
+    MyDoEvents1 Form3
+    Dim aa As New cDIBSection
+    aa.CreateFromPicture hDCToPicture(GetDC(0), x, y, ff.Width / DXP, ff.Height / DYP)
+    
+    aa.ThumbnailPaint ff
+    ff.Visible = True
+    If useform1 Then Form1.Visible = True
+End If
+Set ff = Nothing
+End Sub
+Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
+' create brush
+Dim my_brush As Long
+my_brush = CreateSolidBrush(bgcolor)
+FillRect thathDC, there, my_brush
+DeleteObject my_brush
+End Sub
+
+Public Sub ScrollUpNew(D As Object, mb As basket)
+Dim ar As RECT, r As Long
+Dim p As Long
+With mb
+ar.Left = 0
+ar.Bottom = D.Height / dv15
+ar.Right = D.Width / dv15
+ar.top = .mysplit * .Yt / dv15
+p = .Yt / dv15
+r = BitBlt(D.hDC, CLng(ar.Left), CLng(ar.top), CLng(ar.Right), CLng(ar.Bottom - p), D.hDC, CLng(ar.Left), CLng(ar.top + p), SRCCOPY)
+
+ ar.top = ar.Bottom - p
+FillBack D.hDC, ar, .Paper
+.curpos = 0
+.currow = .My - 1
+End With
+GdiFlush
+End Sub
+Public Sub ScrollDownNew(D As Object, mb As basket)
+Dim ar As RECT, r As Long
+Dim p As Long
+With mb
+ar.Left = 0
+ar.Bottom = D.ScaleY(D.Height, 1, 3)
+ar.Right = D.ScaleX(D.Width, 1, 3)
+ar.top = D.ScaleY(.mysplit * .Yt, 1, 3)
+p = D.ScaleY(.Yt, 1, 3)
+r = BitBlt(D.hDC, CLng(ar.Left), CLng(ar.top + p), CLng(ar.Right), CLng(ar.Bottom - p), D.hDC, CLng(ar.Left), CLng(ar.top), SRCCOPY)
+D.Line (0, .mysplit * .Yt)-(D.ScaleWidth, .mysplit * .Yt + .Yt), .Paper, BF
+.currow = .mysplit
+.curpos = 0
+End With
+End Sub
+
+
+
+
+
+Public Sub SetText(dq As Object, Optional alinespace As Long = -1, Optional ResetColumns As Boolean = False)
+' can be used for first time also
+Dim mymul As Long
+On Error Resume Next
+With players(GetCode(dq))
+If .FontName = "" Or alinespace = -2 Then
+' we have to make it
+If alinespace = -2 Then alinespace = 0
+ResetColumns = True
+.FontName = dq.FontName
+.charset = dq.Font.charset
+.SZ = dq.FontSize
+Else
+If Not (Form3.FontName = .FontName And Form3.Font.charset = .charset And Form3.Font.Size = .SZ) Then
+Form3.StoreFont .FontName, .SZ, .charset
+dq.Font.charset = 0
+dq.FontSize = 9
+dq.FontName = .FontName
+dq.Font.charset = .charset
+dq.FontSize = .SZ
+End If
+End If
+If alinespace <> -1 Then
+If .uMineLineSpace = .MineLineSpace * 2 And .MineLineSpace <> 0 Then
+.MineLineSpace = alinespace
+.uMineLineSpace = alinespace * 2
+Else
+.MineLineSpace = alinespace
+.uMineLineSpace = alinespace ' so now we have normal
+End If
+End If
+.SZ = dq.FontSize
+.Xt = Form3.TextWidth("W") + dv15
+.Yt = Form3.TextHeight("fj")
+.mx = Int(dq.Width / .Xt)
+.My = Int(dq.Height / (.Yt + .uMineLineSpace * 2))
+''.Paper = dq.BackColor
+If .My <= 0 Then .My = 1
+If .mx <= 0 Then .mx = 1
+.Yt = .Yt + .uMineLineSpace * 2
+
+If ResetColumns Then
+mymul = Int(.mx / 8)
+If mymul = 1 Then mymul = 2
+If mymul = 0 Then
+.Column = .mx \ 2 - 1
+Else
+.Column = Int(.mx / mymul)
+While (.mx Mod .Column) > 0 And (.mx / .Column >= 3)
+.Column = .Column + 1
+Wend
+End If
+If .Column = 0 Then .Column = .mx
+.Column = .Column - 1
+If .Column < 4 Then .Column = 4
+End If
+.MAXXGRAPH = dq.Width
+.MAXYGRAPH = dq.Height
+End With
+
+End Sub
+
+Public Sub SetTextSZ(dq As Object, mSz As Single, Optional factor As Single = 1, Optional AddTwipsTop As Long = -1)
+' Used for making specific basket
+On Error Resume Next
+With players(GetCode(dq))
+
+If AddTwipsTop < 0 Then
+    If .double And factor = 1 Then
+    .mysplit = .osplit
+    .Column = .OCOLUMN
+    .currow = (.currow + 1) * 2 - 2
+    .curpos = .curpos * 2
+    mSz = .SZ / 2
+    .uMineLineSpace = .MineLineSpace
+    .double = False
+    ElseIf factor = 2 And Not .double Then
+     .osplit = .mysplit
+     .OCOLUMN = .Column
+     .Column = .Column / 2
+     .mysplit = .mysplit / 2
+     .currow = (.currow + 1) / 2
+     .curpos = .curpos / 2
+     mSz = .SZ * 2
+    .uMineLineSpace = .MineLineSpace * 2
+    .double = True
+    End If
+Else
+
+mSz = mSz * factor
+.MineLineSpace = AddTwipsTop
+.uMineLineSpace = AddTwipsTop * factor
+.double = factor <> 1
+End If
+Form3.StoreFont dq.Font.name, mSz, dq.Font.charset
+dq.FontSize = mSz
+
+.Yt = Form3.TextHeight("fj")
+.Xt = Form3.TextWidth("W") + dv15
+.mx = Int(dq.Width / .Xt)
+.My = Int(dq.Height / (.Yt + .uMineLineSpace * 2))
+.Yt = .Yt + .uMineLineSpace * 2
+
+If .My <= 0 Then .My = 1
+If .mx <= 0 Then .mx = 1
+.SZ = dq.FontSize
+.MAXXGRAPH = dq.Width
+.MAXYGRAPH = dq.Height
+End With
+End Sub
+
+Public Sub SetTextBasketBack(dq As Object, mb As basket)
+' set minimum display parameters for current object
+' need an already filled basket
+On Error Resume Next
+With mb
+
+If Not (dq.FontName = .FontName And dq.Font.charset = .charset And dq.Font.Size = .SZ) Then
+
+Form3.StoreFont .FontName, .SZ, .charset
+dq.Font.charset = 0
+dq.FontSize = 9
+dq.FontName = .FontName
+dq.Font.charset = .charset
+dq.FontSize = .SZ
+End If
+dq.ForeColor = .mypen
+If Not dq.BackColor = .Paper Then
+dq.BackColor = .Paper
+End If
+End With
+End Sub
+
+Function gf$(bstack As basetask, ByVal y&, ByVal x&, ByVal A$, c&, f&, Optional STAR As Boolean = False)
+Dim cLast&, b$, cc$, dq As Object, ownLinespace
+Dim mybasket As basket, addpixels As Long
+GFQRY = True
+Set dq = bstack.Owner
+SetText dq
+mybasket = players(GetCode(dq))
+
+With mybasket
+If Form3.InternalLeadingSpace = 0 And .MineLineSpace = 0 Then
+addpixels = 0
+Else
+addpixels = 2
+End If
+If dq.Visible = False Then dq.Visible = True
+If exWnd = 0 Then dq.SetFocus
+dq.FontTransparent = False
+LCTbasket dq, mybasket, y&, x&
+Dim o$
+o$ = A$
+If A$ = "" Then A$ = " "
+INK$ = ""
+
+Dim XX&
+XX& = x&
+
+x& = x& - 1
+
+cLast& = Len(A$)
+'*****************
+If cLast& + x& >= .mx Then
+MyDoEvents
+If dq.Font.charset = 161 Then
+b$ = InputBoxN("Εισαγωγή Μεταβλητής", MesTitle$, A$)
+Else
+b$ = InputBoxN("Input Variable", MesTitle$, A$)
+End If
+If b$ = "" Then b$ = A$
+If Trim$(b$) < "A" Then b$ = Right$(String$(cLast&, " ") + b$, cLast&) Else b$ = Left$(b$ + String$(cLast&, " "), cLast&)
+gf$ = b$
+If XX& < .mx Then
+dq.FontTransparent = False
+If STAR Then
+PlainBaSket dq, mybasket, StarSTR(Left$(b$, .mx - x&)), True, , addpixels
+Else
+PlainBaSket dq, mybasket, Left$(b$, .mx - x&), True, , addpixels
+End If
+End If
+GoTo GFEND
+Else
+dq.FontTransparent = False
+If STAR Then
+PlainBaSket dq, mybasket, StarSTR(A$), True, , addpixels
+Else
+PlainBaSket dq, mybasket, A$, True, , addpixels
+End If
+End If
+
+'************
+b$ = A$
+.currow = y&
+.curpos = c& + x&
+LCTCB dq, mybasket, ins&
+
+Do
+MyDoEvents1 Form1
+If bstack.IamThread Then If myexit(bstack) Then GoTo contgfhere
+If TaskMaster.QueueCount > 0 Then
+dq.FontTransparent = True
+TaskMaster.RestEnd1
+TaskMasterTick
+
+End If
+ cc$ = INKEY$
+ If cc$ <> "" Then
+ TaskMaster.rest
+SetTextBasketBack dq, mybasket
+ Else
+ TaskMaster.RestEnd
+SetTextBasketBack dq, mybasket
+        If iamactive Then
+           If Screen.ActiveForm Is Nothing Then
+                            DestroyCaret
+                      nomoveLCTC dq, mybasket, y&, c& + x&, ins&
+                      iamactive = False
+           Else
+                If Not (GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1") Then
+                 
+                      DestroyCaret
+                      nomoveLCTC dq, mybasket, y&, c& + x&, ins&
+                      iamactive = False
+             Else
+                         If ShowCaret(dq.hWnd) = 0 Then
+                                   HideCaret dq.hWnd
+                                   .currow = y&
+                                   .curpos = c& + x&
+                                   LCTCB dq, mybasket, ins&
+                                   ShowCaret dq.hWnd
+                         End If
+                End If
+                End If
+     Else
+  If Not Screen.ActiveForm Is Nothing Then
+            If GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1" Then
+           
+                          nomoveLCTC dq, mybasket, y&, c& + x&, ins&
+                             iamactive = True
+                              If ShowCaret(dq.hWnd) = 0 And Screen.ActiveForm.name = "Form1" Then
+                                   HideCaret dq.hWnd
+                                   .currow = y&
+                                   .curpos = c& + x&
+                                   LCTCB dq, mybasket, ins&
+                                   ShowCaret dq.hWnd
+                         End If
+                         End If
+            End If
+     End If
+
+ End If
+
+ 
+        If NOEXECUTION Then
+        If KeyPressed(&H1B) Then
+                       f& = 99 'ESC  ****************
+                        c& = 1
+                        gf$ = o$
+                        b$ = o$
+                                          NOEXECUTION = False
+                                         BLOCKkey = True
+                                    While KeyPressed(&H1B) ''And UseEsc
+                             If TaskMaster.Processing Then
+                                                TaskMaster.RestEnd1
+                                                TaskMaster.TimerTick
+                                                TaskMaster.rest
+                                                MyDoEvents1 dq
+                                                Else
+                                                MyDoEvents
+                                                
+                                                End If
+'''sleepwait 1
+                                    Wend
+                                                                        BLOCKkey = False
+                                                                        End If
+                 Exit Do
+        End If
+        Select Case Len(cc$)
+        Case 1
+        If STAR And cc$ = " " Then cc$ = Chr$(127)
+                Select Case Asc(cc$)
+                Case 8
+                        If c& > 1 Then
+                        Mid$(b$, c& - 1) = Mid$(b$, c&) & " "
+                         c& = c& - 1
+                         dq.FontTransparent = False
+                                   .currow = y&
+                                   .curpos = c& + x&
+                                   LCTCB dq, mybasket, ins&
+                        If STAR Then
+                        PlainBaSket dq, mybasket, StarSTR(Mid$(b$, c&)), True, , addpixels
+                        Else
+                        PlainBaSket dq, mybasket, Mid$(b$, c&), True, , addpixels
+                        End If
+                         dq.refresh
+                                   .currow = y&
+                                   .curpos = c& + x&
+                                   LCTCB dq, mybasket, ins&
+                        End If
+                Case 6
+                f& = -1
+                 gf$ = b$
+                Exit Do
+                Case 13, 9
+                f& = 1 'NEXT  *************
+                gf$ = b$
+                Exit Do
+
+                Case 27
+                        f& = 99 'ESC  ****************
+                        c& = 1
+                        gf$ = o$
+                        b$ = o$
+                                    NOEXECUTION = False
+                                    BLOCKkey = True
+                                    While KeyPressed(&H1B) ''And UseEsc
+                                    If TaskMaster.Processing Then
+                                            TaskMaster.RestEnd1
+                                            TaskMaster.TimerTick
+                                            TaskMaster.rest
+                                            MyDoEvents1 dq
+                                            Else
+                                            MyDoEvents
+                                            
+                                            End If
+                                    ''''MyDoEvents
+                                    Wend
+                                                                        BLOCKkey = False
+                        NOEXECUTION = False
+                        Exit Do
+                Case 32 To 126, 128 To 255
+           
+                        .currow = y&
+                        .curpos = c& + x&
+                        LCTCB dq, mybasket, ins&
+                        If ins& = 1 Then
+                          If Asc(cc$) = 32 And STAR Then
+                If Asc(Mid$(b$, c& + 1)) > 32 Then
+                 Mid$(b$, c&) = Mid$(b$, c& + 1) & " "
+                End If
+                
+                
+                Else
+                        
+                                                
+                        Mid$(b$, c&, 1) = cc$
+                        dq.FontTransparent = False
+                        If STAR Then
+                        PlainBaSket dq, mybasket, StarSTR(Mid$(b$, c&)), True, , addpixels
+                        Else
+                        PlainBaSket dq, mybasket, Mid$(b$, c&), True, , addpixels
+                        End If
+                         dq.refresh
+                        End If
+                        If c& < Len(b$) Then c& = c& + 1
+                                   .currow = y&
+                                   .curpos = c& + x&
+                                   LCTCB dq, mybasket, ins&
+                        Else
+                                 If Asc(cc$) = 32 And STAR Then
+            
+                
+                
+                Else
+                     
+                        LSet b$ = Left$(b$, c& - 1) + cc$ & Mid$(b$, c&)
+                        dq.FontTransparent = False
+                        If STAR Then
+                        PlainBaSket dq, mybasket, StarSTR(Mid$(b$, c&)), True, , addpixels
+                        Else
+                        PlainBaSket dq, mybasket, Mid$(b$, c&), True, , addpixels
+                        End If
+                         dq.refresh
+                        'LCTC Dq, Y&, X& + C& + 1, INS&
+                        End If
+                        If c& < cLast& Then c& = c& + 1
+                                .currow = y&
+                                .curpos = c& + x&
+                                LCTCB dq, mybasket, ins&
+                        End If
+                End Select
+        Case 2
+                Select Case Asc(Right$(cc$, 1))
+               
+                Case 75 'LEFT
+                        If c& > 1 Then
+                                   .currow = y&
+                                .curpos = c& + x&
+                                LCTCB dq, mybasket, ins&
+                        c& = c& - 1:
+                        .currow = y&
+                        .curpos = c& + x&
+                        LCTCB dq, mybasket, ins&
+                        End If
+                Case 77 'RIGHT
+                        If c& < cLast& Then
+                      
+                If Not (Asc(Mid$(b$, c&)) = 32 And STAR) Then
+                
+             
+                                    .currow = y&
+                                .curpos = c& + x&
+                                LCTCB dq, mybasket, ins&
+                        c& = c& + 1:
+                        .currow = y&
+                                .curpos = c& + x&
+                                LCTCB dq, mybasket, ins&
+                        End If
+                        End If
+                Case 72 ' EXIT UP
+                f& = -1 ' PREVIUS ***************
+                gf$ = b$
+                Exit Do
+                Case 80 'EXIT DOWN OR ENTER OR TAB
+                f& = 1 'NEXT  *************
+                gf$ = b$
+                Exit Do
+                Case 82
+                            .currow = y&
+                                .curpos = c& + x&
+                                LCTCB dq, mybasket, ins&
+                ins& = 1 - ins&
+                           .currow = y&
+                                .curpos = c& + x&
+                                LCTCB dq, mybasket, ins&
+                Case 83
+                        Mid$(b$, c&) = Mid$(b$, c& + 1) & " "
+                        dq.FontTransparent = False
+                        LCTbasket dq, mybasket, y&, c& + x&
+                        If STAR Then
+                        PlainBaSket dq, mybasket, StarSTR(Mid$(b$, c&)), True, , addpixels
+                        Else
+                        PlainBaSket dq, mybasket, Mid$(b$, c&), True, , addpixels
+                        End If
+                               .currow = y&
+                                .curpos = c& + x&
+                                LCTCB dq, mybasket, ins&
+                     dq.refresh
+                End Select
+        End Select
+      
+Loop
+
+GFEND:
+LCTbasket dq, mybasket, y&, x& + 1
+If x& < .mx And Not XX& > .mx Then
+If STAR Then
+ PlainBaSket dq, mybasket, StarSTR(b$), True, , addpixels
+Else
+PlainBaSket dq, mybasket, b$, True, , addpixels
+End If
+contgfhere:
+ dq.refresh
+ If TaskMaster.QueueCount > 0 Then TaskMaster.RestEnd
+End If
+dq.FontTransparent = True
+ DestroyCaret
+Set dq = Nothing
+TaskMaster.RestEnd1
+GFQRY = False
+End With
+End Function
+
+
+
+Sub Original(bstack As basetask, COM$)
+Dim D As Object, b$
+
+If COM$ <> "" Then QUERYLIST = ""
+If Form1.Visible Then REFRESHRATE = 25
+If bstack.toprinter Then
+bstack.toprinter = False
+Form1.PrinterDocument1.Cls
+Set D = bstack.Owner
+Else
+Set D = bstack.Owner
+End If
+''On Error GoTo 0
+On Error Resume Next
+Dim basketcode As Long
+basketcode = GetCode(D)
+
+
+Form1.IEUP ""
+Form1.KeyPreview = True
+Dim DUMMY As Boolean, rs As String, mpen As Long, ICO As Long, BAR As Long, bar2 As Long
+BAR = 1
+
+If COM$ <> "" Then D.Visible = False
+ClrSprites
+mpen = PenOne
+'Paper = 1
+D.Font.bold = bstack.myBold
+D.Font.Italic = bstack.myitalic
+
+'dummy = interpret(basestack1, "WINDOW" & str$(SZ) & ",0")  ' + Str$(Form1.Width - 100) & "," & Str$(Form1.Height - 100))
+If SzOne < 4 Then SzOne = 4
+If Not Form1.WindowState = 0 Then Form1.WindowState = 0
+Sleep 10
+If Form1.WindowState = 0 Then
+Form1.Move 0, 0, ScrX() - 1, ScrY() - 1
+End If
+
+FrameText D, SzOne, Form1.Width, Form1.Height, PaperOne
+If lckfrm = 0 Then
+SetText D
+bstack.Owner.Font.charset = bstack.myCharSet
+ Form3.StoreFont bstack.Owner.Font.name, SzOne, bstack.myCharSet
+ 
+ With players(basketcode)
+.mypen = PenOne
+.XGRAPH = 0
+.YGRAPH = 0
+.bold = bstack.myBold '' I have to change that
+.italics = bstack.myitalic
+.FontName = bstack.Owner.FontName
+.SZ = SzOne
+.charset = bstack.myCharSet
+.MAXXGRAPH = Form1.Width
+.MAXYGRAPH = Form1.Height
+.Paper = bstack.Owner.BackColor
+End With
+
+ 
+ 
+' check to see if
+Dim SS$, skipthat As Boolean
+If Not IsSupervisor Then
+    SS$ = ReadUnicodeOrANSI(userfiles & "desktop.inf")
+    If SS$ <> "" Then
+     skipthat = interpret(bstack, SS$)
+    End If
+End If
+If SzOne < 36 And D.Height / SzOne > 250 Then SetDouble D: BAR = BAR + 1
+If SzOne < 83 Then
+
+If bstack.myCharSet = 161 Then
+b$ = "ΠΕΡΙΒΑΛΛΟΝ "
+Else
+b$ = "ENVIRONMENT "
+End If
+D.ForeColor = mycolor(PenOne)
+LCTbasket D, players(DisForm), 0, 0
+wwPlain bstack, players(DisForm), b$ & "M2000", D.Width, 0, 0 '',True
+ICO = TextWidth(D, b$ & "M2000") + 100
+' draw graphic'
+Dim IX As Long, IY As Long
+With players(DisForm)
+IX = (.Xt \ 25) * 25
+IY = Form1.Icon.Height * IX / Form1.Icon.Width
+
+Form1.DIS.PaintPicture Form1.Icon, ICO, (.Yt - IY) / 2, IX, IY
+Form1.DIS.PaintPicture Form1.Icon, ICO, (.Yt - IY) / 2, IX, IY
+End With
+
+' ********
+SetNormal D
+   
+        LCTbasket D, players(basketcode), BAR, 0
+        rs = RESOURCES
+            If bstack.myCharSet = 161 Then
+            If Revision = 0 Then
+            wwPlain bstack, players(DisForm), "Έκδοση Διερμηνευτή: " & CStr(VerMajor) & "." & CStr(VerMinor), D.Width, 0, True
+            Else
+                    wwPlain bstack, players(DisForm), "Έκδοση Διερμηνευτή: " & CStr(VerMajor) & "." & Left$(CStr(VerMinor), 1) & " (" & CStr(Revision) & ")", D.Width, 0, True
+                End If
+                   wwPlain bstack, players(DisForm), "Λειτουργικό Σύστημα: " & os, D.Width, 0, True
+            
+                      wwPlain bstack, players(DisForm), "Όνομα Χρήστη: " & Originalusername, D.Width, 0, True
+                
+            Else
+             If Revision = 0 Then
+              wwPlain bstack, players(DisForm), "Interpreter Version: " & CStr(VerMajor) & "." & CStr(VerMinor), D.Width, 0, True
+             Else
+                    wwPlain bstack, players(DisForm), "Interpreter Version: " & CStr(VerMajor) & "." & Left$(CStr(VerMinor), 1) & " rev. (" & CStr(Revision) & ")", D.Width, 0, True
+                 End If
+              
+                      wwPlain bstack, players(DisForm), "Operating System: " & os, D.Width, 0, True
+                
+                   wwPlain bstack, players(DisForm), "User Name: " & Originalusername, D.Width, 0, True
+        
+                 End If
+                        '    cr bstack
+            GetXYb D, players(basketcode), bar2, BAR
+             players(basketcode).curpos = bar2
+            players(basketcode).currow = BAR
+           BAR = BAR + 1
+            If BAR >= players(basketcode).My Then ScrollUpNew D, players(basketcode)
+                    LCTbasket D, players(basketcode), BAR, 0
+                    players(basketcode).curpos = 0
+            players(basketcode).currow = BAR
+    End If
+    
+If Not skipthat Then
+ DUMMY = interpret(bstack, "PEN " & CStr(mpen) & ":CLS ," & CStr(BAR))
+End If
+End If
+If Not skipthat Then
+DUMMY = interpret(bstack, COM$)
+End If
+'cr bstack
+End Sub
+Sub ClearScr(D As Object, c1 As Long)
+Dim aa As Long
+With players(GetCode(D))
+.Paper = c1
+.curpos = 0
+.currow = 0
+.lastprint = False
+End With
+D.Line (0, 0)-(D.ScaleWidth - dv15, D.ScaleHeight - dv15), c1, BF
+D.CurrentX = 0
+D.CurrentY = 0
+
+End Sub
+Sub ClearScrNew(D As Object, mb As basket, c1 As Long)
+Dim im As New StdPicture, spl As Long
+With mb
+spl = .mysplit * .Yt
+Set im = D.image
+.Paper = c1
+
+If D.name = "Form1" Then
+D.Line (0, spl)-(D.ScaleWidth - dv15, D.ScaleHeight - dv15), .Paper, BF
+.curpos = 0
+.currow = .mysplit
+Else
+D.BackColor = c1
+If spl > 0 Then D.PaintPicture im, 0, 0, D.Width, spl, 0, 0, D.Width, spl, vbSrcCopy
+.curpos = 0
+.currow = .mysplit
+
+End If
+.lastprint = False
+D.CurrentX = 0
+D.CurrentY = 0
+End With
+End Sub
+Function iText(bb As basetask, ByVal V$, wi&, Hi&, aTitle$, n As Long, Optional NumberOnly As Boolean = False, Optional UseIntOnly As Boolean = False) As String
+Dim x&, y&, dd As Object, wh&, shiftlittle As Long, OLDV$
+Set dd = bb.Owner
+With players(GetCode(dd))
+If .lastprint Then
+x& = (dd.CurrentX + .Xt - dv15) \ .Xt
+y& = dd.CurrentY \ .Yt
+shiftlittle = x& * .Xt - dd.CurrentX
+If y& > .mx Then
+y& = .mx - 1
+crNew bb, players(GetCode(dd))
+
+End If
+Else
+x& = .curpos
+y& = .currow
+End If
+If .mx - x& - 1 < wi& Then wi& = .mx - x&
+If .My - y& - 1 < Hi& Then Hi& = .My - y& - 1
+If wi& = 0 Or Hi& < 0 Then
+iText = V$
+Exit Function
+End If
+wi& = wi& + x&
+Hi& = Hi& + y&
+Form1.EditTextWord = True
+wh& = -1
+If n <= 0 Then Form1.TEXT1.title = aTitle$ + " ": wh& = Abs(n - 1)
+If NumberOnly Then
+Form1.TEXT1.NumberOnly = True
+Form1.TEXT1.NumberIntOnly = UseIntOnly
+OLDV$ = V$
+ScreenEdit bb, V$, x&, y&, wi& - 1, Hi&, wh&, , n, shiftlittle
+If result = 99 Then V$ = OLDV$
+Form1.TEXT1.NumberIntOnly = False
+Form1.TEXT1.NumberOnly = False
+Else
+OLDV$ = V$
+ScreenEdit bb, V$, x&, y&, wi& - 1, Hi&, wh&, , n, shiftlittle
+If result = 99 And Hi& = wi& Then V$ = OLDV$
+End If
+iText = V$
+End With
+End Function
+Sub ScreenEditDOC(bstack As basetask, aaa As Variant, x&, y&, x1&, y1&, Optional l As Long = 0, Optional usecol As Boolean = False, Optional col As Long)
+Dim ot As Boolean, back As New Document, i As Long, D As Object
+Dim prive As basket
+Set D = bstack.Owner
+prive = players(GetCode(D))
+With prive
+Dim oldesc As Boolean
+oldesc = escok
+escok = False
+' we have a limit here
+If Not aaa.IsEmpty Then
+For i = 1 To aaa.DocParagraphs
+back.AppendParagraph aaa.TextParagraph(i)
+Next i
+End If
+i = back.LastSelStart
+Dim aaaa As Document, tcol As Long, trans As Boolean
+If usecol Then tcol = mycolor(col) Else tcol = D.BackColor
+
+
+'d.Enabled = False
+If Not bstack.toback Then D.TabStop = False
+If D Is Form1 Then
+D.lockme = True
+Else
+D.Parent.lockme = True
+End If
+If y1& - y& = 0 Then y& = y& - 1: If y1& < 0 Then y& = y& + 1: y1& = y1& + 1
+TextEditLineHeight = y1& - y& + 1
+
+With Form1.TEXT1
+MyDoEvents
+Hook Form1.hWnd, .glistN
+.AutoNumber = Not Form1.EditTextWord
+
+.UsedAsTextBox = False
+.glistN.LeftMarginPixels = 10
+.glistN.maxchar = 0
+If D.ForeColor = tcol Then
+Set Form1.Point2Me = D
+If D.name = "Form1" Then
+.glistN.SkipForm = False
+Else
+.glistN.SkipForm = True
+End If
+Form1.TEXT1.glistN.BackStyle = 1
+End If
+Dim scope As Long
+scope = ChooseByHue(D.ForeColor, rgb(16, 12, 8), rgb(253, 245, 232))
+If D.BackColor = ChooseByHue(scope, D.BackColor, rgb(128, 128, 128)) Then
+If lightconv(scope) > 192 Then
+scope = lightconv(scope) - 128
+.glistN.CapColor = rgb(128 + scope / 2, 128 + scope / 2, 128 + scope / 2)
+Else
+.glistN.CapColor = scope
+End If
+Else
+scope = lightconv(scope) - 128
+
+If scope > 0 Then
+.glistN.CapColor = rgb(128 + scope / 2, 128 + scope / 2, 128 + scope / 2)
+Else
+.glistN.CapColor = rgb(128, 128, 128)
+End If
+End If
+.SelectionColor = .glistN.CapColor
+.glistN.addpixels = 2 * prive.uMineLineSpace / dv15
+.EditDoc = True
+.Enabled = True
+.glistN.ZOrder 0
+
+.BackColor = tcol
+
+.ForeColor = D.ForeColor
+Form1.SetText1
+.glistN.overrideTextHeight = Form3.TextHeight("fj")
+.Font.name = D.Font.name
+.Font.Size = D.Font.Size ' SZ 'Int(d.font.Size) Why
+.Font.charset = D.Font.charset
+.Font.Italic = D.Font.Italic
+.Font.bold = D.Font.bold
+.Font.name = D.Font.name
+.Font.charset = D.Font.charset
+.Font.Size = prive.SZ
+With prive
+If bstack.toback Then
+
+Form1.TEXT1.Move x& * .Xt, y& * .Yt, (x1& - x&) * .Xt + .Xt, (y1& - y&) * .Yt + .Yt
+Else
+Form1.TEXT1.Move x& * .Xt + D.Left, y& * .Yt + D.top, (x1& - x&) * .Xt + .Xt, (y1& - y&) * .Yt + .Yt
+End If
+End With
+If D.ForeColor = tcol Then
+Form1.TEXT1.glistN.RepaintFromOut D.image, D.Left, D.top
+End If
+
+Set .mdoc = aaa
+.nowrap = False
+
+
+
+Form1mn1Enabled = False
+Form1mn2Enabled = False
+Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+
+
+Form1.KeyPreview = False
+NOEDIT = False
+
+.WrapAll
+
+.Render
+
+.Visible = True
+.SetFocus
+If l <> 0 Then
+    If l > 0 Then
+        If aaa.SizeCRLF < l Then l = aaa.SizeCRLF
+        
+        .SelStart = l
+        Else
+        .SelStart = 0
+    End If
+Else
+If aaa.SizeCRLF < .LastSelStart Then
+.SelStart = 1
+Else
+ .SelStart = .LastSelStart
+End If
+End If
+    .ResetUndoRedo
+
+End With
+MyDoEvents
+CancelEDIT = False
+Do
+BLOCKkey = False
+
+ If bstack.IamThread Then If myexit(bstack) Then GoTo contScreenEditThere1
+
+ProcTask2 bstack
+
+
+'End If
+
+Loop Until NOEDIT ''Or (KeyPressed(&H1B) And UseEsc)
+ NOEXECUTION = False
+ BLOCKkey = True
+While KeyPressed(&H1B) ''And UseEsc
+ProcTask2 bstack
+
+Wend
+BLOCKkey = False
+contScreenEditThere1:
+TaskMaster.RestEnd1
+If Form1.TEXT1.Visible Then Form1.TEXT1.Visible = False
+ l = Form1.TEXT1.LastSelStart
+
+
+If D Is Form1 Then
+D.lockme = False
+Else
+D.Parent.lockme = False
+End If
+If Not CancelEDIT Then
+
+Else
+Set aaa = back
+back.LastSelStart = i
+End If
+Set Form1.TEXT1.mdoc = New Document
+
+Form1.TEXT1.glistN.BackStyle = 0
+Set Form1.Point2Me = Nothing
+UnHook Form1.hWnd
+Form1.KeyPreview = True
+
+INK$ = ""
+escok = oldesc
+Set D = Nothing
+End With
+End Sub
+Sub ScreenEdit(bstack As basetask, A$, x&, y&, x1&, y1&, Optional l As Long = 0, Optional changelinefeeds As Long = 0, Optional maxchar As Long = 0, Optional ExcludeThisLeft As Long = 0)
+' allways a$ enter with crlf,but exit with crlf or cr or lf depents from changelinefeeds
+Dim oldesc As Boolean, D As Object
+Set D = bstack.Owner
+
+''SetTextSZ d, Sz
+
+Dim prive As basket
+prive = players(GetCode(D))
+oldesc = escok
+escok = False
+Dim ot As Boolean
+
+If Not bstack.toback Then
+D.TabStop = False
+D.Parent.lockme = True
+Else
+D.lockme = True
+End If
+
+With Form1.TEXT1
+MyDoEvents
+Hook Form1.hWnd, Nothing
+'.Filename = ""
+.AutoNumber = Not Form1.EditTextWord
+
+If maxchar > 0 Then
+ot = .glistN.DragEnabled
+ .glistN.DragEnabled = True
+y1& = y&
+TextEditLineHeight = 1
+.glistN.BorderStyle = 0
+.glistN.BackStyle = 1
+Set Form1.Point2Me = D
+If D.name = "Form1" Then
+.glistN.SkipForm = False
+Else
+.glistN.SkipForm = True
+End If
+
+.glistN.HeadLine = ""
+.glistN.HeadLine = ""
+.glistN.LeftMarginPixels = 1
+.glistN.maxchar = maxchar
+.nowrap = True
+If Len(A$) > maxchar Then
+A$ = Left$(A$, maxchar)
+End If
+
+l = Len(A$)
+
+
+.UsedAsTextBox = True
+
+Else
+.glistN.BorderStyle = 0
+.glistN.BackStyle = 0
+
+If y1& - y& = 0 Then y& = y& - 1: If y1& < 0 Then y& = y& + 1: y1& = y1& + 1
+TextEditLineHeight = y1& - y& + 1
+.UsedAsTextBox = False
+.glistN.LeftMarginPixels = 10
+.glistN.maxchar = 0
+
+End If
+If Form1.EditTextWord Then
+.glistN.WordCharLeft = ConCat(":", "{", "}", "[", "]", ",", "(", ")", "!", ";", "=", ">", "<", """", " ", "+", "-", "/", "*", "^", "$", "%", "_", "@")
+.glistN.WordCharRight = ConCat(".", ":", "{", "}", "[", "]", ",", ")", "!", ";", "=", ">", "<", """", " ", "+", "-", "/", "*", "^", "$", "%", "_")
+.glistN.WordCharRightButIncluded = ""
+
+Else
+.glistN.WordCharLeft = ConCat(":", "{", "}", "[", "]", ",", "(", ")", "!", ";", "=", ">", "<", "'", """", " ", "+", "-", "/", "*", "^", "@")
+.glistN.WordCharRight = ConCat(":", "{", "}", "[", "]", ",", ")", "!", ";", "=", ">", "<", "'", """", " ", "+", "-", "/", "*", "^")
+.glistN.WordCharRightButIncluded = "(" ' so aaa(sdd) give aaa( as word
+End If
+
+Dim scope As Long
+scope = ChooseByHue(D.ForeColor, rgb(16, 12, 8), rgb(253, 245, 232))
+If D.BackColor = ChooseByHue(scope, D.BackColor, rgb(128, 128, 128)) Then
+If lightconv(scope) > 192 Then
+scope = lightconv(scope) - 128
+.glistN.CapColor = rgb(128 + scope / 2, 128 + scope / 2, 128 + scope / 2)
+Else
+.glistN.CapColor = scope
+End If
+Else
+scope = lightconv(scope) - 128
+
+If scope > 0 Then
+.glistN.CapColor = rgb(128 + scope / 2, 128 + scope / 2, 128 + scope / 2)
+Else
+.glistN.CapColor = rgb(128, 128, 128)
+End If
+End If
+.SelectionColor = .glistN.CapColor
+.glistN.addpixels = 2 * prive.uMineLineSpace / dv15
+.EditDoc = True
+.Enabled = True
+'.glistN.AddPixels = 0
+.glistN.ZOrder 0
+.BackColor = D.BackColor
+.ForeColor = D.ForeColor
+.Font.name = D.Font.name
+Form1.SetText1
+.glistN.overrideTextHeight = Form3.TextHeight("fj")
+.Font.Size = D.Font.Size ' SZ 'Int(d.font.Size) Why
+.Font.charset = D.Font.charset
+.Font.Italic = D.Font.Italic
+.Font.bold = D.Font.bold
+
+.Font.name = D.Font.name
+
+.Font.charset = D.Font.charset
+.Font.Size = prive.SZ 'Int(d.font.Size)
+If bstack.toback Then
+If maxchar > 0 Then
+
+.Move x& * prive.Xt - ExcludeThisLeft, y& * prive.Yt, (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt
+.glistN.RepaintFromOut D.image, 0, 0
+Else
+.Move x& * prive.Xt, y& * prive.Yt, (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt
+End If
+Else
+If maxchar > 0 Then
+.Move x& * prive.Xt + D.Left - ExcludeThisLeft, y& * prive.Yt + D.top, (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt
+.glistN.RepaintFromOut D.image, D.Left, D.top
+Else
+.Move x& * prive.Xt + D.Left, y& * prive.Yt + D.top, (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt
+End If
+End If
+If A$ <> "" Then
+If .Text <> A$ Then .LastSelStart = 0
+.Text = A$
+Else
+.Text = ""
+.LastSelStart = 0
+End If
+If Not Form1.EditTextWord Then .mdoc.WrapAgainColor
+'.glistN.NoFreeMoveUpDown = True
+Form1mn1Enabled = False
+Form1mn2Enabled = False
+Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+
+
+Form1.KeyPreview = False
+
+NOEDIT = False
+
+If maxchar = 0 Then
+.nowrap = False
+.Charpos = 0
+Else
+.Render
+End If
+
+.Visible = True
+MyDoEvents
+.SetFocus
+
+If l <> 0 Then
+    If l > 0 Then
+        If Len(A$) < l Then l = Len(A$)
+        .SelStart = l
+                Else
+        .SelStart = 0
+    End If
+Else
+If Len(A$) < .LastSelStart Then
+.SelStart = 1
+l = Len(A$)
+Else
+    .SelStart = .LastSelStart
+End If
+End If
+    .ResetUndoRedo
+
+
+
+End With
+MyDoEvents
+CancelEDIT = False
+Dim timeOut As Long
+
+
+Do
+BLOCKkey = False
+
+ If bstack.IamThread Then If myexit(bstack) Then GoTo contScreenEditThere
+
+ProcTask2 bstack
+
+ Loop Until NOEDIT
+ NOEXECUTION = False
+ BLOCKkey = True
+While KeyPressed(&H1B) ''And UseEsc
+'
+ProcTask2 bstack
+
+
+Wend
+BLOCKkey = False
+contScreenEditThere:
+TaskMaster.RestEnd1
+If Form1.TEXT1.Visible Then Form1.TEXT1.Visible = False
+
+ l = Form1.TEXT1.LastSelStart
+
+If bstack.toback Then
+D.lockme = False
+Else
+D.Parent.lockme = False
+End If
+If Not CancelEDIT Then
+
+If changelinefeeds > 10 Then
+A$ = Form1.TEXT1.TextFormatBreak(vbCr)
+ElseIf changelinefeeds > 9 Then
+A$ = Form1.TEXT1.TextFormatBreak(vbLf)
+Else
+If changelinefeeds = -1 Then changelinefeeds = 0
+A$ = Form1.TEXT1.Text
+End If
+Else
+changelinefeeds = -1
+End If
+
+Form1.KeyPreview = True
+If maxchar > 0 Then Form1.TEXT1.glistN.DragEnabled = ot
+
+UnHook Form1.hWnd
+INK$ = ""
+escok = oldesc
+Set D = Nothing
+End Sub
+
+Function blockCheck(ByVal s$, ByVal Lang As Long, Optional ByVal sbname$ = "") As Boolean
+If s$ = "" Then blockCheck = True: Exit Function
+Dim i As Long, j As Long, c As Long, b$, resp&
+Lang = Not Lang
+Dim a1 As Boolean
+Dim jump As Boolean
+If Trim(s$) = "" Then Exit Function
+c = Len(s$)
+a1 = True
+i = 1
+Do
+Select Case Asc(Mid$(s$, i, 1))
+Case 32
+' nothing
+Case 34
+Do While i < c
+i = i + 1
+If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+Loop
+Case 39, 92
+Do While i < c
+i = i + 1
+If Mid$(s$, i, 2) = vbCrLf Then Exit Do
+Loop
+Case 61
+jump = True
+Case 123
+
+
+If jump Then
+jump = False
+' we have a multiline text
+Dim target As Long
+target = j
+    Do
+    Select Case Asc(Mid$(s$, i, 1))
+    Case 34
+    Do While i < c
+    i = i + 1
+    If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+    Loop
+    Case 123
+    j = j - 1
+    Case 125
+    j = j + 1: If j = target Then Exit Do
+    End Select
+    i = i + 1
+    Loop Until i > c
+    If j <> target Then Exit Do
+    Else
+j = j - 1
+End If
+
+
+Case 125
+j = j + 1: If j = 1 Then Exit Do
+Case Else
+jump = False
+
+End Select
+i = i + 1
+Loop Until i > c
+
+If j = 0 Then
+
+ElseIf j < 0 Then
+    If Not Lang Then
+        b$ = sbname$ + "Problem in blocks - look } are less " + CStr(Abs(j))
+    Else
+        b$ = sbname$ + "Πρόβλημα με τα τμήματα - δες τα } είναι λιγότερα " + CStr(Abs(j))
+    End If
+resp& = ask(b$, True)
+Else
+If Not Lang Then
+b$ = sbname$ + "Problem in blocks - look { are less " + CStr(j)
+Else
+b$ = sbname$ + "Πρόβλημα με τα τμήματα - δες τα { είναι λιγότερα " + CStr(j)
+End If
+resp& = ask(b$, True)
+End If
+If resp& <> 1 Then
+blockCheck = True
+End If
+
+End Function
+
+Sub ListChoise(bstack As basetask, A$, x&, y&, x1&, y1&)
+Dim D As Object, oldh As Long
+Dim s$, prive As basket
+If NOEXECUTION Then Exit Sub
+Set D = bstack.Owner
+prive = players(GetCode(D))
+Hook Form1.hWnd, Form1.List1
+Dim ot As Boolean, DROP
+With Form1.List1
+.Font.name = D.Font.name
+Form1.Font.charset = D.Font.charset
+Form1.Font.Strikethrough = False
+.Font.Size = D.Font.Size
+.Font.name = D.Font.name
+Form1.Font.charset = D.Font.charset
+.Font.Size = D.Font.Size
+If LEVCOLMENU < 2 Then .BackColor = D.ForeColor
+If LEVCOLMENU < 3 Then .ForeColor = D.BackColor
+.Font.bold = D.Font.bold
+.Font.Italic = D.Font.Italic
+.addpixels = 2 * prive.uMineLineSpace / dv15
+.VerticalCenterText = True
+If D.Visible = False Then D.Visible = True
+.StickBar = True
+s$ = .HeadLine
+.HeadLine = ""
+.HeadLine = s$
+.Enabled = False
+If .Visible Then
+If .BorderStyle = 0 Then
+
+Else
+End If
+
+Else
+
+If .BorderStyle = 0 Then
+.Move x& * prive.Xt + D.Left, y& * prive.Yt + D.top, (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt + .HeadlineHeight * dv15
+Else
+.Move x& * prive.Xt - dv15 + D.Left, y& * prive.Yt - dv15 + D.top, (x1& - x&) * prive.Xt + prive.Xt + 2 * dv15, (y1& - y&) * prive.Yt + prive.Yt + 2 * dv15 + .HeadlineHeight * dv15
+End If
+End If
+.Enabled = True
+.ShowBar = False
+
+If .LeaveonChoose Then
+.CalcAndShowBar
+Exit Sub
+End If
+
+
+
+ot = Targets
+Targets = False
+
+.PanPos = 0
+
+If .listindex < 0 Then
+.ShowThis 1
+Else
+.ShowThis .listindex + 1
+End If
+.Visible = True
+.ZOrder 0
+NOEDIT = False
+.Tag = A$
+
+If A$ = "" Then
+    DROP = mouse
+    MyDoEvents
+    ' Form1.KeyPreview = False
+    .Enabled = True
+    .SetFocus
+    .LeaveonChoose = True
+    If .HeadLine <> "" Then
+    oldh = 0
+    Else
+    oldh = .HeadlineHeight
+    End If
+    Else
+        .Enabled = True
+    .SetFocus
+    .LeaveonChoose = False
+    
+    End If
+    .ShowMe
+            If bstack.TaskMain Or TaskMaster.Processing Then
+            If TaskMaster.QueueCount > 0 Then
+            mywait bstack, 100
+              Else
+            MyDoEvents
+            End If
+        Else
+         DoEvents
+         Sleep 1
+         End If
+
+    If .HeadlineHeight <> oldh Then
+    If .BorderStyle = 0 Then
+    If ((y1& - y&) * prive.Yt + prive.Yt + 2 * dv15 + .HeadlineHeight * dv15) + .top > ScrY() Then
+    .Move .Left, .top - (((y1& - y&) * prive.Yt + prive.Yt + 2 * dv15 + .HeadlineHeight * dv15) + .top - ScrY()), (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt + .HeadlineHeight * dv15
+    Else
+.Move .Left, .top, (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt + .HeadlineHeight * dv15
+End If
+Else
+If ((y1& - y&) * prive.Yt + prive.Yt + 2 * dv15 + .HeadlineHeight * dv15) + .top > ScrY() Then
+.Move .Left, .top - (((y1& - y&) * prive.Yt + prive.Yt + 2 * dv15 + .HeadlineHeight * dv15) + .top - ScrY()), (x1& - x&) * prive.Xt + prive.Xt + 2 * dv15, (y1& - y&) * prive.Yt + prive.Yt + 2 * dv15 + .HeadlineHeight * dv15
+Else
+.Move .Left, .top, (x1& - x&) * prive.Xt + prive.Xt + 2 * dv15, (y1& - y&) * prive.Yt + prive.Yt + 2 * dv15 + .HeadlineHeight * dv15
+End If
+End If
+  
+oldh = .HeadlineHeight
+    End If
+    .FloatLimitTop = Form1.Height - prive.Yt * 2
+     .FloatLimitLeft = Form1.Width - prive.Xt * 2
+    MyDoEvents
+    End With
+If A$ = "" Then
+    Do
+        If bstack.TaskMain Or TaskMaster.Processing Then
+            If TaskMaster.QueueCount > 0 Then
+          mywait bstack, 2
+             TaskMaster.RestEnd1
+   TaskMaster.TimerTick
+TaskMaster.rest
+''SleepWait 1
+  Sleep 1
+              Else
+            MyDoEvents
+            End If
+        Else
+         DoEvents
+                  Sleep 1
+         End If
+    
+    Loop Until Form1.List1.Visible = False
+    If Not NOEXECUTION Then MOUT = False
+    Do
+    DROP = mouse
+    MyDoEvents
+    Loop Until DROP = 0 Or MOUT
+    MOUT = False
+    While KeyPressed(&H1B) ''And UseEsc
+ProcTask2 bstack
+Wend
+MOUT = False: NOEXECUTION = False
+    If Form1.List1.listindex >= 0 Then
+    A$ = Form1.List1.List(Form1.List1.listindex)
+    Else
+    A$ = ""
+    End If
+   Form1.List1.Enabled = False
+    Else
+        Form1.List1.Enabled = True
+    
+  If A$ = "" Then
+  Form1.List1.SetFocus
+  Form1.List1.LeaveonChoose = True
+  Else
+  D.TabStop = True
+  End If
+  End If
+NOEDIT = True
+Set D = Nothing
+UnHook Form1.hWnd
+Form1.KeyPreview = True
+Targets = ot
+End Sub
+Private Sub mywait11(bstack As basetask, PP As Double)
+Dim p As Boolean, e As Boolean
+On Error Resume Next
+If bstack.Process Is Nothing Then
+''If extreme Then MyDoEvents
+If PP = 0 Then Exit Sub
+Else
+
+Err.clear
+p = bstack.Process.Done
+If Err.Number = 0 Then
+e = True
+If p <> 0 Then
+Exit Sub
+End If
+End If
+End If
+PP = PP + CDbl(timeGetTime)
+
+Do
+
+
+If TaskMaster.Processing And Not bstack.TaskMain Then
+        If Not bstack.toprinter Then bstack.Owner.refresh
+        TaskMaster.TimerTick
+       ' SleepWait 1
+       MyDoEvents
+       
+Else
+        ' SleepWait 1
+        MyDoEvents
+        End If
+If e Then
+p = bstack.Process.Done
+If Err.Number = 0 Then
+If p <> 0 Then
+Exit Do
+End If
+End If
+End If
+Loop Until PP <= CDbl(timeGetTime) Or NOEXECUTION
+
+                       If exWnd <> 0 Then
+                mytitle$ bstack
+                End If
+End Sub
+Public Sub WaitDialog(bstack As basetask)
+Dim oldesc As Boolean
+oldesc = escok
+escok = False
+Dim D As Object
+Set D = bstack.Owner
+Dim ot As Boolean, DROP
+ot = Targets
+Targets = False  ' do not use targets for now
+NOEDIT = False
+    DROP = mouse
+    ''SleepWait3 100
+    Sleep 1
+    If bstack.ThreadsNumber = 0 Then
+    If Not (bstack.toback Or bstack.toprinter) Then If bstack.Owner.Visible Then bstack.Owner.refresh
+
+    End If
+  
+    Do
+   
+
+            mywait11 bstack, 5
+      Sleep 1
+    
+    Loop Until loadfileiamloaded = False Or NOEDIT = True
+    MOUT = False
+    Do
+    DROP = mouse Or KeyPressed(&H1B)
+    MyDoEvents
+
+    Loop Until DROP = 0 Or MOUT Or NOEDIT = True
+ NOEDIT = True
+ BLOCKkey = True
+While KeyPressed(&H1B) ''And UseEsc
+
+ProcTask2 bstack
+NOEXECUTION = False
+Wend
+BLOCKkey = False
+escok = oldesc
+INK$ = ""
+
+Form1.KeyPreview = True
+Targets = ot
+ mywait11 bstack, 5
+
+End Sub
+
+Public Sub FrameText(dd As Object, ByVal Size As Single, x As Long, y As Long, cc As Long, Optional myCut As Boolean = False)
+Dim i As Long, mymul As Long
+
+If dd Is Form1.PrinterDocument1 Then
+' check this please
+Pr_Back dd, Size
+Exit Sub
+End If
+
+
+Dim basketcode As Long
+basketcode = GetCode(dd)
+With players(basketcode)
+.curpos = 0
+.currow = 0
+.XGRAPH = 0
+.YGRAPH = 0
+If x = 0 Then
+x = dd.Width
+y = dd.Height
+End If
+
+.mysplit = 0
+
+''dd.BackColor = 0 '' mycolor(cc)    ' check if paper...
+
+.Paper = mycolor(cc)
+dd.CurrentX = 0
+dd.CurrentY = 0
+
+''ClearScreenNew dd, mybasket, cc
+dd.CurrentY = 0
+dd.Font.Size = Size
+Size = dd.Font.Size
+
+''Sleep 1  '' USED TO GIVE TIME TO LOAD FONT
+Form3.StoreFont dd.Font.name, Size, dd.Font.charset
+.Yt = Form3.TextHeight("fj")
+.Xt = Form3.TextWidth("W")
+
+While TextHeight(Form3, "fj") / (.Yt / 2 + dv15) < dv
+Size = Size + 0.2
+Form3.Font.Size = Size
+Wend
+dd.Font.Size = Size
+.Yt = TextHeight(Form3, "fj")
+.Xt = TextWidth(Form3, "W") + dv15
+
+.mx = Int(x / .Xt)
+.My = Int(y / (.Yt + .MineLineSpace * 2))
+.Yt = .Yt + .MineLineSpace * 2
+If .mx < 2 Then .mx = 2: x = 2 * .Xt
+If .My < 2 Then .My = 2: y = 2 * .Yt
+If (.mx Mod 2) = 1 And .mx > 1 Then
+.mx = .mx - 1
+End If
+mymul = Int(.mx / 8)
+If mymul = 1 Then mymul = 2
+If mymul = 0 Then
+.Column = .mx \ 2 - 1
+Else
+.Column = Int(.mx / mymul)
+
+While (.mx Mod .Column) > 0 And (.mx / .Column >= 3)
+.Column = .Column + 1
+Wend
+End If
+If .Column = 0 Then .Column = .mx
+.Column = .Column - 1 ' FOR PRINT 0 TO COLUMN-1
+
+If .Column < 4 Then .Column = 4
+
+.SZ = Size
+
+If dd.name = "Form1" Then
+' no change
+Else
+If dd.name <> "dSprite" Then
+dd.Width = .mx * CLng(.Xt)
+dd.Height = .My * CLng(.Yt)
+dd.Left = (dd.Parent.ScaleWidth - dd.Width) \ 2
+dd.top = (dd.Parent.ScaleHeight - dd.Height) \ 2
+ElseIf myCut Then
+dd.Width = .mx * .Xt
+dd.Height = .My * .Yt
+End If
+
+End If
+
+
+.MAXXGRAPH = dd.Width
+.MAXYGRAPH = dd.Height
+.FTEXT = 0
+.FTXT = ""
+
+Form1.MY_BACK.ClearUp
+If dd.Visible Then
+ClearScr dd, .Paper
+Else
+dd.BackColor = .Paper
+End If
+End With
+
+
+
+End Sub
+
+Sub Pr_Back(dd As Object, Optional mSize As Single = 0)
+SetText dd
+If mSize > 0 Then
+SetTextSZ dd, mSize
+End If
+
+End Sub
+Function INKEY$()
+' αυτή η συνάρτηση θα αδειάσει τον προσωρινό χώρο πληκτρολογίσεων, που μπορεί να είναι πολλά πλήκτρα..
+' θα επιστρέψει το πρώτο από αυτά ή τίποτα.
+' Χρησιμοποιείται παντού όπου διαβάζουμε το πληκτρολόγιο
+
+If MKEY$ <> "" Then ' κοιτάει να αδειάσει τον προσωρινό χώρο MKEY$
+' αν έχει κάτι τότε το λαμβάνει τον αδείαζε βάζοντας τον στο τέλος του INK$
+' και αδείαζουμε το MKEY$
+    INK$ = MKEY$ & INK$
+    MKEY$ = ""
+End If
+' τώρα θα ασχοληθούμε με το INK$ αν έχει τίποτα
+If INK$ <> "" Then
+' ειδική περίπτωση αν έχουμε 0 στο πρώτο Byte, έχουμε ειδικό κ
+    If Asc(INK$) = 0 Then
+        INKEY$ = Left$(INK$, 2)
+        INK$ = Mid$(INK$, 3)
+    Else
+    ' αλλιώς σηκώνουμε ένα χαρακτήρα με ότι έχει ακόμα
+    INKEY$ = PopOne(INK$)
+    
+   
+        
+    End If
+Else
+    'Αν δεν έχουμε τίποτα...δεν κάνουμε τίποτα...γυρίζουμε το τίποτα!
+    INKEY$ = ""
+End If
+
+End Function
+Function UINKEY$()
+' mink$ used for reinput keystrokes
+' MINK$ = MINK$ & UINK$
+If UKEY$ <> "" Then MINK$ = MINK$ + UKEY$: UKEY$ = ""
+If MINK$ <> "" Then
+If AscW(MINK$) = 0 Then
+    UINKEY$ = Left$(MINK$, 2)
+    MINK$ = Mid$(MINK$, 3)
+Else
+    UINKEY$ = Left$(MINK$, 1)
+    MINK$ = Mid$(MINK$, 2)
+End If
+Else
+    UINKEY$ = ""
+End If
+
+End Function
+
+Function QUERY(bstack As basetask, Prompt$, s$, m&, Optional USELIST As Boolean = True, Optional endchars As String = vbCr, Optional excludechars As String = "", Optional checknumber As Boolean = False) As String
+'NoAction = True
+Dim dX As Long, dy As Long
+
+If excludechars = "" Then excludechars = Chr$(0)
+If QUERYLIST = "" Then QUERYLIST = Chr$(13): LASTQUERYLIST = 1
+Dim q1 As Long, sp$, Once As Boolean, dq As Object
+ 
+Set dq = bstack.Owner
+SetText dq
+Dim basketcode As Long, prive As basket
+prive = players(GetCode(dq))
+With prive
+If .currow >= .My Or .lastprint Then crNew bstack, prive: .lastprint = False
+LCTbasketCur dq, prive
+ins& = 0
+Dim fr1 As Long, fr2 As Long, p As Double
+UseEnter = False
+If dq.name = "DIS" Then
+If Form1.Visible = False Then
+    If Not Form3.Visible Then
+        Form1.Hide: Sleep 100
+    Else
+        'Form3.PREPARE
+    End If
+
+    If Form1.WindowState = vbMinimized Then Form1.WindowState = vbNormal
+    Form1.Show , Form5
+    MyDoEvents
+    Sleep 100
+    End If
+End If
+If dq.Visible = False Then dq.Visible = True
+If exWnd = 0 Then Form1.KeyPreview = True
+QRY = True
+If GetForegroundWindow = Form1.hWnd Then
+If exWnd = 0 Then dq.SetFocus
+End If
+
+
+Dim DE$
+
+PlainBaSket dq, prive, Prompt$, , , 0
+dq.refresh
+
+ 
+
+INK$ = ""
+dq.FontTransparent = False
+
+Dim A$
+s$ = ""
+oldLCTCB dq, prive, 0
+Do
+
+If Not Once Then
+If USELIST Then
+ DoEvents
+  If Not iamactive Then
+  Sleep 1
+  Else
+  If Not bstack.IamChild Then Sleep 1
+  End If
+ ''If MKEY$ = "" Then Dq.refresh
+Else
+If Not bstack.IamThread Then
+
+ If Not iamactive Then k1 = 0: MyDoEvents1 Form1
+
+ Else
+ 
+LCTbasketCur dq, prive                       ' here
+ End If
+ End If
+ End If
+If Not QRY Then HideCaret dq.hWnd: Exit Do
+ BLOCKkey = False
+ If USELIST Then
+
+ If Not Once Then
+ Once = True
+
+ ''If Abs((clickMe And &HFF) - 39) = 1 And QUERYLIST <> "" Then ' up down
+ If QUERYLIST <> "" Then  ' up down
+    If INK = "" Then MyDoEvents
+If clickMe = 38 Then
+
+ If Len(QUERYLIST) < LASTQUERYLIST Then LASTQUERYLIST = 2
+  q1 = InStr(LASTQUERYLIST, QUERYLIST, vbCr)
+         If q1 < 2 Or q1 <= LASTQUERYLIST Then
+         q1 = 1: LASTQUERYLIST = 1
+         End If
+        MKEY$ = ""
+        INK = String$(RealLen(s$), 8) + Mid$(QUERYLIST, LASTQUERYLIST, q1 - LASTQUERYLIST)
+        LASTQUERYLIST = q1 + 1
+
+    ElseIf clickMe = 40 Then
+    
+    If LASTQUERYLIST < 3 Then LASTQUERYLIST = Len(QUERYLIST)
+    q1 = InStrRev(QUERYLIST, vbCr, LASTQUERYLIST - 2)
+         If q1 < 2 Then
+                   q1 = Len(QUERYLIST)
+         End If
+         If q1 > 1 Then
+         LASTQUERYLIST = InStrRev(QUERYLIST, vbCr, q1 - 1) + 1
+         If LASTQUERYLIST < 2 Then LASTQUERYLIST = 2
+         
+        MKEY$ = ""
+        INK = String$(RealLen(s$), 8) + Mid$(QUERYLIST, LASTQUERYLIST, q1 - LASTQUERYLIST)
+   LASTQUERYLIST = q1 + 1
+
+      End If
+ End If
+ clickMe = -2
+ End If
+ 
+ ElseIf INK <> "" Then
+ MKEY$ = ""
+ Else
+ clickMe = 0
+ Once = False
+ End If
+ End If
+
+  
+againquery:
+ A$ = INKEY$
+ 
+If A$ = "" Then
+ 
+    If TaskMaster.QueueCount > 0 Then
+  ProcTask2 bstack
+  
+  SetText dq
+
+LCTbasket dq, prive, .currow, .curpos
+    Else
+  
+   End If
+      If iamactive Then
+ If ShowCaret(dq.hWnd) = 0 Then
+ 
+   LCTCB dq, prive, 0
+  End If
+If Not bstack.IamThread Then MyDoEvents1 Form1  'SleepWait 1
+ If Screen.ActiveForm Is Nothing Then
+ iamactive = False:  If ShowCaret(dq.hWnd) <> 0 Then HideCaret dq.hWnd
+Else
+ 
+    If Not GetForegroundWindow = Screen.ActiveForm.hWnd Then
+    iamactive = False:  If ShowCaret(dq.hWnd) <> 0 Then HideCaret dq.hWnd
+  
+    End If
+    End If
+    End If
+
+  End If
+   If bstack.IamThread Then If myexit(bstack) Then GoTo contqueryhere
+
+If Screen.ActiveForm Is Nothing Then
+iamactive = False
+Else
+If Screen.ActiveForm.name <> "Form1" Then
+iamactive = False
+Else
+iamactive = GetForegroundWindow = Screen.ActiveForm.hWnd
+End If
+End If
+If FKey > 0 Then
+If FK$(FKey) <> "" Then
+s$ = FK$(FKey)
+FKey = 0
+             ''  here
+      LCTCB dq, prive, -1: DestroyCaret
+ oldLCTCB dq, prive, 0
+ Exit Do
+End If
+End If
+
+
+dq.FontTransparent = False
+If RealLen(A$) = 1 Or Len(A$) = 1 Or (RealLen(A$) = 0 And Len(A$) = 1 And Len(s$) > 1) Then
+   '
+   
+   If Len(A$) = 1 Then
+    If InStr(endchars, A$) > 0 Then
+     If A$ = vbCr Then
+        
+      LCTCB dq, prive, -1: DestroyCaret
+ oldLCTCB dq, prive, 0
+
+        Exit Do
+
+     End If
+     End If
+     ElseIf A$ = vbCr Then
+     A$ = Left$(endchars, 1)
+     End If
+    If Asc(A$) = 27 And escok Then
+        
+      LCTCB dq, prive, -1: DestroyCaret
+ oldLCTCB dq, prive, 0
+    s$ = ""
+    If ExTarget Then End
+
+    Exit Do
+ElseIf Asc(A$) = 27 Then
+A$ = Chr$(0)
+End If
+If A$ = Chr(8) Then
+DE$ = " "
+    If Len(s$) > 0 Then
+    ExcludeOne s$
+   '  If Len(s$) > 1 Then
+    '    If AscW(Right$(s$, 1)) = 769 Then
+     '   If (Len(s$) - 2) = 0 Then
+      '  s$ = ""
+       ' Else
+        
+        '        s$ = Left$(s$, Len(s$) - 2)
+         '       End If
+      '  Else
+       '         s$ = Left$(s$, Len(s$) - 1)
+        '        End If
+      '  Else
+       ' s$ = ""
+       ' End If
+             LCTCB dq, prive, -1: DestroyCaret
+            oldLCTCB dq, prive, 0
+
+        
+        .curpos = .curpos - 1
+        If .curpos < 0 Then
+            .curpos = .mx - 1: .currow = .currow - 1
+
+            If .currow < .mysplit Then
+                ScrollDownNew dq, prive
+                PlainBaSket dq, prive, Right$(Prompt$ & s$, .mx - 1), , , 0
+                DE$ = ""
+            End If
+        End If
+        
+       LCTbasketCur dq, prive
+        dX = .curpos
+        dy = .currow
+       PlainBaSket dq, prive, DE$, , , 0
+       .curpos = dX
+       .currow = dy
+         
+         
+            oldLCTCB dq, prive, 0
+            
+    End If
+End If
+If Asc(A$) > 31 And (RealLen(s$) < m& Or RealLen(A$) = 0) Then
+If RealLen(A$) = 0 Then
+s$ = s$ & A$: A$ = s$: ExcludeOne s$: A$ = Mid$(A$, Len(s$) + 1)
+s$ = s$ + A$
+MKEY$ = ""
+INK = Chr$(8) + A$
+Else
+
+    If InStr(excludechars, A$) > 0 Then
+
+    Else
+            If checknumber Then
+                    fr1 = 1
+                    If (s$ = "" And A$ = "-") Or IsNumberQuery(s$ + A$, fr1, p, fr2) Then
+                            If fr2 - 1 = RealLen(s$) + 1 Or (s$ = "" And A$ = "-") Then
+   If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
+                   PlainBaSket dq, prive, A$, , , 0: s$ = s$ & A$
+                 
+              oldLCTCB dq, prive, 0
+                  LCTCB dq, prive, 0
+GdiFlush
+                            End If
+                    
+                    End If
+            Else
+            If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
+                PlainBaSket dq, prive, A$, , , 0: s$ = s$ & A$
+              If .curpos >= .mx Then
+                                .curpos = 0
+                                .currow = .currow + 1
+                            End If
+              oldLCTCB dq, prive, 0
+                  LCTCB dq, prive, 0
+                  GdiFlush
+                
+            End If
+    End If
+End If
+If InStr(endchars, A$) > 0 Then
+    If A$ >= " " Then
+                     PlainBaSket dq, prive, A$, , , 0
+              
+      LCTCB dq, prive, -1: DestroyCaret
+                                GdiFlush
+                                End If
+QUERY = A$
+Exit Do
+End If
+ .pageframe = 0
+ End If
+End If
+If Not QRY Then Exit Do
+Loop
+
+
+ 
+If Not QRY Then s$ = ""
+dq.FontTransparent = True
+QRY = False
+
+Call mouse
+
+If s$ <> "" And USELIST Then
+q1 = InStr(QUERYLIST, Chr$(13) + s$ & Chr$(13))
+If q1 = 1 Then ' same place
+ElseIf q1 > 1 Then ' reorder
+sp$ = Mid$(QUERYLIST, q1 + RealLen(s$) + 1)
+QUERYLIST = Chr$(13) + s$ & Mid$(QUERYLIST, 1, q1 - 1) + sp$
+Else ' insert
+QUERYLIST = Chr$(13) + s$ & QUERYLIST
+End If
+LASTQUERYLIST = 2
+End If
+End With
+contqueryhere:
+If TaskMaster.QueueCount > 0 Then TaskMaster.RestEnd
+players(GetCode(dq)) = prive
+Set dq = Nothing
+TaskMaster.RestEnd1
+
+End Function
+
+
+Public Sub GetXYb(dd As Object, mb As basket, x As Long, y As Long)
+With mb
+If dd.CurrentY Mod .Yt <= dv15 Then
+y = (dd.CurrentY) \ .Yt
+Else
+y = (dd.CurrentY - .uMineLineSpace) \ .Yt
+End If
+x = dd.CurrentX \ .Xt
+
+''
+End With
+End Sub
+Public Sub GetXYb2(dd As Object, mb As basket, x As Long, y As Long)
+With mb
+
+x = dd.CurrentX \ .Xt
+y = (dd.CurrentY) \ .Yt
+End With
+End Sub
+Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, ByVal yy1&, ByVal yy2&, ByVal hor As Boolean, ByVal all As Boolean)
+    Dim Redval&, Greenval&, Blueval&
+    Dim R1&, g1&, b1&, sr&, SG&, SB&
+    f& = f& Mod &H1000000
+    t& = t& Mod &H1000000
+    Redval& = f& And &H10000FF
+    Greenval& = (f& And &H100FF00) / &H100
+    Blueval& = (f& And &HFF0000) / &H10000
+    R1& = t& And &H10000FF
+    g1& = (t& And &H100FF00) / &H100
+    b1& = (t& And &HFF0000) / &H10000
+    sr& = (R1& - Redval&) * 1000 / 127
+    SG& = (g1& - Greenval&) * 1000 / 127
+    SB& = (b1& - Blueval&) * 1000 / 127
+    Redval& = Redval& * 1000
+    
+    Greenval& = Greenval& * 1000
+    Blueval& = Blueval& * 1000
+    Dim Step&, Reps&, FillTop As Single, FillLeft As Single, FillRight As Single, FillBottom As Single
+    If hor Then
+    yy2& = TheObject.Height - yy2&
+    If all Then
+    Step = ((yy2& - yy1&) / 127)
+    Else
+    Step = (TheObject.Height / 127)
+    End If
+    If all Then
+    FillTop = yy1&
+    Else
+    FillTop = 0
+    End If
+    FillLeft = xx1&
+    FillRight = TheObject.Width - xx2&
+    FillBottom = FillTop + Step * 2
+    Else ' vertical
+    
+        xx2& = TheObject.Width - xx2&
+    If all Then
+    Step = ((xx2& - xx1&) / 127)
+    Else
+    Step = (TheObject.Width / 127)
+    End If
+    If all Then
+    FillLeft = xx1&
+    Else
+    FillLeft = 0
+    End If
+    FillTop = yy1&
+    FillBottom = TheObject.Height - yy2&
+    FillRight = FillLeft + Step * 2
+    
+    End If
+    For Reps = 1 To 127
+    If hor Then
+        If FillTop <= yy2& And FillBottom >= yy1& Then
+        TheObject.Line (FillLeft, RMAX(FillTop, yy1&))-(FillRight, RMIN(FillBottom, yy2&)), rgb(Redval& / 1000, Greenval& / 1000, Blueval& / 1000), BF
+        End If
+        Redval& = Redval& + sr&
+        Greenval& = Greenval& + SG&
+        Blueval& = Blueval& + SB&
+        FillTop = FillBottom
+        FillBottom = FillTop + Step
+    Else
+        If FillLeft <= xx2& And FillRight >= xx1& Then
+        TheObject.Line (RMAX(FillLeft, xx1&), FillTop)-(RMIN(FillRight, xx2&), FillBottom), rgb(Redval& / 1000, Greenval& / 1000, Blueval& / 1000), BF
+        End If
+        Redval& = Redval& + sr&
+        Greenval& = Greenval& + SG&
+        Blueval& = Blueval& + SB&
+        FillLeft = FillRight
+        FillRight = FillRight + Step
+    End If
+    Next
+    
+End Sub
+Function mycolor(q)
+If (cUlng(q) And &HFF000000) = &H80000000 Then
+mycolor = GetSysColor(cUlng(q) And &HFF) And &HFFFFFF
+Exit Function
+End If
+
+If q < 0 Or q > 15 Then
+
+ mycolor = Abs(q) And &HFFFFFF
+Else
+mycolor = QBColor(q Mod 16)
+End If
+End Function
+
+
+
+
+Sub ICOPY(d1 As Object, x1 As Long, y1 As Long, w As Long, h As Long)
+Dim sv As Long
+With players(GetCode(d1))
+sv = BitBlt(d1.hDC, CLng(d1.ScaleX(x1, 1, 3)), CLng(d1.ScaleY(y1, 1, 3)), CLng(d1.ScaleX(w, 1, 3)), CLng(d1.ScaleY(h, 1, 3)), d1.hDC, CLng(d1.ScaleX(.XGRAPH, 1, 3)), CLng(d1.ScaleY(.YGRAPH, 1, 3)), SRCCOPY)
+'sv = UpdateWindow(d1.hwnd)
+End With
+End Sub
+
+Sub sHelp(title$, doc$, x As Long, y As Long, Optional txtbox As Boolean)
+mHelp = Not txtbox
+vH_title$ = title$
+vH_doc$ = doc$
+vH_x = x
+vH_y = y
+End Sub
+
+Sub vHelp(Optional ByVal bypassshow As Boolean = False)
+Dim huedif As Long
+Dim UAddPixelsTop As Long
+If vH_title$ = "" Then Exit Sub
+
+If Not Form4.Visible Then Form4.Show , Form1: bypassshow = True
+If bypassshow Then
+MyForm Form4, ScrX() - vH_x * Helplastfactor, ScrY() - vH_y * Helplastfactor, vH_x * Helplastfactor, vH_y * Helplastfactor, True, Helplastfactor
+Else
+MyForm Form4, Form4.Left, Form4.top, vH_x * Helplastfactor, vH_y * Helplastfactor, True, Helplastfactor
+End If
+Form4.MoveMe
+
+If Form1.Visible Then
+If Form1.DIS.Visible Then
+  ''  If Abs(Val(hueconvSpecial(mycolor(uintnew(&H80000018)))) - Val(hueconvSpecial(-Paper))) > Abs(Val(hueconvSpecial(mycolor(uintnew(&H80000003)))) - Val(hueconvSpecial(-Paper))) Then
+  If Abs(hueconv(mycolor(uintnew(&H80000018))) - Val(hueconv(players(0).Paper))) > 10 And Not Abs(lightconv(mycolor(uintnew(&H80000018))) - Val(lightconv(players(0).Paper))) < 50 Then
+    Form4.BackColor = &H80000018
+    Form4.Label1.BackColor = &H80000018
+    
+    Else
+    
+    Form4.BackColor = &H80000003
+    Form4.Label1.BackColor = &H80000003
+    End If
+
+Else
+''If Abs(Val(hueconvSpecial(mycolor(&H80000018))) - Val(hueconvSpecial(Form1.BackColor))) > Abs(Val(hueconvSpecial(mycolor(&H80000003))) - Val(hueconvSpecial(Form1.BackColor))) Then
+     If Abs(hueconv(mycolor(uintnew(&H80000018))) - Val(hueconv(Form1.BackColor))) > 10 And Not Abs(lightconv(mycolor(uintnew(&H80000018))) - Val(lightconv(Form1.BackColor))) < 50 Then
+
+    Form4.BackColor = &H80000018
+    Form4.Label1.BackColor = &H80000018
+    Else
+    
+    Form4.BackColor = &H80000003
+    Form4.Label1.BackColor = &H80000003
+    End If
+End If
+End If
+With Form4.Label1
+.Visible = True
+.Enabled = False
+.Text = vH_doc$
+.SetRowColumn 1, 0
+.EditDoc = False
+.NoMark = True
+If abt Then
+.glistN.WordCharLeft = "["
+.glistN.WordCharRight = "]"
+.glistN.WordCharRightButIncluded = ""
+Else
+.glistN.WordCharLeft = ConCat(":", "{", "}", "[", "]", ",", "(", ")", "!", ";", "=", ">", "<", "'", """", " ", "+", "-", "/", "*", "^")
+.glistN.WordCharRight = ConCat(":", "{", "}", "[", "]", ",", ")", "!", ";", "=", ">", "<", "'", """", " ", "+", "-", "/", "*", "^")
+.glistN.WordCharRightButIncluded = "("
+End If
+.Enabled = True
+.NewTitle vH_title$, (4 + UAddPixelsTop) * Helplastfactor
+.glistN.ShowMe
+End With
+
+
+Form4.ZOrder
+Form4.Label1.glistN.DragEnabled = Not abt
+If exWnd = 0 Then Form1.SetFocus
+End Sub
+
+Function FileNameType(extension As String) As String
+Dim i As Long, fs, b
+ strTemp = String(200, Chr$(0))
+    'Get
+    GetTempPath 200, strTemp
+    strTemp = LONGNAME(mylcasefILE(Left$(strTemp, InStr(strTemp, Chr(0)) - 1)))
+    If strTemp = "" Then
+     strTemp = mylcasefILE(Left$(strTemp, InStr(strTemp, Chr(0)) - 1))
+     If Right$(strTemp, 1) <> "\" Then strTemp = strTemp & "\"
+    End If
+    
+    i = FreeFile
+    Open strTemp & "dummy." & extension For Output As i
+    Print #i, "test"
+    Close #i
+    Sleep 10
+    Set fs = CreateObject("Scripting.FileSystemObject")
+  Set b = fs.GetFile(strTemp & "dummy." & extension)
+    FileNameType = b.Type
+    Kill strTemp & "dummy." & extension
+End Function
+Function mylcasefILE(ByVal A$) As String
+If A$ = "" Then Exit Function
+If casesensitive Then
+' no case change
+mylcasefILE = A$
+Else
+ mylcasefILE = LCase(A$)
+ End If
+
+End Function
+
+Function myUcase(ByVal A$, Optional Convert As Boolean = False) As String
+Dim i As Long
+If A$ = "" Then Exit Function
+ If AscW(A$) > 255 Or Convert Then
+ For i = 1 To Len(A$)
+ Select Case AscW(Mid$(A$, i, 1))
+Case 902
+Mid$(A$, i, 1) = ChrW(913)
+Case 904
+Mid$(A$, i, 1) = ChrW(917)
+Case 906
+Mid$(A$, i, 1) = ChrW(921)
+Case 912
+Mid$(A$, i, 1) = ChrW(921)
+Case 905
+Mid$(A$, i, 1) = ChrW(919)
+Case 908
+Mid$(A$, i, 1) = ChrW(927)
+Case 911
+Mid$(A$, i, 1) = ChrW(937)
+Case 910
+Mid$(A$, i, 1) = ChrW(933)
+Case 940
+Mid$(A$, i, 1) = ChrW(913)
+Case 941
+Mid$(A$, i, 1) = ChrW(917)
+Case 943
+Mid$(A$, i, 1) = ChrW(921)
+Case 942
+Mid$(A$, i, 1) = ChrW(919)
+Case 972
+Mid$(A$, i, 1) = ChrW(927)
+Case 974
+Mid$(A$, i, 1) = ChrW(937)
+Case 973
+Mid$(A$, i, 1) = ChrW(933)
+Case 962
+Mid$(A$, i, 1) = ChrW(931)
+End Select
+Next i
+End If
+myUcase = UCase(A$)
+End Function
+
+Function myLcase(ByVal A$) As String
+If A$ = "" Then Exit Function
+A$ = Trim$(LCase(A$))
+If A$ = "" Then Exit Function
+ If AscW(A$) > 255 Then
+A$ = A$ & Chr(0)
+' Here are greek letters for proper case conversion
+A$ = Replace(A$, "σ" & Chr(0), "ς")
+A$ = Replace(A$, Chr(0), "")
+A$ = Replace(A$, "σ ", "ς ")
+A$ = Replace(A$, "σ$", "ς$")
+A$ = Replace(A$, "σ&", "ς&")
+A$ = Replace(A$, "σ.", "ς.")
+A$ = Replace(A$, "σ(", "ς(")
+A$ = Replace(A$, "σ_", "ς_")
+A$ = Replace(A$, "σ/", "ς/")
+A$ = Replace(A$, "σ\", "ς\")
+A$ = Replace(A$, "σ-", "ς-")
+A$ = Replace(A$, "σ+", "ς+")
+A$ = Replace(A$, "σ*", "ς*")
+A$ = Replace(A$, "σ" & vbCr, "ς" & vbCr)
+A$ = Replace(A$, "σ" & vbLf, "ς" & vbLf)
+End If
+
+myLcase = A$
+End Function
+Function MesTitle$()
+If ttl Then
+If Form1.Caption = "" Then
+If HERE$ = "" Then
+MesTitle$ = "M2000"
+' IDE
+Else
+If LASTPROG$ <> "" Then
+MesTitle$ = ExtractNameOnly(LASTPROG$)
+Else
+MesTitle$ = "M2000"
+End If
+End If
+Else
+MesTitle$ = Form1.Caption
+End If
+Else
+If HERE$ = "" Or LASTPROG$ = "" Then
+MesTitle$ = "M2000"
+Else
+MesTitle$ = ExtractNameOnly(LASTPROG$) & " " & HERE$
+End If
+End If
+End Function
+Public Function holdcontrol(wh As Object, mb As basket) As Long
+Dim x1 As Long, y1 As Long
+With mb
+If .pageframe = 0 Then
+''GetXYb wh, mb, X1, y1
+If .mysplit > 0 Then .pageframe = (.My - .mysplit) * 4 / 5 Else .pageframe = Fix(.My * 4 / 5)
+If .pageframe < 1 Then .pageframe = 1
+.basicpageframe = .pageframe
+holdcontrol = .pageframe
+Else
+holdcontrol = .basicpageframe
+End If
+End With
+End Function
+Public Sub HoldReset(col As Long, mb As basket)
+With mb
+.basicpageframe = col
+If .basicpageframe <= 0 Then .basicpageframe = .pageframe
+End With
+End Sub
+Public Sub gsb_file(Optional assoc As Boolean = True)
+   Dim cd As String
+     cd = App.path
+        AddDirSep cd
+
+        If assoc Then
+          associate ".gsb", "M2000 Ver" & Str$(VerMajor) & "." & CStr(VerMinor \ 100) & " User Module", cd & "M2000.EXE"
+        Else
+      deassociate ".gsb", "M2000 Ver" & Str$(VerMajor) & "." & CStr(VerMinor \ 100) & " User Module", cd & "M2000.EXE"
+   End If
+End Sub
+Public Sub Switches(s$)
+Dim cc As cRegistry
+Set cc = New cRegistry
+cc.ClassKey = HKEY_CURRENT_USER
+    cc.SectionKey = basickey
+Dim D$, w$, p As Long, b As Long
+If s$ <> "" Then
+s$ = mylcasefILE(s$)
+    Do While FastSymbol(s$, "-")
+    
+            If IsLabel(basestack1, s$, D$) > 0 Then
+            D$ = UCase(D$)
+            If D$ = "TEST" Then
+                STq = False
+                STEXIT = False
+                STbyST = True
+                Form2.Show , Form1
+                Form2.Label1(0) = ""
+                Form2.Label1(1) = ""
+                Form2.Label1(2) = ""
+                 TestShowSub = ""
+ TestShowStart = 0
+   
+                stackshow basestack1
+                Form1.Show , Form5
+                trace = True
+            ElseIf D$ = "NORUN" Then
+                If ttl Then Form3.WindowState = vbNormal Else Form1.Show , Form5
+                NORUN1 = True
+            ElseIf D$ = "FONT" Then
+            ' + LOAD NEW
+                cc.ValueKey = "FONT"
+                    cc.ValueType = REG_SZ
+                   ' LoadFont (MCD & "TT6492M_.TTF")
+                  LoadFont (mcd & "TITUSCBZ.TTF")
+                    
+               cc.Value = "Monospac821Greek BT"
+            ElseIf D$ = "LINESPACE" Then
+                cc.ValueKey = "LINESPACE"
+                    cc.ValueType = REG_DWORD
+               
+                  cc.Value = 0
+            ElseIf D$ = "SIZE" Then
+                cc.ValueKey = "SIZE"
+                    cc.ValueType = REG_DWORD
+               
+                  cc.Value = 15
+                 
+                 
+            ElseIf D$ = "PEN" Then
+                cc.ValueKey = "PEN"
+                    cc.ValueType = REG_DWORD
+                  cc.Value = 0
+                      cc.ValueKey = "PAPER"
+                    cc.ValueType = REG_DWORD
+                  cc.Value = 7
+                  
+            ElseIf D$ = "BOLD" Then
+             cc.ValueKey = "BOLD"
+                   cc.ValueType = REG_DWORD
+                 
+                  cc.Value = 0
+                 
+            
+            ElseIf D$ = "PAPER" Then
+                cc.ValueKey = "PAPER"
+                    cc.ValueType = REG_DWORD
+                  cc.Value = 7
+                   cc.ValueKey = "PEN"
+                    cc.ValueType = REG_DWORD
+                  cc.Value = 0
+                   
+            ElseIf D$ = "GREEK" Then
+            cc.ValueKey = "COMMAND"
+                 cc.ValueType = REG_SZ
+                    cc.Value = "LATIN"
+            ElseIf D$ = "DARK" Then
+            cc.ValueKey = "HTML"
+                 cc.ValueType = REG_SZ
+                    cc.Value = "BRIGHT"
+            ElseIf D$ = "CASESENSITIVE" Then
+            cc.ValueKey = "CASESENSITIVE"
+             cc.ValueType = REG_SZ
+                    cc.Value = "NO"
+            
+            ElseIf D$ = "REG" Then
+            gsb_file False
+            Else
+            s$ = "-" & D$ & s$
+            Exit Do
+            End If
+            Else
+        Exit Do
+        End If
+        Sleep 2
+    Loop
+Do While FastSymbol(s$, "+")
+If IsLabel(basestack1, s$, D$) > 0 Then
+            D$ = UCase(D$)
+    If D$ = "TEST" Then
+            STq = False
+            STEXIT = False
+            STbyST = True
+            Form2.Show , Form1
+            Form2.Label1(0) = ""
+            Form2.Label1(1) = ""
+            Form2.Label1(2) = ""
+             TestShowSub = ""
+ TestShowStart = 0
+
+            stackshow basestack1
+            Form1.Show , Form5
+            trace = True
+        ElseIf D$ = "REG" Then
+        gsb_file
+        ElseIf D$ = "FONT" Then
+    ' + LOAD NEW
+        cc.ValueKey = "FONT"
+            cc.ValueType = REG_SZ
+            If ISSTRINGA(s$, w$) Then cc.Value = w$
+        ElseIf D$ = "LINESPACE" Then
+            cc.ValueKey = "LINESPACE"
+                cc.ValueType = REG_DWORD
+            If IsNumberLabel(s$, w$) Then If Val(w$) >= 0 And Val(w$) <= 60 * dv15 Then cc.Value = CLng(Val(w$) * 2)
+               
+        ElseIf D$ = "SIZE" Then
+            cc.ValueKey = "SIZE"
+            cc.ValueType = REG_DWORD
+            If IsNumberLabel(s$, w$) Then If Val(w$) >= 8 And Val(w$) <= 28 Then cc.Value = CLng(Val(w$))
+          
+        ElseIf D$ = "PEN" Then
+            cc.ValueKey = "PAPER"
+            cc.ValueType = REG_DWORD
+            p = cc.Value
+            cc.ValueKey = "PEN"
+            cc.ValueType = REG_DWORD
+            If IsNumberLabel(s$, w$) Then
+                If p = Val(w$) Then p = 16 - p Else p = Val(w$) Mod 16
+                cc.Value = CLng(Val(p))
+            End If
+        ElseIf D$ = "BOLD" Then
+                cc.ValueKey = "BOLD"
+                cc.ValueType = REG_DWORD
+                If IsNumberLabel(s$, w$) Then cc.Value = CLng(Val(w$) Mod 16)
+                
+        ElseIf D$ = "PAPER" Then
+                cc.ValueKey = "PEN"
+                cc.ValueType = REG_DWORD
+                p = cc.Value
+                cc.ValueKey = "PAPER"
+                cc.ValueType = REG_DWORD
+                If IsNumberLabel(s$, w$) Then
+                If p = Val(w$) Then p = 16 - p Else p = Val(w$) Mod 16
+                    cc.Value = CLng(Val(p))
+                End If
+        ElseIf D$ = "GREEK" Then
+                cc.ValueKey = "COMMAND"
+                cc.ValueType = REG_SZ
+                cc.Value = "GREEK"
+        ElseIf D$ = "DARK" Then
+            cc.ValueKey = "HTML"
+                 cc.ValueType = REG_SZ
+                    cc.Value = "DARK"
+        ElseIf D$ = "CASESENSITIVE" Then
+                cc.ValueKey = "CASESENSITIVE"
+                cc.ValueType = REG_SZ
+                cc.Value = "YES"
+        Else
+            s$ = "+" & D$ & s$
+            Exit Do
+        End If
+    Else
+    Exit Do
+    End If
+Sleep 2
+Loop
+
+End If
+
+End Sub
+Function blockStringPOS(s$, pos As Long) As Boolean
+Dim i As Long, j As Long, c As Long
+Dim a1 As Boolean
+c = Len(s$)
+a1 = True
+i = pos
+If i > Len(s$) Then Exit Function
+Do
+Select Case Asc(Mid$(s$, i, 1))
+Case 34
+Do While i < c
+i = i + 1
+If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+Loop
+Case 123
+j = j - 1
+Case 125
+j = j + 1: If j = 1 Then Exit Do
+End Select
+i = i + 1
+Loop Until i > c
+If j = 1 Then
+blockStringPOS = True
+pos = i
+Else
+pos = Len(s$)
+End If
+
+End Function
+Function BlockParam2(s$, pos As Long) As Boolean
+' need to be open
+Dim i As Long, j As Long
+j = 1
+For i = pos To Len(s$)
+Select Case Asc(Mid$(s$, i, 1))
+Case 0
+Exit For
+Case 34
+i = InStr(i + 1, s$, """")
+If i = 0 Then Exit Function
+Case 40
+j = j + 1
+Case 41
+j = j - 1
+If j = 0 Then Exit For
+Case 123
+i = i + 1
+If blockStringPOS(s$, i) Then
+Else
+i = 0
+'' i = InStr(i + 1, s$, Chr$(125))
+End If
+If i = 0 Then Exit Function
+End Select
+Next i
+If j = 0 Then pos = i: BlockParam2 = True
+End Function
+Public Function aheadstatus(A$, Optional srink As Boolean = True, Optional pos As Long = 1) As String
+Dim b$, part$, w$, pos2 As Long, level&
+
+If A$ = "" Then Exit Function
+If pos = 0 Then pos = 1
+Do While pos <= Len(A$)
+    w$ = Mid$(A$, pos, 1)
+    If part$ = "" And w$ = "0" Then
+        If pos + 2 <= Len(A$) Then
+            If LCase(Mid$(A$, pos, 2)) Like "0[xχ]" Then
+            'hexadecimal literal number....
+                pos = pos + 2
+                Do While pos <= Len(A$)
+                If Not Mid$(A$, pos, 1) Like "[0123456789abcdefABCDEF]" Then Exit Do
+                pos = pos + 1
+                Loop
+                b$ = b$ & "N"
+                If pos <= Len(A$) Then
+                    w$ = Mid$(A$, pos, 1)
+                Else
+                    Exit Do
+                End If
+            End If
+        End If
+    End If
+
+    If w$ = """" Then
+        If part$ <> "" Then
+        b$ = b$ & part$
+        End If
+        part$ = "S"
+        pos = pos + 1
+        Do While pos <= Len(A$)
+        If Mid$(A$, pos, 1) = """" Then Exit Do
+    If Asc(Mid$(A$, pos, 1)) < 32 Then Exit Do
+   
+        pos = pos + 1
+        Loop
+
+    ElseIf w$ = Chr$(2) Then  ' packet string
+        If part$ <> "" Then
+        b$ = b$ & part$
+        End If
+        part$ = "S"
+        '  UNPACKLNG(Mid$(a$, pos+1, 8)+10
+        pos = pos + UNPACKLNG(Mid$(A$, pos + 1, 8)) + 8
+        w$ = """"
+   
+    
+    ElseIf w$ = "(" Then
+        level& = 0
+        If part$ <> "" Then
+            ' after
+            ElseIf Right$(b$, 1) = "a" Then
+            b$ = Left$(b$, Len(b$) - 1)
+            part$ = ""
+            Else
+            part$ = "N"
+              
+        End If
+      pos = pos + 1
+        If Not BlockParam2(A$, pos) Then Exit Do
+        
+       If Mid$(A$, pos + 1, 1) <> "." Then b$ = b$ & part$
+        part$ = ""
+        
+    ElseIf w$ = "{" Then
+
+    
+           ''If b$ & part$ = "" Or Not part$ = "N" Then '' Or part$ = "S" Or part$ = "o" Or part$ = "l"
+             ''  If b$ & part$ = "" Or part$ = "S" Or part$ = "o" Then  '' Or part$ = "l"
+          
+    If part$ <> "" Then
+        b$ = b$ & part$
+        End If
+        part$ = "S"
+        
+        
+            If pos <= Len(A$) Then
+        If Not blockStringAhead(A$, pos) Then Exit Do
+        End If
+      
+
+    Else
+        Select Case w$
+        Case ","  ' bye bye
+        Exit Do
+        Case "%"
+            If part$ = "" Then
+            End If
+        Case "$"
+            If part$ = "" Then
+                If b$ = "" Then
+                    part$ = "N"
+                ElseIf Right$(b$, 1) = "o" Then
+                    part$ = "N"
+                Else
+                    aheadstatus = b$
+                    Exit Function
+                End If
+            ElseIf part$ = "N" Then
+                    b$ = b$ & "Sa"
+                    part$ = ""
+            End If
+        Case "+", "-"
+                    b$ = b$ & part$
+                    If b$ = "" Then
+                    Else
+                    
+                part$ = "o"
+                End If
+        Case "*", "/", "^"
+            If part$ <> "o" Then
+            b$ = b$ & part$
+            End If
+            part$ = "o"
+        Case " "
+            If part$ <> "" Then
+            b$ = b$ & part$
+            part$ = ""
+            Else
+            'skip
+            End If
+        Case "0" To "9", "."
+            If part$ = "N" Then
+            ElseIf part$ = "S" Then
+            
+            Else
+            b$ = b$ & part$
+            part$ = "N"
+            End If
+        Case "&"
+        If part$ = "" Then
+        part$ = "S"
+        Else
+        b$ = part$
+        part$ = "S"
+        End If
+        Case "e", "E", "ε", "Ε"
+            If part$ = "N" Then
+
+            ElseIf part$ = "S" Then
+            
+            
+            Else
+            b$ = b$ & part$
+            part$ = "N"
+            End If
+        Case "=", ">", "<", "~"
+                If b$ & part$ <> "" Then
+                w$ = Replace(b$ & part$, "a", "")
+            part$ = ""
+               If srink Then
+                  Do
+                b$ = w$
+                w$ = Replace(b$, "NN", "N")
+                Loop While w$ <> b$
+                         Do
+                        b$ = w$
+                          w$ = Replace(b$, "SlS", "N")
+                          Loop While w$ <> b$
+                            Do
+                          b$ = w$
+                          w$ = Replace(b$, "NlN", "N")
+                          Loop While w$ <> b$
+    
+                Do
+                b$ = w$
+                w$ = Replace(b$, "NoN", "N")
+                Loop While w$ <> b$
+                
+                Do
+                b$ = w$
+                w$ = Replace(b$, "SoS", "S")
+                Loop While w$ <> b$
+                Else
+              b$ = w$
+               End If
+               
+                If Left$(b$, Len(b$) - 1) <> "l" Then part$ = "l"
+                Else
+                Exit Do
+                End If
+        
+        Case ")", "}", Is < " ", ":", ";", "'", "\"
+        Exit Do
+        Case Else
+        If part$ = "N" Then
+
+        ElseIf part$ = "S" Then
+       
+        Else
+        
+     b$ = b$ & part$
+     part$ = "N"
+
+            End If
+        End Select
+        End If
+        
+    pos = pos + 1
+  
+Loop
+
+    w$ = Replace(b$ & part$, "a", "")
+    
+    b$ = w$
+If srink Then
+         Do
+  b$ = w$
+
+    w$ = Replace(b$, "SlS", "N")
+    Loop While w$ <> b$
+      Do
+    b$ = w$
+    w$ = Replace(b$, "NlN", "N")
+    Loop While w$ <> b$
+    
+    Do
+    b$ = w$
+    w$ = Replace(b$, "NoN", "N")
+    Loop While w$ <> b$
+    
+    Do
+    b$ = w$
+    w$ = Replace(b$, "SoS", "S")
+    Loop While w$ <> b$
+End If
+   
+   
+   
+   
+
+
+    aheadstatus = b$
+
+
+
+
+End Function
+Function blockStringAhead(s$, pos1 As Long) As Long
+Dim i As Long, j As Long, c As Long
+Dim a1 As Boolean
+c = Len(s$)
+a1 = True
+i = pos1
+If i > c Then blockStringAhead = c: Exit Function
+Do
+
+Select Case Asc(Mid$(s$, i, 1))
+Case 34
+Do While i < c
+i = i + 1
+If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+Loop
+Case 123
+j = j - 1
+Case 125
+j = j + 1: If j = 0 Then Exit Do
+End Select
+i = i + 1
+Loop Until i > c
+If j = 0 Then
+pos1 = i
+blockStringAhead = True
+Else
+blockStringAhead = False
+End If
+
+
+End Function
+Public Function CleanStr(sStr As String, noValidcharList As String) As String
+Dim A$, i As Long '', ddt As Boolean
+If noValidcharList <> "" Then
+''If Len(sStr) > 20000 Then ddt = True
+If Len(sStr) > 0 Then
+For i = 1 To Len(sStr)
+''If ddt Then If i Mod 321 = 0 Then Sleep 20
+If InStr(noValidcharList, Mid$(sStr, i, 1)) = 0 Then A$ = A$ & Mid$(sStr, i, 1)
+
+Next i
+End If
+Else
+A$ = sStr
+End If
+CleanStr = A$
+End Function
+Public Sub ResCounter()
+k1 = 0
+End Sub
+Public Sub MyDoEvents2(Optional obj As Object)
+
+If k1 = 0 Then k1 = uintnew(timeGetTime): RRCOUNTER = 1
+   If TaskMaster.PlayMusic Then
+                    TaskMaster.OnlyMusic = True
+                        TaskMaster.TimerTick
+                        TaskMaster.OnlyMusic = False
+End If
+If TaskMaster.Processing Then
+                
+    If Not extreme Then
+     If Not obj Is Nothing Then
+           '' If SLOW Then
+           
+            If uintnew(timeGetTime) > k1 Then RRCOUNTER = 0
+           
+            If RRCOUNTER = 0 Then
+          
+                If obj.Visible Then
+                        If kForm Then
+                kForm = False
+                 k1 = 0
+                TaskMaster.rest
+                UpdateWindow obj.hWnd
+                DoEvents
+                TaskMaster.RestEnd
+        Else
+        MyDoEvents1 obj
+        End If
+          k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
+
+                
+               End If
+
+                End If
+
+        End If
+    Else
+         If uintnew(timeGetTime) > k1 Then RRCOUNTER = 0
+         If RRCOUNTER = 0 Then k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
+               
+
+
+
+    End If
+Else
+
+
+
+ If uintnew(timeGetTime) > k1 Then RRCOUNTER = 0
+ 
+ If RRCOUNTER = 0 Then
+         k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
+
+        
+        If QRY Then
+            DoEvents
+        Else
+        If kForm Then
+        kForm = False
+            TaskMaster.rest
+            DoEvents
+            TaskMaster.RestEnd
+        Else
+        
+     ''  If Not extreme Then If Not obj Is Nothing Then If obj.Visible Then GdiFlush: obj.refresh
+
+            DoEvents
+        End If
+      
+        End If
+End If
+
+
+
+
+
+
+
+
+End If
+End Sub
+
+
+
+Public Function MyDoEvents()
+If TaskMaster Is Nothing Then
+DoEvents
+Exit Function
+ElseIf TaskMaster.PlayMusic Then
+                  TaskMaster.OnlyMusic = True
+                      TaskMaster.TimerTick
+                    TaskMaster.OnlyMusic = False
+                 End If
+TaskMaster.rest
+DoEvents
+TaskMaster.RestEnd
+End Function
+
+
+Function ReadUnicodeOrANSI(FileName As String, Optional ByVal EnsureWinLFs As Boolean, Optional feedback As Long) As String
+Dim i&, FNr&, BLen&, WChars&, BOM As Integer, BTmp As Byte, b() As Byte
+' code from Schmidt, member of vbforums
+If FileName = "" Then Exit Function
+On Error GoTo ErrHandler
+  BLen = FileLen(GetDosPath(FileName))
+  If BLen = 0 Then Exit Function
+  
+  FNr = FreeFile
+  Open GetDosPath(FileName) For Binary Access Read As FNr
+      Get FNr, , BOM
+    Select Case BOM
+      Case &HFEFF, &HFFFE 'one of the two possible 16 Bit BOMs
+        If BLen >= 3 Then
+          ReDim b(0 To BLen - 3): Get FNr, 3, b 'read the Bytes
+          feedback = 0
+          If BOM = &HFFFE Then 'big endian, so lets swap the byte-pairs
+          feedback = 1
+            For i = 0 To UBound(b) Step 2
+              BTmp = b(i): b(i) = b(i + 1): b(i + 1) = BTmp
+            Next
+          End If
+          ReadUnicodeOrANSI = b
+        End If
+      Case &HBBEF 'the start of a potential UTF8-BOM
+        Get FNr, , BTmp
+        If BTmp = &HBF Then 'it's indeed the UTF8-BOM
+        feedback = 2
+          If BLen >= 4 Then
+            ReDim b(0 To BLen - 4): Get FNr, 4, b 'read the Bytes
+            
+            WChars = MultiByteToWideChar(65001, 0, b(0), BLen - 3, 0, 0)
+            ReadUnicodeOrANSI = Space$(WChars)
+            MultiByteToWideChar 65001, 0, b(0), BLen - 3, StrPtr(ReadUnicodeOrANSI), WChars
+          End If
+        Else 'not an UTF8-BOM, so read the whole Text as ANSI
+        feedback = 3
+          ReadUnicodeOrANSI = Space$(BLen)
+          Get FNr, 1, ReadUnicodeOrANSI
+        End If
+        
+      Case Else 'no BOM was detected, so read the whole Text as ANSI
+        feedback = 3
+        ReadUnicodeOrANSI = Space$(BLen)
+        Get FNr, 1, ReadUnicodeOrANSI
+    End Select
+    
+    If InStr(ReadUnicodeOrANSI, vbCrLf) = 0 Then
+      If InStr(ReadUnicodeOrANSI, vbLf) Then
+      feedback = feedback + 10
+   If EnsureWinLFs Then ReadUnicodeOrANSI = Replace(ReadUnicodeOrANSI, vbLf, vbCrLf)
+      ElseIf InStr(ReadUnicodeOrANSI, vbCr) Then
+      feedback = feedback + 20
+      
+    If EnsureWinLFs Then ReadUnicodeOrANSI = Replace(ReadUnicodeOrANSI, vbCr, vbCrLf)
+      End If
+    End If
+    
+ErrHandler:
+If FNr Then Close FNr
+If Err Then Err.Raise Err.Number, Err.Source & ".ReadUnicodeOrANSI", Err.Description
+End Function
+
+Public Function SaveUnicode(ByVal FileName As String, ByVal buf As String, mode2save As Long, Optional Append As Boolean = False) As Boolean
+' using doc as extension you can read it from word...with automatic conversion to unicode
+' OVERWRITE ALWAYS
+Dim w As Long, A() As Byte, f$, i As Long, bb As Byte, yesswap As Boolean
+On Error GoTo t12345
+If Not Append Then
+If Not NeoUnicodeFile(FileName) Then Exit Function
+Else
+If Not CanKillFile(FileName$) Then Exit Function
+End If
+f$ = GetDosPath(FileName)
+If Err.Number > 0 Or f$ = "" Then Exit Function
+w = FreeFile
+MyDoEvents
+Open f$ For Binary As w
+' mode2save
+' 0 is utf-le
+If Append Then Seek #w, LOF(w) + 1
+mode2save = mode2save Mod 10
+If mode2save = 0 Then
+A() = ChrW(&HFEFF)
+Put #w, , A()
+
+ElseIf mode2save = 1 Then
+A() = ChrW(&HFFFE) ' big endian...need swap
+If Not Append Then Put #w, , A()
+yesswap = True
+ElseIf mode2save = 2 Then  'utf8
+If Not Append Then
+        Put #w, , CByte(&HEF)
+        Put #w, , CByte(&HBB)
+        Put #w, , CByte(&HBF)
+        End If
+        Put #w, , Utf16toUtf8(buf)
+        Close w
+    SaveUnicode = True
+        Exit Function
+ElseIf mode2save = 3 Then ' ascii
+Put #w, , buf
+      Close w
+    SaveUnicode = True
+        Exit Function
+End If
+
+Dim maxmw As Long, iPos As Long
+iPos = 1
+maxmw = 32000 ' check it with maxmw 20 OR 1
+If yesswap Then
+For iPos = 1 To Len(buf) Step maxmw
+A() = Mid$(buf, iPos, maxmw)
+For i = 0 To UBound(A()) - 1 Step 2
+bb = A(i): A(i) = A(i + 1): A(i + 1) = bb
+Next i
+Put #w, 3, A()
+Next iPos
+Else
+For iPos = 1 To Len(buf) Step maxmw
+A() = Mid$(buf, iPos, maxmw)
+Put #w, , A()
+Next iPos
+End If
+Close w
+SaveUnicode = True
+t12345:
+End Function
+Public Sub getUniString(f As Long, s As String)
+Dim A() As Byte
+A() = s
+Get #f, , A()
+s = A()
+End Sub
+
+Public Sub putUniString(f As Long, s As String)
+Dim A() As Byte
+A() = s
+Put #f, , A()
+End Sub
+Public Sub putANSIString(f As Long, s As String)
+Put #f, , s
+End Sub
+Public Function getUniStringlINE(f As Long, s As String) As Boolean
+' 2 bytes a time... stop to line end and advance to next line
+
+Dim A() As Byte, s1 As String, SS As Long, lbreak As String
+A = " "
+On Error GoTo a11
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A()
+
+s1 = A()
+If s1 <> vbCr And s1 <> vbLf Then
+s = s + s1
+If Asc(s1) = 63 And (AscW(A()) <> 63 And AscW(A()) <> -257) Then
+If AscW(A()) < &H4000 Then Exit Function
+End If
+Else
+If Not (LOF(f) < Seek(f)) Then
+SS = Seek(f)
+lbreak = s1
+Get #f, , A()
+s1 = A()
+If s1 <> vbCr And s1 <> vbLf Or lbreak = s1 Then
+Seek #f, SS  ' restore it
+End If
+End If
+Exit Do
+End If
+Loop
+getUniStringlINE = True
+a11:
+End Function
+Public Sub getAnsiStringlINE(f As Long, s As String)
+' 2 bytes a time... stop to line end and advance to next line
+Dim A As Byte, s1 As String, SS As Long, lbreak As String
+'a = " "
+On Error GoTo a11
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A
+
+s1 = Chr(A)
+If s1 <> vbCr And s1 <> vbLf Then
+s = s + s1
+Else
+If Not (LOF(f) < Seek(f)) Then
+SS = Seek(f)
+Get #f, , A
+lbreak = s1
+s1 = Chr(A)
+
+If s1 <> vbCr And s1 <> vbLf Or lbreak = s1 Then
+Seek #f, SS  ' restore it
+End If
+End If
+Exit Do
+End If
+Loop
+'S = StrConv(S, vbUnicode)
+a11:
+End Sub
+Public Sub getUniStringComma(f As Long, s As String)
+' sring must be in quotes
+' 2 bytes a time... stop to line end and advance to next line
+' use numbers with . as decimal not ,
+Dim A() As Byte, s1 As String, SS As Long, inside As Boolean
+s = ""
+
+A = " "
+On Error GoTo a1115
+
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A()
+s1 = A()
+If s1 <> " " Then
+If s1 = """" Then inside = True: Exit Do
+
+End If
+Loop
+' we throw the first
+If s1 <> """" Then Exit Sub
+
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A()
+
+s1 = A()
+If s1 <> vbCr And s1 <> vbLf And s1 <> """" Then
+s = s + s1
+
+Else
+If s1 = """" Then
+If s = "" Then ' is the first we have empty string
+inside = False
+Else
+' look if we have one  more
+If Not (LOF(f) < Seek(f)) Then
+SS = Seek(f)
+
+Get #f, , A()
+If A(0) = 34 Then
+s = s + Chr(34)
+GoTo nn1
+Else
+Seek #f, SS
+End If
+End If
+
+End If
+inside = False
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A()
+s1 = A()
+
+If s1 = vbCr Or s1 = vbLf Or s1 = "," Then Exit Do
+
+Loop
+If s1 = "," Then Exit Do
+End If
+If s1 <> "," And (Not (LOF(f) < Seek(f))) And (Not inside) Then
+    SS = Seek(f)
+    Get #f, , A()
+    s1 = A()
+    If s1 <> vbCr And s1 <> vbLf Then
+    Seek #f, SS  ' restore it
+    End If
+    End If
+If Not inside Then Exit Do Else s = s + s1
+
+End If
+nn1:
+Loop
+a1115:
+End Sub
+Public Sub getAnsiStringComma(f As Long, s As String)
+' sring must be in quotes
+' 2 bytes a time... stop to line end and advance to next line
+' use numbers with . as decimal not ,
+Dim A As Byte, s1 As String, SS As Long, inside As Boolean
+s = ""
+
+On Error GoTo a1111
+
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A
+s1 = Chr$(A)
+If s1 <> " " Then
+If s1 = """" Then inside = True: Exit Do
+
+End If
+Loop
+' we throw the first
+If s1 <> """" Then Exit Sub
+
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A
+
+s1 = Chr$(A)
+If s1 <> vbCr And s1 <> vbLf And s1 <> """" Then
+s = s + s1
+
+Else
+If s1 = """" Then
+If s = "" Then ' is the first we have empty string
+inside = False
+Else
+' look if we have one  more
+If Not (LOF(f) < Seek(f)) Then
+SS = Seek(f)
+
+Get #f, , A
+If A = 34 Then
+s = s + Chr(34)
+GoTo nn1
+Else
+Seek #f, SS
+End If
+End If
+
+End If
+inside = False
+Do While Not (LOF(f) < Seek(f))
+Get #f, , A
+s1 = Chr(A)
+
+If s1 = vbCr Or s1 = vbLf Or s1 = "," Then Exit Do
+
+Loop
+If s1 = "," Then Exit Do
+End If
+If s1 <> "," And (Not (LOF(f) < Seek(f))) And (Not inside) Then
+    SS = Seek(f)
+    Get #f, , A
+    s1 = Chr(A)
+    If s1 <> vbCr And s1 <> vbLf Then
+    Seek #f, SS  ' restore it
+    End If
+    End If
+If Not inside Then Exit Do Else s = s + s1
+
+End If
+nn1:
+Loop
+
+a1111:
+End Sub
+Public Sub getUniRealComma(f As Long, r As Double)
+' 2 bytes a time... stop to line end and advance to next line
+' use numbers with . as decimal not ,
+Dim A() As Byte, s1 As String, SS As Long, s As String
+r = 0
+A = " "
+On Error GoTo a111
+Do While Not LOF(f) < Seek(f)
+Get #f, , A()
+
+s1 = A()
+If s1 <> vbCr And s1 <> vbLf And s1 <> "," Then
+s = s + s1
+Else
+If s1 <> "," And Not (LOF(f) < Seek(f)) Then
+    SS = Seek(f)
+    Get #f, , A()
+    s1 = A()
+    If s1 <> vbCr And s1 <> vbLf Then
+    Seek #f, SS  ' restore it
+    End If
+End If
+Exit Do
+End If
+Loop
+IsNumberD2 s$, r
+a111:
+
+
+End Sub
+Public Sub getAnsiRealComma(f As Long, r As Double)
+' 2 bytes a time... stop to line end and advance to next line
+' use numbers with . as decimal not ,
+Dim A As Byte, s1 As String, SS As Long, s As String
+r = 0
+
+On Error GoTo a112
+Do While Not LOF(f) < Seek(f)
+Get #f, , A
+
+s1 = Chr(A)
+If s1 <> vbCr And s1 <> vbLf And s1 <> "," Then
+s = s + s1
+Else
+If s1 <> "," And Not (LOF(f) < Seek(f)) Then
+    SS = Seek(f)
+    Get #f, , A
+    s1 = Chr(A)
+    If s1 <> vbCr And s1 <> vbLf Then
+    Seek #f, SS  ' restore it
+    End If
+End If
+Exit Do
+End If
+Loop
+IsNumberD2 s$, r
+a112:
+
+
+End Sub
+Public Function RealLen(s$) As Long
+Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long
+ctype = CT_CTYPE3
+ll = Len(s$)
+   If ll Then
+      ReDim A(Len(s$) * 2 + 20)
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, A(0)) <> 0 Then
+      For i = 1 To Len(s$) * 2 - 1 Step 2
+      If A(i - 1) > 0 Then If A(i) = 0 Then If A(i - 1) < 8 Then ll = ll - 1
+          Next i
+      End If
+   End If
+RealLen = ll
+End Function
+Public Function PopOne(s$) As String
+Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long, MM As Long
+ctype = CT_CTYPE3
+Dim one As Boolean
+ll = Len(s$)
+MM = ll
+   If ll Then
+      ReDim A(Len(s$) * 2 + 20)
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, A(0)) <> 0 Then
+      For i = 1 To Len(s$) * 2 - 1 Step 2
+            If A(i) = 0 Then
+            If A(i - 1) > 0 Then
+            If A(i - 1) < 8 Then ll = ll - 1
+            Else
+            If Not one Then Exit For
+            
+            End If
+            Else
+            If one Then Exit For
+            one = Not one
+            End If
+      Next i
+      End If
+        ll = ll - 1
+      MM = MM - ll
+   End If
+If ll < 0 Then
+PopOne = s$
+s$ = ""
+ElseIf MM > 0 Then
+    PopOne = Left$(s$, MM)
+    s$ = Right$(s$, ll)
+End If
+
+End Function
+Public Sub ExcludeOne(s$)
+Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long
+ll = Len(s$)
+ctype = CT_CTYPE3
+   If ll > 1 Then
+      ReDim A(Len(s$) * 2 + 20)
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, A(0)) <> 0 Then
+      For i = ll * 2 - 1 To 1 Step -2
+      If A(i) = 0 Then
+      If A(i - 1) > 0 Then
+      If A(i - 1) < 8 Then ll = ll - 1
+      Else
+      Exit For
+      End If
+      Else
+      Exit For
+      End If
+          Next i
+      End If
+       ll = ll - 1
+       If ll <= 0 Then
+       s$ = ""
+       Else
+       
+        s$ = Left$(s$, ll)
+        End If
+      Else
+      s$ = ""
+      
+   End If
+End Sub
+
+
