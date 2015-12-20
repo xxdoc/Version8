@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 121
+Global Const Revision = 122
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -10810,7 +10810,7 @@ If neoGetArray(bstack, w$, pppp) Then
         End If
 If Not NeoGetArrayItem(pppp, bstack, w$, V, b$) Then interpret = False: HERE$ = ohere$: Exit Function
 On Error Resume Next
-If MaybeIsSymbol(b$, "+-*/!") Then
+If MaybeIsSymbol(b$, ":+-*/!") Then
 With pppp
         If IsOperator(b$, "++") Then
             .item(V) = .item(V) + 1
@@ -10840,6 +10840,23 @@ With pppp
         ElseIf IsOperator(b$, "~") Then
             .item(V) = -1 - (.item(V) <> 0)
             GoTo loopcontinue1
+      ElseIf FastSymbol(b$, ":=") Then
+
+    If IsExp(bstack, b$, p) Then
+        .item(V) = p
+    ElseIf IsStrExp(bstack, b$, SS$) Then
+      If Not IsObject(.item(V)) Then
+          .item(V) = SS$
+          Else
+        CheckVar .item(V), SS$
+        
+        End If
+
+    Else
+        Exit Do
+    End If
+    If FastSymbol(b$, ",") Then V = V + 1: GoTo contarr1
+    GoTo loopcontinue1
         End If
 .item(V) = MyRound(.item(V), 13)
 GoTo loopcontinue1
@@ -10894,6 +10911,7 @@ If Not NeoGetArrayItem(pppp, bstack, w$, V, b$) Then interpret = False: HERE$ = 
 On Error Resume Next
 If Not FastSymbol(b$, "=") Then
     If FastSymbol(b$, ":=") Then
+contarr1:
     SS$ = Left$(aheadstatus(b$), 1)
         If SS$ = "S" Then
         If Not IsStrExp(bstack, b$, SS$) Then interpret = False: HERE$ = ohere$: Exit Function
@@ -13979,6 +13997,7 @@ End If
 ElseIf Not NeoGetArrayItem(pppp, bstack, w$, V, b$) Then
 ''MyEr "Error too", "Λάθος"
 If LastErNum = -2 Then
+
 Execute bstack, b$, True
 Execute = 0: Exit Function
 Else
@@ -13987,8 +14006,10 @@ Exit Do
 End If
 End If
 On Error Resume Next
-If MaybeIsSymbol(b$, "+-*/~") Then
+
+If MaybeIsSymbol(b$, ":+-*/~") Then
 With pppp
+
 If IsOperator(b$, "++") Then
 .item(V) = .item(V) + 1
 GoTo loopcontinue
@@ -14017,6 +14038,23 @@ GoTo loopcontinue
 ElseIf IsOperator(b$, "~") Then
 .item(V) = -1 - (.item(V) <> 0)
 GoTo loopcontinue
+ElseIf FastSymbol(b$, ":=") Then
+
+    If IsExp(bstack, b$, p) Then
+        .item(V) = p
+    ElseIf IsStrExp(bstack, b$, SS$) Then
+      If Not IsObject(.item(V)) Then
+          .item(V) = SS$
+          Else
+        CheckVar .item(V), SS$
+        
+        End If
+
+    Else
+        Exit Do
+    End If
+    If FastSymbol(b$, ",") Then V = V + 1: GoTo contarr
+    GoTo loopcontinue
 End If
 .item(V) = MyRound(.item(V), 13)
 
@@ -14126,6 +14164,7 @@ On Error Resume Next
 
 If Not FastSymbol(b$, "=") Then
   If FastSymbol(b$, ":=") Then   ''????????????
+contarr:
     SS$ = Left$(aheadstatus(b$), 1)
         If SS$ = "S" Then
         If Not IsStrExp(bstack, b$, SS$) Then Execute = 0:   Exit Function
@@ -30013,6 +30052,8 @@ againhere:
                                                                                                                 Else
                                                                                                                   
                                                                                                                      Select Case VarType(.item(i + V))
+                                                                                                                     Case 5
+                                                                                                                     var(V1) = var(V1) + " " + CStr(.item(i + V))
                                                                                                                      Case 8
                                                                                                                      w$ = .item(i + V)
                                                                                                                      If IsNumberD2(w$, p) Then
