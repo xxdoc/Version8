@@ -137,6 +137,13 @@ If dnum = 1 Then
     maxitems = cursor
     limit(0) = maxitems
 End If
+ElseIf command = 9 Then
+If dnum = 1 Then
+    ReDim Preserve actualdata(cursor) As Variant
+    maxitems = cursor - 1
+    limit(0) = maxitems
+End If
+maxitems1 = maxitems - 1
 End If
 SerialItem = True
 

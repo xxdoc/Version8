@@ -95,12 +95,12 @@ End If
 Inc
 End Sub
 Public Property Get StackPick(where As Long) As VarItem
-Dim a As VarItem
+Dim A As VarItem
 dec
-Set a = mstack.item(where)
+Set A = mstack.item(where)
 mstack.remove where
 
-Set StackPick = a
+Set StackPick = A
 End Property
 Public Property Get StackItemType(where As Long) As String
 Dim aa As VarItem
@@ -163,10 +163,10 @@ End If
 Inc
 End Sub
 
-Public Sub PushVal(a As Double)
+Public Sub PushVal(A As Double)
 Dim aa As New VarItem
 aa.Typename = "N"
-aa.ItemDouble = a
+aa.ItemDouble = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -193,10 +193,10 @@ dec
 Set PopObj = mstack.item(1).ObjectRef
 mstack.remove 1   '
 End Property
-Public Sub PushStr(ByRef a As String)
+Public Sub PushStr(ByRef A As String)
 Dim aa As New VarItem
 aa.Typename = "S"
-aa.ItemStr = a
+aa.ItemStr = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -246,10 +246,10 @@ mstack.remove 1
 
 End Property
 
-Public Sub DataVal(a As Double)
+Public Sub DataVal(A As Double)
 Dim aa As New VarItem
 aa.Typename = "N"
-aa.ItemDouble = a
+aa.ItemDouble = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -257,10 +257,10 @@ mstack.Add aa, , , mstack.Count
 End If
 Inc
 End Sub
-Public Sub DataStr(ByRef a As String)
+Public Sub DataStr(ByRef A As String)
 Dim aa As New VarItem
 aa.Typename = "S"
-aa.ItemStr = a$
+aa.ItemStr = A$
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -268,11 +268,11 @@ mstack.Add aa, , , mstack.Count
 End If
 Inc
 End Sub
-Public Sub DataStrUn(a As String)
+Public Sub DataStrUn(A As String)
 Dim aa As New VarItem, i As Long, b As String
-b = Split(a)(0)
+b = Split(A)(0)
 aa.Typename = "S"
-aa.ItemStr = a
+aa.ItemStr = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -309,10 +309,10 @@ End Sub
 Public Sub Begin(from As Long)
 BeginFrom = from
 End Sub
-Public Sub additem(ByRef a As String)
+Public Sub additem(ByRef A As String)
 Dim aa As New VarItem
     aa.Typename = "S"
-    aa.ItemStr = a$
+    aa.ItemStr = A$
     If mstack.Count = 0 Then
         BeginFrom = 1
         mstack.Add aa
@@ -329,13 +329,13 @@ Dim aa As New VarItem
 
 Inc
 End Sub
-Public Sub MergeTop(a As mStiva)
-If Me Is a Then Exit Sub
+Public Sub MergeTop(A As mStiva)
+If Me Is A Then Exit Sub
 Dim i As Long, aa As VarItem
-If a.Total > 0 Then
+If A.Total > 0 Then
 Do
-i = a.Total
-Set aa = a.StackPick(i)
+i = A.Total
+Set aa = A.StackPick(i)
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -345,19 +345,19 @@ Inc
 Loop Until i <= 1
 End If
 End Sub
-Public Sub MergeBottom(a As mStiva)
-If Me Is a Then Exit Sub
+Public Sub MergeBottom(A As mStiva)
+If Me Is A Then Exit Sub
 Dim i As Long, aa As VarItem
-If a.Total > 0 Then
+If A.Total > 0 Then
 Do
-Set aa = a.StackPick(1)
+Set aa = A.StackPick(1)
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
-mstack.Add aa, , , mstack.Count   'push so first of a is first on mstack
+mstack.Add aa, , , mstack.Count    'push so first of a is first on mstack
 End If
 Inc
-Loop Until a.Total < 1
+Loop Until A.Total < 1
 End If
 End Sub
 Private Sub Class_Terminate()
