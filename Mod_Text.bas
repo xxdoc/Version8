@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 123
+Global Const Revision = 124
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2565,7 +2565,7 @@ ReDim var(50) As Variant
 clickMe2 = -1
 
 
-Dim Soros As New mStiva
+Dim soros As New mStiva
 Dim t As Long
 ReDim q(0) As target
 
@@ -4113,13 +4113,13 @@ Case "FALSE", "ÿ≈’ƒ≈”", "ÿ≈’ƒ«”"
     Exit Function
 Case "STACK.SIZE", "Ã≈√≈»œ”.”Ÿ—œ’"
     IsNumber = True
-    r = SG * bstack.Soros.Total
+    r = SG * bstack.soros.Total
     A$ = n$
     Exit Function
 Case "ISNUM", "≈…Õ¡—"
     IsNumber = True
-      If bstack.Soros.Total > 0 Then
-    If bstack.Soros.PopType = "N" Then r = SG * True Else r = 0
+      If bstack.soros.Total > 0 Then
+    If bstack.soros.PopType = "N" Then r = SG * True Else r = 0
     Else
     r = 0
     End If
@@ -4137,8 +4137,8 @@ Case "NOT", "œ◊…", "ƒ≈Õ"
     Exit Function
 Case "ISLET", "≈…Õ√—"
     IsNumber = True
-    If bstack.Soros.Total > 0 Then
-    If bstack.Soros.PopType = "S" Then r = SG * True Else r = 0
+    If bstack.soros.Total > 0 Then
+    If bstack.soros.PopType = "S" Then r = SG * True Else r = 0
     End If
     A$ = n$
     Exit Function
@@ -4186,7 +4186,7 @@ Case "SCALE.Y", " À…Ã¡Œ.’", "’.”«Ã≈…¡", "Y.TWIPS"
     Exit Function
 Case "EMPTY", " ≈Õœ"
     IsNumber = True
-    r = SG * (bstack.Soros.Total = 0)
+    r = SG * (bstack.soros.Total = 0)
     A$ = n$
     Exit Function
 Case "MOVIE.COUNTER", "MEDIA.COUNTER", "MUSIC.COUNTER", "‘¡…Õ…¡.Ã≈‘—«‘«”", "Ãœ’”… «.Ã≈‘—«‘«”"
@@ -4286,14 +4286,14 @@ Case "MENU", "≈–…Àœ√«"
     A$ = n$
     Exit Function
 Case "NUMBER", "¡—…»Ãœ”", "‘…Ã«"
-    If bstack.Soros.Total = 0 Then
+    If bstack.soros.Total = 0 Then
     A$ = n$
             MyErMacro A$, "Stack is empty", "O Û˘Ò¸Ú ÂﬂÌ·È ‹‰ÂÈÔÚ"
   
         IsNumber = False: Exit Function
 
-    ElseIf bstack.Soros.PopType = "N" Then
-    r = SG * bstack.Soros.PopVal
+    ElseIf bstack.soros.PopType = "N" Then
+    r = SG * bstack.soros.PopVal
     A$ = n$
     IsNumber = True
     Exit Function
@@ -4399,14 +4399,14 @@ Case "STACKITEM(", "‘…Ã«”Ÿ—œ’("
 If IsExp(bstack, n$, p) Then
 W3 = Abs(CLng(p))
 backitem:
-    If bstack.Soros.Total < W3 Then
+    If bstack.soros.Total < W3 Then
     A$ = n$
             MyErMacro A$, "Stack item not found at position " & CStr(W3), "ƒÂÌ ı‹Ò˜ÂÈ ÙÈÏﬁ Û˘ÒÔ˝ ÛÙÁ Ë›ÛÁ " & CStr(W3)
   
         IsNumber = False: Exit Function
 
-    ElseIf bstack.Soros.StackItemType(W3) = "N" Then
-    r = SG * bstack.Soros.StackItem(W3)
+    ElseIf bstack.soros.StackItemType(W3) = "N" Then
+    r = SG * bstack.soros.StackItem(W3)
     A$ = n$
     IsNumber = FastSymbol(A$, ")", True)
     Exit Function
@@ -6824,7 +6824,7 @@ Do While dn <= dd
                            r = SG * bstack.LastValue
     
       Else
-                      bstack.Soros.CopyGroup pppp.item(w2), anything
+                      bstack.soros.CopyGroup pppp.item(w2), anything
                        Set bstack.LastObj = anything
                       
       End If
@@ -8338,9 +8338,9 @@ End If
                 IsString = True
                 Exit Function
     Case "LETTER$", "√—¡ÃÃ¡$"
-                If bstackstr.Soros.Total = 0 Then
-                ElseIf bstackstr.Soros.PopType = "S" Then
-                r$ = bstackstr.Soros.PopStr
+                If bstackstr.soros.Total = 0 Then
+                ElseIf bstackstr.soros.PopType = "S" Then
+                r$ = bstackstr.soros.PopStr
                 IsString = True
                 Exit Function
                 End If
@@ -8401,21 +8401,21 @@ Case "STACKTYPE$(", "”Ÿ—œ’‘’–œ”$("
 If IsExp(bstackstr, A$, p) Then
 W3 = Abs(CLng(p))
 backitem1:
-    If bstackstr.Soros.Total < W3 Then
+    If bstackstr.soros.Total < W3 Then
  
             MyErMacro A$, "Stack item not found at position " & CStr(W3), "ƒÂÌ ı‹Ò˜ÂÈ ÛÙÔÈ˜ÂﬂÔ Û˘ÒÔ˝ ÛÙÁ Ë›ÛÁ " & CStr(W3)
   
         IsString = False: Exit Function
 
-    ElseIf bstackstr.Soros.StackItemType(W3) = "*" Then
-    Set bstackstr.LastObj = bstackstr.Soros.StackItem(W3)
+    ElseIf bstackstr.soros.StackItemType(W3) = "*" Then
+    Set bstackstr.LastObj = bstackstr.soros.StackItem(W3)
     r$ = Typename$(bstackstr.LastObj)
     Set bstackstr.LastObj = Nothing
     IsString = FastSymbol(A$, ")", True)
-    ElseIf bstackstr.Soros.StackItemType(W3) = "?" Then
+    ElseIf bstackstr.soros.StackItemType(W3) = "?" Then
     r$ = "(?)"
-    ElseIf bstackstr.Soros.StackItemType(W3) = "S" Then
-    s$ = CStr(bstackstr.Soros.StackItem(W3))
+    ElseIf bstackstr.soros.StackItemType(W3) = "S" Then
+    s$ = CStr(bstackstr.soros.StackItem(W3))
     r$ = ""
     Select Case Abs(IsLabel(bstackstr, s$, q2$))
     Case 1, 3, 4
@@ -8425,7 +8425,7 @@ backitem1:
     End Select
     If r$ = "" Then r$ = "String"
             IsString = FastSymbol(A$, ")", True)
-    ElseIf bstackstr.Soros.StackItemType(W3) = "N" Then
+    ElseIf bstackstr.soros.StackItemType(W3) = "N" Then
     
     r$ = "Number"
         IsString = FastSymbol(A$, ")", True)
@@ -8444,14 +8444,14 @@ Case "STACKITEM$(", "‘…Ã«”Ÿ—œ’$("
 If IsExp(bstackstr, A$, p) Then
 W3 = Abs(CLng(p))
 backitem2:
-    If bstackstr.Soros.Total < W3 Then
+    If bstackstr.soros.Total < W3 Then
  
             MyErMacro A$, "Stack item not found at position " & CStr(W3), "ƒÂÌ ı‹Ò˜ÂÈ ÙÈÏﬁ Û˘ÒÔ˝ ÛÙÁ Ë›ÛÁ " & CStr(W3)
   
         IsString = False: Exit Function
 
-    ElseIf bstackstr.Soros.StackItemType(W3) = "S" Then
-    r$ = bstackstr.Soros.StackItem(W3)
+    ElseIf bstackstr.soros.StackItemType(W3) = "S" Then
+    r$ = bstackstr.soros.StackItem(W3)
     IsString = FastSymbol(A$, ")", True)
     Exit Function
     Else
@@ -14091,7 +14091,7 @@ End If
      If Not bstack.LastObj Is Nothing Then
      Set myobject = pppp.GroupRef
      If pppp.IHaveClass Then
-     bstack.Soros.PushObj bstack.LastObj
+     bstack.soros.PushObj bstack.LastObj
      If Typename(pppp.item(V)) = "Empty" Then
      Set pppp.item(V) = New Group
      End If
@@ -14113,7 +14113,7 @@ If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
   If Not bstack.LastObj Is Nothing Then
      Set myobject = pppp.GroupRef
      If pppp.IHaveClass Then
-     bstack.Soros.PushObj bstack.LastObj
+     bstack.soros.PushObj bstack.LastObj
      SpeedGroup bstack, pppp, "@READ ", w$, "", V
      Else
      Set pppp.item(V) = bstack.LastObj
@@ -14417,7 +14417,7 @@ i = 1: FK$(13) = ""
 ' MergeTop the parameters as a frame...
 ' But a call to a function always give a new stack
 ' So this is included for modules to perform recuirsive call with common stack.
-If STAC3.Total > 0 Then mystack.Soros.MergeTop STAC3
+If STAC3.Total > 0 Then mystack.soros.MergeTop STAC3
 
 Dim ok As Boolean, nokillvars As Boolean
 nokillvars = basestack.nokillvars: basestack.nokillvars = False
@@ -14544,9 +14544,9 @@ End If
     Next i
 
     SubName$ = Right$(SubName$, snames)
-   If Not basestack.Soros Is mystack.Soros Then
+   If Not basestack.soros Is mystack.soros Then
    End If
-    basestack.Soros.MergeTop mystack.Soros
+    basestack.soros.MergeTop mystack.soros
 
 
     Exit Do
@@ -14670,7 +14670,7 @@ End If
 
 
 Dim Stack As mStiva
-Set Stack = b.Soros
+Set Stack = b.soros
 
 If Form2.compute <> "" Then
 dl$ = Form2.compute
@@ -15394,7 +15394,7 @@ If i = 1 Then
      bs.reflimit = Len(VarName$)
         Set bs.Parent = basestack
         If basestack.IamThread Then Set bs.Process = basestack.Process
-        Set bs.Sorosref = basestack.Soros  ' same stack
+        Set bs.Sorosref = basestack.soros  ' same stack
         Set bs.Owner = basestack.Owner
         bs.UseGroupname = sbgroup(x1)
         bs.OriginalCode = x1
@@ -15444,7 +15444,7 @@ ElseIf i > 3 Then
         bs.reflimit = Len(VarName$)
         Set bs.Parent = basestack
         If basestack.IamThread Then Set bs.Process = basestack.Process
-        If Not TheSame(HERE$, SS$) Then Set bs.Sorosref = basestack.Soros
+        If Not TheSame(HERE$, SS$) Then Set bs.Sorosref = basestack.soros
         Set bs.Owner = basestack.Owner
              bs.UseGroupname = sbgroup(x1)
              bs.OriginalCode = x1
@@ -16310,7 +16310,7 @@ Form1.myBreak basestack
     
     Original basestack1, "NEW:CLEAR"
 
-    basestack.Soros.Flush
+    basestack.soros.Flush
 
 End If
 Case "REMOVE", "ƒ…¡√—¡÷«"
@@ -16943,7 +16943,7 @@ Case "STOCK", "”‘œ "
 Identifier = StockValues(basestack, rest$, Lang)
 Exit Function
 Case "LINK", "≈ÕŸ”≈"
-Set myobject = basestack.Soros
+Set myobject = basestack.soros
 Set basestack.Sorosref = New mStiva
 s$ = ""
 
@@ -16952,9 +16952,9 @@ If IsLabelSymbolNew(rest$, "…”◊Õ«", "WEAK", Lang) Then
      
 If IsStrExp(basestack, rest$, SS$) Then
 If GetSub(SS$, x1) Then
- basestack.Soros.DataStr "{" + SB(x1) + "}": x1 = 1: GoTo contlink2
+ basestack.soros.DataStr "{" + SB(x1) + "}": x1 = 1: GoTo contlink2
 Else
- basestack.Soros.DataStr SS$: x1 = 1: GoTo contlink2
+ basestack.soros.DataStr SS$: x1 = 1: GoTo contlink2
 
 End If
 
@@ -16966,7 +16966,7 @@ End If
 it = IsLabelDot(HERE$, rest$, SS$)
 If it = 2 Then it = IsLabelDot(HERE$, rest$, SS$)
 
-If it = 0 Then If IsStrExp(basestack, rest$, SS$) Then x1 = 1: basestack.Soros.DataStr SS$: GoTo contlink2  ''s$ = "DATA {" + SS$ + "}": GoTo contlink1
+If it = 0 Then If IsStrExp(basestack, rest$, SS$) Then x1 = 1: basestack.soros.DataStr SS$: GoTo contlink2  ''s$ = "DATA {" + SS$ + "}": GoTo contlink1
 
 If it <> 0 And SS$ <> "" Then
 If Left$(SS$, 1) = "&" Then SS$ = Mid$(SS$, 2)
@@ -16997,7 +16997,7 @@ If s$ <> "" Then rest$ = s$ + rest$
 
 Loop While FastSymbol(rest$, ",")
 contlink2:
-If basestack.Soros.Total = 0 Then
+If basestack.soros.Total = 0 Then
 MyEr "Nothing to link", "‘ﬂÔÙ· „È· Ì· ÂÌ˛Û˘"
 ElseIf IsLabelSymbolNew(rest$, "”‘œ", "TO", Lang, True) Then
    Identifier = Identifier(basestack, "@REFER", rest$)
@@ -17057,7 +17057,7 @@ Set myobject = Nothing
  Set bs = New basetask
     Set bs.Sorosref = ps
     If FastSymbol(rest$, ";") Then
-    basestack.Soros.MergeTop ps
+    basestack.soros.MergeTop ps
     
     Identifier = True
     Exit Function
@@ -17103,7 +17103,7 @@ End If
 Do
 again1:
 Identifier = False
-If FastSymbol(rest$, ",") Then bs.Soros.DROP 1: GoTo again1
+If FastSymbol(rest$, ",") Then bs.soros.DROP 1: GoTo again1
 If FastSymbol(rest$, "&") Or col = 1 Then
 ' so now for GROUP variables we use only by reference
 Select Case Abs(IsLabel(basestack, rest$, what$))
@@ -17159,7 +17159,7 @@ contpush12:
      var(it).ArrList = .ArrList
      var(it).FuncList = .FuncList
     var(it).GroupName = myUcase(what$) + "."
-    Set var(it).Sorosref = .Soros.Copy
+    Set var(it).Sorosref = .soros.Copy
     End With
      End If
      Identifier = True
@@ -17947,15 +17947,15 @@ Case "PUSH", "¬¡À≈"
 Do
         If IsExp(bstack, rest$, p) Then
                 If Not bstack.LastObj Is Nothing Then
-                        bstack.Soros.PushObj bstack.LastObj
+                        bstack.soros.PushObj bstack.LastObj
                 Else
-                        bstack.Soros.PushVal p
+                        bstack.soros.PushVal p
                 End If
         ElseIf IsStrExp(bstack, rest$, s$) Then
         If Not bstack.LastObj Is Nothing Then
-                        bstack.Soros.PushObj bstack.LastObj
+                        bstack.soros.PushObj bstack.LastObj
                 Else
-                        bstack.Soros.PushStr s$
+                        bstack.soros.PushStr s$
                 End If
         Else
                 Exit Do
@@ -17971,18 +17971,18 @@ Do
                         
                         CopyGroup vvl, bstack
                         Set photo = vvl
-                                bstack.Soros.DataObj photo
+                                bstack.soros.DataObj photo
                         Else
-                                bstack.Soros.DataObj bstack.LastObj
+                                bstack.soros.DataObj bstack.LastObj
                         End If
                 Else
-                        bstack.Soros.DataVal p
+                        bstack.soros.DataVal p
                 End If
         ElseIf IsStrExp(bstack, rest$, s$) Then
                 If Not bstack.LastObj Is Nothing Then
-                        bstack.Soros.DataObj bstack.LastObj
+                        bstack.soros.DataObj bstack.LastObj
                 Else
-                        bstack.Soros.DataStr s$
+                        bstack.soros.DataStr s$
                 End If
         Else
                 Exit Do
@@ -18428,10 +18428,10 @@ Case "FIND", "≈’—≈”«"
                 
                      x1 = var(i).FindStr(SS$, x1, y1, col)
                      If x1 > 0 Then
-                        bstack.Soros.PushVal CDbl(col)  ' CHAR IN PARAGRAPH
-                        bstack.Soros.PushVal CDbl(y1)   'PARAGRAPH ORDER ..NUMBER START FROM 1
+                        bstack.soros.PushVal CDbl(col)  ' CHAR IN PARAGRAPH
+                        bstack.soros.PushVal CDbl(y1)   'PARAGRAPH ORDER ..NUMBER START FROM 1
                      End If
-                        bstack.Soros.PushVal CDbl(x1)   ' POSITION IN ALL DOCUMENT
+                        bstack.soros.PushVal CDbl(x1)   ' POSITION IN ALL DOCUMENT
                     
                 Else
                     MissingDoc
@@ -18446,10 +18446,10 @@ Case "FIND", "≈’—≈”«"
           
                         x1 = pppp.item(i).FindStr(SS$, x1, y1, col)
                             If x1 > 0 Then
-                               bstack.Soros.PushVal CDbl(col)  ' CHAR IN PARAGRAPH
-                               bstack.Soros.PushVal CDbl(y1)   'PARAGRAPH ORDER ..NUMBER START FROM 1
+                               bstack.soros.PushVal CDbl(col)  ' CHAR IN PARAGRAPH
+                               bstack.soros.PushVal CDbl(y1)   'PARAGRAPH ORDER ..NUMBER START FROM 1
                             End If
-                        bstack.Soros.PushVal CDbl(x1)   ' POSITION IN ALL DOCUMENT
+                        bstack.soros.PushVal CDbl(x1)   ' POSITION IN ALL DOCUMENT
                     
               
                         Else
@@ -18490,8 +18490,8 @@ Case "WORDS", "À≈Œ≈…”"
         If y1 = 3 Then
             If GetVar(bstack, s$, i) Then
                 If Typename(var(i)) = doc Then
-                bstack.Soros.Begin 1
-                var(i).ExportWords2ObjectAddItem bstack.Soros, sx <> 0
+                bstack.soros.Begin 1
+                var(i).ExportWords2ObjectAddItem bstack.soros, sx <> 0
                 var(i).ResetWords
                     
                 Else
@@ -18505,8 +18505,8 @@ Case "WORDS", "À≈Œ≈…”"
             End If
         ElseIf y1 = 6 Then
                     If Typename(pppp.item(i)) = doc Then
-                        bstack.Soros.Begin 1
-                         pppp.item(i).ExportWords2ObjectAddItem bstack.Soros, sx <> 0
+                        bstack.soros.Begin 1
+                         pppp.item(i).ExportWords2ObjectAddItem bstack.soros, sx <> 0
                          pppp.item(i).ResetWords
                       Else
                       MissingDoc
@@ -18600,44 +18600,44 @@ If Not IsExp(bstack, rest$, x) Then x = 1
             MyEr "No negatives or zero", "º˜È ·ÒÌÁÙÈÍÔﬂ ﬁ ÏÁ‰›Ì"
     Exit Function
     End If
-    If x > bstack.Soros.Total Then
+    If x > bstack.soros.Total Then
         MissStackItem
         
         Exit Function
     Else
-    bstack.Soros.Copy2TopItem CLng(x)
+    bstack.soros.Copy2TopItem CLng(x)
 
     End If
 Case "SHIFTBACK", "÷≈—≈–…”Ÿ"  'Ã≈‘¡ …Õ≈… ¡–œ ‘«Õ  œ—’÷«
-If Not IsExp(bstack, rest$, x) Then x = bstack.Soros.Total
+If Not IsExp(bstack, rest$, x) Then x = bstack.soros.Total
 If x <= 0 Then
      
         MyEr "No negatives or zero", "º˜È ·ÒÌÁÙÈÍÔﬂ ﬁ ÏÁ‰›Ì"
         ifier = False
 Exit Function
 End If
-If x > bstack.Soros.Total Then
+If x > bstack.soros.Total Then
 MissStackItem
 ifier = False
 Exit Function
     Else
-    bstack.Soros.MakeTopItemBack CLng(x)
+    bstack.soros.MakeTopItemBack CLng(x)
     
     End If
     
 Case "SHIFT", "÷≈—≈"  'Ã≈‘¡ …Õ≈… ”‘«Õ  œ—’÷«
-If Not IsExp(bstack, rest$, x) Then x = bstack.Soros.Total
+If Not IsExp(bstack, rest$, x) Then x = bstack.soros.Total
 If x <= 0 Then
      
         MyEr "No negatives or zero", "º˜È ·ÒÌÁÙÈÍÔﬂ ﬁ ÏÁ‰›Ì"
 Exit Function
 End If
-If x > bstack.Soros.Total Then
+If x > bstack.soros.Total Then
 MissStackItem
 
 Exit Function
     Else
-    bstack.Soros.MakeTopItem CLng(x)
+    bstack.soros.MakeTopItem CLng(x)
     
     End If
 
@@ -18651,14 +18651,14 @@ End If
 If x = 0 Then
 ' do nothing
 Else
-If x > bstack.Soros.Total Then
+If x > bstack.soros.Total Then
 MissStackItem
 
 Exit Function
-    ElseIf x = bstack.Soros.Total Then
-    bstack.Soros.Flush
+    ElseIf x = bstack.soros.Total Then
+    bstack.soros.Flush
     Else
-    bstack.Soros.DROP CLng(x)
+    bstack.soros.DROP CLng(x)
     End If
     End If
 
@@ -18978,9 +18978,9 @@ If FastSymbol(rest$, "!") And ML <> 1 Then
 If VALIDATEpart(rest$, s$) Then
 Do While s$ <> ""
     If ISSTRINGA(s$, pa$) Then
-        bstack.Soros.DataStr pa$
+        bstack.soros.DataStr pa$
     ElseIf IsNumberD(s$, x) Then
-        bstack.Soros.DataVal x
+        bstack.soros.DataVal x
     Else
         Exit Do
     End If
@@ -19246,28 +19246,28 @@ End If
                 If UBound(aaa()) > LBound(aaa()) Then
             
                         For x1 = UBound(aaa()) To LBound(aaa()) + 1 Step -1
-                            bstack.Soros.PushStr aaa(x1)
+                            bstack.soros.PushStr aaa(x1)
                         Next x1
-                        bstack.Soros.PushVal UBound(aaa()) - LBound(aaa())
-                        bstack.Soros.PushStr aaa(x1)
+                        bstack.soros.PushVal UBound(aaa()) - LBound(aaa())
+                        bstack.soros.PushStr aaa(x1)
                  End If
             Else
             
      If isdir(ReturnFile) Then
-     bstack.Soros.PushStr ""
+     bstack.soros.PushStr ""
     Else
-    bstack.Soros.PushStr ReturnFile
+    bstack.soros.PushStr ReturnFile
     End If
         End If
     Else
     If isdir(ReturnFile) Then
-     bstack.Soros.PushStr ""
+     bstack.soros.PushStr ""
     Else
-    bstack.Soros.PushStr ReturnFile
+    bstack.soros.PushStr ReturnFile
     End If
     End If
     Else
-    bstack.Soros.PushStr ""
+    bstack.soros.PushStr ""
     End If
 
 Set photo = Nothing
@@ -19319,19 +19319,19 @@ End If
     If UBound(aaa()) > LBound(aaa()) Then
 
 For x1 = UBound(aaa()) To LBound(aaa()) + 1 Step -1
-    bstack.Soros.PushStr aaa(x1)
+    bstack.soros.PushStr aaa(x1)
 Next x1
-bstack.Soros.PushVal UBound(aaa()) - LBound(aaa())
-bstack.Soros.PushStr aaa(x1)
+bstack.soros.PushVal UBound(aaa()) - LBound(aaa())
+bstack.soros.PushStr aaa(x1)
 End If
 Else
-    bstack.Soros.PushStr ReturnFile
+    bstack.soros.PushStr ReturnFile
     End If
     Else
-    bstack.Soros.PushStr ReturnFile
+    bstack.soros.PushStr ReturnFile
     End If
     Else
-    bstack.Soros.PushStr ""
+    bstack.soros.PushStr ""
     End If
 
 Set photo = Nothing
@@ -19346,7 +19346,7 @@ If IsLabelSymbolNew(rest$, "À¡»œ”", "ERROR", Lang) Then
             LastErName = ""
             LastErNameGR = ""
 End If
-bstack.Soros.Flush
+bstack.soros.Flush
 
 
   Case "PROPERTIES", "…ƒ…œ‘«‘≈”"  ''for printer
@@ -22232,9 +22232,9 @@ Set photo = Nothing
 End If
 DialogSetupLang Lang
 If OpenColor(bstack, photo, i) Then
-bstack.Soros.PushVal CDbl(-i)
+bstack.soros.PushVal CDbl(-i)
 Else
-bstack.Soros.PushVal CDbl(-it)
+bstack.soros.PushVal CDbl(-it)
 
 End If
 Set photo = Nothing
@@ -22273,9 +22273,9 @@ End If
 ' change for file type
 If InStr(w$, "|") > 0 Then w$ = ""  ' NOT COMBATIBLE..CHANGE TO ALL FILES
 If SaveAsDialog(bstack, photo, s$, frm$, SS$, w$) Then
-bstack.Soros.PushStr ReturnFile
+bstack.soros.PushStr ReturnFile
 Else
-bstack.Soros.PushStr ""
+bstack.soros.PushStr ""
 End If
 
 Set photo = Nothing
@@ -22319,7 +22319,7 @@ Case "STACK", "”Ÿ—œ”"
 SS$ = "{" & block(rest$) & "}"
 frm$ = rest$
 If FastSymbol(rest$, "}") Then
-Set ps = bstack.Soros
+Set ps = bstack.soros
 Set bstack.Sorosref = New mStiva
 Call executeblock(it, bstack, SS$, False, Once)
 Set bstack.Sorosref = ps
@@ -22333,9 +22333,9 @@ If FastSymbol(rest$, "!") Then
 If VALIDATEpart(rest$, s$) Then
 Do While s$ <> ""
 If ISSTRINGA(s$, pa$) Then
-bstack.Soros.DataStr pa$
+bstack.soros.DataStr pa$
 ElseIf IsNumberD(s$, x) Then
-bstack.Soros.DataVal x
+bstack.soros.DataVal x
 Else
 Exit Do
 End If
@@ -22373,7 +22373,7 @@ End If
 IsSymbol SS$, ","
 i = i + 1
 Loop
-bstack.Soros.MergeTop ps
+bstack.soros.MergeTop ps
 Else
 ifier = False
 Exit Function
@@ -22394,7 +22394,7 @@ End If
 IsSymbol SS$, ","
 i = i + 1
 Loop
-bstack.Soros.MergeTop ps
+bstack.soros.MergeTop ps
 End If
 Else
 ifier = False
@@ -22431,7 +22431,7 @@ End If
 IsSymbol SS$, ","
 i = i + 1
 Loop
-bstack.Soros.MergeTop ps
+bstack.soros.MergeTop ps
 'stack$(bstack) = ss$ & stack$(bstack)
 Else
 ifier = False
@@ -22453,7 +22453,7 @@ End If
 IsSymbol SS$, ","
 i = i + 1
 Loop
-bstack.Soros.MergeTop ps
+bstack.soros.MergeTop ps
 'stack$(bstack) = ss$ & stack$(bstack)
 End If
 Else
@@ -22475,12 +22475,12 @@ End If
 IsSymbol SS$, ","
 i = i + 1
 Loop
-bstack.Soros.MergeTop ps
+bstack.soros.MergeTop ps
 'stack$(bstack) = ss$ & stack$(bstack)
 End If
 Else
 i = 0
-With bstack.Soros
+With bstack.soros
 s$ = ""
 Do
 i = i + 1
@@ -25584,7 +25584,7 @@ End Sub
 Public Function VALIDATEmStiva(bs As basetask, p$, s$) As Boolean
 Dim st As mStiva, SS$, j As Long
 
-Set st = bs.Soros
+Set st = bs.soros
 Dim i As Long, r$
 If p$ <> "" Then
     ''s$ = ""
@@ -27122,7 +27122,7 @@ If k > that.Count Then
 ''x1 = stdCallW(that.LIB, that.FUNC, vbLong, final(), that.Count)
 x1 = 100
 If Ret Then
-bstack.Soros.PushVal CDbl(x1)   ' FEEDBACK TO STACK
+bstack.soros.PushVal CDbl(x1)   ' FEEDBACK TO STACK
 End If
 Else
 'error message
@@ -27200,9 +27200,9 @@ If k > that.Count Then
 x1 = stdCallW(that.LIB, that.FUNC, vbLong, final(), that.Count)
 If Ret Then
 If that.RetType = 0 Then
-bstack.Soros.PushVal CDbl(x1)   ' FEEDBACK TO STACK
+bstack.soros.PushVal CDbl(x1)   ' FEEDBACK TO STACK
 Else
-bstack.Soros.PushStr GetBStrFromPtr(x1)
+bstack.soros.PushStr GetBStrFromPtr(x1)
 End If
 End If
 Else
@@ -27652,7 +27652,7 @@ If Trim$(what$) = "" Then Exit Sub
  Dim ps As mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, SS$, frmarr$, sss$
  Dim grtype As Variant, ps2push As String
  Set var(i) = New Group
- Set ps = var(i).Soros
+ Set ps = var(i).soros
  Dim subgroup As Object, pppp As mArray
  Dim ohere$, oldgroupname$
  ohere$ = HERE$
@@ -27828,7 +27828,7 @@ Wend
 If Trim$(what$) = "" Then Exit Sub
  Dim ps As mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, SS$, frmarr$, sss$
  Dim grtype As Variant, ps2push As String, tt As Long, ff$
- Set ps = var(i).Soros
+ Set ps = var(i).soros
  Dim subgroup As Object, pppp As mArray
  Dim ohere$, oldgroupname$
  ohere$ = HERE$
@@ -28146,9 +28146,9 @@ Dim s() As String, w$, i As Long, nm$, nt$, cm$, nt1$, j As Long, k As Long
                     nt$ = Typename$(var(j))
                  If Not lcl Then
                                          If nt$ = "Group" Then
-                                        .Soros.DataStr "*" + Left$(s(i), InStr(s(i), " ") - 1) + Str(j)
+                                        .soros.DataStr "*" + Left$(s(i), InStr(s(i), " ") - 1) + Str(j)
                                         Else
-                                        .Soros.DataStr Left$(s(i), InStr(s(i), " ") - 1) + Str(j)
+                                        .soros.DataStr Left$(s(i), InStr(s(i), " ") - 1) + Str(j)
                                         End If
                                         .Varlist = .Varlist + Chr$(1) + "_ " + Mid$(s(i), Len(w$) + 1)
                            Else
@@ -28181,7 +28181,7 @@ Dim s() As String, w$, i As Long, nm$, nt$, cm$, nt1$, j As Long, k As Long
         
                 If Left(s(i), Len(w$)) = w$ Then
                 If Not lcl Then
-                  .Soros.DataStr Split(s(i))(0) + ") " + Split(s(i))(1)
+                  .soros.DataStr Split(s(i))(0) + ") " + Split(s(i))(1)
                 .ArrList = .ArrList + Chr$(13) + "__" + Mid$(s(i), Len(w$) + 1)
                 Else
                 .LocalList = .LocalList + vbCrLf + "local DIM " + dimString(Mid$(s(i), Len(w$) + 1)) + vbCrLf
@@ -29164,7 +29164,7 @@ i = 1
        With bs
         .reflimit = Len(VarName$)
         Set .Parent = basestack
-        Set .Sorosref = basestack.Soros   'same stack
+        Set .Sorosref = basestack.soros   'same stack
         Set .Owner = .Parent.Owner
         .OriginalName$ = ohere$
         .vars = var2used: .VName = Len(VarName$)
@@ -29409,7 +29409,7 @@ Set ParentStack = basestack.Parent
     If Not FastSymbol(rest$, ",") Then Exit Do
                 Loop
              Set ParentStack = Nothing
-            basestack.Soros.MergeTop ps
+            basestack.soros.MergeTop ps
 End Function
 Function PushParamGeneral(basestack As basetask, rest$) As Boolean
 PushParamGeneral = True
@@ -29445,7 +29445,7 @@ Dim ps As mStiva, p As Double, s$
     If Not FastSymbol(rest$, ",") Then Exit Do
                 Loop
              
-            basestack.Soros.MergeTop ps
+            basestack.soros.MergeTop ps
 End Function
 Sub PushParamGeneraOLD(basestack As basetask, rest$)
 Dim ps As mStiva, p As Double, s$
@@ -29471,7 +29471,7 @@ Dim ps As mStiva, p As Double, s$
                     If Not FastSymbol(rest$, ",") Then Exit Do
                 Loop
              
-            basestack.Soros.MergeTop ps
+            basestack.soros.MergeTop ps
 End Sub
 
 Function searchsub(A$, w$, final As Long) As Boolean
@@ -29901,18 +29901,24 @@ Function StockValues(bstack As basetask, b$, Lang As Long) As Boolean
 ' Stock A[$|%| ]()  keep  N,  B[$|%| ]()
 ' Stock A[$|%| ]()  sweep  N [,  value ]   fill a copy of value to n items or empty slots
 Dim w$, pppp As mArray, V As Long, VN As Long, i As Long, what$, pppp1 As mArray, V1 As Long
-Dim bs As New basetask, p As Double, P1 As Double
+Dim bs As New basetask, p As Double, P1 As Double, soros As mStiva
 If Abs(IsLabel(bstack, b$, what$)) > 4 Then
         If neoGetArray(bstack, what$, pppp, HERE$ <> "") Then
 
                 If NeoGetArrayItem(pppp, bstack, what$, V, b$) Then
 againhere:
                             If IsLabelSymbolNew(b$, "¡–œ", "IN", Lang) Then
+                            
                                 If what$ = "" Then Exit Function   ' no for no named array
-                                    If Identifier(bs, "@DATA", b$) Then
-                                                   VN = V + bs.Soros.Total - 1
+                                Set soros = bstack.soros
+                                Set bstack.Sorosref = bs.soros
+                                ' Need bstack and not bs because bstack has more info inside.
+                                    If Identifier(bstack, "@DATA", b$) Then
+                                     Set bstack.Sorosref = soros
+                                     Set soros = Nothing
+                                                   VN = V + bs.soros.Total - 1
                                                    If pppp.UpperMonoLimit >= VN Then
-                                                            With bs.Soros
+                                                            With bs.soros
                                                                      i = 1
                                                                      For V = V To VN
                                                                               If .StackItemTypeObjectType(i) = "" Then
@@ -29949,7 +29955,7 @@ againhere:
                                                                                         Case 5, 6, 7
                                                                                          If neoGetArray(bstack, w$, pppp1, HERE$ <> "") Then
                                                                                             If IsSymbol(b$, ")") Then
-                                                                                                bs.Soros.PushObj pppp.item(V)
+                                                                                                bs.soros.PushObj pppp.item(V)
                                                                                                         If Not globalArrByPointer(bs, bstack, w$) Then MyEr "No array found", "ƒÂÌ ‚ÒﬁÍ· ﬂÌ·Í·"
                                                                                                 Else
                                                                                                         If NeoGetArrayItem(pppp1, bstack, w$, V1, b$) Then
@@ -29957,7 +29963,7 @@ againhere:
                                                                                                         End If
                                                                                                 End If
                                                                                         ElseIf IsSymbol(b$, ")") Then
-                                                                                                        bs.Soros.PushObj pppp.item(V)
+                                                                                                        bs.soros.PushObj pppp.item(V)
                                                                                                         If Not globalArrByPointer(bs, bstack, w$) Then MyEr "No array found", "ƒÂÌ ‚ÒﬁÍ· ﬂÌ·Í·"
                                                                                                 End If
 
@@ -30122,11 +30128,11 @@ againhere:
                                                                                                                 pppp.item(i + V) = P1
                                                                                                                 Next i
                                                                                                                 Else
-                                                                                                            bs.Soros.PushObj bstack.LastObj
+                                                                                                            bs.soros.PushObj bstack.LastObj
                                                                                                                 Set bstack.LastObj = Nothing
                                                                                                                 For i = 0 To p - 1
-                                                                                                                bs.Soros.Copy2TopItem 1
-                                                                                                                Set pppp.item(i + V) = bs.Soros.PopObj
+                                                                                                                bs.soros.Copy2TopItem 1
+                                                                                                                Set pppp.item(i + V) = bs.soros.PopObj
                                                                                                                 Next i
                                                                                                                 End If
                                                                                                         End If
@@ -30138,11 +30144,11 @@ againhere:
                                                                                                                 pppp.item(i + V) = what$
                                                                                                                 Next i
                                                                                                                 Else
-                                                                                                                                                bs.Soros.PushObj bstack.LastObj
+                                                                                                                                                bs.soros.PushObj bstack.LastObj
                                                                                                                 Set bstack.LastObj = Nothing
                                                                                                                 For i = 0 To p - 1
-                                                                                                                bs.Soros.Copy2TopItem 1
-                                                                                                                Set pppp.item(i + V) = bs.Soros.PopObj
+                                                                                                                bs.soros.Copy2TopItem 1
+                                                                                                                Set pppp.item(i + V) = bs.soros.PopObj
                                                                                                                 Next i
                                                                                                                 End If
                                                                                                                 End If
