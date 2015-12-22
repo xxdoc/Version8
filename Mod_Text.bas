@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 122
+Global Const Revision = 123
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -11714,6 +11714,8 @@ nd& = x1
         End If
         If IsLabelSymbolNew(b$, "ΕΩΣ", "TO", Lang) Then
         If IsExp(bstack, b$, sp) Then
+       sp = MyRound(sp, 13)
+        p = MyRound(p, 13)
             If x1 > 1 Then sp = Int(sp)
                 st = Sgn(sp - p)
                 
@@ -15289,6 +15291,11 @@ Case "GROUP", "ΟΜΑΔΑ"
   
 Else
  x1 = Abs(IsLabel(basestack, rest$, what$))
+ If HERE$ = what$ Then
+NameConflict
+    Identifier = False
+Exit Function
+ End If
  End If
  
  If x1 = 1 Then
@@ -17871,6 +17878,9 @@ MyEr "Can't swap ", "Δεν μπορώ να αλλάξω τιμές "
 End Sub
 Public Sub Nosuchvariable(nameOfvar$)
 MyEr "No such variable " + nameOfvar$, "δεν υπάρχει τέτοια μεταβλητή " + nameOfvar$
+End Sub
+Public Sub NameConflict()
+   MyEr "Group Name Has Module name ", "Το όνομα ομάδας είναι και όνομα του τμήματος"
 End Sub
 Public Sub NoReference()
    MyEr "No reference exist", "Δεν υπάρχει αναφορά"
@@ -23990,6 +24000,7 @@ If Len(nm$) > 5 Then
         If bstack.UseGroupname <> "" Then
                 n$ = Chr$(1) + bstack.UseGroupname + Mid$(nm$, 6) + " "
                 i = InStrRev(VarName$, n$)
+                If i > 0 Then GoTo there12
         Else
         
             n$ = StripThis2(HERE$)
@@ -23997,7 +24008,7 @@ If Len(nm$) > 5 Then
             n$ = Chr(1) + n$ & "." & Mid(nm$, 6) & " "
             
             Else
-            If IsLabel(bstack, Mid$(nm$, 5), n$) Then
+            If IsLabel(bstack, Mid$(nm$, 6), n$) Then ' NO NEED DOT ANY MORE..(WE USE DOTNEW)
                     n$ = Chr(1) + HERE$ & "." & n$ & " "
             Else
                         n$ = Chr(1) + HERE$ & "." & nm$ & " "   '????
@@ -24037,6 +24048,7 @@ End If
 End If
 '***********************
 If i > 0 Then
+there12:
 GetVar = True
 i = Val(Mid$(VarName$, i + Len(n$)))
 Else
@@ -24336,7 +24348,7 @@ End If
 End Function
 
 Function logical(basestack As basetask, s$, D As Double) As Boolean
-Dim b$, s2$, s3$ ' , OSTAC$
+Dim b$, S2$, s3$ ' , OSTAC$
 Dim ah As String
 
 ah = aheadstatus(s$, False)    '
@@ -24357,16 +24369,16 @@ End If
 On Error Resume Next
 
 If Err.Number > 0 Then Exit Function
-s2$ = s$
+S2$ = s$
 
 If Left$(ah, 1) <> "N" Then
  IsStrExp basestack, s$, b$
 logical = False
 If FastSymbol(s$, "=") Then
     logical = False
-    If IsStrExp(basestack, s$, s2$) Then
+    If IsStrExp(basestack, s$, S2$) Then
     logical = True
-    If b$ = s2$ Then D = -1 Else D = 0
+    If b$ = S2$ Then D = -1 Else D = 0
     Exit Function
     Else
     If LastErNum = -2 Then logical = True
@@ -24374,9 +24386,9 @@ If FastSymbol(s$, "=") Then
     End If
 ElseIf FastSymbol(s$, "<>") Then
     logical = False
-    If IsStrExp(basestack, s$, s2$) Then
+    If IsStrExp(basestack, s$, S2$) Then
     logical = True
-    If b$ <> s2$ Then D = -1 Else D = 0
+    If b$ <> S2$ Then D = -1 Else D = 0
     Exit Function
         Else
     If LastErNum = -2 Then logical = True
@@ -24384,9 +24396,9 @@ ElseIf FastSymbol(s$, "<>") Then
     End If
 ElseIf FastSymbol(s$, "<=") Then
     logical = False
-    If IsStrExp(basestack, s$, s2$) Then
+    If IsStrExp(basestack, s$, S2$) Then
     logical = True
-    If b$ <= s2$ Then D = -1 Else D = 0
+    If b$ <= S2$ Then D = -1 Else D = 0
     Exit Function
             Else
     If LastErNum = -2 Then logical = True
@@ -24394,9 +24406,9 @@ ElseIf FastSymbol(s$, "<=") Then
     End If
 ElseIf FastSymbol(s$, "<") Then
     logical = False
-    If IsStrExp(basestack, s$, s2$) Then
+    If IsStrExp(basestack, s$, S2$) Then
     logical = True
-    If b$ < s2$ Then D = -1 Else D = 0
+    If b$ < S2$ Then D = -1 Else D = 0
     Exit Function
             Else
     If LastErNum = -2 Then logical = True
@@ -24404,9 +24416,9 @@ ElseIf FastSymbol(s$, "<") Then
     End If
 ElseIf FastSymbol(s$, ">=") Then
     logical = False
-    If IsStrExp(basestack, s$, s2$) Then
+    If IsStrExp(basestack, s$, S2$) Then
     logical = True
-    If b$ >= s2$ Then D = -1 Else D = 0
+    If b$ >= S2$ Then D = -1 Else D = 0
     Exit Function
             Else
     If LastErNum = -2 Then logical = True
@@ -24414,9 +24426,9 @@ ElseIf FastSymbol(s$, ">=") Then
     End If
 ElseIf FastSymbol(s$, ">") Then
     logical = False
-    If IsStrExp(basestack, s$, s2$) Then
+    If IsStrExp(basestack, s$, S2$) Then
     logical = True
-    If b$ > s2$ Then D = -1 Else D = 0
+    If b$ > S2$ Then D = -1 Else D = 0
     Exit Function
             Else
     If LastErNum = -2 Then logical = True
@@ -24424,9 +24436,9 @@ ElseIf FastSymbol(s$, ">") Then
     End If
 ElseIf FastSymbol(s$, "~") Then
     logical = False
-    If IsStrExp(basestack, s$, s2$) Then
+    If IsStrExp(basestack, s$, S2$) Then
     logical = True
-    If b$ Like s2$ Then D = -1 Else D = 0
+    If b$ Like S2$ Then D = -1 Else D = 0
     Exit Function
             Else
     If LastErNum = -2 Then logical = True
@@ -24434,11 +24446,11 @@ ElseIf FastSymbol(s$, "~") Then
     End If
 End If
 
-If LastErNum <> -2 Then s$ = s2$
+If LastErNum <> -2 Then s$ = S2$
 
 Else
 
-s$ = s2$
+s$ = S2$
 If IsNumber(basestack, s$, D) Then
 logical = True
 Else
@@ -24873,13 +24885,13 @@ Kill strTemp & "tmp." & tP$
 myRegister = Trim$(rl$)
 End Function
 Public Function PCall(ByVal sFile As String) As String
-Dim s2 As String, i As Long, bsfile As String, rfile As String, MYNULL$
+Dim S2 As String, i As Long, bsfile As String, rfile As String, MYNULL$
 bsfile = mylcasefILE(sFile)
-   s2 = String(MAX_FILENAME_LEN, 32)
+   S2 = String(MAX_FILENAME_LEN, 32)
    'Retrieve the name and handle of the executable, associated with this file
-   i = FindExecutable(StrPtr(sFile), StrPtr(MYNULL$), StrPtr(s2))
+   i = FindExecutable(StrPtr(sFile), StrPtr(MYNULL$), StrPtr(S2))
    If i > 32 Then
-   rfile = mylcasefILE(Left$(s2, InStr(s2, Chr$(0)) - 1))
+   rfile = mylcasefILE(Left$(S2, InStr(S2, Chr$(0)) - 1))
    If ExtractName(bsfile) = ExtractName(rfile) Then
    ' it is an executable
    PCall = mylcasefILE(bsfile)
