@@ -2525,7 +2525,7 @@ End If
     
 
     resp = Form3.NeoASK(basestack1)
-        If resp = 1 Then InputBoxN = basestack1.Soros.PopStr
+        If resp = 1 Then InputBoxN = basestack1.soros.PopStr
           AskInput = False
 End Function
 Public Function ask(A$, Optional retry As Boolean = False) As Double
@@ -2751,7 +2751,7 @@ Case "LOAD", "LOAD.DOC", "LOCAL", "LOCALE", "LOCALE$(", "LOCALE(", "LOG(", "LONG
 Case "LOWORD(", "LOWWORD(", "MAIN.TASK", "MARK", "MASTER", "MATCH(", "MAX(", "MAX.DATA$("
 Case "MAX.DATA(", "MDB(", "MEDIA", "MEDIA.COUNTER", "MEMBER$(", "MEMBER.TYPE$(", "MEMO", "MEMORY", "MENU"
 Case "MENU$(", "MENU.VISIBLE", "MENUITEMS", "MERGE.DOC", "METHOD", "MID$(", "MIN(", "MIN.DATA$(", "MIN.DATA("
-Case "MOD", "MODE", "MODULE", "MODULE$", "MODULES", "MONITOR", "MOTION", "MOTION.W", "MOTION.WX"
+Case "MOD", "MODE", "MODULE", "MODULE$", "MODULE(", "MODULES", "MONITOR", "MOTION", "MOTION.W", "MOTION.WX"
 Case "MOTION.WY", "MOTION.X", "MOTION.XW", "MOTION.Y", "MOTION.YW", "MOUSE", "MOUSE.ICON", "MOUSE.KEY", "MOUSE.X"
 Case "MOUSE.Y", "MOUSEA.X", "MOUSEA.Y", "MOVE", "MOVIE", "MOVIE.COUNTER", "MOVIE.DEVICE$", "MOVIE.ERROR$", "MOVIE.STATUS$"
 Case "MOVIES", "MUSIC", "MUSIC.COUNTER", "NAME", "NEW", "NEW:CLEAR", "NEXT"
@@ -2830,7 +2830,7 @@ Case "суццяажг", "суцйяиме(", "суцйяоусг(", "суцвымеусе.еццяажо", "сулпиесг", "с
 Case "сумаятгсг(", "сумевисе", "сумхгла", "сус", "сусйеуг.пяобокгс$", "сустгла", "сувмотгта(", "свд$(", "сведиа"
 Case "сведио.мглатым", "сыяос", "сыяос$(", "сыяоутупос$(", "сысе", "сысе.еццяажо", "таимиа", "таимиа.летягтгс", "таимиес"
 Case "танг", "танимолгсг", "таутисг(", "таутовяомо", "текос", "текос(", "тий", "тиктос.аявеиоу$(", "тилг"
-Case "тилг(", "тилгсыяоу$(", "тилгсыяоу(", "типота", "титкос", "тлгла", "тлгла$", "тлглата", "томос"
+Case "тилг(", "тилгсыяоу$(", "тилгсыяоу(", "типота", "титкос", "тлгла", "тлгла(", "тлгла$", "тлглата", "томос"
 Case "тон.еж(", "топийа", "топийес", "топийг", "топийо", "топийо$(", "топийо(", "топос$(", "топос.аявеиоу$("
 Case "тоте", "тупос", "тупос$(", "тупос.аявеиоу$(", "тупысе", "туваиос(", "тыяа", "у.сглеиа"
 Case "упаявеи(", "упаявеи.йатакоцос(", "уплея(", "упо", "упойатакоцос", "упок", "упокоцистг", "упокоцистгс$", "упокоипо"

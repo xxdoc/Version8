@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 124
+Global Const Revision = 125
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -4581,6 +4581,26 @@ End If
 A$ = n$
 IsNumber = FastSymbol(A$, ")", True)
 BLOCKkey = False
+Exit Function
+Case "ΤΜΗΜΑ(", "MODULE("
+  MakeThisSub bstack, n$
+If IsLabel(bstack, n$, s$) Then
+
+    r = SG * True
+  
+    If GetlocalSub(s$, w1) Then
+    
+    ElseIf GetlocalSubExtra(s$, w1) Then
+    
+    ElseIf Not GetSub(s$, w1) Then
+    r = False
+    End If
+    A$ = n$
+    IsNumber = FastSymbol(A$, ")", True)
+Else
+    A$ = n$
+    IsNumber = False
+End If
 Exit Function
 Case "ΒΑΣΗ(", "MDB("
 If IsStrExp(bstack, n$, s$) Then
@@ -16354,9 +16374,9 @@ If IsLabelA("", rest$, w$) = 1 Then
                 SS$ = block(rest$)
                 i = Len(rest$)
                 If Lang = 1 Then
-                        rest$ = w$ + "{'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf + "group " + w$ + " +{" + SS$ & "}" + vbCrLf + " try { call! " + w$ + "." + w$ + "}  : =" + w$ + rest$
+                        rest$ = w$ + "{'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf + "group " + w$ + " +{" + SS$ & "}" + vbCrLf + "if module(" + w$ + "." + w$ + ") then call! " + w$ + "." + w$ + vbCrLf + "=" + w$ + rest$
                 Else
-                        rest$ = w$ + "{'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf + "ομαδα " + w$ + " +{" + SS$ & "}" + vbCrLf + " try { call! " + w$ + "." + w$ + "}  : =" + w$ + rest$
+                        rest$ = w$ + "{'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf + "ομαδα " + w$ + " +{" + SS$ & "}" + vbCrLf + "if module(" + w$ + "." + w$ + ") then call! " + w$ + "." + w$ + vbCrLf + "=" + w$ + rest$
                 End If
                 GoTo classcont
          Else
@@ -30063,6 +30083,10 @@ againhere:
                                                                                         V1 = GlobalVar(w$, "")
                                                                                         End If
                                                                                         VN = Right$(what$, 3) = "$"
+                                                                                         If p - 1 + V > pppp.UpperMonoLimit Then
+                                                                                          MyEr "Invalid copy number", "Μη έγκυρος δείκτης αντιγραφής"
+                                                                                         Exit Function
+                                                                                         End If
                                                                                     For i = 0 To p - 1
                                                                                                                 With pppp
                                                                                                                 If IsObject(.item(i + V)) Then

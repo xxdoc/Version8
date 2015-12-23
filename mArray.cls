@@ -164,12 +164,16 @@ itemPtr = VarPtr(actualdata(curitem))
 End Property
 Public Property Get item(curitem As Long) As Variant
 On Error GoTo there1
+If maxitems1 >= curitem Then
 If IsObject(actualdata(curitem)) Then
 Set item = actualdata(curitem)
 Else
 item = actualdata(curitem)
 End If
 Exit Property
+Else
+''Stop
+End If
 there1:
 
 End Property
