@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 126
+Global Const Revision = 127
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -1120,7 +1120,7 @@ work = True
     
     pn& = pn& + opn&
   opn& = 0
-  rest$ = LTrim$(rest$)
+  rest$ = NLtrim$(rest$)
   If rest$ <> "" Then
     
   If Not MaybeIsSymbol(rest$, " : }\'" + vbCr) Then
@@ -2041,7 +2041,7 @@ If er = 2 Then oj = 0: j = i - 2: Exit For
 er2 = 1
 oj = j: j = 0
 If oj = 0 Then oj = i - 1: If oj < 0 Then oj = 0
-Case " "
+Case " ", ChrW(160)
 If j > 0 Then Exit For
 If er2 = 2 Then oj = 0: j = i - 1: Exit For
 er = 1
@@ -3154,7 +3154,7 @@ Dim a1 As Long
 If A$ <> "" Then
 For a1 = 1 To Len(A$) + 1
 Select Case Mid$(A$, a1, 1)
-Case " ", ","
+Case " ", ",", ChrW(160)
 If a1 > 1 Then Exit For
 Case Is = Chr(2)
 If a1 = 1 Then Exit Function
@@ -3205,7 +3205,7 @@ sng = fr - 1
     Do While sng < Len(A$)
     sng = sng + 1
     Select Case Mid$(A$, sng, 1)
-    Case " ", "+"
+    Case " ", "+", ChrW(160)
     Case "-"
     SG = -SG
     Case Else
@@ -3245,7 +3245,7 @@ Else
         Do While sng <= Len(A$)
        
         Select Case Mid$(A$, sng, 1)
-        Case " "
+        Case " ", ChrW(160)
         If Not (sg1 And Len(ex$) = 1) Then
         Exit Do
         End If
@@ -3330,7 +3330,7 @@ sng = fr - 1
     Do While sng < Len(A$)
     sng = sng + 1
     Select Case Mid$(A$, sng, 1)
-    Case " ", "+"
+    Case " ", "+", ChrW(160)
     Case "-"
     SG = -SG
     Case Else
@@ -3370,7 +3370,7 @@ Else
         Do While sng <= Len(A$)
        
         Select Case Mid$(A$, sng, 1)
-        Case " "
+        Case " ", ChrW(160)
         If Not (sg1 And Len(ex$) = 1) Then
         Exit Do
         End If
@@ -3432,7 +3432,7 @@ Dim a1 As Long
 If A$ <> "" Then
 For a1 = 1 To Len(A$) + 1
 Select Case Mid$(A$, a1, 1)
-Case " "
+Case " ", ChrW(160)
 If a1 > 1 Then Exit For
 Case Is = Chr(2)
 If a1 = 1 Then Exit Function
@@ -3458,7 +3458,7 @@ Dim D As Double
 If A$ <> "" Then
 For a1 = fr To Len(A$) + 1
 Select Case Mid$(A$, a1, 1)
-Case " "
+Case " ", ChrW(160)
 If a1 > fr Then Exit For
 Case Is = Chr(2)
 If a1 = fr Then Exit Function
@@ -3519,7 +3519,7 @@ Case "#"
     '' out
     End If
     Exit Function
-Case " ", "+"
+Case " ", "+", ChrW(160)
 Case "-"
 SG = -SG
 Case Else
@@ -3561,7 +3561,7 @@ Else
         Do While sng& <= Len(A$)
        
         Select Case Mid$(A$, sng&, 1)
-        Case " "
+        Case " ", ChrW(160)
         If Not (sg1 And Len(ex$) = 1) Then
         Exit Do
         End If
@@ -3703,7 +3703,7 @@ Case "#"
     '' out
     End If
     Exit Function
-Case " ", "+"
+Case " ", "+", ChrW(160)
 Case "-"
 SG = -SG
 Case Else
@@ -4333,7 +4333,7 @@ End If
 End If
 IsNumber = False  ''         " " + & String$(w2 - Len(n$), " ")
  ''If w2 >= Len(n$) Then a$ = " " & String$(w2 - Len(n$), " ") + n$ Else a$ = n$
-  If w2 >= Len(n$) Then A$ = LTrim$(A$) Else A$ = n$
+  If w2 >= Len(n$) Then A$ = NLtrim$(A$) Else A$ = n$
    
  If FindNameForGroup(bstack, V$) Then
  MyErMacro A$, "Unkown Property " & V$, "¢„Ì˘ÛÙÁ È‰È¸ÙÁÙ· " & V$
@@ -6909,7 +6909,7 @@ Else
         Do While sng& <= Len(A$)
        
         Select Case Mid$(A$, sng&, 1)
-        Case " "
+        Case " ", ChrW(160)
         If Not (sg1 And Len(ex$) = 1) Then
         Exit Do
         End If
@@ -7014,7 +7014,7 @@ Dim RR&, one As Boolean, c$
 r$ = ""
 If A$ = "" Then IsPureLabel = 0: Exit Function
 
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
     c$ = myUcase(Left$(A$, 1))
     If AscW(c$) < 256 Then
@@ -7118,7 +7118,7 @@ Function IsLabel(bstack As basetask, A$, rrr$, Optional nocommand As Boolean, Op
 Dim RR&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean
 r$ = ""
 If A$ = "" Then IsLabel = 0: Exit Function
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
      c$ = Left$(A$, 1) 'ANYCHAR HERE
     If AscW(c$) < 256 Then
@@ -7425,7 +7425,7 @@ Function IsLabelOnly(A$, r$) As Long
 Dim RR&, one As Boolean, c$, dot&
 r$ = ""
 If A$ = "" Then IsLabelOnly = 0: Exit Function
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
      c$ = Left$(A$, 1) 'ANYCHAR HERE
     If AscW(c$) < 256 Then
@@ -7566,7 +7566,7 @@ Function IsLabelSYMB(A$, r$) As Boolean
 Dim RR&, one As Boolean, c$
 r$ = ""
 If A$ = "" Then IsLabelSYMB = 0: Exit Function
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
      c$ = myUcase(Left$(A$, 1))
     If AscW(c$) < 256 Then
@@ -7615,7 +7615,7 @@ Function IsLabelSYMB2(A$, r$) As Boolean
 Dim RR&, one As Boolean, c$
 r$ = ""
 If A$ = "" Then IsLabelSYMB2 = 0: Exit Function
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
      c$ = Left$(A$, 1)
     If AscW(c$) < 256 Then
@@ -7671,7 +7671,7 @@ LB = 1
      c$ = Mid$(A$, LB, 1)
     If AscW(c$) < 256 Then
         Select Case c$
-        Case " "
+        Case " ", ChrW(160)
         If LB - mb > 1 Then
         LB = LB - 1
         Exit Do
@@ -7713,7 +7713,7 @@ Function IsLabelA(where$, A$, r$) As Long
 Dim RR&, one As Boolean, c$, gr As Boolean
 r$ = ""
 If A$ = "" Then IsLabelA = 0: Exit Function
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
     c$ = Left$(A$, 1)
     If AscW(c$) < 256 Then
@@ -7848,7 +7848,7 @@ Dim RR&, one As Boolean, c$, firstdot$, gr As Boolean
 r$ = ""
 If A$ = "" Then IsLabelDot = 0: Exit Function
 
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
     c$ = Left$(A$, 1)
     If AscW(c$) < 256 Then
@@ -9840,7 +9840,7 @@ End If
 
 If w = 0 Then IsString = False: Exit Function
 r$ = Mid$(A$, 2, w - 2)
-A$ = LTrim$(Mid$(A$, w + 1))
+A$ = NLtrim$(Mid$(A$, w + 1))
 IsString = True
 
 End Function
@@ -9867,7 +9867,7 @@ If q$ = "" Or Len(A$) < 2 Then ISSTRINGA = False: Exit Function
 w = InStr(2, A$, q$, vbBinaryCompare)
 If w = 0 Then ISSTRINGA = False: Exit Function
 r$ = Mid$(A$, 2, w - 2)
-bb$ = LTrim$(Mid$(A$, w + 1))
+bb$ = NLtrim$(Mid$(A$, w + 1))
 
 ISSTRINGA = True
 
@@ -9881,7 +9881,7 @@ If Left$(A$, Len(c$)) = c$ Then  ' no letters in operator so no UCASE
 n$ = Left$(Mid$(A$, Len(c$) + 1, 1) & " ", 1)
     If Not InStr(novalidstr, n$) > 0 Then
     
-    A$ = LTrim$(Mid$(A$, Len(c$) + 1))
+    A$ = NLtrim$(Mid$(A$, Len(c$) + 1))
     IsOperator = True
     End If
 End If
@@ -9898,11 +9898,11 @@ End Function
 
 Function IsSymbol(A$, c$, Optional mis As Boolean = False) As Boolean
 Dim b$
-b$ = LTrim$(A$)
+b$ = NLtrim$(A$)
   If b$ <> "" Then
 If myUcase(Left$(b$, Len(c$))) = c$ Then
 If c$ <> "{" Then
-A$ = LTrim$(Mid$(b$, Len(c$) + 1))
+A$ = NLtrim$(Mid$(b$, Len(c$) + 1))
 Else
 A$ = Mid$(b$, Len(c$) + 1)
 End If
@@ -9938,10 +9938,7 @@ Function IsSymbol3(A$, c$, Optional mis As Boolean = False) As Boolean
 ' SAME AS FASTSYMB WITHOUT
 Dim i As Long
 If A$ = "" Then Exit Function
-i = 1
-While Mid$(A$, i, 1) = " "
-    i = i + 1
-Wend
+i = MyTrimL(A$)
 If i > Len(A$) Then Exit Function
 Select Case Len(c$)
 Case 1
@@ -9989,10 +9986,7 @@ Function FastSymbol(A$, c$, Optional mis As Boolean = False) As Boolean
 
 Dim i As Long
 If A$ = "" Then Exit Function
-i = 1
-While Mid$(A$, i, 1) = " "
-    i = i + 1
-Wend
+i = MyTrimL(A$)
 If i > Len(A$) Then Exit Function
 Select Case Len(c$)
 Case 1
@@ -10035,10 +10029,7 @@ End Function
 Function MaybeIsSymbol(A$, c$) As Boolean
 Dim i As Long
 If A$ = "" Then Exit Function
-i = 1
-While Mid$(A$, i, 1) = " "
-    i = i + 1
-Wend
+i = MyTrimL(A$)
 If i > Len(A$) Then Exit Function
 MaybeIsSymbol = InStr(c$, Mid$(A$, i, 1)) > 0
 
@@ -10494,7 +10485,7 @@ PROCESSCOMMAND:
             Select Case w$
         Dim x1 As Long, y1 As Long
         Dim x2 As Long, y2 As Long, SBR$, nd&
-            Case " "
+            Case " ", ChrW(160)
             ' nothing
           '  SSS = Len(B$)
             Case "SLOW", "¡—√¡"
@@ -12152,7 +12143,7 @@ startwithgroup:
         If FastSymbol(b$, "{") Then
         SS$ = block(b$) + vbCrLf & "thread this erase"
         sp = GetTaskId + 20000
-        b$ = LTrim$(Mid$(b$, 2))
+        b$ = NLtrim$(Mid$(b$, 2))
             Set bs = New basetask
             bs.reflimit = bstack.reflimit
                         Set bs.Parent = bstack
@@ -12180,7 +12171,7 @@ startwithgroup:
         Execute = 0
         If FastSymbol(b$, "{") Then
         SS$ = block(b$)
-        b$ = LTrim$(Mid$(b$, 2))  ' cut the code...
+        b$ = NLtrim$(Mid$(b$, 2))  ' cut the code...
           If IsLabelSymbolNew(b$, "Ÿ”", "AS", Lang) Then
           ' search for variable name only
             If Abs(IsLabel(bstack, b$, w$)) = 1 Then
@@ -12221,7 +12212,7 @@ startwithgroup:
         V = Len(b$)
                   SS$ = block(b$) + "}"
                   TraceStore bstack, x1, b$, 1, y1
-                  b$ = LTrim$(Mid$(b$, 2))
+                  b$ = NLtrim$(Mid$(b$, 2))
                   ok = False
                       sss = Len(b$)
                     ec$ = SS$
@@ -12318,7 +12309,7 @@ startwithgroup:
                 If p = 0 Then
                  If FastSymbol(b$, "{") Then
                  w$ = block(b$)
-                 b$ = LTrim$(b$)
+                 b$ = NLtrim$(b$)
            If FastSymbol(b$, "}") Then
                 b$ = LTrim(b$)
                  If b$ = "" Then Exit Function
@@ -12337,7 +12328,7 @@ startwithgroup:
                  TraceStore bstack, x1, b$, 1, y1
                  
                  ec$ = SS$
-                 b$ = LTrim$(Mid$(b$, 2))
+                 b$ = NLtrim$(Mid$(b$, 2))
                  sss = Len(b$)
                  bb$ = w$
                          Execute = 1
@@ -12382,7 +12373,7 @@ startwithgroup:
               If p <= 0 Then
                  If FastSymbol(b$, "{") Then
                  w$ = block(b$)
-                 b$ = LTrim$(Mid$(b$, 2))
+                 b$ = NLtrim$(Mid$(b$, 2))
                  sss = Len(b$)
                  Else
                  Exit Do
@@ -12391,7 +12382,7 @@ startwithgroup:
                  If FastSymbol(b$, "{") Then
                  SS$ = block(b$) + "}"
                  ec$ = SS$
-                 b$ = LTrim$(Mid$(b$, 2))
+                 b$ = NLtrim$(Mid$(b$, 2))
                  sss = Len(b$)
       
                          Execute = 1
@@ -12499,7 +12490,7 @@ If p > uintnew(timeGetTime) Then
                 If (Not jump) Or IFCTRL = 2 Then
                  If FastSymbol(b$, "{") Then
                 w$ = block(b$)
-                b$ = LTrim$(Mid$(b$, 2))
+                b$ = NLtrim$(Mid$(b$, 2))
                 Else
                 SetNextLine b$
                 lbl = True
@@ -12533,7 +12524,7 @@ If p > uintnew(timeGetTime) Then
             
        TraceStore bstack, x1, b$, 1
          
-         b$ = LTrim$(Mid$(b$, 2))
+         b$ = NLtrim$(Mid$(b$, 2))
                      
                      Call executeblock(Execute, bstack, SS$, Once, ok)
           TraceRestore bstack, x1
@@ -12558,7 +12549,7 @@ If p > uintnew(timeGetTime) Then
          End If
          Execute = 1
          SS$ = "{" & block(b$) & "}"
-          b$ = LTrim$(Mid$(b$, 2))
+          b$ = NLtrim$(Mid$(b$, 2))
                      Call executeblock(Execute, bstack, SS$, Once, ok)
      var(V) = Execute = 1
                  
@@ -12584,7 +12575,7 @@ If p > uintnew(timeGetTime) Then
          b$ = Mid$(b$, IFCTRL)
                    If FastSymbol(b$, "{") Then
                w$ = block(b$)
-             b$ = LTrim$(Mid$(b$, 2))
+             b$ = NLtrim$(Mid$(b$, 2))
               Else
                 SetNextLine b$
                 lbl = True
@@ -12604,7 +12595,7 @@ If p > uintnew(timeGetTime) Then
                              If jump Then
                     If FastSymbol(b$, "{") Then
                     w$ = block(b$)
-                    b$ = LTrim$(Mid$(b$, 2))
+                    b$ = NLtrim$(Mid$(b$, 2))
                     
                     Else
                     SetNextLine b$
@@ -12621,7 +12612,7 @@ If p > uintnew(timeGetTime) Then
                 If Not jump Then      ' JUMP FALSE SKIP ELSE
                 If FastSymbol(b$, "{") Then
                 w$ = block(b$)
-                b$ = LTrim$(Mid$(b$, 2))
+                b$ = NLtrim$(Mid$(b$, 2))
                 Else
                  SetNextLine b$
                 lbl = True
@@ -12668,7 +12659,7 @@ If p > uintnew(timeGetTime) Then
                     If FastSymbol(b$, "{") Then
                      If Once = True Then Execute = 0: Exit Function
                     w$ = block(b$)
-                    b$ = LTrim$(Mid$(b$, 2))
+                    b$ = NLtrim$(Mid$(b$, 2))
                     
                     Else
                     If Once Then
@@ -12698,7 +12689,7 @@ If p > uintnew(timeGetTime) Then
                 If FastSymbol(b$, "{") Then
                  If Once = True Then Execute = 0: Exit Function
                 w$ = block(b$)
-                b$ = LTrim$(Mid$(b$, 2))
+                b$ = NLtrim$(Mid$(b$, 2))
                 Else
                  SetNextLine b$
                 lbl = True
@@ -12989,7 +12980,7 @@ If p > uintnew(timeGetTime) Then
                                     If FastSymbol(b$, "{") Then
                                            If slct >= 0 Then
                                                     SS$ = block(b$) + "}"
-                                                    b$ = LTrim$(Mid$(b$, 2))
+                                                    b$ = NLtrim$(Mid$(b$, 2))
                                             Else
                                                     V = Len(b$)
                                                     SS$ = block(b$)
@@ -13052,7 +13043,7 @@ If p > uintnew(timeGetTime) Then
                                     If FastSymbol(b$, "{") Then
                                     V = Len(b$)
                                         SS$ = block(b$)
-                                        b$ = LTrim$(Mid$(b$, 2))
+                                        b$ = NLtrim$(Mid$(b$, 2))
                                         If slct > 0 Then
                                                     V = Len(b$)
                                                     DUM = False
@@ -18905,7 +18896,7 @@ Exit Function
 
 Case "Õ«Ã¡", "THREAD"  ' ************************************************************************* THREAD CONSTRUCT AND HANDLE FROM OTHER POINT
       If FastSymbol(rest$, "{") Then
-        frm$ = LTrim$(block(rest$))
+        frm$ = NLtrim$(block(rest$))
         If FastSymbol(rest$, "}") Then
                 par = False
                 If IsLabelSymbolNew(rest$, "Ÿ”", "AS", Lang) Then
@@ -19030,7 +19021,7 @@ If ML <> 1 Then
 
 
     pa$ = ExtractPath(SS$)
-    para$ = Trim$(".gsb " & Mid$(SS$, Len(ExtractPath(SS$) + ExtractName(SS$)) + 1))
+    para$ = RTrim$(".gsb " & Mid$(SS$, Len(ExtractPath(SS$) + ExtractName(SS$)) + 1))
 If pa$ = "" Then pa$ = mcd
 frm$ = ExtractNameOnly(SS$)
 
@@ -20235,7 +20226,7 @@ If FastSymbol(rest$, "!") Then
                            
                      End If
                      Form1.ShadowMarks = True
-                     ''rest$ = LTrim$(rest$)
+                     ''rest$ = nltrim$(rest$)
 If y < 1 And x1 = 0 Then y = 1
                      If GetVar(bstack, what$, i) Then
                              var(i) = iText(bstack, var(i), (x), (y), frm$, x1)
@@ -25045,7 +25036,7 @@ Exit Function
 End If
 End If
 Case "@@@"
-MyShell = Shell(Trim$("explorer " & ww$), way)
+MyShell = Shell(RTrim$("explorer " & ww$), way)
 Case Else ' its a document
 PP$ = ReplaceStr("file:", "", PP$)
 frm$ = PCall(PP$ & exe$)
@@ -25660,7 +25651,7 @@ s$ = ""
 ok = True
 For i = 1 To Len(st$)
 Select Case Mid$(st$, i, 1)
-Case " ", ","
+Case " ", ",", ChrW(160)
 
 Case Is = Chr(34)
 j = InStr(i + 1, st$, Chr(34), vbBinaryCompare)
@@ -26239,7 +26230,7 @@ Do
 there100:
 Do
 
-If Left$(LTrim$(rest$) + "00", 2) = vbCrLf Or MaybeIsSymbol(rest$, "\'") Then
+If Left$(NLtrim$(rest$) + "00", 2) = vbCrLf Or MaybeIsSymbol(rest$, "\'") Then
 SetNextLine rest$
 lcl = False
 Else
@@ -27814,10 +27805,10 @@ With myobject
                 End If
                 
        
-                sss$ = LTrim$(sss$) + " "
+                sss$ = NLtrim$(sss$) + " "
                 While Asc(sss$) = 13
                     SetNextLine sss$
-                    sss$ = LTrim$(sss$) + " "
+                    sss$ = NLtrim$(sss$) + " "
                 Wend
                     If bstack.UseGroupname <> "" Then
                                 HERE$ = ""
@@ -28001,10 +27992,10 @@ End If
                 End If
                 
        
-                sss$ = LTrim$(sss$) + " "
+                sss$ = NLtrim$(sss$) + " "
                 While Asc(sss$) = 13
                     SetNextLine sss$
-                    sss$ = LTrim$(sss$) + " "
+                    sss$ = NLtrim$(sss$) + " "
                 Wend
                         If bstack.UseGroupname <> "" Then
                     HERE$ = ""
@@ -28404,7 +28395,7 @@ FastSymbol rest$, ","
 If s$ <> "" Then
 
 If FastSymbol(rest$, "+") Then pa$ = "" Else pa$ = "new"
-If FastSymbol(rest$, "{") Then frm$ = LTrim$(blockString(rest$))
+If FastSymbol(rest$, "{") Then frm$ = NLtrim$(blockString(rest$))
 If frm$ <> "" Then
 If what$ = "HTML" Then
 If ExtractType(s$) = "" Then s$ = s$ & ".html"
@@ -30247,7 +30238,7 @@ Do
         ec$ = w$
         SS$ = GetStrUntil(" ", ec$)
         End If
-    ec$ = LTrim$(ec$)
+    ec$ = NLtrim$(ec$)
     b$ = ReplaceStr2(SS$, ec$, b$)
 While Left$(b$, 2) = vbCrLf
     b$ = Mid$(b$, 3)

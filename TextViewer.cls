@@ -1935,7 +1935,7 @@ again2:
 Do
 again3:
   pos1 = 1
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
   DROP$ = aheadstatus(A$, False, pos1)
   
   If pos1 > 1 Or DROP$ = "S" Then
@@ -2069,7 +2069,7 @@ Dim RR&, one As Boolean, c$, firstdot$, gr As Boolean
 r$ = ""
 If A$ = "" Then IsLabelDot = 0: Exit Function
 
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
     c$ = Left$(A$, 1)
     If AscW(c$) < 256 Then
@@ -2203,7 +2203,7 @@ Function IsLabelOnly(A$, r$) As Long
 Dim RR&, one As Boolean, c$, dot&, extra&
 r$ = ""
 If A$ = "" Then IsLabelOnly = 0: Exit Function
-A$ = LTrim$(A$)
+A$ = NLtrim$(A$)
     Do While Len(A$) > 0
      c$ = Left$(A$, 1) 'ANYCHAR HERE
     If AscW(c$) < 256 Then
@@ -3054,7 +3054,7 @@ If Not skip Then c$ = Trim(c$)
 If e$ <> "" Then If Val(e$) > Val(c$) + 10 Then skip = False
 If (Val(c$) Mod 10 = 0) And Not skip Then
 TR$ = String$(Len(Trim$(c$)), "0")
-A$ = Format((Val(c$) + 10), TR$) + Space$(Len(CurrentParagraph) - Len(c$) - Len(LTrim$(b$)))
+A$ = Format((Val(c$) + 10), TR$) + Space$(Len(CurrentParagraph) - Len(c$) - Len(NLtrim$(b$)))
 Else
 If e$ <> "" And CStr((Val(c$) + 1)) = Trim$(e$) Then
 maxw = glistN.UserControlTextWidth(c$)
@@ -3066,7 +3066,7 @@ c$ = ""
 
 Else
 TR$ = String$(Len(Trim$(c$)), "0")
-A$ = Format((Val(c$) + 1), TR$) + Space$(Len(CurrentParagraph) - Len(Trim$(c$)) - Len(LTrim$(b$)))
+A$ = Format((Val(c$) + 1), TR$) + Space$(Len(CurrentParagraph) - Len(Trim$(c$)) - Len(NLtrim$(b$)))
 End If
 End If
 Else
@@ -3370,7 +3370,7 @@ Do While pos <= Len(A$)
             b$ = b$ & part$
             End If
             part$ = "o"
-        Case " "
+        Case " ", ChrW(160)
         word$ = ""
             If part$ <> "" Then
             b$ = b$ & part$

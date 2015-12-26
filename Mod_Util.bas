@@ -1122,8 +1122,8 @@ Dim PX As Long, PY As Long, r As Long, p$, c$, LEAVEME As Boolean, nr As RECT, n
 Dim p2 As Long, mUAddPixelsTop As Long
 Dim pixX As Long, pixY As Long
 Dim rTop As Long, rBottom As Long
-Dim lenw&, realR&, realstop&, ctype As Long, WHAT1$
-ctype = CT_CTYPE3
+Dim lenw&, realR&, realstop&, r1 As Long, WHAT1$
+
 Dim A() As Byte
 '' LEAVEME = False -  NOT NEEDED
 With mybasket
@@ -1146,7 +1146,7 @@ With mybasket
      ReDim A(Len(WHAT1$) * 2 + 20)
      Dim skip As Boolean
      
-     skip = GetStringTypeExW(&HB, ctype, StrPtr(WHAT1$), -1, A(0)) = 0 Or IsWine
+     skip = GetStringTypeExW(&HB, 1, StrPtr(WHAT1$), Len(WHAT1$), A(0)) = 0  ' Or IsWine
         Do While (lenw& - r) >= .mx - PX And (.mx - PX) > 0
         
         '' p$ = Left$(what, .mx - PX)
@@ -1160,7 +1160,7 @@ With mybasket
         If ddd.FontTransparent = False Then FillBack ddd.hDC, nr2, .Paper
         ddd.CurrentX = PX * .Xt
         ddd.CurrentY = PY * .Yt + .uMineLineSpace
-     
+     r1 = .mx - PX - 1 + r
         Do
             If ONELINE And NoCR And PX > .mx Then what = "": Exit Do
             c$ = Mid$(WHAT1$, r + 1, 1)
@@ -1168,21 +1168,18 @@ With mybasket
             If c$ >= " " Then
             
                If Not skip Then
-             If A(r * 2 + 3) = 0 Then
-                     Do
-                         If A(r * 2 + 2) < 8 Then
-                            
+              If A(r * 2 + 2) = 0 And A(r * 2 + 3) <> 0 Then
+                          Do
+                        
                             c$ = c$ + Mid$(WHAT1$, r + 2, 1)
                              r = r + 1
- 
-                           
-                         Else
-                             Exit Do
-                         End If
-                     Loop Until A(r * 2 + 3) <> 0
+                    If r >= r1 Then Exit Do
+                    
+                     Loop Until A(r * 2 + 2) <> 0 Or A(r * 2 + 3) = 0
                  End If
+         
                  End If
-                 DrawText ddd.hDC, StrPtr(c$), -1, nr, DT_SINGLELINE Or DT_CENTER Or DT_NOPREFIX
+                      DrawText ddd.hDC, StrPtr(c$), -1, nr, DT_SINGLELINE Or DT_CENTER Or DT_NOPREFIX
             End If
            r = r + 1
             With nr
@@ -1261,23 +1258,20 @@ realR& = 0
        ddd.CurrentX = PX * .Xt
     
     ddd.CurrentY = PY * .Yt + .uMineLineSpace
-
-    For r = r To Len(what$) - 1
+r1 = RealLen(what$) - 1
+    For r = r To r1
         c$ = Mid$(WHAT1$, r + 1, 1)
         If c$ >= " " Then
+       ' skip = True
              If Not skip Then
-             If A(r * 2 + 3) = 0 Then
-                     Do
-                         If A(r * 2 + 2) < 8 Then
-                            
-                            c$ = c$ + Mid$(WHAT1$, r + 2, 1)
-                             r = r + 1
-                         Else
-                             Exit Do
-                         End If
-                     Loop Until A(r * 2 + 3) <> 0
-                 End If
-                 End If
+           If A(r * 2 + 2) = 0 And A(r * 2 + 3) <> 0 Then
+            Do
+                c$ = c$ + Mid$(WHAT1$, r + 2, 1)
+                r = r + 1
+                If r >= r1 Then Exit Do
+            Loop Until A(r * 2 + 2) <> 0 Or A(r * 2 + 3) = 0
+            End If
+         End If
                
       ddd.CurrentX = ddd.CurrentX + .Xt
         End If
@@ -4105,16 +4099,16 @@ End With
 End Sub
 Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, ByVal yy1&, ByVal yy2&, ByVal hor As Boolean, ByVal all As Boolean)
     Dim Redval&, Greenval&, Blueval&
-    Dim R1&, g1&, b1&, sr&, SG&, SB&
+    Dim r1&, g1&, b1&, sr&, SG&, SB&
     f& = f& Mod &H1000000
     t& = t& Mod &H1000000
     Redval& = f& And &H10000FF
     Greenval& = (f& And &H100FF00) / &H100
     Blueval& = (f& And &HFF0000) / &H10000
-    R1& = t& And &H10000FF
+    r1& = t& And &H10000FF
     g1& = (t& And &H100FF00) / &H100
     b1& = (t& And &HFF0000) / &H10000
-    sr& = (R1& - Redval&) * 1000 / 127
+    sr& = (r1& - Redval&) * 1000 / 127
     SG& = (g1& - Greenval&) * 1000 / 127
     SB& = (b1& - Blueval&) * 1000 / 127
     Redval& = Redval& * 1000
@@ -5466,23 +5460,44 @@ a112:
 
 
 End Sub
-Public Function RealLen(s$) As Long
+Public Function RealLenOld(s$) As Long
 Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long
 If IsWine Then
-RealLen = Len(s$)
+RealLenOld = Len(s$)
 Else
 ctype = CT_CTYPE3
 ll = Len(s$)
    If ll Then
       ReDim A(Len(s$) * 2 + 20)
-      If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, A(0)) <> 0 Then
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), A(0)) <> 0 Then
       For i = 1 To Len(s$) * 2 - 1 Step 2
-      If A(i - 1) > 0 Then If A(i) = 0 Then If A(i - 1) < 8 Then ll = ll - 1
+      If A(i - 1) > 0 Then
+      If A(i) = 0 Then If A(i - 1) < 8 Then ll = ll - 1
+      ElseIf A(i) = 0 Then
+      ll = ll - 1
+      End If
+      
+          Next i
+      End If
+   End If
+RealLenOld = ll
+End If
+End Function
+Public Function RealLen(s$) As Long
+Dim A() As Byte, s1$, i As Long, ll As Long
+ll = Len(s$)
+   If ll Then
+      ReDim A(Len(s$) * 2 + 20)
+      If GetStringTypeExW(&HB, 1, StrPtr(s$), Len(s$), A(0)) <> 0 Then
+      
+      For i = 1 To Len(s$) * 2 - 1 Step 2
+
+        If A(i - 1) = 0 Then If A(i) <> 0 Then ll = ll - 1
+      
           Next i
       End If
    End If
 RealLen = ll
-End If
 End Function
 Public Function PopOne(s$) As String
 Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long, MM As Long

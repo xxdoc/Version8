@@ -8,6 +8,7 @@ Private Const SM_CXSCREEN = 0
 Private Const SM_CYSCREEN = 1
 Private Const LOGPIXELSX = 88
 Private Const LOGPIXELSY = 90
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, RetVal As Integer)
 
 Public MediaPlayer1 As New MovieModule
 Public MediaBack1 As New MovieModule
@@ -3113,6 +3114,42 @@ Public Function ScrY() As Long
 ScrY = GetSystemMetrics(SM_CYSCREEN) * dv15
 End Function
 
+Public Function MyTrimL(s$) As Long
+Dim i&, l As Long
+Static p2 As Long, P1 As Integer, p4 As Long
+  l = Len(s): If l = 0 Then MyTrimL = 1: Exit Function
+  p2 = StrPtr(s): l = l - 1
+  p4 = p2 + l * 2
+  For i = p2 To p4 Step 2
+  GetMem2 i, P1
+  Select Case P1
+    Case 32, 160
+    Case Else
+     MyTrimL = (i - p2) \ 2 + 1
+   Exit Function
+  End Select
+  Next i
+ MyTrimL = l + 2
+End Function
+Public Function excludespace(s$) As Long
+Dim i&, l As Long
+Static p2 As Long, P1 As Integer, p4 As Long
+  l = Len(s): If l = 0 Then Exit Function
+  p2 = StrPtr(s): l = l - 1
+  p4 = p2 + l * 2
+  For i = p2 To p4 Step 2
+  GetMem2 i, P1
+  Select Case P1
+    Case 32, 160
+    Case Else
+     excludespace = (i - p2) \ 2
+   Exit Function
+  End Select
+  Next i
 
+End Function
 
+Public Function NLtrim$(A$)
+If Len(A$) > 0 Then NLtrim$ = Mid$(A$, MyTrimL(A$))
+End Function
 
