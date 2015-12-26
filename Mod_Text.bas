@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 125
+Global Const Revision = 126
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -25988,10 +25988,16 @@ SleepWaitEdit2 1
 TaskMaster.RestEnd
 End Sub
 Function mybreakkey() As Boolean
-If KeyPressedLong(&H13) = 1 Then
+If RRCOUNTER = 1 Then
+    If KeyPressedLong(&H13) = 1 Then
 k1 = 0
 mybreakkey = Form1.mybreak1()
 End If
+RRCOUNTER = 2
+End If
+               
+
+
 End Function
 Sub ResetBreak()
 Do While KeyPressedLong(&H13) <> 0

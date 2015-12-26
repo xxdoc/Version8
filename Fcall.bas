@@ -104,21 +104,21 @@ Dim i As Long, V(), HRes As Long
 End Function
 
 Public Function GetFuncPtr(sDll As String, sFunc As String) As Long
-Static hLib As Long, sLib As String
+Static hlib As Long, sLib As String
   If sLib <> sDll Then 'just a bit of caching, to make resolving libHdls faster
     sLib = sDll
     On Error Resume Next
-      hLib = 0
-      hLib = LibHdls(sLib)
+      hlib = 0
+      hlib = LibHdls(sLib)
     On Error GoTo 0
     
-    If hLib = 0 Then
-      hLib = LoadLibrary(sLib)
-      If hLib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
-      LibHdls.Add hLib, sLib '<- cache it under the dll-name for the next call
+    If hlib = 0 Then
+      hlib = LoadLibrary(sLib)
+      If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
+      LibHdls.Add hlib, sLib '<- cache it under the dll-name for the next call
     End If
   End If
-  GetFuncPtr = GetProcAddress(hLib, sFunc)
+  GetFuncPtr = GetProcAddress(hlib, sFunc)
   If GetFuncPtr = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
 End Function
 
@@ -139,4 +139,17 @@ Dim LibHdl
   For Each LibHdl In LibHdls: FreeLibrary LibHdl: Next
   Set LibHdls = Nothing
 End Sub
-
+Function IsWine()
+Static www As Boolean, wwb As Boolean, hlib As Long
+If www Then
+Else
+Err.clear
+On Error Resume Next
+hlib = LoadLibrary("ntdll")
+wwb = GetProcAddress(hlib, "wine_get_version") <> 0
+If hlib <> 0 Then FreeLibrary hlib
+If Err.Number > 0 Then wwb = False
+www = True
+End If
+IsWine = wwb
+End Function

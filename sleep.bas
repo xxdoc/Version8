@@ -92,7 +92,7 @@ TaskMaster.rest
                  If some.Visible Then some.refresh
                   End If
                   
-DoEvents
+ DoEvents
    TaskMaster.RestEnd
    
 End Sub
@@ -108,7 +108,7 @@ TaskMaster.rest
             k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
          If some.Visible Then some.refresh
                   
-                  DoEvents
+          DoEvents
                   End If
                   
 
@@ -150,13 +150,18 @@ Do
 Loop Until A > b.MARKTWO
 End Sub
 Public Sub SleepWaitEdit(lNumberOf10ThmiliSeconds As Long)
-
-If Forms.Count < 3 Then Sleep 1: DoEvents: Exit Sub
+    
+If Forms.Count < 3 Then
+Sleep 1
+DoEvents
+Exit Sub
+End If
 If TaskMaster Is Nothing Then
 Set TaskMaster = New TaskMaster
 TaskMaster.Interval = 5
 End If
 TaskMaster.rest
+
     Dim ft As FILETIME
     Dim lBusy As Long
     Dim lRet As Long
@@ -214,7 +219,7 @@ TaskMaster.rest
             
             If RRCOUNTER = 0 Then
             k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
-                  DoEvents
+     DoEvents
                   End If
   Loop Until lBusy = WAIT_OBJECT_0
     ' Close the handles when you are done with them.
@@ -224,7 +229,11 @@ End Sub
         
 Public Sub SleepWaitEdit2(lNumberOf10ThmiliSeconds As Long)
 
-If Forms.Count < 3 Then Sleep 1: DoEvents: Exit Sub
+If Forms.Count < 3 Then
+Sleep 1
+DoEvents
+Exit Sub
+End If
 If TaskMaster Is Nothing Then
 Set TaskMaster = New TaskMaster
 TaskMaster.Interval = 5
@@ -283,7 +292,7 @@ TaskMaster.rest
         lBusy = MsgWaitForMultipleObjects(1, hTimer, False, _
             INFINITE, QS_ALLINPUT&)
  
-                  DoEvents
+                 DoEvents
 
   Loop Until lBusy = WAIT_OBJECT_0
     ' Close the handles when you are done with them.

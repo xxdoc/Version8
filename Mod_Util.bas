@@ -1145,7 +1145,8 @@ With mybasket
     WHAT1$ = what + " "
      ReDim A(Len(WHAT1$) * 2 + 20)
      Dim skip As Boolean
-     skip = GetStringTypeExW(&HB, ctype, StrPtr(WHAT1$), -1, A(0)) = 0
+     
+     skip = GetStringTypeExW(&HB, ctype, StrPtr(WHAT1$), -1, A(0)) = 0 Or IsWine
         Do While (lenw& - r) >= .mx - PX And (.mx - PX) > 0
         
         '' p$ = Left$(what, .mx - PX)
@@ -1166,8 +1167,6 @@ With mybasket
       
             If c$ >= " " Then
             
-            '    realstop& = AscW(Mid$(WHAT1$, r + 2, 1))
-               ' If (realstop& And &H300) = &H300 Then
                If Not skip Then
              If A(r * 2 + 3) = 0 Then
                      Do
@@ -1175,7 +1174,7 @@ With mybasket
                             
                             c$ = c$ + Mid$(WHAT1$, r + 2, 1)
                              r = r + 1
-                           '  lenw& = lenw& - 1
+ 
                            
                          Else
                              Exit Do
@@ -1202,7 +1201,7 @@ With mybasket
         
          Loop
         .curpos = PX + realR
-       '' what = Mid$(what, r + 1)
+ 
         If Not ONELINE Then PX = 0
         
         If NoCR Then Exit Sub Else PY = PY + 1
@@ -1233,7 +1232,7 @@ With mybasket
                .Left = PX * pixX
                .Right = .Left + pixX
                .top = PY * pixY + mUAddPixelsTop
-               .Bottom = .top + pixY - p2 'mUAddPixelsTop * 2
+               .Bottom = .top + pixY - p2
             End With
             rTop = PY * pixY
             rBottom = rTop + pixY - plusone
@@ -1273,8 +1272,6 @@ realR& = 0
                             
                             c$ = c$ + Mid$(WHAT1$, r + 2, 1)
                              r = r + 1
-                           '  lenw& = lenw& - 1
-                           
                          Else
                              Exit Do
                          End If
@@ -1299,7 +1296,6 @@ realR& = 0
   .curpos = PX
  .currow = PY
   End With
-            
 End Sub
 
 Public Function nTextY(basestack As basetask, ByVal what As String, ByVal Font As String, ByVal Size As Single, Optional ByVal degree As Double = 0#)
@@ -1945,7 +1941,7 @@ res = nohi - Hi
 wi = ddd.CurrentX
     If collectit Then
     Dim aa As Document
-   bstack.Soros.PushStr mdoc.textDoc
+   bstack.soros.PushStr mdoc.textDoc
         Set mdoc = Nothing
                  End If
 ''GetXYb ddd, mybasket, .curpos, .currow
@@ -1964,7 +1960,7 @@ ms.PushVal CDbl(1)
 Else
 ms.PushVal CDbl(0)
 End If
-basestack.Soros.MergeTop ms
+basestack.soros.MergeTop ms
 End Sub
 Public Sub nPlain(basestack As basetask, ByVal what As String, ByVal Font As String, ByVal Size As Single, Optional ByVal degree As Double = 0#, Optional ByVal JUSTIFY As Long = 0, Optional ByVal qual As Boolean = True, Optional ByVal ExtraWidth As Long = 0)
 Dim ddd As Object
@@ -5026,12 +5022,11 @@ Else
         If kForm Then
         kForm = False
             TaskMaster.rest
-            DoEvents
+     DoEvents
             TaskMaster.RestEnd
         Else
         
      ''  If Not extreme Then If Not obj Is Nothing Then If obj.Visible Then GdiFlush: obj.refresh
-
             DoEvents
         End If
       
@@ -5473,6 +5468,9 @@ a112:
 End Sub
 Public Function RealLen(s$) As Long
 Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long
+If IsWine Then
+RealLen = Len(s$)
+Else
 ctype = CT_CTYPE3
 ll = Len(s$)
    If ll Then
@@ -5484,6 +5482,7 @@ ll = Len(s$)
       End If
    End If
 RealLen = ll
+End If
 End Function
 Public Function PopOne(s$) As String
 Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long, MM As Long
