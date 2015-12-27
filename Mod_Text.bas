@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 127
+Global Const Revision = 128
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -12571,7 +12571,7 @@ If p > uintnew(timeGetTime) Then
          If (Not jump) Or IFCTRL = 2 Then
          ' LOOK AHEAD...DO NOT PLAY THE LOGICAL EXPRESSION
          IFCTRL = 1
-         SS$ = aheadstatus(b$, , IFCTRL)
+         SS$ = aheadstatus(b$, False, IFCTRL)
          b$ = Mid$(b$, IFCTRL)
                    If FastSymbol(b$, "{") Then
                w$ = block(b$)

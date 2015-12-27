@@ -3116,7 +3116,7 @@ End Function
 
 Public Function MyTrimL(s$) As Long
 Dim i&, l As Long
-Static p2 As Long, P1 As Integer, p4 As Long
+Dim p2 As Long, P1 As Integer, p4 As Long
   l = Len(s): If l = 0 Then MyTrimL = 1: Exit Function
   p2 = StrPtr(s): l = l - 1
   p4 = p2 + l * 2
@@ -3133,7 +3133,7 @@ Static p2 As Long, P1 As Integer, p4 As Long
 End Function
 Public Function excludespace(s$) As Long
 Dim i&, l As Long
-Static p2 As Long, P1 As Integer, p4 As Long
+Dim p2 As Long, P1 As Integer, p4 As Long
   l = Len(s): If l = 0 Then Exit Function
   p2 = StrPtr(s): l = l - 1
   p4 = p2 + l * 2

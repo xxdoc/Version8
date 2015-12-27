@@ -1122,7 +1122,7 @@ Dim PX As Long, PY As Long, r As Long, p$, c$, LEAVEME As Boolean, nr As RECT, n
 Dim p2 As Long, mUAddPixelsTop As Long
 Dim pixX As Long, pixY As Long
 Dim rTop As Long, rBottom As Long
-Dim lenw&, realR&, realstop&, r1 As Long, WHAT1$
+Dim lenw&, realR&, realstop&, R1 As Long, WHAT1$
 
 Dim A() As Byte
 '' LEAVEME = False -  NOT NEEDED
@@ -1160,7 +1160,7 @@ With mybasket
         If ddd.FontTransparent = False Then FillBack ddd.hDC, nr2, .Paper
         ddd.CurrentX = PX * .Xt
         ddd.CurrentY = PY * .Yt + .uMineLineSpace
-     r1 = .mx - PX - 1 + r
+     R1 = .mx - PX - 1 + r
         Do
             If ONELINE And NoCR And PX > .mx Then what = "": Exit Do
             c$ = Mid$(WHAT1$, r + 1, 1)
@@ -1173,7 +1173,7 @@ With mybasket
                         
                             c$ = c$ + Mid$(WHAT1$, r + 2, 1)
                              r = r + 1
-                    If r >= r1 Then Exit Do
+                    If r >= R1 Then Exit Do
                     
                      Loop Until A(r * 2 + 2) <> 0 Or A(r * 2 + 3) = 0
                  End If
@@ -1258,8 +1258,8 @@ realR& = 0
        ddd.CurrentX = PX * .Xt
     
     ddd.CurrentY = PY * .Yt + .uMineLineSpace
-r1 = RealLen(what$) - 1
-    For r = r To r1
+R1 = RealLen(what$) - 1
+    For r = r To R1
         c$ = Mid$(WHAT1$, r + 1, 1)
         If c$ >= " " Then
        ' skip = True
@@ -1268,7 +1268,7 @@ r1 = RealLen(what$) - 1
             Do
                 c$ = c$ + Mid$(WHAT1$, r + 2, 1)
                 r = r + 1
-                If r >= r1 Then Exit Do
+                If r >= R1 Then Exit Do
             Loop Until A(r * 2 + 2) <> 0 Or A(r * 2 + 3) = 0
             End If
          End If
@@ -4099,16 +4099,16 @@ End With
 End Sub
 Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, ByVal yy1&, ByVal yy2&, ByVal hor As Boolean, ByVal all As Boolean)
     Dim Redval&, Greenval&, Blueval&
-    Dim r1&, g1&, b1&, sr&, SG&, SB&
+    Dim R1&, g1&, b1&, sr&, SG&, SB&
     f& = f& Mod &H1000000
     t& = t& Mod &H1000000
     Redval& = f& And &H10000FF
     Greenval& = (f& And &H100FF00) / &H100
     Blueval& = (f& And &HFF0000) / &H10000
-    r1& = t& And &H10000FF
+    R1& = t& And &H10000FF
     g1& = (t& And &H100FF00) / &H100
     b1& = (t& And &HFF0000) / &H10000
-    sr& = (r1& - Redval&) * 1000 / 127
+    sr& = (R1& - Redval&) * 1000 / 127
     SG& = (g1& - Greenval&) * 1000 / 127
     SB& = (b1& - Blueval&) * 1000 / 127
     Redval& = Redval& * 1000
@@ -4781,7 +4781,7 @@ Do While pos <= Len(A$)
             b$ = b$ & part$
             End If
             part$ = "o"
-        Case " "
+        Case " ", ChrW(160)
             If part$ <> "" Then
             b$ = b$ & part$
             part$ = ""
@@ -5565,5 +5565,4 @@ ctype = CT_CTYPE3
       
    End If
 End Sub
-
 
