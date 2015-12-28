@@ -46,6 +46,7 @@ Public Sub MakeTopItemBack(where As Long)
 'we pick an item from top to any other place
 Dim aa As VarItem
 On Error Resume Next
+If where > 1 Then
 Set aa = mstack.item(1)
 mstack.remove 1
 If mstack.Count = 0 Then
@@ -53,17 +54,20 @@ mstack.Add aa
 Else
 mstack.Add aa, , , where - 1
 End If
+End If
 End Sub
 Public Sub MakeTopItem(where As Long)
 'we pick an item and to the top
 Dim aa As VarItem
 On Error Resume Next
+If where > 1 Then
 Set aa = mstack.item(where)
 mstack.remove where
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
 mstack.Add aa, , 1
+End If
 End If
 End Sub
 Public Sub Copy2TopItem(where As Long)

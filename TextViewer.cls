@@ -3371,6 +3371,22 @@ Do While pos <= Len(A$)
             End If
             part$ = "o"
         Case " ", ChrW(160)
+          If word$ <> "" Then
+  Select Case myUcase(word$, True)
+  Case "THEN", "ELSE", "тоте"
+  pos = pos - 4
+  Exit Do
+  Case "ELSE.IF"
+  pos = pos - 7
+  Exit Do
+  Case "аккиыс"
+  pos = pos - 6
+  Exit Do
+  Case "аккиыс.ам"
+  pos = pos - 9
+  Exit Do
+  End Select
+  End If
         word$ = ""
             If part$ <> "" Then
             b$ = b$ & part$
@@ -3394,14 +3410,14 @@ Do While pos <= Len(A$)
         part$ = "S"
         End If
         Case "e", "E", "Е", "е"
-            If part$ = "N" Then
-            word$ = word$ + w$
-            ElseIf part$ = "S" Then
+        word$ = word$ + w$
+           If part$ = "S" Then
             
             
-            Else
+            ElseIf part$ = "N" Then
+            
             b$ = b$ & part$
-            part$ = "N"
+            'part$ = "N"
             End If
         Case "=", ">", "<", "~"
                 If b$ & part$ <> "" Then
@@ -3459,22 +3475,7 @@ Do While pos <= Len(A$)
         End If
         
     pos = pos + 1
-  If word$ <> "" Then
-  Select Case myUcase(word$, True)
-  Case "THEN", "ELSE", "тоте"
-  pos = pos - 4
-  Exit Do
-  Case "ELSE.IF"
-  pos = pos - 7
-  Exit Do
-  Case "аккиыс"
-  pos = pos - 6
-  Exit Do
-  Case "аккиыс.ам"
-  pos = pos - 9
-  Exit Do
-  End Select
-  End If
+
 Loop
 
     w$ = Replace(b$ & part$, "a", "")

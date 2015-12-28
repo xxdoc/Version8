@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 128
+Global Const Revision = 129
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -19356,11 +19356,11 @@ If IsLabelSymbolNew(rest$, "кахос", "ERROR", Lang) Then
          LastErNum = 0
             LastErName = ""
             LastErNameGR = ""
-End If
+Else
 bstack.soros.Flush
-
-
-  Case "PROPERTIES", "идиотгтес"  ''for printer
+End If
+Exit Function
+Case "PROPERTIES", "идиотгтес"  ''for printer
   If IsStrExp(bstack, rest$, s$) Then
   LoadArray MyDM(), s$
   Else
@@ -29829,7 +29829,15 @@ subsub02:
                                                                                             ElseIf InStr(bb$, " ") > 0 Then
                                                                                                     GoTo findelsesub0
                                                                                             Else   ' jump ??
-                                                                                                    Exit Do
+                                                                                        
+                                                                                                i = PosLabel(bb$, SB(bstack.OriginalCode))
+                                                                                                
+                                                                                            If i <> 0 And i < Len(SB(bstack.OriginalCode)) Then
+                                                                                                    bb$ = Mid$(SB(bstack.OriginalCode), i)
+                                                                                                    
+                                                                                                    GoTo subsub02
+                                                                                            End If
+                                                                                                   Exit Do
                                                                                             End If
                                                                                     ElseIf x2 = 1 Then
                                                                                             If LastErNum <> -2 Then
