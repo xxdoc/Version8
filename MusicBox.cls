@@ -26,6 +26,16 @@ Dim mybusy As Boolean
 Private myBase As TaskInterface
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Private myProcess As basetask
+
+Private Sub Class_Terminate()
+Dim midimsg As String
+TaskMaster.MusicTaskNum = TaskMaster.MusicTaskNum - 1
+If mNote > 0 Then
+ midimsg = &H80 + (mNote * &H100) + Channel
+ midiOutShortMsg hmidi, midimsg
+ End If
+End Sub
+
 Private Property Set TaskInterface_Process(aProcess As basetask)
 Set myProcess = aProcess
 Set myProcess.Process = myBase

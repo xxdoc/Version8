@@ -174,7 +174,7 @@ End Function
 
 Public Sub AddTask(ByRef NewTask As TaskInterface, Optional Priority As PriorityLevel)
   ' Add to list
-  If NewTask.Id > 0 And NewTask.Id < 100 Then MusicTaskNum = MusicTaskNum + 1
+ 
   If Priority = tmHigh And myMasterList.Count > 0 Then
     myMasterList.Add NewTask, "", 1
 
@@ -256,7 +256,9 @@ Public Sub Dispose()
 End Sub
 
 Public Sub TimerTick()
+
 If tickdrop > 0 Then Exit Sub
+Debug.Print MusicTaskNum
 Dim this As TaskInterface
   If myMasterList.Count = 0 Then Exit Sub
   
@@ -297,11 +299,10 @@ End If
   End If
   Else
     If this.Done Then
-If this.Id < 100 Then MusicTaskNum = MusicTaskNum - 1
-    this.Dispose tmThisTask
+
   Else
 
-    AddTask this, this.Priority
+''  AddTask this, this.Priority
     
   End If
     this.Dispose tmThisTask
@@ -357,7 +358,6 @@ End If
   End If
   Else
     If this.Done Then
-If this.Id < 100 Then MusicTaskNum = MusicTaskNum - 1
     this.Dispose tmThisTask
   Else
 

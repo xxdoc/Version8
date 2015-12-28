@@ -262,8 +262,8 @@ End Property
 Public Property Get RetStack() As mStiva
 Set RetStack = RetSoros
 End Property
-Public Property Get Soros() As mStiva
-Set Soros = parentSoros
+Public Property Get soros() As mStiva
+Set soros = parentSoros
 End Property
 Public Property Set Owner(A As Object)
 Set myOwner = A
@@ -412,7 +412,6 @@ Else
 ThrowOne aa.Id
 End If
 End If
-
 Next aa
 End If
 
@@ -449,10 +448,10 @@ IsString = True
 End If
 End Function
 Public Function IsInStackObject(r As Object) As Boolean  ' not used yet
-If Soros.LookNull Then
+If soros.LookNull Then
 Set r = Nothing
 IsInStackObject = True
-ElseIf Soros.PopType = "*" Then
+ElseIf soros.PopType = "*" Then
 Set r = parentSoros.PopObj
 IsInStackObject = True
 End If
@@ -477,20 +476,20 @@ End If
 
 End Function
 Public Function IsInStackNumber(r As Double) As Boolean
-If Soros.LookNull Then
-r = Soros.PopVal
+If soros.LookNull Then
+r = soros.PopVal
 IsInStackNumber = True
-ElseIf Soros.PopType = "N" Then
-r = Soros.PopVal
+ElseIf soros.PopType = "N" Then
+r = soros.PopVal
 IsInStackNumber = True
 End If
 End Function
 Public Function IsInStackString(r As String) As Boolean
-If Soros.LookNull Then
-r = Soros.PopStr
+If soros.LookNull Then
+r = soros.PopStr
 IsInStackString = True
-ElseIf Soros.PopType = "S" Then
-r = Soros.PopStr
+ElseIf soros.PopType = "S" Then
+r = soros.PopStr
 IsInStackString = True
 End If
 End Function

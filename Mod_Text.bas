@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 129
+Global Const Revision = 130
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -20551,7 +20551,11 @@ Case "паине", "PLAY"
 
 If IsExp(bstack, rest$, p) Then
     If p = 0 Then
-
+    TaskMaster.MusicTaskNum = 0
+    TaskMaster.OnlyMusic = True
+    Do
+    TaskMaster.TimerTickNow
+    Loop Until TaskMaster.PlayMusic = False
    mute = True
     Else
     mute = False
@@ -20561,6 +20565,7 @@ If IsExp(bstack, rest$, p) Then
           Set task.Owner = Form1.DIS
          
           task.Parameters CLng(p), CLng(sx)
+          TaskMaster.MusicTaskNum = TaskMaster.MusicTaskNum + 1
           TaskMaster.AddTask task
           Do While FastSymbol(rest$, ",")
            I3 = False
@@ -20570,7 +20575,9 @@ If IsExp(bstack, rest$, p) Then
                 Set task = New MusicBox
                 Set task.Owner = Form1.DIS
                 task.Parameters CLng(p), CLng(sx)
+                TaskMaster.MusicTaskNum = TaskMaster.MusicTaskNum + 1
                  TaskMaster.AddTask task
+                 
                 I3 = True
                  End If
             End If
