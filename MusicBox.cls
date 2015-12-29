@@ -41,13 +41,13 @@ Set myProcess = aProcess
 Set myProcess.Process = myBase
 End Property
 Private Property Let TaskInterface_ID(ByVal rhs As Long)
-If rhs = Channel Then
+If rhs = Channel + 1 Then
 myBase.Done = True
 End If
 End Property
 
 Private Property Get TaskInterface_ID() As Long
-TaskInterface_ID = Channel
+TaskInterface_ID = Channel + 1
 End Property
 
 Private Property Let TaskInterface_interval(ByVal rhs As Double)

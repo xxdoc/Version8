@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 130
+Global Const Revision = 131
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -20556,28 +20556,44 @@ If IsExp(bstack, rest$, p) Then
     Do
     TaskMaster.TimerTickNow
     Loop Until TaskMaster.PlayMusic = False
+    TaskMaster.OnlyMusic = False   '' forget it in revision 130
    mute = True
     Else
     mute = False
     If FastSymbol(rest$, ",") Then
         If IsExp(bstack, rest$, sx) Then
+          If sx < 1 Then
+          sx = 0
+          Do While TaskMaster.ThrowOne(CLng(p))
+          sx = sx - 1
+          If sx < -100 Then Exit Do
+          Loop
+          Else
           Set task = New MusicBox
           Set task.Owner = Form1.DIS
          
           task.Parameters CLng(p), CLng(sx)
           TaskMaster.MusicTaskNum = TaskMaster.MusicTaskNum + 1
           TaskMaster.AddTask task
+          End If
           Do While FastSymbol(rest$, ",")
            I3 = False
         If IsExp(bstack, rest$, p) Then
              If FastSymbol(rest$, ",") Then
                 If IsExp(bstack, rest$, sx) Then
-                Set task = New MusicBox
-                Set task.Owner = Form1.DIS
-                task.Parameters CLng(p), CLng(sx)
-                TaskMaster.MusicTaskNum = TaskMaster.MusicTaskNum + 1
-                 TaskMaster.AddTask task
-                 
+                If sx < 1 Then
+                        sx = 0
+                        Do While TaskMaster.ThrowOne(CLng(p))
+                        sx = sx - 1
+                        If sx < -100 Then Exit Do
+                        Loop
+                  Else
+                    Set task = New MusicBox
+                    Set task.Owner = Form1.DIS
+                    task.Parameters CLng(p), CLng(sx)
+                    TaskMaster.MusicTaskNum = TaskMaster.MusicTaskNum + 1
+                     TaskMaster.AddTask task
+              End If
                 I3 = True
                  End If
             End If

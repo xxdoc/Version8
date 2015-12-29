@@ -256,9 +256,7 @@ Public Sub Dispose()
 End Sub
 
 Public Sub TimerTick()
-
 If tickdrop > 0 Then Exit Sub
-Debug.Print MusicTaskNum
 Dim this As TaskInterface
   If myMasterList.Count = 0 Then Exit Sub
   
