@@ -236,9 +236,12 @@ Exit Sub
 End If
 If TaskMaster Is Nothing Then
 Set TaskMaster = New TaskMaster
-TaskMaster.Interval = 5
-End If
 TaskMaster.rest
+TaskMaster.Interval = 5
+Else
+TaskMaster.rest
+End If
+
     Dim ft As FILETIME
     Dim lBusy As Long
     Dim lRet As Long
@@ -253,6 +256,9 @@ TaskMaster.rest
         ' If the timer already exists, it does not hurt to open it
         ' as long as the person who is trying to open it has the
         ' proper access rights.
+        DoEvents
+        Exit Sub
+        
     Else
         ft.dwLowDateTime = -1
         ft.dwHighDateTime = -1

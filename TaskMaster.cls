@@ -15,7 +15,7 @@ Option Explicit
 ' The TaskMaster handles queing and timing of the
 ' various tasks.
 Dim mymes As Long
-Dim tickdrop As Long
+Public tickdrop As Long
 Dim holdtasks As Boolean
 Public Enum DisposeAction
   tmThisTask
@@ -436,7 +436,7 @@ End Sub
 Public Sub RestEnd()
 tickdrop = tickdrop - 1
 If tickdrop <= 0 Then tickdrop = 0: holdtasks = False
-If tickdrop > 0 Then If QueueCount = 0 Then tickdrop = 0:: holdtasks = False
+''If tickdrop > 0 Then If QueueCount = 0 Then tickdrop = 0:: holdtasks = False
 End Sub
 Public Sub Rest1()
 '

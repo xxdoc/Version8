@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 131
+Global Const Revision = 132
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -1624,7 +1624,9 @@ ec$ = w$ + ")"
 
         
         y1 = GlobalVar(w$, 0, HERE$ = "")
+
         UnFloatGroup bstack, w$, y1, pppp.item(V)
+        
         var(y1).FloatGroupName = ec$
        Dim r As Double, bs As New basetask
         b$ = w$ + b$
@@ -1638,14 +1640,13 @@ ec$ = w$ + ")"
          SpeedGroup = 1
    
         CopyGroup var(y1), bs
+
          Set tempRef = pppp.item(V).Link
         Set pppp.item(V) = bs.LastObj
         Set pppp.item(V).LinkRef = tempRef
         Set bs.LastObj = Nothing
         End If
         CopyGroup var(y1), bstack
-        
-
         
      Set bstack.LastObj = Nothing
          GoTo fastexit
@@ -12412,9 +12413,9 @@ startwithgroup:
             If bstack.IamThread Then k1 = uintnew(timeGetTime + REFRESHRATE)
 If p > uintnew(timeGetTime) Then
             ''  If TaskMaster.Processing Then TaskMaster.TimerTick Else Sleep 1
+
              ProcTask2 bstack
-                While p > uintnew(timeGetTime)
-                
+                   While p > uintnew(timeGetTime)
          ProcTask2 bstack
                   ''  If TaskMaster.Processing Then TaskMaster.TimerTick Else Sleep 1
                     Wend
@@ -13409,7 +13410,7 @@ If Len(bb$) = 8 Then Execute = 0: Exit Function
                                         End If
                                    Set myobject = Nothing
                                         bstack.GroupName = SS$
-                                   '' Debug.Print SB(3)
+
                              
                                 Else
                                 '' maybe a block of itemd''
@@ -14442,7 +14443,6 @@ Do
     mystack.UseGroupname = sbgroup(x1)
     frm$ = Mid$(SB(x1), i)
     it = 1
- 
 Call executeblock(it, mystack, frm$, False, ok)
     Select Case it ''Execute(mystack, frm$, False)
     Case 0
@@ -14675,6 +14675,8 @@ End With
 
 Once = False
 Exit Sub
+Else
+Form2.testpad.nowrap = False
 End If
 
 
@@ -15409,8 +15411,9 @@ If i = 1 Then
         Set bs.Owner = basestack.Owner
         bs.UseGroupname = sbgroup(x1)
         bs.OriginalCode = x1
+
        Call GoFunc(bs, what$, rest$, vvl)
-     
+               
         Set bs = Nothing
         basestack.nokillvars = False
         If LastErNum = -1 Then Identifier = False: Exit Function
@@ -17760,11 +17763,13 @@ it = 1
             End If
             
             If HERE$ <> ohere$ Then
+
                 If Not ProcModuleEntry(basestack, ohere$, x1, rest$) Then GoTo NERR
+   
     
             Else
 NERR:
-            
+          
                         If Err.Number = 6 Then
                                 Err.clear
                                 MyErMacro rest$, "Overflow long, expect lower than (2147483648)", "Υπερχείλιση ακεραίου, περιμένω μικρότερο από (2147483648)"
@@ -25977,7 +25982,7 @@ Sub ProcTask(bstack As basetask)
 If TaskMaster.Processing Then
            TaskMaster.RestEnd1
  TaskMaster.TimerTick
-TaskMaster.rest
+''TaskMaster.rest
 ElseIf Not bstack.IamChild Then
 If REFRESHRATE > 25 Then k1 = 0
 REFRESHRATE = 40
@@ -25993,11 +25998,13 @@ Sub ProcTask2(bstack As basetask)
 If TaskMaster.Processing Then
           TaskMaster.RestEnd1
  TaskMaster.TimerTickNow
-TaskMaster.rest
+
 ElseIf SLOW Then
 Sleep 1
+
 End If
 TaskMaster.rest
+
 SleepWaitEdit2 1
 TaskMaster.RestEnd
 End Sub
@@ -27708,7 +27715,6 @@ End If
   End If
 
 With myobject
-
             If .IamFloatGroup Then
                     .PeekItem 0, grtype
                     .PeekItem 1, vvl
@@ -27755,7 +27761,7 @@ With myobject
                                                         Dim spare As Object
                                                         Set spare = vvl
                                                         UnFloatGroup bstack, s$, V, spare
-                                                        vvl.EndFloat
+                                                    '    vvl.EndFloat
                                                         Set spare = Nothing
                                                          ps.DataStr "*" + ps2push + Str(V)
                                             Else
@@ -27851,7 +27857,6 @@ With myobject
                 With var(i)
                  .GroupName = what$ + "."
                  .FloatGroupName = myobject.FloatGroupName
-              ''   Debug.Print what$ + "."
                 .Varlist = frm$
                 .ArrList = frmarr$
                 
@@ -29412,6 +29417,7 @@ loopthis = False
 Loop
 ProcModuleEntry = True
 there22:
+
 End Function
 Function PushParamGeneralV7(basestack As basetask, rest$) As Boolean
 PushParamGeneralV7 = True

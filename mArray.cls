@@ -25,7 +25,7 @@ Public CodeName As String
 Private oldmaxitems As Long
 Public Sub CopyArray(k As mArray)
 'copy this to k
-Dim V As Variant, i As Long
+Dim V As Variant, i As Long, obj As Object, obj2 As Object
 k.SerialItem V, Me.UpperMonoLimit, 8
 k.StartResize
 For i = 0 To dnum - 1
@@ -36,7 +36,15 @@ If Right$(k.arrname, 2) = "%(" Then
 For i = 0 To Me.UpperMonoLimit
 
 If IsObject(Me.item(i)) Then
+Select Case Typename(Me.item(i))
+Case "Group"
+Set obj = Me.item(i)
+CopyGroup obj, obj2
+Set k.item(i) = obj2
+Set obj2 = Nothing
+Case Else
 Set k.item(i) = Me.item(i)
+End Select
 Else
 k.item(i) = Int(Me.item(i))
 End If
@@ -46,7 +54,15 @@ Else
 For i = 0 To Me.UpperMonoLimit
 
 If IsObject(Me.item(i)) Then
+Select Case Typename(Me.item(i))
+Case "Group"
+Set obj = Me.item(i)
+CopyGroup obj, obj2
+Set k.item(i) = obj2
+Set obj2 = Nothing
+Case Else
 Set k.item(i) = Me.item(i)
+End Select
 Else
 k.item(i) = Me.item(i)
 End If
