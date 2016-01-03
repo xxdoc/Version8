@@ -1430,6 +1430,7 @@ End Sub
 
 Private Sub QuickSortExtended(Arr() As Long, ByVal LB As Long, ByVal UB As Long)
 Dim M1 As Long, M2 As Long
+On Error GoTo abc1
 Dim Piv As String, Tmp As String '<- adjust types here, when switching to something different than Long
      If UB - LB = 1 Then
      M1 = LB
@@ -1469,6 +1470,10 @@ Dim Piv As String, Tmp As String '<- adjust types here, when switching to someth
     Loop
     If LB < M2 Then QuickSortExtended Arr, LB, M2
     If M1 < UB Then QuickSortExtended Arr, M1, UB
+    Exit Sub
+abc1:
+    
+    
 End Sub
 Sub SwapPara(ByVal order1 As Long, ByVal order2 As Long, Arr() As Long)
 Dim paranum1 As Long, paranum2 As Long

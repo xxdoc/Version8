@@ -1854,7 +1854,7 @@ If kind > 0 Then
                                             GoTo again
                                         ElseIf ismine3(DROP$) Then
                                         onetime = True
-                                        kind = 0
+                                        kind = -2
                                         GoTo again2
                                         End If
                                 End If
@@ -1935,6 +1935,7 @@ again2:
 Do
 again3:
   pos1 = 1
+ '' kind = -2 maybe
 A$ = NLtrim$(A$)
   DROP$ = aheadstatus(A$, False, pos1)
   

@@ -1786,7 +1786,7 @@ If isAcolumn Then Exit Sub
 If skip < 0 Or scrollme Then
 lCount = lCount + 1
     Hi = Hi - 1
- npy = npy + 1
+    npy = npy + 1
     If npy >= .My And scrollme Then
     If Not nopr Then
             If SCRnum2stop > 0 Then
@@ -1823,7 +1823,7 @@ lCount = lCount + 1
             
 If Not nopr Then crNew bstack, mybasket
             ' 1ST
-            npy = npy - 1
+If Not nopr Then ddd.CurrentY = ddd.CurrentY - mybasket.Yt:   npy = npy - 1
     End If
 If Not nopr Then GetXYb2 ddd, mybasket, ruller&, npy
 conthere:

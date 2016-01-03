@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 132
+Global Const Revision = 133
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -14157,7 +14157,7 @@ MakeArray bstack, w$, 6, b$, pppp, NewStat, VarStat
 End If
 If neoGetArray(bstack, w$, pppp) Then
     If FastSymbol(b$, ")") Then
-    'need to found an expression
+    'need to found an expression - HEREHERE
         If FastSymbol(b$, "=") Then
             If IsStrExp(bstack, b$, w$) Then
                 If Not bstack.LastObj Is Nothing Then
@@ -23850,7 +23850,11 @@ If useglobalname Then
 n$ = Chr(13) & bstack.GroupName + nm$
 
 Else
+If HERE$ = "" Then
+n$ = Chr(13) + bstack.GroupName & nm$
+Else
 n$ = Chr(13) + HERE$ & "." & bstack.GroupName & nm$
+End If
 End If
 End If
 k = InStrRev(arrname$, n$)
@@ -27660,6 +27664,7 @@ CopyGroup var(Val(b$(BI + 1))), bstack
 Set vvl = bstack.LastObj
 Set bstack.LastObj = Nothing
 k.PokeItem j + 1, vvl
+
 Else
 k.PokeItem j + 1, var(Val(b$(BI + 1)))
 End If
@@ -27674,6 +27679,7 @@ Set myArray = neoArray(c$(Ci + 1))
 
 Set mySecondArray = New mArray
 myArray.CopyArray mySecondArray
+mySecondArray.arrname = myArray.arrname
 Set vvl = mySecondArray
 Set myArray = Nothing
 End If
@@ -27921,6 +27927,11 @@ End If
                                             If Not neoGetArrayLinkOnly(bstack, s$, SS$) Then ''
                                                     Set subgroup = vvl
                                                     GlobalArr bstack, s$, SS$, 0, -1
+                                                    Set pppp = neoArray.item(SS$)
+                                                    subgroup.CopyArray pppp
+                                                    Set subgroup = Nothing
+                                            Else
+                                            Set subgroup = vvl
                                                     Set pppp = neoArray.item(SS$)
                                                     subgroup.CopyArray pppp
                                                     Set subgroup = Nothing
