@@ -8,15 +8,15 @@ Public pw As Long, ph As Long, psw As Long, psh As Long, pwox As Long, phoy As L
           lpszOutput As String
       End Type
             Private Declare Function StartDoc Lib "gdi32" Alias "StartDocA" _
-          (ByVal hdc As Long, lpdi As DOCINFO) As Long
+          (ByVal hDC As Long, lpdi As DOCINFO) As Long
 
-      Private Declare Function StartPage Lib "gdi32" (ByVal hdc As Long) _
+      Private Declare Function StartPage Lib "gdi32" (ByVal hDC As Long) _
           As Long
 
-      Private Declare Function EndDoc Lib "gdi32" (ByVal hdc As Long) _
+      Private Declare Function EndDoc Lib "gdi32" (ByVal hDC As Long) _
           As Long
 
-      Private Declare Function EndPage Lib "gdi32" (ByVal hdc As Long) _
+      Private Declare Function EndPage Lib "gdi32" (ByVal hDC As Long) _
           As Long
 Private mp_hdc As Long
 Public MyDM() As Byte
@@ -29,10 +29,10 @@ Private Const PHYSICALWIDTH As Long = 110
 Private Const LOGPIXELSX = 88
 Private Const LOGPIXELSY = 90
 
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hdc As Long, ByVal iCapabilitiy As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal iCapabilitiy As Long) As Long
 
       Private Declare Function ResetDC Lib "gdi32" Alias "ResetDCA" _
-          (ByVal hdc As Long, lpInitData As Any) As Long
+          (ByVal hDC As Long, lpInitData As Any) As Long
 Private Declare Function CreateIC Lib "gdi32" Alias "CreateICA" _
           (ByVal lpDriverName As String, ByVal lpDeviceName As String, _
           ByVal lpOutput As String, lpInitData As Any) As Long
@@ -43,7 +43,7 @@ Private Declare Function CreateIC Lib "gdi32" Alias "CreateICA" _
       Private Declare Function CreateDC Lib "gdi32" Alias "CreateDCA" _
           (ByVal lpDriverName As String, ByVal lpDeviceName As String, _
           ByVal lpOutput As Long, lpInitData As Any) As Long
-      Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) _
+      Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) _
           As Long
       Private Const NULLPTR = 0&
       ' Constants for DEVMODE
@@ -129,7 +129,7 @@ End Type
      pDefault As Any) As Long
 
       Private Declare Function DocumentProperties Lib "winspool.drv" _
-      Alias "DocumentPropertiesA" (ByVal hwnd As Long, _
+      Alias "DocumentPropertiesA" (ByVal hWnd As Long, _
       ByVal hPrinter As Long, ByVal pDeviceName As String, _
        pDevModeOutput As Any, pDevModeInput As Any, ByVal fMode As Long) As Long
 
@@ -163,35 +163,35 @@ End Sub
 
       Function ByteToString(ByteArray() As Byte) As String
         Dim TempStr As String
-        Dim I As Integer
+        Dim i As Integer
 
-        For I = 1 To CCHDEVICENAME
-            TempStr = TempStr & Chr(ByteArray(I))
-        Next I
+        For i = 1 To CCHDEVICENAME
+            TempStr = TempStr & Chr(ByteArray(i))
+        Next i
         ByteToString = StripNulls(TempStr)
       End Function
 
       Function ShowProperties(f As Object, szPrinterName As String, adevmode() As Byte) As Boolean
-      Dim hPrinter As Long, I As Long
-      Dim nSize As Long
+      Dim hPrinter As Long, i As Long
+      Dim nsize As Long
      '' Dim pDevMode As DEVMODE
      ' Dim adevmode() As Byte
       Dim TempStr As String, oldfields As Long
       Dim pd As PRINTER_DEFAULTS
       pd.DesiredAccess = PRINTER_ACCESS_USE
         If OpenPrinter(szPrinterName, hPrinter, pd) <> 0 Then
-           nSize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, NULLPTR, NULLPTR, 0)
+           nsize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, NULLPTR, NULLPTR, 0)
           ' Form1.Caption = nSize
-          If nSize < 1 Then
+          If nsize < 1 Then
             ShowProperties = False
             Exit Function
           End If
-          If UBound(adevmode) <> nSize + 100 Then
-         ReDim adevmode(1 To nSize + 100) As Byte
+          If UBound(adevmode) <> nsize + 100 Then
+         ReDim adevmode(1 To nsize + 100) As Byte
          
-           nSize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, adevmode(1), ByVal NULLPTR, DM_OUT_BUFFER)
+           nsize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, adevmode(1), ByVal NULLPTR, DM_OUT_BUFFER)
           
-          If nSize < 0 Then
+          If nsize < 0 Then
             ShowProperties = False
             Exit Function
           End If
@@ -202,9 +202,9 @@ End Sub
       '' Call CopyMemory(adevmode(1), pDevMode, Len(pDevMode))
    End If
          If Not f Is Nothing Then
-          nSize = DocumentProperties(f.hwnd, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_PROMPT Or DM_IN_BUFFER Or DM_OUT_BUFFER)  '
+          nsize = DocumentProperties(f.hWnd, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_PROMPT Or DM_IN_BUFFER Or DM_OUT_BUFFER)  '
          Else
-         nSize = DocumentProperties(0, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_IN_BUFFER Or DM_OUT_BUFFER)
+         nsize = DocumentProperties(0, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_IN_BUFFER Or DM_OUT_BUFFER)
         End If
 
        ''  Call CopyMemory(pDevMode, adevmode(1), Len(pDevMode))
@@ -259,32 +259,32 @@ Ret = DeleteDC(p_hdc)
 End Function
 
 Function ChangeOrientation(f As Object, szPrinterName As String, adevmode() As Byte) As Boolean
-      Dim hPrinter As Long, I As Long
-      Dim nSize As Long
+      Dim hPrinter As Long, i As Long
+      Dim nsize As Long
       Dim pDevMode As DEVMODE
       Dim TempStr As String, oldfields As Long
       Dim pd As PRINTER_DEFAULTS
       pd.DesiredAccess = PRINTER_ACCESS_USE
         If OpenPrinter(szPrinterName, hPrinter, pd) <> 0 Then
-           nSize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, _
+           nsize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, _
            NULLPTR, NULLPTR, 0)
-          If nSize < 1 Then
+          If nsize < 1 Then
             ChangeOrientation = False
             Exit Function
           End If
-          If UBound(adevmode) <> nSize Then
-         ReDim adevmode(1 To nSize) As Byte
+          If UBound(adevmode) <> nsize Then
+         ReDim adevmode(1 To nsize) As Byte
          
-           nSize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, adevmode(1), ByVal NULLPTR, DM_OUT_BUFFER)
+           nsize = DocumentProperties(NULLPTR, hPrinter, szPrinterName, adevmode(1), ByVal NULLPTR, DM_OUT_BUFFER)
           
-          If nSize < 0 Then
+          If nsize < 0 Then
             ChangeOrientation = False
             Exit Function
           End If
    
    End If
          If Not f Is Nothing Then
-          nSize = DocumentProperties(f.hwnd, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_PROMPT Or DM_OUT_BUFFER Or DM_IN_BUFFER)
+          nsize = DocumentProperties(f.hWnd, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_PROMPT Or DM_OUT_BUFFER Or DM_IN_BUFFER)
          Else
 
       
@@ -294,7 +294,7 @@ Function ChangeOrientation(f As Object, szPrinterName As String, adevmode() As B
      Call CopyMemory(adevmode(1), pDevMode, Len(pDevMode))
       
       
-         nSize = DocumentProperties(0, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_IN_BUFFER Or DM_OUT_BUFFER)
+         nsize = DocumentProperties(0, hPrinter, szPrinterName, adevmode(1), adevmode(1), DM_IN_BUFFER Or DM_OUT_BUFFER)
         End If
 
          Call CopyMemory(pDevMode, adevmode(1), Len(pDevMode))
@@ -327,81 +327,82 @@ Dim pDevMode As DEVMODE
          'Call CopyMemory(dm(1), pDevMode, Len(pDevMode))
 End Function
 Public Sub associate(EXT As String, FileType As String, _
-  ByVal Filename As String)
+  ByVal FileName As String)
 On Error Resume Next
-Filename = mylcasefILE(Filename)
-Dim B As Object
-Set B = CreateObject("wscript.shell")
+FileName = mylcasefILE(FileName)
+Dim b As Object
+Set b = CreateObject("wscript.shell")
 EXT = "." & Replace(UCase(EXT), ".", "")
-If Filename = "" Then Exit Sub
-B.regwrite "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & ExtractNameOnly(Filename), Filename
-B.regwrite "HKCR\" & EXT & "\", FileType
-B.regwrite "HKCR\" & FileType & "\", EXT & "_auto_file"
-B.regwrite "HKCR\" & FileType & "\DefaultIcon\", Filename & ",0"
-B.regwrite "HKCR\" & FileType & "\shell\open\command\", Filename & " ""%1"" "
-B.regwrite "HKLM\SOFTWARE\Classes\" & ExtractName(Filename) & "\", EXT & "_auto_file"
-B.regwrite "HKLM\SOFTWARE\Classes\" & ExtractName(Filename) & "\DefaultIcon\", Filename & ",0"
-B.regwrite "HKLM\SOFTWARE\Classes\" & ExtractName(Filename) & "\shell\open\command\", Filename & " ""%1"" "
-B.regwrite "HKCR\Applications\" & FileType & "\shell\open\command\", Filename & " ""&l"" "
-B.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\Application"
-B.regwrite "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\Application", Filename
-B.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\OpenWithList\"
-B.regwrite "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\OpenWithList\", Filename
+If FileName = "" Then Exit Sub
+b.regwrite "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & ExtractNameOnly(FileName), FileName
+b.regwrite "HKCR\" & EXT & "\", FileType
+b.regwrite "HKCR\" & FileType & "\", EXT & "_auto_file"
+b.regwrite "HKCR\" & FileType & "\DefaultIcon\", FileName & ",0"
+b.regwrite "HKCR\" & FileType & "\shell\open\command\", FileName & " ""%1"" "
+b.regwrite "HKLM\SOFTWARE\Classes\" & ExtractName(FileName) & "\", EXT & "_auto_file"
+b.regwrite "HKLM\SOFTWARE\Classes\" & ExtractName(FileName) & "\DefaultIcon\", FileName & ",0"
+b.regwrite "HKLM\SOFTWARE\Classes\" & ExtractName(FileName) & "\shell\open\command\", FileName & " ""%1"" "
+b.regwrite "HKCR\Applications\" & FileType & "\shell\open\command\", FileName & " ""&l"" "
+b.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\Application"
+b.regwrite "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\Application", FileName
+b.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\OpenWithList\"
+b.regwrite "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\OpenWithList\", FileName
 
 End Sub
 Public Sub deassociate(EXT As String, FileType As String, _
-  ByVal Filename As String)
+  ByVal FileName As String)
 On Error Resume Next
-Filename = mylcasefILE(Filename)
-Dim B As Object
-Set B = CreateObject("wscript.shell")
+FileName = mylcasefILE(FileName)
+Dim b As Object
+Set b = CreateObject("wscript.shell")
 EXT = "." & ReplaceStr(".", "", EXT)
-If Filename = "" Then Exit Sub
-B.regdelete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & ExtractNameOnly(Filename)
-B.regdelete "HKCR\" & EXT & "\" ', FileType
-B.regdelete "HKCR\" & FileType & "\shell\open\command\" ', Filename & " ""&l"" "
-B.regdelete "HKCR\" & FileType & "\DefaultIcon\" ', Filename & ",0"
-B.regdelete "HKCR\" & FileType & "\" ', EXT * " file"
-B.regdelete "HKLM\SOFTWARE\Classes\" & ExtractName(Filename) & "\shell\open\command\" ', Filename & " ""&l"" "
-B.regdelete "HKLM\SOFTWARE\Classes\" & ExtractName(Filename) & "\DefaultIcon\" ', Filename & ",0"
-B.regdelete "HKLM\SOFTWARE\Classes\" & ExtractName(Filename) & "\" ', EXT * " file"
-B.regdelete "HKCR\Applications\" & FileType & "\shell\open\command\" ', Filename & " ""&l"" "
-B.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\Application"
-B.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\OpenWithList\"
+If FileName = "" Then Exit Sub
+b.regdelete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & ExtractNameOnly(FileName)
+b.regdelete "HKCR\" & EXT & "\" ', FileType
+b.regdelete "HKCR\" & FileType & "\shell\open\command\" ', Filename & " ""&l"" "
+b.regdelete "HKCR\" & FileType & "\DefaultIcon\" ', Filename & ",0"
+b.regdelete "HKCR\" & FileType & "\" ', EXT * " file"
+b.regdelete "HKLM\SOFTWARE\Classes\" & ExtractName(FileName) & "\shell\open\command\" ', Filename & " ""&l"" "
+b.regdelete "HKLM\SOFTWARE\Classes\" & ExtractName(FileName) & "\DefaultIcon\" ', Filename & ",0"
+b.regdelete "HKLM\SOFTWARE\Classes\" & ExtractName(FileName) & "\" ', EXT * " file"
+b.regdelete "HKCR\Applications\" & FileType & "\shell\open\command\" ', Filename & " ""&l"" "
+b.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\Application"
+b.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\OpenWithList\"
 
 End Sub
-Function signlong(ByVal a As Double) As Double
-If a < 0 Then a = 0
-If a > CDbl(2147483647) Then
-signlong = ((CDbl(&H80000000) + a) + CDbl(&H80000000)) ' And &HFFFFFFFF
+Function signlong(ByVal A As Double) As Double
+If A < 0 Then A = 0
+If A > 4294967295# Then A = 4294967295#
+If A > CDbl(2147483647) Then
+signlong = ((CDbl(&H80000000) + A) + CDbl(&H80000000)) ' And &HFFFFFFFF
 Else
-signlong = a
+signlong = A
 End If
 End Function
-Function uintnew(ByVal a As Double) As Double
-If a > CDbl(2147483647) Then a = CDbl(2147483647)
-If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
-If a < 0 Then
-uintnew = CDbl(&H7FFFFFFF) + (CDbl(&H7FFFFFFF) + a) + 2
+Function uintnew(ByVal A As Double) As Double
+If A > CDbl(2147483647) Then A = CDbl(2147483647)
+If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
+If A < 0 Then
+uintnew = CDbl(&H7FFFFFFF) + (CDbl(&H7FFFFFFF) + A) + 2
 Else
-uintnew = a
+uintnew = A
 End If
 End Function
-Function UINT(ByVal a As Long) As Long 'δίνει έναν integer σαν unsign integer σε long
- Dim B As Long
- B = a And &HFFFF
- If B < 0 Then
- UINT = CLng(&H10000 + B)
+Function UINT(ByVal A As Long) As Long 'δίνει έναν integer σαν unsign integer σε long
+ Dim b As Long
+ b = A And &HFFFF
+ If b < 0 Then
+ UINT = CLng(&H10000 + b)
  Else
- UINT = CLng(B)
+ UINT = CLng(b)
  End If
  
  End Function
  
-Function cUint(ByVal a As Long) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
+Function cUint(ByVal A As Long) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
 Dim c As Long
 
-c = Abs(a) And &HFFFF&
+c = Abs(A) And &HFFFF&
 If c > 32767 Then
 cUint = CInt(c - &H10000)
 Else
@@ -409,27 +410,27 @@ cUint = CInt(c)
 End If
 
 End Function
-Function LowWord(a As Long) As Long
-Const Bb = 65535
-LowWord = cUint(CLng(Bb And a))
+Function LowWord(A As Long) As Long
+Const bb = 65535
+LowWord = cUint(CLng(bb And A))
 End Function
 Function HighLow(h As Long, l As Long) As Long
-Const Bb = 65536
-HighLow = h * Bb + l
+Const bb = 65536
+HighLow = h * bb + l
 End Function
-Function HighWord(a As Long) As Long
-Dim B As Double
-B = a
-Const Bb = 65536
-HighWord = Int(B / Bb)
+Function HighWord(A As Long) As Long
+Dim b As Double
+b = A
+Const bb = 65536
+HighWord = Int(b / bb)
 End Function
-Function cUlng(ByVal a As Double) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
+Function cUlng(ByVal A As Double) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
 On Error GoTo cu1
-a = Abs(Int(a))
-If a > CDbl(2147483647#) Then
-cUlng = a - 4294967296#
+A = Abs(Int(A))
+If A > CDbl(2147483647#) Then
+cUlng = A - 4294967296#
 Else
-cUlng = CLng(a)
+cUlng = CLng(A)
 End If
 Exit Function
 cu1:
@@ -440,24 +441,24 @@ Function Sput(ByVal Sl As String) As String
 Sput = Chr(2) + Right$("00000000" & Hex$(cUlng(CDbl(Len(Sl)))), 8) + Sl
 End Function
 
-Function PACKLNG$(ByVal a As Double)
-PACKLNG$ = Right$("00000000" & Hex$(cUlng(a)), 8)
+Function PACKLNG$(ByVal A As Double)
+PACKLNG$ = Right$("00000000" & Hex$(cUlng(A)), 8)
 End Function
-Function PACKLNG2$(ByVal a As Double)  ' with error return..
+Function PACKLNG2$(ByVal A As Double)  ' with error return..
 ' this if only for print
 On Error GoTo cu22
 Dim internal As Long
-a = Int(a)
-If a > 4294967296# Then
+A = Int(A)
+If A > 4294967296# Then
 PACKLNG2$ = "???+"
-ElseIf a < 0 Then
+ElseIf A < 0 Then
 ' error
 PACKLNG2$ = "???-"
 Else
-    If a > CDbl(2147483647#) Then
-    internal = a - 4294967296#
+    If A > CDbl(2147483647#) Then
+    internal = A - 4294967296#
     Else
-    internal = CLng(a)
+    internal = CLng(A)
     End If
 
 If internal <= 65535 And internal >= 0 Then
@@ -479,8 +480,8 @@ UNPACKLNG = cUlng(Val("&H" & s$))
 End If
 End Function
 
-Function ORGAN(a As Long) As String
-Select Case a
+Function ORGAN(A As Long) As String
+Select Case A
 Case 1
 ORGAN = "Acoustic Grand Piano"
 Case 2

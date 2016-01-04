@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 133
+Global Const Revision = 134
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -23769,25 +23769,7 @@ Function neoGetArray(bstack As basetask, ByVal nm$, ga As mArray, Optional searc
 Dim k As Long
 Dim n$
 nm$ = myUcase(nm$)
-If Len(nm$) > 5 And False Then
-           ' not used any more
-                If Left$(nm$, 5) = "THIS." Then
-               
-                    n$ = StripThis2(HERE$)
-                    If n$ <> "" Then n$ = Chr(13) + n$ & "." & bstack.GroupName + Mid(nm$, 6) Else n$ = Chr(13) + HERE$ & "." & nm$
-                ElseIf Left$(nm$, 5) = "ΑΥΤΟ." Then
-           
-                    n$ = StripThis2(HERE$)
-                    If n$ <> "" Then n$ = Chr(13) + n$ & "." & bstack.GroupName + Mid(nm$, 6) Else n$ = Chr(13) + HERE$ & "." & nm$
-                Else
-                If useglobalname Then
-                    n$ = Chr(13) + nm$
-                    Else
-                    n$ = Chr(13) + HERE$ & "." & nm$
-                    End If
-                End If
 
-Else
 
 If useglobalname Then
 n$ = Chr(13) + bstack.GroupName + nm$
@@ -23797,18 +23779,27 @@ Else
 n$ = Chr(13) + HERE$ & "." + bstack.GroupName + nm$
 
 End If
-End If
+
 k = InStrRev(arrname$, n$)
 If k = 0 And bstack.UseGroupname <> "" Then
 If Left$(nm$, 5) = "ΑΥΤΟ." Or Left$(nm$, 5) = "THIS." Then
  If useLocalOnly Then Exit Function
 n$ = Chr$(13) + bstack.UseGroupname + Mid$(nm$, 6)
 k = InStrRev(arrname$, n$)
+If k = 0 Then
+                n$ = myUcase(Mid$(nm$, 5))
+                    If bstack.GetDot(n$, 1) Then
+                    n$ = Chr(13) + n$
+                 k = InStrRev(arrname$, n$)
+                 End If
+
+End If
 End If
 End If
 
 
 If k = 0 Then
+
             If searchonly Then Exit Function
             If Not useLocalOnly Then
                         n$ = Chr(13) + myUcase(nm$)
@@ -23820,7 +23811,12 @@ End If
 If k > 0 Then
 k = k + Len(n$) + 1
 Set ga = neoArray(Mid$(arrname$, k, 16)): neoGetArray = True
+         
+           
+           
+
 End If
+
 
 End Function
 Function neoGetArrayLinkOnly(bstack As basetask, ByVal nm$, Link$, Optional useglobalname As Boolean = False, Optional useLocalOnly As Boolean = False) As Boolean
@@ -29968,7 +29964,7 @@ Function StockValues(bstack As basetask, b$, Lang As Long) As Boolean
 Dim w$, pppp As mArray, V As Long, VN As Long, i As Long, what$, pppp1 As mArray, V1 As Long
 Dim bs As New basetask, p As Double, P1 As Double, soros As mStiva
 If Abs(IsLabel(bstack, b$, what$)) > 4 Then
-        If neoGetArray(bstack, what$, pppp, HERE$ <> "") Then
+        If neoGetArray(bstack, what$, pppp) Then
 
                 If NeoGetArrayItem(pppp, bstack, what$, V, b$) Then
 againhere:
@@ -30018,7 +30014,7 @@ againhere:
                                                                         
                                                                                         If GetVar(bstack, w$, i) Then Set var(i) = pppp.item(V)
                                                                                         Case 5, 6, 7
-                                                                                         If neoGetArray(bstack, w$, pppp1, HERE$ <> "") Then
+                                                                                         If neoGetArray(bstack, w$, pppp1) Then
                                                                                             If IsSymbol(b$, ")") Then
                                                                                                 bs.soros.PushObj pppp.item(V)
                                                                                                         If Not globalArrByPointer(bs, bstack, w$) Then MyEr "No array found", "Δεν βρήκα πίνακα"
@@ -30044,7 +30040,7 @@ againhere:
                                                                                         var(i) = pppp.item(V)
                                                                                         
                                                                                         Case 5, 6, 7
-                                                                                         If neoGetArray(bstack, w$, pppp1, HERE$ <> "") Then
+                                                                                         If neoGetArray(bstack, w$, pppp1) Then
                                                                                          
                                                                                                 If NeoGetArrayItem(pppp1, bstack, w$, V1, b$) Then
                                                                                                      pppp1.item(V1) = pppp.item(V)
@@ -30073,7 +30069,7 @@ againhere:
                                                             End If
                                                                      If IsSymbol(b$, ",") Then
                                                                      If Abs(IsLabel(bstack, b$, w$)) > 4 Then
-                                                                        If neoGetArray(bstack, w$, pppp1, HERE$ <> "") Then
+                                                                        If neoGetArray(bstack, w$, pppp1) Then
                                                                          If NeoGetArrayItem(pppp1, bstack, w$, V1, b$) Then
                                                                                    If Not (V1 + p - 1 <= pppp1.UpperMonoLimit) Then
                                                                                                 MyEr "Invalid index", "Μη έγκυρος δείκτης"
