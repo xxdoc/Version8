@@ -1800,12 +1800,12 @@ Exit Sub
 ' FOR TESTS
   pos1 = 0
   For k = 1 To UBound(col()) Step 2
-    If VarType(col(k)) = 0 Then Stop
+    If VarType(col(k)) = 0 Then Exit Sub
     If col(k) > pos1 Then pos1 = col(k)
-    If col(k) < pos1 Then Stop
+    If col(k) < pos1 Then Exit Sub
   Next k
     For k = 0 To UBound(col()) Step 2
-   If col(k) > 15 Then Stop
+   If col(k) > 15 Then Exit Sub
   Next k
   
 End If

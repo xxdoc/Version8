@@ -129,7 +129,7 @@ If mNote > 0 Then
     If BE > 6 Then BE = 6
         m_duration = uintnew(CDbl(timeGetTime)) + BEATS(Channel) / 2 ^ (BE - 1)
    If mNote <> -1 Then
-    mNote = GetNote(octava, lNote)
+    mNote = GetNote(octava, lNote \ 2)
       midimsg = &H90 + (mNote * &H100) + (volume * &H10000) + Channel
     midiOutShortMsg hmidi, midimsg
     End If

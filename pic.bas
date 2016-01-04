@@ -2059,7 +2059,7 @@ lngNote = ((Oct - 1) * 12 + No) - 37
 GetFrequency = 440 * (2 ^ (lngNote / 12))
 End Function
 Public Function GetNote(Oct As Integer, No As Integer) As Long
-GetNote = Oct * 12 + No - 1
+GetNote = Oct * 12 + No
 End Function
 Public Sub PlayTune(SS$)
 Dim octave As Integer, i As Long, V$
@@ -2100,7 +2100,7 @@ i = 1
 If Trim$(SS$) = "" Then note2play = 0: Exit Function
 If Asc(SS$) <> 32 Then
 V$ = Mid$(SS$, i, 2)
-probe2play = InStr(FACE$, UCase(V$)) / 2
+probe2play = InStr(FACE$, UCase(V$))
 Else
 probe2play = 24
 End If
@@ -2164,6 +2164,7 @@ End If
 
 ' so we have it here
 note2play = probe2play
+
 PlayTuneMIDI = True
 End If
 End If
