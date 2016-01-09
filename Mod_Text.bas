@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 135
+Global Const Revision = 136
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2625,7 +2625,7 @@ If par > 0 Then IsExp = False
 End Function
 Function IsExpA(bstack As basetask, aa$, RR As Double, parenthesis As Long, Optional ByVal noand As Boolean = True) As Boolean
 Dim r As Double, ac As Double, po As Double, MUL As Long, R1 As Double
-Dim logic As Boolean, l As Boolean
+Dim logic As Boolean, L As Boolean
 
 IsExpA = False
 If aa$ = "" Then Exit Function
@@ -3481,12 +3481,12 @@ End If
 End Function
 
 Sub tsekme()
-Dim b$, l As Double
+Dim b$, L As Double
 b$ = " 12323 45.44545 -2345.343 .345 345.E-45 34.53 434 534 534 534 345"
 'b$ = ""
 Debug.Print b$
-While IsNumberD2(b$, l)
-Debug.Print l
+While IsNumberD2(b$, L)
+Debug.Print L
 Wend
 End Sub
 Function IsNumberCheck(A$, r As Double) As Boolean
@@ -25089,11 +25089,11 @@ Private Function ReplaceStr2(sStr As String, dStr As String, fromStr As String) 
   ReplaceStr2 = Replace$(fromStr, sStr, dStr, vbTextCompare)
 End Function
 Function StarSTR(ByVal sStr As String) As String
-Dim l As Long, s As Long
-l = Len(sStr)
+Dim L As Long, s As Long
+L = Len(sStr)
 sStr = RTrim(sStr)
-s = l - Len(sStr)
-StarSTR = String$(l - s, "*") + String$(s, " ")
+s = L - Len(sStr)
+StarSTR = String$(L - s, "*") + String$(s, " ")
 
 End Function
 Function ReplaceStr(sStr As String, dStr As String, fromStr As String) As String
@@ -26104,14 +26104,14 @@ Else
 var = s
 End If
 End Sub
-Sub CheckVarLong(var As Variant, l As Long)
+Sub CheckVarLong(var As Variant, L As Long)
 
 If IsObject(var) Then
 
 Set var = Nothing
 var = Empty
 End If
-var = l
+var = L
 
 End Sub
 Sub LATIN(bstack As basetask)
@@ -27282,7 +27282,7 @@ End Sub
 
 
 Public Sub ProcProperty(bstack As basetask, V(), vIndex As Long, FN$, rest$, language As Long)
-Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, many As Long
+Dim var1() As Variant, s$, r As Double, L As Long, newref As Long, many As Long
 Dim var2() As String
 Dim vv As Object
 Set vv = V(vIndex)
@@ -27292,8 +27292,8 @@ Do
 If FastSymbol(rest$, ",") Then
 If IsExp(bstack, rest$, r) Then
 ''var1(0) = r
-l = FindDISPID(vv, FN$)
-ChangeOneParameter vv, l, (r), FN$
+L = FindDISPID(vv, FN$)
+ChangeOneParameter vv, L, (r), FN$
 ElseIf IsStrExp(bstack, rest$, s$) Then
 var1(0) = s$
 
@@ -27303,9 +27303,9 @@ End If
 ElseIf IsLabelSymbolNew(rest$, "ыс", "AS", language) Then
 ' WE MAKE A NEW OBJECT
 
-l = FindDISPID(vv, FN$)
+L = FindDISPID(vv, FN$)
 FN$ = Typename(vv) & "." & UCase(FN$)
-If l <> -1 Then
+If L <> -1 Then
 ' we have vv, fn$, l and we are looking for a label to make an object to that
 If Abs(IsLabel(bstack, rest$, s$)) < 5 Then
 ' now we have  S$, but maybe is used
@@ -27322,7 +27322,7 @@ Else
 ''GetlocalVar s$, newref
 newref = GlobalVarRefOnly(bstack.GroupName & s$)
 MakeitPropReference V(newref)
-V(newref).Construct vIndex, l   ' this is the link vindex is an index to var()
+V(newref).Construct vIndex, L   ' this is the link vindex is an index to var()
 ' so for every method or property we use this simple struct
 ' we can define the value type
 
@@ -27347,7 +27347,7 @@ End Sub
 ' METHOD A "Multiply", &alfa,&beta$   'passing by reference
 ''ProcMethod bstack, var(i), sS$, rest$,  LANG
 Sub ProcMethod(bstack As basetask, V(), vIndex As Long, FN$, rest$, language As Long)
-Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, glob As Boolean
+Dim var1() As Variant, s$, r As Double, L As Long, newref As Long, glob As Boolean
 Dim vv As Object, mstack As New mStiva, result As Variant, retobject As Object
 Dim namarg As Long
 Set vv = V(vIndex)
@@ -27415,7 +27415,7 @@ End If
 End Sub
 Sub RealMeth(bstack As basetask, rest$, var2() As Variant, var3() As String, NoNameditems As Long, namedargument As Long)
 '  testmeth "122,&beta,121,alfa:=a+4, beta:=122"
-Dim s$, l$
+Dim s$, L$
 Dim trap As Long, SS$, p As Double, items As Long
 Do
 again:
@@ -27438,16 +27438,16 @@ Case "N"
 
 
         ' maybe is a named argument
-        l$ = rest$
-        If IsLabel(bstack, l$, SS$) Then
-                If IsOperator(l$, ":=") Then
+        L$ = rest$
+        If IsLabel(bstack, L$, SS$) Then
+                If IsOperator(L$, ":=") Then
                     'push name to
                     namedargument = namedargument + 1
                     If UBound(var3()) < namedargument Then ReDim Preserve var3(namedargument + 1)
                     var3(namedargument) = SS$
                     
                     trap = 1
-                    rest$ = l$
+                    rest$ = L$
                     GoTo again
                 Else
                        If Not ((trap Mod 2 = 0) And namedargument > 0) Then
@@ -27485,13 +27485,13 @@ Loop Until s$ = ""
 End Sub
 Sub TestMeth(rest$)
 '  testmeth "122,&beta,121,alfa:=a+4, beta:=122"
-Dim s$, y1 As Long, l$, namedargument As Long
+Dim s$, y1 As Long, L$, namedargument As Long
 Dim trap As Long
 Do
 s$ = aheadstatus(rest$, True, y1)
 ''Debug.Print s$, Mid$(rest$, 1, y1 - 1)
 If s$ <> "" Then
-    l$ = Mid$(rest$, 1, y1 - 1)
+    L$ = Mid$(rest$, 1, y1 - 1)
     rest$ = Mid$(rest$, y1)
 End If
 If FastSymbol(rest$, ":=") Then
@@ -29540,6 +29540,7 @@ If ww$(0) = "S" Then
 Set acopy = New Document
 With acopy
 .textDocFast = A$
+.LCID = 1032
 ww$(1) = ww$(1) + ":"
 Do While .FindIdentifier(ww$(1), False, there, Curs)
 If Trim$(Left$(.TextParagraph(there), Curs - 1)) = "" Then
@@ -29567,6 +29568,7 @@ Set acopy = New Document
 
 With acopy
 .textDocFast = A$
+.LCID = 1032
 there = 0
 Curs = 0
 Do
@@ -29666,7 +29668,7 @@ Function executeblock(exec As Long, bstack As basetask, b$, Once As Boolean, kol
 
 executeblock = True
 bstack.LastComm = ""
-Dim i As Long, ec$, ec1$, ll As Long, oldLL As Long, bb$, p As Double, x2 As Long, y2 As Long, monce As Long, W3 As Long, removebracket As Boolean
+Dim i As Long, ec$, ec1$, LL As Long, oldLL As Long, bb$, p As Double, x2 As Long, y2 As Long, monce As Long, W3 As Long, removebracket As Boolean
 Dim myLevel As Long, oldexec As Long, loopthis As Boolean, subspoint As Boolean, RetStackSize As Long
 RetStackSize = bstack.RetStack.Total
 If exec = 0 Then exec = 1
@@ -29691,9 +29693,9 @@ End If
 oldLL = bstack.addlen
 If Len(ec1$) > 0 And Len(b$) <> Len(ec1$) Then
 
-ll = Len(ec1$) + oldLL
+LL = Len(ec1$) + oldLL
 Else
-ll = oldLL
+LL = oldLL
 End If
 ec1$ = ""
         Do
@@ -29701,7 +29703,7 @@ ec1$ = ""
 fromfirst0:
         
                 kolpo = Once: Once = False
-                bstack.addlen = ll
+                bstack.addlen = LL
              
                 W3 = Execute(bstack, bb$, kolpo, stepbystep, loopthis)
                 bstack.addlen = oldLL

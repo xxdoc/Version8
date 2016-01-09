@@ -2813,7 +2813,7 @@ End If
 iText = V$
 End With
 End Function
-Sub ScreenEditDOC(bstack As basetask, aaa As Variant, x&, y&, x1&, y1&, Optional l As Long = 0, Optional usecol As Boolean = False, Optional col As Long)
+Sub ScreenEditDOC(bstack As basetask, aaa As Variant, x&, y&, x1&, y1&, Optional L As Long = 0, Optional usecol As Boolean = False, Optional col As Long)
 Dim ot As Boolean, back As New Document, i As Long, D As Object
 Dim prive As basket
 Set D = bstack.Owner
@@ -2928,11 +2928,11 @@ NOEDIT = False
 
 .Visible = True
 .SetFocus
-If l <> 0 Then
-    If l > 0 Then
-        If aaa.SizeCRLF < l Then l = aaa.SizeCRLF
+If L <> 0 Then
+    If L > 0 Then
+        If aaa.SizeCRLF < L Then L = aaa.SizeCRLF
         
-        .SelStart = l
+        .SelStart = L
         Else
         .SelStart = 0
     End If
@@ -2969,7 +2969,7 @@ BLOCKkey = False
 contScreenEditThere1:
 TaskMaster.RestEnd1
 If Form1.TEXT1.Visible Then Form1.TEXT1.Visible = False
- l = Form1.TEXT1.LastSelStart
+ L = Form1.TEXT1.LastSelStart
 
 
 If D Is Form1 Then
@@ -2995,7 +2995,7 @@ escok = oldesc
 Set D = Nothing
 End With
 End Sub
-Sub ScreenEdit(bstack As basetask, A$, x&, y&, x1&, y1&, Optional l As Long = 0, Optional changelinefeeds As Long = 0, Optional maxchar As Long = 0, Optional ExcludeThisLeft As Long = 0)
+Sub ScreenEdit(bstack As basetask, A$, x&, y&, x1&, y1&, Optional L As Long = 0, Optional changelinefeeds As Long = 0, Optional maxchar As Long = 0, Optional ExcludeThisLeft As Long = 0)
 ' allways a$ enter with crlf,but exit with crlf or cr or lf depents from changelinefeeds
 Dim oldesc As Boolean, D As Object
 Set D = bstack.Owner
@@ -3044,7 +3044,7 @@ If Len(A$) > maxchar Then
 A$ = Left$(A$, maxchar)
 End If
 
-l = Len(A$)
+L = Len(A$)
 
 
 .UsedAsTextBox = True
@@ -3154,17 +3154,17 @@ End If
 MyDoEvents
 .SetFocus
 
-If l <> 0 Then
-    If l > 0 Then
-        If Len(A$) < l Then l = Len(A$)
-        .SelStart = l
+If L <> 0 Then
+    If L > 0 Then
+        If Len(A$) < L Then L = Len(A$)
+        .SelStart = L
                 Else
         .SelStart = 0
     End If
 Else
 If Len(A$) < .LastSelStart Then
 .SelStart = 1
-l = Len(A$)
+L = Len(A$)
 Else
     .SelStart = .LastSelStart
 End If
@@ -3200,7 +3200,7 @@ contScreenEditThere:
 TaskMaster.RestEnd1
 If Form1.TEXT1.Visible Then Form1.TEXT1.Visible = False
 
- l = Form1.TEXT1.LastSelStart
+ L = Form1.TEXT1.LastSelStart
 
 If bstack.toback Then
 D.lockme = False
@@ -3823,7 +3823,6 @@ If Not QRY Then HideCaret dq.hWnd: Exit Do
  If Not Once Then
  Once = True
 
- ''If Abs((clickMe And &HFF) - 39) = 1 And QUERYLIST <> "" Then ' up down
  If QUERYLIST <> "" Then  ' up down
     If INK = "" Then MyDoEvents
 If clickMe = 38 Then
@@ -3954,20 +3953,7 @@ If A$ = Chr(8) Then
 DE$ = " "
     If Len(s$) > 0 Then
     ExcludeOne s$
-   '  If Len(s$) > 1 Then
-    '    If AscW(Right$(s$, 1)) = 769 Then
-     '   If (Len(s$) - 2) = 0 Then
-      '  s$ = ""
-       ' Else
-        
-        '        s$ = Left$(s$, Len(s$) - 2)
-         '       End If
-      '  Else
-       '         s$ = Left$(s$, Len(s$) - 1)
-        '        End If
-      '  Else
-       ' s$ = ""
-       ' End If
+
              LCTCB dq, prive, -1: DestroyCaret
             oldLCTCB dq, prive, 0
 
@@ -3995,14 +3981,21 @@ DE$ = " "
             
     End If
 End If
-If Asc(A$) > 31 And (RealLen(s$) < m& Or RealLen(A$) = 0) Then
-If RealLen(A$) = 0 Then
+
+If Asc(A$) > 31 And (RealLen(s$) < m& Or RealLen(A$, True) = 0) Then
+If RealLen(A$, True) = 0 Then
+If Asc(A$) = 63 And s$ <> "" Then
 s$ = s$ & A$: A$ = s$: ExcludeOne s$: A$ = Mid$(A$, Len(s$) + 1)
 s$ = s$ + A$
 MKEY$ = ""
 INK = Chr$(8) + A$
 Else
-
+''A$ = A$ + A$
+If s$ = "" Then A$ = " "
+GoTo cont12345
+End If
+Else
+cont12345:
     If InStr(excludechars, A$) > 0 Then
 
     Else
@@ -5461,57 +5454,74 @@ a112:
 
 End Sub
 Public Function RealLenOld(s$) As Long
-Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long
+Dim A() As Byte, ctype As Long, s1$, i As Long, LL As Long
 If IsWine Then
 RealLenOld = Len(s$)
 Else
 ctype = CT_CTYPE3
-ll = Len(s$)
-   If ll Then
+LL = Len(s$)
+   If LL Then
       ReDim A(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), A(0)) <> 0 Then
       For i = 1 To Len(s$) * 2 - 1 Step 2
       If A(i - 1) > 0 Then
-      If A(i) = 0 Then If A(i - 1) < 8 Then ll = ll - 1
+      If A(i) = 0 Then If A(i - 1) < 8 Then LL = LL - 1
       ElseIf A(i) = 0 Then
-      ll = ll - 1
+      LL = LL - 1
       End If
       
           Next i
       End If
    End If
-RealLenOld = ll
+RealLenOld = LL
 End If
 End Function
-Public Function RealLen(s$) As Long
-Dim A() As Byte, s1$, i As Long, ll As Long
-ll = Len(s$)
-   If ll Then
+Public Function RealLen(s$, Optional checkone As Boolean = False) As Long
+Dim A() As Byte, s1$, i As Long, LL As Long, ii As Long, L$, LLL$
+LL = Len(s$)
+   If LL Then
       ReDim A(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, 1, StrPtr(s$), Len(s$), A(0)) <> 0 Then
-      
+ii = 0
       For i = 1 To Len(s$) * 2 - 1 Step 2
-
-        If A(i - 1) = 0 Then If A(i) <> 0 Then ll = ll - 1
-      
+ii = ii + 1
+        If A(i - 1) = 0 Then
+        If A(i) <> 0 Then
+        If ii > 1 Then
+            If L$ = Mid$(s$, ii, 1) Then
+                If LLL$ = "" Then LL = LL + 1
+                    LLL$ = L$
+                Else
+                    L$ = Mid$(s$, ii, 1)
+                    LL = LL - 1
+                End If
+            Else
+            
+           If checkone Then LL = LL - 1
+            End If
+        Else
+        LLL$ = ""
+        End If
+        End If
+           L$ = Mid$(s$, ii, 1)
           Next i
       End If
    End If
-RealLen = ll
+RealLen = LL
 End Function
 Public Function PopOne(s$) As String
-Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long, MM As Long
+Dim A() As Byte, ctype As Long, s1$, i As Long, LL As Long, MM As Long
 ctype = CT_CTYPE3
 Dim one As Boolean
-ll = Len(s$)
-MM = ll
-   If ll Then
+LL = Len(s$)
+MM = LL
+   If LL Then
       ReDim A(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, A(0)) <> 0 Then
       For i = 1 To Len(s$) * 2 - 1 Step 2
             If A(i) = 0 Then
             If A(i - 1) > 0 Then
-            If A(i - 1) < 8 Then ll = ll - 1
+            If A(i - 1) < 8 Then LL = LL - 1
             Else
             If Not one Then Exit For
             
@@ -5522,29 +5532,29 @@ MM = ll
             End If
       Next i
       End If
-        ll = ll - 1
-      MM = MM - ll
+        LL = LL - 1
+      MM = MM - LL
    End If
-If ll < 0 Then
+If LL < 0 Then
 PopOne = s$
 s$ = ""
 ElseIf MM > 0 Then
     PopOne = Left$(s$, MM)
-    s$ = Right$(s$, ll)
+    s$ = Right$(s$, LL)
 End If
 
 End Function
 Public Sub ExcludeOne(s$)
-Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long
-ll = Len(s$)
+Dim A() As Byte, ctype As Long, s1$, i As Long, LL As Long
+LL = Len(s$)
 ctype = CT_CTYPE3
-   If ll > 1 Then
+   If LL > 1 Then
       ReDim A(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, A(0)) <> 0 Then
-      For i = ll * 2 - 1 To 1 Step -2
+      For i = LL * 2 - 1 To 1 Step -2
       If A(i) = 0 Then
       If A(i - 1) > 0 Then
-      If A(i - 1) < 8 Then ll = ll - 1
+      If A(i - 1) < 8 Then LL = LL - 1
       Else
       Exit For
       End If
@@ -5553,12 +5563,12 @@ ctype = CT_CTYPE3
       End If
           Next i
       End If
-       ll = ll - 1
-       If ll <= 0 Then
+       LL = LL - 1
+       If LL <= 0 Then
        s$ = ""
        Else
        
-        s$ = Left$(s$, ll)
+        s$ = Left$(s$, LL)
         End If
       Else
       s$ = ""
