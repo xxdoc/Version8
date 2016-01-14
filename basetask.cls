@@ -109,20 +109,30 @@ If dotcollection.Count < dotnum Then
 If UseGroupname = "" Then
 
 Else
-            If InStr(A$, "(") > 0 Then
-             If AscW(Left$(A$, 1)) > 255 Then
- A$ = "ауто." + A$
- Else
- A$ = "THIS." + A$
- End If
-            Else
+           ' If InStr(A$, "(") > 0 Then
+            ' If AscW(Left$(A$, 1)) > 255 Then
+ 'A$ = "ауто." + A$
+ 'Else
+ 'A$ = "THIS." + A$
+ 'End If
+  '          Else
             
             A$ = UseGroupname + A$
-            End If
+   '         End If
 
  End If
 Else
+
+  If dotcollection(dotnum) = "THIS" Then
+    If UseGroupname <> "" Then
+      A$ = UseGroupname + A$
+    Else
+    A$ = "THIS." + A$
+    End If
+  Else
     A$ = dotcollection(dotnum) + "." + A$
+
+    End If
     If Asc(A$) = 46 Then
     dotnum = 1
     While Asc(Mid$(A$, dotnum + 1) + " ") = 46

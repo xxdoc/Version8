@@ -1914,7 +1914,12 @@ End If
     pos2 = k - Len(A$) + 1
   End If
   End If
-  If FastSymbol(A$, "<=") Then
+'' or here for again4
+If FastSymbol(A$, ".") Then
+  addone col(), pos2, 10
+    pos2 = k - Len(A$) + 1
+End If
+If FastSymbol(A$, "<=") Then
   addone col(), pos2, 15
     pos2 = k - Len(A$) + 1
     Else
