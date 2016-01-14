@@ -1916,7 +1916,7 @@ End If
   End If
 '' or here for again4
 If FastSymbol(A$, ".") Then
-  addone col(), pos2, 10
+  addone col(), pos2, lastcol
     pos2 = k - Len(A$) + 1
 End If
 If FastSymbol(A$, "<=") Then
@@ -2404,7 +2404,7 @@ Dim ok As Boolean
 
 If A$ = "" Then Exit Function
 ok = InStr(c$, Left$(A$, 1))
-If remove Then A$ = Mid$(A$, 2)
+If remove And ok Then A$ = Mid$(A$, 2)
 MaybeIsSymbolNoSpace = ok
 End Function
 Private Sub mDoc_Lastline()
