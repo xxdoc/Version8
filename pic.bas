@@ -1782,7 +1782,7 @@ End If
 End Sub
 Sub SpriteControl(ByVal aPrior As Long, ByVal bPrior As Long) ' these are priorities
 'If aPrior = bPrior Then Exit Sub ' just done...
-Dim k As Long, m As Long, i As Long, ll As Long, KK As Long
+Dim k As Long, m As Long, i As Long, LL As Long, KK As Long
 k = FindSpriteByTag(aPrior)
 
 If k = 0 Then Exit Sub  ' there is no such a player
@@ -2689,7 +2689,7 @@ Function ismine1(ByVal A$) As Boolean  '  START A BLOCK
 ismine1 = True
 A$ = myUcase(A$, True)
 Select Case A$
-Case "DO", "REPEAT", "PART"
+Case "DO", "REPEAT", "PART", "LIB"
 Case "епамекабе", "епамакабе", "леяос"
 Case Else
 ismine1 = False
@@ -2699,8 +2699,8 @@ Function ismine2(ByVal A$) As Boolean  ' CAN START A BLOCK OR DO SOMETHING
 ismine2 = True
 A$ = myUcase(A$, True)
 Select Case A$
-Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "ELSE", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "PATH", "PEN", "PRINTER", "PRINTING", "STACK", "START", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "WHILE"
-Case "аявг", "аккиыс", "цемийо", "цемийг", "цемийес", "циа", "дес", "ейтупытгс", "ейтупысг", "емы", "епипедо", "ивмос", "йахе", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
+Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "DECLARE", "ELSE", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "PATH", "PEN", "PRINTER", "PRINTING", "STACK", "START", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "WHILE"
+Case "аявг", "аккиыс", "цемийо", "цемийг", "цемийес", "циа", "дес", "ейтупытгс", "ейтупысг", "емы", "епипедо", "ивмос", "йахе", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "ояисе", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
 Case Else
 ismine2 = False
 End Select
@@ -2709,7 +2709,7 @@ Function ismine3(ByVal A$) As Boolean  ' CAN START A NEW COMMAND
 ismine3 = True
 A$ = myUcase(A$, True)
 Select Case A$
-Case "ELSE", "THEN"
+Case "ELSE", "THEN", "LIB"
 Case "аккиыс", "тоте"
 Case Else
 ismine3 = False
@@ -3147,6 +3147,224 @@ Dim p2 As Long, P1 As Integer, p4 As Long
    Exit Function
   End Select
   Next i
+
+End Function
+Public Function IsLabelDotSub(where$, A$, rrr$, r$, lang As Long) As Long
+' for left side...no &
+
+Dim RR&, one As Boolean, c$, firstdot$, gr As Boolean
+
+rrr$ = ""
+r$ = ""
+Dim i&, l As Long, p3 As Integer
+Dim p2 As Long, P1 As Integer, p4 As Long '', excludesp As Long
+  l = Len(A$): If l = 0 Then IsLabelDotSub = 0: lang = 1: Exit Function
+p2 = StrPtr(A$): l = l - 1
+  p4 = p2 + l * 2
+  For i = p2 To p4 Step 2
+  GetMem2 i, P1
+  Select Case P1
+    Case 13
+    
+    If i < p4 Then
+    GetMem2 i + 2, p3
+    If p3 = 10 Then
+    IsLabelDotSub = 1234
+    If i + 6 > p4 Then
+    A$ = ""
+    Else
+    i = i + 4
+    Do While i < p4
+
+    GetMem2 i, P1
+    If P1 = 32 Or P1 = 160 Then
+    i = i + 2
+    Else
+    GetMem2 i + 2, p3
+    If P1 <> 13 And p3 <> 10 Then Exit Do
+    i = i + 4
+    End If
+    Loop
+    A$ = Mid$(A$, (i + 2 - p2) \ 2)
+    End If
+    Else
+    If i > p2 Then A$ = Mid$(A$, (i - 2 - p2) \ 2)
+    End If
+    Else
+    If i > p2 Then A$ = Mid$(A$, (i - 2 - p2) \ 2)
+    End If
+    
+    lang = 1
+    Exit Function
+    Case 32, 160
+    Case Else
+     ''excludesp = (i - p2) \ 2
+   Exit For
+  End Select
+  Next i
+  
+  If i > p4 Then A$ = "": IsLabelDotSub = 0: Exit Function
+  
+  For i = i To p4 Step 2
+  GetMem2 i, P1
+  If P1 < 256 Then
+  Select Case ChrW(P1)
+    Case "@"
+            If i < p4 And r$ <> "" Then
+            GetMem2 i + 2, P1
+            If ChrW(P1) <> "(" Then
+              where$ = r$
+            r$ = ""
+            rrr$ = ""
+            Else
+              IsLabelDotSub = 0: A$ = firstdot$ + Mid$(A$, (i - p2) \ 2): Exit Function
+            End If
+            Else
+              IsLabelDotSub = 0: A$ = firstdot$ + Mid$(A$, (i - p2) \ 2): Exit Function
+            End If
+    Case "?"
+        If r$ = "" And firstdot$ = "" Then
+        rrr$ = "?"
+        r$ = rrr$
+        i = i + 4
+        A$ = Mid$(A$, (i - p2) \ 2) ' mid$(a$, 2)
+        IsLabelDotSub = 1
+        lang = 1 + CLng(gr)
+        Exit Function
+    
+        ElseIf firstdot$ = "" Then
+        IsLabelDotSub = 1
+        lang = 1 + CLng(gr)
+        rrr$ = r$
+        A$ = Mid$(A$, (i + 2 - p2) \ 2)
+        Exit Function
+        Else
+        IsLabelDotSub = 0
+        A$ = Mid$(A$, (i + 2 - p2) \ 2)
+        Exit Function
+        End If
+    Case "."
+            If one Then
+            Exit For
+            ElseIf r$ <> "" And i < p4 Then
+            GetMem2 i + 2, P1
+            If ChrW(P1) = "." Or ChrW(P1) = " " Then
+            If ChrW(P1) = "." And i + 2 < p4 Then
+            
+                GetMem2 i + 4, P1
+                If ChrW(P1) = " " Then i = i + 4: Exit For
+            Else
+                i = i + 2
+               Exit For
+            End If
+            End If
+''            If Mid$(A$, 2, 2) = ". " Or Mid$(A$, 2, 1) = " " Then Exit for
+            GetMem2 i, P1
+            r$ = r$ & ChrW(P1)
+            ''A$ = Mid$(A$, 2)
+            RR& = 1
+            Else
+            firstdot$ = firstdot$ + "."
+            'A$ = Mid$(A$, 2)
+            End If
+        Case "\", "{" To "~", "^"
+            Exit For
+        Case "0" To "9", "_"
+           If one Then
+             '' do nothing
+             
+            '' If firstdot$ <> "" Then A$ = firstdot$ + A$
+            Exit For
+            ElseIf r$ <> "" Then
+            r$ = r$ & ChrW(P1)
+            '' A$ = Mid$(A$, 2)
+            RR& = 1 'is an identifier or floating point variable
+            Else
+            Exit For
+            End If
+        Case Is >= "A"
+            If one Then
+            Exit For
+            Else
+            r$ = r$ & ChrW(P1)
+            ''A$ = Mid$(A$, 2)
+            RR& = 1 'is an identifier or floating point variable
+            End If
+        Case "$"
+            If one Then Exit For
+            If r$ <> "" Then
+            one = True
+            RR& = 3 ' is string variable
+            r$ = r$ & ChrW(P1)
+'            A$ = Mid$(A$, 2)
+            Else
+            Exit For
+            End If
+        Case "%"
+            If one Then Exit For
+            If r$ <> "" Then
+            one = True
+            RR& = 4 ' is long variable
+            r$ = r$ & ChrW(P1)
+'            A$ = Mid$(A$, 2)
+            Else
+            Exit For
+            End If
+    Case "("
+            If r$ <> "" Then
+            If i + 4 <= p4 Then
+                GetMem2 i + 2, P1
+                GetMem2 i + 2, p3
+                If ChrW(P1) + ChrW(p3) = ")@" Then
+                    r$ = r$ & "()."
+                    i = i + 4
+            '                     A$ = Mid$(A$, 4)
+                Else
+                    GoTo i123
+                End If
+                            Else
+i123:
+                                       Select Case RR&
+                                       Case 1
+                                       RR& = 5 ' float array or function
+                                       Case 3
+                                       RR& = 6 'string array or function
+                                       Case 4
+                                       RR& = 7 ' long array
+                                       Case Else
+                                       Exit For
+                                       End Select
+                     GetMem2 i, P1
+                                        r$ = r$ & ChrW(P1)
+                                        i = i + 2
+                                      ' A$ = Mid$(A$, 2)
+                                   Exit For
+                            
+                          End If
+               Else
+                        Exit For
+            
+            End If
+        Case Else
+        Exit For
+  End Select
+  Else
+    If one Then
+              Exit For
+              Else
+              gr = True
+              ''r$ = r$ & Left$(A$, 1)
+              r$ = r$ & ChrW(P1)
+              'A$ = Mid$(A$, 2)
+              RR& = 1 'is an identifier or floating point variable
+              End If
+    End If
+  Next i
+  If i > p4 Then A$ = "" Else If (i + 2 - p2) \ 2 > 1 Then A$ = Mid$(A$, (i + 2 - p2) \ 2)
+       rrr$ = firstdot$ + myUcase(r$, gr)
+       lang = 1 + CLng(gr)
+    IsLabelDotSub = RR&
+   'a$ = LTrim(a$)
 
 End Function
 
