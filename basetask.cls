@@ -44,11 +44,12 @@ Private threadsnames As New Collection  ' δουλεύει
 Public mMap As New Collection
 Public TaskMain As Boolean
 Public OriginalName$
-Public mGroupName$
+Private mGroupName$
 Public UseGroupname$
 Public LastClick As Long
 Public Look2Parent As Boolean
 Private dotcollection As New Collection
+Public StaticCollection As New Collection
 Private topdotlevel As Long
 Public reflimit As Long
 Public IndexSub As Long
@@ -62,7 +63,116 @@ Public LastState As Boolean
 Private RetSoros As New mStiva  ' for basic mimic functions- for education only
 Public SubLevel As Long
 Public OriginalCode As Long
+Public StaticInUse$
+Public Sub SetVar(ByVal NAME$, var As Variant)
+    On Error Resume Next
+    StaticCollection.Add var, NAME$
+    If Err.Number > 0 Then
+    StaticCollection.remove NAME$
+    StaticCollection.Add var, NAME$
+    End If
+   
+   '' Debug.Print "Put to ", Me.StaticInUse, " Var ", NAME$, " type ", Typename$(VAR)
+End Sub
+Function AlterVar(ByVal NAME$, p As Double, ss$, inttype As Boolean) As Boolean
+Dim var As Variant
+  var = StaticCollection(NAME$)
+    StaticCollection.remove NAME$
+            Select Case ss$
+            Case "!!"
+            var = -1 - (var <> 0)
+            Case "++"
+            var = var + 1
+            Case "--"
+            var = var - 1
+            Case "-!"
+            var = -var
+            Case "=", "g"
+            var = p
+            Case "+"
+            var = p + var
+            Case "*"
+            var = p * var
+            Case "-"
+            var = var - p
+            Case "/"
+            If p = 0 Then
+            
+             Exit Function
+            End If
+            var = var / p
+            Case "!"
+            var = -1 - (var <> 0)
+            End Select
+            If inttype Then
+            var = Int(var)
+            Else
+            var = MyRound(var, 13)
+            End If
+   StaticCollection.Add var, NAME$
+   AlterVar = True
+End Function
+Function MyRound(ByVal x, Optional d As Double = 0) As Double
+Dim i, n
+  i = Abs(Int(d)): If i > 13 Then i = 13
+  n = Sgn(x) * 0.5
 
+Select Case i
+Case 0
+MyRound = Fix(x + n)
+Case 1
+MyRound = Fix(x * 10# + n) / 10#
+Case 2
+MyRound = Fix(x * 100# + n) / 100#
+Case 3
+MyRound = Fix(x * 1000# + n) / 1000#
+Case 4
+MyRound = Fix(x * 10000# + n) / 10000#
+Case 5
+MyRound = Fix(x * 100000# + n) / 100000#
+Case 6
+MyRound = Fix(x * 1000000# + n) / 1000000#
+Case 7
+MyRound = Fix(x * 10000000# + n) / 10000000#
+Case 8
+MyRound = Fix(x * 100000000# + n) / 100000000#
+Case 9
+MyRound = Fix(x * 1000000000# + n) / 1000000000#
+Case 10
+MyRound = Fix(x * 10000000000# + n) / 10000000000#
+Case 11
+MyRound = Fix(x * 100000000000# + n) / 100000000000#
+Case 12
+MyRound = Fix(x * 1000000000000# + n) / 1000000000000#
+Case 13
+MyRound = Fix(x * 10000000000000# + n) / 10000000000000#
+End Select
+End Function
+Public Function ExistVar(ByVal NAME$) As Boolean
+    Dim i As Long
+    If StaticCollection.Count = 0 Then Exit Function
+    On Error Resume Next
+    i = VarType(StaticCollection(NAME$))
+    If Err.Number > 0 Then Exit Function
+    ExistVar = True
+End Function
+Public Sub ReadVar(ByVal NAME$, var As Variant)
+    Dim i As Long, VV As Variant
+    On Error Resume Next
+    i = VarType(StaticCollection(NAME$))
+    If Err.Number Then var = Empty: Exit Sub
+    ''Debug.Print NAME$, OriginalName, OriginalCode, HERE$, mGroupName
+    If i = vbObject Then
+            Set var = StaticCollection(NAME$)
+            StaticCollection.remove NAME$  '' we do a remove
+            Set VV = Nothing
+            StaticCollection.Add VV, NAME$
+            ' objects are popped
+    Else
+            var = StaticCollection(NAME$)
+    End If
+
+End Sub
 Public Sub DropNdot(n As Long)
 ''On Error Resume Next
 If n = 0 Then Exit Sub
@@ -84,7 +194,7 @@ dotcollection.Add A$, , , dotcollection.Count
 End If
 End Sub
 Public Function GetDotNew(A$, dotnum&) As Boolean
-If Look2Parent Then GetDotNew = Parent.GetDotNew(A$, dotnum&): Exit Function
+If Look2Parent Then GetDotNew = parent.GetDotNew(A$, dotnum&): Exit Function
 
 On Error Resume Next
 If dotcollection.Count = 0 Then
@@ -253,7 +363,7 @@ End Property
 Public Property Get IamChild() As Boolean
 IamChild = Mchild
 End Property
-Public Property Set Parent(dady As basetask)
+Public Property Set parent(dady As basetask)
 Set MyParent = dady
 Mchild = True
 Me.toback = dady.toback
@@ -262,8 +372,8 @@ Me.tolayer = dady.tolayer
 ' αν θέλω μαζί με την σύνδεση του Parent
 ' δίνω και την Sorosref από την Soros του Parent (την δική του ή από τον πατέρα του)
 End Property
-Public Property Get Parent() As basetask
-Set Parent = MyParent
+Public Property Get parent() As basetask
+Set parent = MyParent
 
 End Property
 Public Property Set Sorosref(A As mStiva)
@@ -319,23 +429,23 @@ Set Process = mprocess
 
 End Property
 Public Property Set LinkThread(Threadid As Long, A As TaskInterface)
-Dim aa As mThreadref
-Set aa = threadsnames(CStr(Threadid))
-Set aa.thread = A
+Dim AA As mThreadref
+Set AA = threadsnames(CStr(Threadid))
+Set AA.thread = A
 
 End Property
 
 Public Sub PushThread(Threadid As Long, threadvar As String)
-Dim aa As New mThreadref
+Dim AA As New mThreadref
 
-Set aa.thread = Nothing  ' no thread
-aa.Id = Threadid
-aa.VarName = threadvar
-threadsnames.Add aa, CStr(Threadid)
+Set AA.thread = Nothing  ' no thread
+AA.Id = Threadid
+AA.VarName = threadvar
+threadsnames.Add AA, CStr(Threadid)
 
 End Sub
 Public Function Exist(Threadid As Long, ThreadName As String) As Boolean
-Dim aa As mThreadref
+Dim AA As mThreadref
 On Error Resume Next
 Exist = threadsnames(CStr(Threadid)).VarName = ThreadName
 If Err.Number > 0 Then
@@ -346,47 +456,47 @@ End If
 End Function
 
 Public Function ThrowOne(Threadid As Long) As Boolean
-Dim aa As mThreadref
+Dim AA As mThreadref
 On Error Resume Next
 ' this is mandatory
 If TaskMaster.ThrowOne(Threadid) Then ThrowOne = True
 If Err.Number > 0 Then Err.clear: Exit Function
 ' maybe the task isn't on our list - because we send message from other thread!
-Set aa = threadsnames(CStr(Threadid))
+Set AA = threadsnames(CStr(Threadid))
 If Err.Number = 0 Then
 threadsnames.remove CStr(Threadid)
-aa.thread.Dispose tmAllTasks
+AA.thread.Dispose tmAllTasks
 ThrowOne = True
 Dim bb As basetask
-Set aa.thread = Nothing
+Set AA.thread = Nothing
 Else
 Err.clear
-ThrowOne = Me.Parent.ThrowOne(Threadid)
+ThrowOne = Me.parent.ThrowOne(Threadid)
 
 End If
 Err.clear
 'If Me.IamChild Then Me.Parent.ThrowOne Threadid
-Set aa = Nothing
+Set AA = Nothing
 End Function
-Public Function ThreadsStr(Optional ByVal Lang As Long = 0)
+Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 '' use threadsnames
-Dim aa As mThreadref, A$
+Dim AA As mThreadref, A$
 If threadsnames.Count > 0 Then
-For Each aa In threadsnames
-If Left$(aa.VarName, 1) = "_" Then
-If Lang = 0 Then
+For Each AA In threadsnames
+If Left$(AA.VarName, 1) = "_" Then
+If lang = 0 Then
 A$ = A$ & "ΕΣΩΤΕΡΙΚΟ ΝΗΜΑ "
 Else
 A$ = A$ & "INTERNAL THREAD "
 End If
 Else
-A$ = A$ & aa.VarName + Str$(aa.Id) & " "
+A$ = A$ & AA.VarName + Str$(AA.Id) & " "
 End If
-Next aa
+Next AA
 End If
 If Me.IamChild Then
-If Not Me.Parent Is Nothing Then
-ThreadsStr = Trim$(A$ & Me.Parent.ThreadsStr(Lang))
+If Not Me.parent Is Nothing Then
+ThreadsStr = Trim$(A$ & Me.parent.ThreadsStr(lang))
 Else
 ThreadsStr = ""
 End If
@@ -396,33 +506,33 @@ End If
 End Function
 Public Function ThreadsNumber() As Long
 '' use threadsnames
-Dim aa As mThreadref, KK
+Dim AA As mThreadref, KK
 If threadsnames.Count > 0 Then
-For Each aa In threadsnames
-If Left$(aa.VarName, 5) <> "_multi" Then KK = KK + 1
-Next aa
+For Each AA In threadsnames
+If Left$(AA.VarName, 5) <> "_multi" Then KK = KK + 1
+Next AA
 End If
 
 ThreadsNumber = KK
 End Function
 Public Sub ThrowThreads(Optional idexclude As Long = -1)
 
-Dim aa As mThreadref, Tid As Long
+Dim AA As mThreadref, Tid As Long
 Dim thatProcess As TaskInterface
 Dim thatBasetask As basetask
 
 If threadsnames.Count > 0 Then
-For Each aa In threadsnames
-If idexclude <> aa.Id Then
+For Each AA In threadsnames
+If idexclude <> AA.Id Then
 If Not TaskMaster Is Nothing Then
-If TaskMaster.ThrowOne(aa.Id) Then
-ThrowOne aa.Id
+If TaskMaster.ThrowOne(AA.Id) Then
+ThrowOne AA.Id
 End If
 Else
-ThrowOne aa.Id
+ThrowOne AA.Id
 End If
 End If
-Next aa
+Next AA
 End If
 
 End Sub
@@ -512,7 +622,7 @@ Set myOwner = Nothing
 Set mprocess = Nothing
 Set parentSoros = Nothing
 Set MyParent = Nothing
-
+Set StaticCollection = Nothing
 End Sub
 
 

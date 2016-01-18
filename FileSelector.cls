@@ -132,12 +132,12 @@ If NostateDir Then Exit Sub
 If fakeitemcount = 0 Then fakeitemcount = 1
 cListCount = fakeitemcount
 End Sub
-Private Function mylcasefILE(ByVal a$) As String
-a$ = LTrim$(a$)
+Private Function mylcasefILE(ByVal A$) As String
+A$ = NLtrim$(A$)
 If casesensitive Then
-mylcasefILE = a$
+mylcasefILE = A$
 Else
- mylcasefILE = LCase(a$) '!!!!!!!!!!
+ mylcasefILE = LCase(A$) '!!!!!!!!!!
  End If
 
 End Function
@@ -375,25 +375,25 @@ End Property
 
 Private Sub gListN_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
 ' item is from 0
-Dim a As RECT, b As RECT
+Dim A As RECT, b As RECT
 Dim what$, ThatPara As Long, i As Long
 If NostateDir Then
 ' as a setup menu
 If item <> -1 Then skip = False
 Else
-CopyFromLParamToRect a, thisrect
+CopyFromLParamToRect A, thisrect
 CopyFromLParamToRect b, thisrect
-a.Left = a.Left + 1
-a.Right = glistN.WidthPixels
+A.Left = A.Left + 1
+A.Right = glistN.WidthPixels
 b.Right = glistN.WidthPixels
 If item < 0 Then  ' this is a headline
 If Not skip Then FillBack thisHDC, b, glistN.CapColor
       mDoc1.TextParagraphLine 1, what$, ThatPara
       glistN.HeadlineHeight = mDoc1.DocLines * (onelineheight + 1) + 2
-      a.top = a.top + 1
+      A.top = A.top + 1
       For i = 1 To mDoc1.DocLines
-        PrintItem thisHDC, mDoc1.TextLine(i), a
-        a.top = a.top + onelineheight + 1
+        PrintItem thisHDC, mDoc1.TextLine(i), A
+        A.top = A.top + onelineheight + 1
       Next i
  If topoffsetpixel = 0 Then topoffsetpixel = glistN.LineTopOffsetPixels
      
@@ -405,9 +405,9 @@ If Not skip Then FillBack thisHDC, b, glistN.CapColor
 
 ElseIf Left$(Mydir.List(item), 1) = Chr$(2) Then
                 'DrawFrameControl thisHDC, a, 0, item
-                a.Left = a.Left + 1
+                A.Left = A.Left + 1
                 
-              a.top = a.top + topoffsetpixel
+              A.top = A.top + topoffsetpixel
                 
                    If item = glistN.listindex And Not glistN.ListSep(item) Then
             'SetTextColor thisHDC, 0
@@ -420,12 +420,12 @@ ElseIf Left$(Mydir.List(item), 1) = Chr$(2) Then
                 End If
        
                  If Mydir.path = "" Then
-                 a.Left = a.Left + 1
+                 A.Left = A.Left + 1
                  If (Mydir.ReadLevel(item) - 1) > 0 Then SetTextColor thisHDC, &H666666 ' &H999999
-                 PrintItem thisHDC, Mid$(Mydir.List(item), 2), a
+                 PrintItem thisHDC, Mid$(Mydir.List(item), 2), A
                  Else
-                 a.Left = a.Left + 1 + (Mydir.ReadLevel(item) - 1) * 30 * lastfactor
-                PrintItem thisHDC, "\" + Mydir.ExtractName(Mydir.List(item)), a
+                 A.Left = A.Left + 1 + (Mydir.ReadLevel(item) - 1) * 30 * lastfactor
+                PrintItem thisHDC, "\" + Mydir.ExtractName(Mydir.List(item)), A
                 End If
 Else
     If item = glistN.listindex Then
@@ -448,9 +448,9 @@ Else
     b.top = b.Bottom - 1
    FillBack thisHDC, b, 0
     End If
-    a.Left = a.Left + 1 + (Mydir.ReadLevel(item) - 1) * 30 * lastfactor
-     a.top = a.top + topoffsetpixel
-    PrintItem thisHDC, Mydir.ExtractName(Mydir.List(item)), a
+    A.Left = A.Left + 1 + (Mydir.ReadLevel(item) - 1) * 30 * lastfactor
+     A.top = A.top + topoffsetpixel
+    PrintItem thisHDC, Mydir.ExtractName(Mydir.List(item)), A
 
     
 End If
@@ -544,9 +544,9 @@ End If
 End Sub
 
 Public Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT
-CopyFromLParamToRect a, thatRect
-FillBack thathDC, a, thatbgcolor
+Dim A As RECT
+CopyFromLParamToRect A, thatRect
+FillBack thathDC, A, thatbgcolor
 End Sub
 Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
 ' create brush
@@ -556,7 +556,7 @@ FillRect thathDC, there, my_brush
 DeleteObject my_brush
 End Sub
 Private Sub myDir2_DirFinished()
-Dim findit As Long, a$(), b$
+Dim findit As Long, A$(), b$
 
 Set Mydir = myDir2
 'glistN.clear  no clear please

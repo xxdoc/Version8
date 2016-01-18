@@ -28,6 +28,11 @@ Private Sub Class_Initialize()
 myid = -1
 End Sub
 
+
+Private Property Get TaskInterface_Process() As basetask
+Set TaskInterface_Process = myProcess
+End Property
+
 Public Property Set TaskInterface_Process(Value As basetask)
 Set myProcess = Value
 

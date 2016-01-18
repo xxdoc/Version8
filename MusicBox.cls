@@ -36,6 +36,9 @@ If mNote > 0 Then
  End If
 End Sub
 
+Private Property Get TaskInterface_Process() As basetask
+Set TaskInterface_Process = myProcess
+End Property
 Private Property Set TaskInterface_Process(aProcess As basetask)
 Set myProcess = aProcess
 Set myProcess.Process = myBase

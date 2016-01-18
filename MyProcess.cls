@@ -37,6 +37,11 @@ Private myProcess As basetask  ' myprocess.process.id is the handler
 Private myProcessPureParent As basetask
 Private mNostretch As Boolean
 
+
+Private Property Get TaskInterface_Process() As basetask
+Set TaskInterface_Process = myProcess
+End Property
+
 Private Property Set TaskInterface_Process(aProcess As basetask)
 If aProcess Is Nothing Then
     Set myOwner = Nothing

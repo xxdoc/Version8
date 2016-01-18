@@ -28,7 +28,7 @@ Dim m_duration As Double
 Dim mYspace As Double
     Dim myholdtime As Double
 Dim mycode As String
-Dim mymode As Long
+Dim MyMode As Long
 Dim mybusy As Boolean
 Public hPipe As Long
 Private pipename As String  '= "\\.\pipe\bigtest"
@@ -37,6 +37,11 @@ Private myBUFvar As String, res As Long
 Private myBase As TaskInterface
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Private myProcess As basetask
+
+Private Property Get TaskInterface_Process() As basetask
+Set TaskInterface_Process = myProcess
+End Property
+
 Private Property Set TaskInterface_Process(aProcess As basetask)
 Set myProcess = aProcess
 Set myProcess.Process = myBase
@@ -93,7 +98,7 @@ On Error GoTo poulos
    mytarget$ = Values(4)
    ' AND A VARIABLE....TO PLACE DATA
    Dim openMode, pipeMode As Long
-    Dim sa As SECURITY_ATTRIBUTES
+    Dim SA As SECURITY_ATTRIBUTES
 'Create the named pipe
    Const GMEM_FIXED = &H0
     Const GMEM_ZEROINIT = &H40
@@ -102,12 +107,12 @@ On Error GoTo poulos
   pSD = GlobalAlloc(GPTR, SECURITY_DESCRIPTOR_MIN_LENGTH)
       res = InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION)
       res = SetSecurityDescriptorDacl(pSD, -1, 0, 0)
-      sa.nLength = LenB(sa)
-      sa.lpSecurityDescriptor = pSD
-      sa.bInheritHandle = True
+      SA.nLength = LenB(SA)
+      SA.lpSecurityDescriptor = pSD
+      SA.bInheritHandle = True
 openMode = PIPE_ACCESS_INBOUND 'PIPE_ACCESS_DUPLEX ' Or WRITE_DAC ' PIPE_ACCESS_DUPLEX | WRITE_DAC
 pipeMode = PIPE_NOWAIT Or PIPE_TYPE_BYTE Or PIPE_READMODE_BYTE
-hPipe = CreateNamedPipe(StrPtr(pipename), openMode, pipeMode, 10, 10000, 2000, 400, sa)
+hPipe = CreateNamedPipe(StrPtr(pipename), openMode, pipeMode, 10, 10000, 2000, 400, SA)
 
 If INVALID_HANDLE_VALUE = hPipe Then
 myBase.Done = True: Exit Sub
@@ -128,7 +133,7 @@ Private Function BytesToStr(ab() As Byte) As String
     BytesToStr = StrConv(ab, vbUnicode)
 End Function
 Private Sub TaskInterface_Tick()
- Dim X As Integer, mycnt As Long
+ Dim x As Integer, mycnt As Long
 Dim lpBuffer(2048) As Byte
 On Error GoTo there
 If m_duration <= uintnew(CDbl(timeGetTime)) Then

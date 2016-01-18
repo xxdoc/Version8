@@ -441,7 +441,7 @@ End Function
 Private Function look(ByVal level As Integer, ByVal folder As String, Optional offset As Long = 0, Optional foldersincluded As Boolean = False, Optional foldersonly As Boolean = False) As Long
 Dim lookpath As String, GUARD As String, mf$(), maxf As Long, k As Long
 If LevelStop > 0 Then If level > LevelStop Then Exit Function
-Dim fold$(), fff As Long, ADDTHIS As Long, mlen As Long
+Dim fold$(), fff As Long, addthis As Long, mlen As Long
 Dim Filter As Long
   Dim wfd As WIN32_FIND_DATA, fhandle As Long
 On Error GoTo 1000:
@@ -522,7 +522,7 @@ Wend
 FindClose fhandle
 ' #1
 ' maybe we can hide that witha switch
- If level = 1 And folder <> "" And ((LCase(folder & "\") <> LCase(TopFolder)) Or (TopFolder = "\")) Then AddAFile "...", level: ADDTHIS = ADDTHIS + 1  '  may we needaswitch here to exclude that
+ If level = 1 And folder <> "" And ((LCase(folder & "\") <> LCase(TopFolder)) Or (TopFolder = "\")) Then AddAFile "...", level: addthis = addthis + 1  '  may we needaswitch here to exclude that
 If foldersonly Or foldersincluded Then
      ' #2
     If fff > 0 Then QuickSortExtended fold$(), 1, fff      ' we can sort the folders here
@@ -589,7 +589,7 @@ End If
 End If
 
 
-look = maxf + ADDTHIS
+look = maxf + addthis
 Exit Function
 1000:
 look = 0
@@ -639,7 +639,7 @@ Dim Piv As String, Tmp As String '<- adjust types here, when switching to someth
 End Sub
 Private Function IsSymbol3(A$, c$) As Boolean
 Dim b$
-b$ = LTrim$(A$)
+b$ = NLtrim$(A$)
   If b$ <> "" Then
     If Left$(b$, Len(c$)) = c$ Then
         A$ = Mid$(b$, Len(c$) + 1)

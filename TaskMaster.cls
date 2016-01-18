@@ -213,7 +213,7 @@ GoTo thh
 thh:
         RestEnd
 End Property
-Public Sub Message(Mes As Long, code As Long, Optional PARAM As Long = 0)
+Public Sub Message(Mes As Long, code As Long, Optional PARAM As Long = 0, Optional Exec$)
 Dim ok As Boolean
 Dim task As TaskInterface
 Set task = getone(Mes)
@@ -229,6 +229,11 @@ If Not (task Is Nothing) Then
             task.busy = False
         Case 3
         task.Interval = PARAM
+        Case 4
+        If Execute(task.Process, Exec$, True) = 0 Then
+            task.Dispose tmAllTasks
+            ThrowOne Mes
+        End If
         
         End Select
         

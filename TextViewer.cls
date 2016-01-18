@@ -1620,11 +1620,11 @@ col(k + 2) = thispos
 
 End Sub
 Private Sub ColorizeExpressions(ByVal A$, col(), k As Long, pos2 As Long, feedthis As Long)
-Dim DROP$, pos1 As Long, kind As Long
+Dim drop$, pos1 As Long, kind As Long
 Dim lastcol As Long
 again:
 If A$ = "" Then Exit Sub
-DROP$ = "@(": kind = Abs(FastSymbol(A$, DROP$)) * 4
+drop$ = "@(": kind = Abs(FastSymbol(A$, drop$)) * 4
 If kind = 0 Then
 If IsSymbol(A$, "@") Then
 
@@ -1635,19 +1635,19 @@ addone col(), 1, 14
 End If
  pos2 = k - Len(A$) + 1
 End If
-kind = IsLabelOnly(A$, DROP$)
+kind = IsLabelOnly(A$, drop$)
 End If
 
-If kind = 0 Then DROP$ = "$(": kind = Abs(FastSymbol(A$, DROP$)) * 4
-If kind = 0 Then DROP$ = "~(": kind = Abs(FastSymbol(A$, DROP$)) * 4
-If kind = 0 Then DROP$ = ""
+If kind = 0 Then drop$ = "$(": kind = Abs(FastSymbol(A$, drop$)) * 4
+If kind = 0 Then drop$ = "~(": kind = Abs(FastSymbol(A$, drop$)) * 4
+If kind = 0 Then drop$ = ""
 If kind > 0 Then
-    If ismine(DROP$) Then
+    If ismine(drop$) Then
     lastcol = 11
     If pos2 > 0 Then
        addone col(), pos2, 11
     Else
-       addone col(), k - Len(A$) - Len(DROP$) + 1, 11
+       addone col(), k - Len(A$) - Len(drop$) + 1, 11
        End If
         '' for the end
    Else
@@ -1655,7 +1655,7 @@ If kind > 0 Then
    If pos2 > 0 Then
        addone col(), pos2, lastcol
    Else
-       addone col(), k - Len(A$) - Len(DROP$) + 1, lastcol
+       addone col(), k - Len(A$) - Len(drop$) + 1, lastcol
       
        End If
   End If
@@ -1663,7 +1663,7 @@ If kind > 0 Then
   If kind > 3 Then
   Do
   pos1 = 1
-  DROP$ = aheadstatus(A$, False, pos1)
+  drop$ = aheadstatus(A$, False, pos1)
   If pos1 > 1 Then
   ColorizeExpressions Mid$(A$, 1, pos1 - 1), col(), k - Len(A$) + pos1 - 1, pos2, feedthis
   If feedthis > 0 And pos1 >= Len(A$) Then Exit Sub
@@ -1691,28 +1691,28 @@ pos2 = k - Len(A$) + 1
 ElseIf MaybeIsSymbol(A$, "{", , True) Then
 addone col(), pos2, 15
 
-DROP$ = blockString(A$)
-If DROP$ <> "" Or (DROP$ = "" And Left$(A$, 1) = "}") Then
+drop$ = blockString(A$)
+If drop$ <> "" Or (drop$ = "" And Left$(A$, 1) = "}") Then
 feedthis = 0
 ''If Not IsSymbol(a$, "}") Then
 If Not MaybeIsSymbol(A$, "}", , True) Then feedthis = 15
 Else
 feedthis = 15
 End If
-DROP$ = ""
+drop$ = ""
 pos2 = k - Len(A$) + 1
 If feedthis = 15 Then Exit Sub
     GoTo again
 
 ElseIf MaybeIsSymbol(A$, Chr(34)) Then
 
-If Not ISSTRINGA(A$, DROP$) Then
+If Not ISSTRINGA(A$, drop$) Then
 A$ = ""
 addone col(), pos2, 10
 Else
 addone col(), pos2, 15
 End If
-DROP$ = ""
+drop$ = ""
 pos2 = k - Len(A$) + 1
     GoTo again
 
@@ -1773,7 +1773,7 @@ End If
 Exit Sub
 End If
 ReDim col(1)
-Dim A$, k As Long, DROP$, pos1 As Long, pos2 As Long, onetime As Boolean, kind As Long
+Dim A$, k As Long, drop$, pos1 As Long, pos2 As Long, onetime As Boolean, kind As Long
 Dim lastcol As Long
 A$ = data
 onetime = True
@@ -1817,7 +1817,7 @@ addone col(), 1, 14
 End If
  pos2 = k - Len(A$) + 1
 Wend
-DROP$ = "@(": kind = Abs(FastSymbol(A$, DROP$)) * 4
+drop$ = "@(": kind = Abs(FastSymbol(A$, drop$)) * 4
 If kind = 0 Then
 If IsSymbol(A$, "@") Then
         If pos2 > 0 Then
@@ -1828,21 +1828,21 @@ If IsSymbol(A$, "@") Then
      pos2 = k - Len(A$) + 1
 End If
 End If
-kind = IsLabelDot("", A$, DROP$)
+kind = IsLabelDot("", A$, drop$)
 
-If kind = 0 Then DROP$ = "$(": kind = Abs(FastSymbol(A$, DROP$)) * 4
-If kind = 0 Then DROP$ = "~(": kind = Abs(FastSymbol(A$, DROP$)) * 4
-If kind = 0 Then DROP$ = ""
+If kind = 0 Then drop$ = "$(": kind = Abs(FastSymbol(A$, drop$)) * 4
+If kind = 0 Then drop$ = "~(": kind = Abs(FastSymbol(A$, drop$)) * 4
+If kind = 0 Then drop$ = ""
 If kind > 0 Then
-    If ismine(DROP$) Then
+    If ismine(drop$) Then
                 lastcol = 11
                 If pos2 > 0 Then
                    addone col(), pos2, 11
                 Else
-                   addone col(), k - Len(A$) - Len(DROP$) + 1, 11
+                   addone col(), k - Len(A$) - Len(drop$) + 1, 11
                    End If
         '' for the end
-                If ismine2(DROP$) Then
+                If ismine2(drop$) Then
               
                 kind = -2
                 If Trim$(A$) <> "" Then
@@ -1852,13 +1852,13 @@ If kind > 0 Then
                                             pos2 = k - Len(A$) + 1
                                             onetime = True
                                             GoTo again
-                                        ElseIf ismine3(DROP$) Then
+                                        ElseIf ismine3(drop$) Then
                                         onetime = True
                                         kind = -2
                                         GoTo again2
                                         End If
                                 End If
-                ElseIf ismine1(DROP$) Then
+                ElseIf ismine1(drop$) Then
                   
                 kind = -1
                                 If Trim$(A$) <> "" Then
@@ -1881,7 +1881,7 @@ If kind > 0 Then
                 If pos2 > 0 Then
                  addone col(), pos2, 10
                 Else
-                 addone col(), k - Len(A$) - Len(DROP$) + 1, 10
+                 addone col(), k - Len(A$) - Len(drop$) + 1, 10
                 
                  End If
   End If
@@ -1889,7 +1889,7 @@ If kind > 0 Then
   If kind > 3 Then
  
   pos1 = 1
- DROP$ = aheadstatus(A$, False, pos1)
+ drop$ = aheadstatus(A$, False, pos1)
 ''  pos1 = Len(A$) + 1
 
 marvel:
@@ -1903,7 +1903,7 @@ marvel2:
   If FastSymbol(A$, ",") Then
     pos2 = k - Len(A$) + 1
   pos1 = 1
-  DROP$ = aheadstatus(A$, False, pos1)
+  drop$ = aheadstatus(A$, False, pos1)
 GoTo marvel2
 End If
   
@@ -1942,23 +1942,23 @@ again3:
   pos1 = 1
  '' kind = -2 maybe
 A$ = NLtrim$(A$)
-  DROP$ = aheadstatus(A$, False, pos1)
+  drop$ = aheadstatus(A$, False, pos1)
   
-  If pos1 > 1 Or DROP$ = "S" Then
+  If pos1 > 1 Or drop$ = "S" Then
   If pos1 = 1 Then
-  DROP$ = A$
+  drop$ = A$
   pos1 = Len(A$) + 1
   Else
-  DROP$ = Mid$(A$, 1, pos1 - 1)
-  If DROP$ = "" Then DROP$ = " "
+  drop$ = Mid$(A$, 1, pos1 - 1)
+  If drop$ = "" Then drop$ = " "
   End If
 feedback = 0
- ColorizeExpressions DROP$, col(), k - Len(A$) + pos1 - 1, pos2, feedback
+ ColorizeExpressions drop$, col(), k - Len(A$) + pos1 - 1, pos2, feedback
 
  ''If feedthis Then Exit Sub
   A$ = Mid$(A$, pos1)   '''was pos1
 ''  If InStr(DROP$, " ") = 0 Then
-If InStr(DROP$, " ") = 0 Or kind >= 0 Then GoTo again3
+If InStr(drop$, " ") = 0 Or kind >= 0 Then GoTo again3
   End If
     If MaybeIsSymbol(A$, ",;", , True) Then
      addone col(), pos2, 14
@@ -2059,8 +2059,8 @@ End If
         GoTo again
 
 ElseIf pos2 = 0 Then
-If IsNumberLabel(A$, DROP$) Then
-        addone col(), k - Len(A$) - Len(DROP$) + 1, 15
+If IsNumberLabel(A$, drop$) Then
+        addone col(), k - Len(A$) - Len(drop$) + 1, 15
         pos2 = k - Len(A$) + 1
         GoTo again
  End If
@@ -2878,30 +2878,30 @@ End If
 End Property
 Public Property Get CharPosStart() As Long
 Dim findit As Long
-Dim A As Long, b As Long, c As Long, D As Long
+Dim A As Long, b As Long, c As Long, d As Long
 findit = -1
-mdoc.FindPos glistN.listindex + 1, glistN.SelStart, findit, A, b, c, D
+mdoc.FindPos glistN.listindex + 1, glistN.SelStart, findit, A, b, c, d
 CharPosStart = findit
 End Property
 Public Property Get SelStart() As Long
 '
 Dim findit As Long
-Dim A As Long, b As Long, c As Long, D As Long
+Dim A As Long, b As Long, c As Long, d As Long
 findit = -1
 If glistN.MarkNext > 0 Then
 If BlockTopline = BlockBottomline Then
 If BlockStartCursor < BlockEndCursor Then
-mdoc.FindPos BlockTopline + 1, BlockStartCursor, findit, A, b, c, D
+mdoc.FindPos BlockTopline + 1, BlockStartCursor, findit, A, b, c, d
 Else
-mdoc.FindPos BlockTopline + 1, BlockEndCursor, findit, A, b, c, D
+mdoc.FindPos BlockTopline + 1, BlockEndCursor, findit, A, b, c, d
 End If
 ElseIf BlockTopline = BlockStartLine Then
-mdoc.FindPos BlockTopline + 1, BlockStartCursor, findit, A, b, c, D
+mdoc.FindPos BlockTopline + 1, BlockStartCursor, findit, A, b, c, d
 Else
-mdoc.FindPos BlockTopline + 1, BlockEndCursor, findit, A, b, c, D
+mdoc.FindPos BlockTopline + 1, BlockEndCursor, findit, A, b, c, d
 End If
 Else
-mdoc.FindPos glistN.listindex + 1, glistN.SelStart, findit, A, b, c, D
+mdoc.FindPos glistN.listindex + 1, glistN.SelStart, findit, A, b, c, d
 End If
 If findit <> -1 Then LastSelStart = findit
 SelStart = findit
@@ -2914,19 +2914,19 @@ sel1 = SelLength
     BlockStartPara = BlockEndPara
     BlockStartPos = BlockEndPos
     glistN.MarkNext = 0
-Dim A As Long, b As Long, c As Long, D As Long
+Dim A As Long, b As Long, c As Long, d As Long
 findit = rhs
-mdoc.FindPos 1, 0, findit, A, b, c, D
+mdoc.FindPos 1, 0, findit, A, b, c, d
 
 SetRowColumn A, b, sel1 <> 0
 If sel1 <> 0 Then SelLength = sel1: LastSelStart = sel1
 End Property
 Public Property Let SelStartSilent(ByVal rhs As Long)
 Dim findit As Long
-Dim A As Long, b As Long, c As Long, D As Long
+Dim A As Long, b As Long, c As Long, d As Long
 LastSelStart = rhs
 findit = rhs
-mdoc.FindPos 1, 0, findit, A, b, c, D
+mdoc.FindPos 1, 0, findit, A, b, c, d
 SetRowColumn A, b, True
 End Property
 
@@ -3050,12 +3050,12 @@ End Function
 Public Function AutoIntNewLine() As Boolean
 ' if autonumber
 Dim A$, newid As Long 'mDoc.MarkParagraphID
-Dim b$, c$, D$, e$, skip As Boolean, TR$, maxw As Long
+Dim b$, c$, d$, e$, skip As Boolean, TR$, maxw As Long
 
 b$ = CurrentParagraph
 If AutoNumber Then
 If IsNumberLabel(b$, c$) Then
-D$ = NextParagraph: If D$ <> "" Then If IsNumberLabel(D$, e$) Then skip = True
+d$ = NextParagraph: If d$ <> "" Then If IsNumberLabel(d$, e$) Then skip = True
 If Not skip Then c$ = Trim(c$)
 If e$ <> "" Then If Val(e$) > Val(c$) + 10 Then skip = False
 If (Val(c$) Mod 10 = 0) And Not skip Then
@@ -3076,10 +3076,10 @@ A$ = Format((Val(c$) + 1), TR$) + Space$(Len(CurrentParagraph) - Len(Trim$(c$)) 
 End If
 End If
 Else
-A$ = Space$(Len(CurrentParagraph) - Len(LTrim(CurrentParagraph)))
+A$ = Space$(Len(CurrentParagraph) - Len(NLtrim$(CurrentParagraph)))
 End If
 Else
-A$ = Space$(Len(CurrentParagraph) - Len(LTrim(CurrentParagraph)))
+A$ = Space$(Len(CurrentParagraph) - Len(NLtrim$(CurrentParagraph)))
 End If
 
 If A$ <> "" Then

@@ -62,6 +62,8 @@ End Sub
 
 Public Sub Parameters(ParamArray Values())
 End Sub
+Public Property Get Process() As basetask
+End Property
 Public Property Set Process(Value As basetask)
 End Property
 Public Sub Tick()
