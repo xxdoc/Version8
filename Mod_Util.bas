@@ -1055,7 +1055,7 @@ If NoCR Then Exit Do Else PY = PY + 1
 
 If PY >= .My And Not ONELINE Then
 
-If ddd.name = "PrinterDocument1" Then
+If ddd.NAME = "PrinterDocument1" Then
 getnextpage
  With nr
  .top = PY * pixY + mb.uMineLineSpace
@@ -1205,7 +1205,7 @@ With mybasket
         
         If PY >= .My And Not ONELINE Then
         
-        If ddd.name = "PrinterDocument1" Then
+        If ddd.NAME = "PrinterDocument1" Then
         getnextpage
          With nr
          .top = PY * pixY + mUAddPixelsTop
@@ -1302,7 +1302,7 @@ Dim prive As Long
 prive = GetCode(ddd)
 On Error Resume Next
 With players(prive)
-BFONT = ddd.Font.name
+BFONT = ddd.Font.NAME
 If Font <> "" Then
 If Size = 0 Then Size = ddd.FontSize
 Form3.StoreFont Font, Size, .charset
@@ -1349,7 +1349,7 @@ Dim prive As Long
 prive = GetCode(ddd)
 On Error Resume Next
 With players(prive)
-BFONT = ddd.Font.name
+BFONT = ddd.Font.NAME
 If Font <> "" Then
 If Size = 0 Then Size = ddd.FontSize
 Form3.StoreFont Font, Size, .charset
@@ -1934,7 +1934,7 @@ res = nohi - Hi
 
 wi = ddd.CurrentX
     If collectit Then
-    Dim aa As Document
+    Dim AA As Document
    bstack.soros.PushStr mdoc.textDoc
         Set mdoc = Nothing
                  End If
@@ -1963,7 +1963,7 @@ Dim PX As Long, PY As Long, OLDFONT As String, OLDSIZE As Long, DEGR As Double
 Dim f As LOGFONT, hPrevFont As Long, hFont As Long, fline$, ruler As Long
 Dim BFONT As String
 On Error Resume Next
-BFONT = ddd.Font.name
+BFONT = ddd.Font.NAME
 If ExtraWidth <> 0 Then
 SetTextCharacterExtra ddd.hDC, ExtraWidth
 End If
@@ -2017,7 +2017,7 @@ If ExtraWidth <> 0 Then SetTextCharacterExtra ddd.hDC, 0
 End Sub
 
 Public Sub nForm(bstack As basetask, TheSize As Single, nW As Long, nH As Long, myLineSpace As Long)
-    Form3.StoreFont bstack.Owner.Font.name, TheSize, bstack.myCharSet
+    Form3.StoreFont bstack.Owner.Font.NAME, TheSize, bstack.myCharSet
     nH = Form3.TextHeight("Wq") + myLineSpace * 2
     nW = Form3.TextWidth("W") + dv15
 End Sub
@@ -2075,10 +2075,10 @@ If Form1.Visible Then
     Sleep 20
     k1 = 0
     MyDoEvents1 Form3
-    Dim aa As New cDIBSection
-    aa.CreateFromPicture hDCToPicture(GetDC(0), x, y, ff.Width / DXP, ff.Height / DYP)
+    Dim AA As New cDIBSection
+    AA.CreateFromPicture hDCToPicture(GetDC(0), x, y, ff.Width / DXP, ff.Height / DYP)
     
-    aa.ThumbnailPaint ff
+    AA.ThumbnailPaint ff
     ff.Visible = True
     If useform1 Then Form1.Visible = True
 End If
@@ -2224,7 +2224,7 @@ mSz = mSz * factor
 .uMineLineSpace = AddTwipsTop * factor
 .double = factor <> 1
 End If
-Form3.StoreFont dq.Font.name, mSz, dq.Font.charset
+Form3.StoreFont dq.Font.NAME, mSz, dq.Font.charset
 dq.FontSize = mSz
 
 .Yt = Form3.TextHeight("fj")
@@ -2349,7 +2349,7 @@ SetTextBasketBack dq, mybasket
                       nomoveLCTC dq, mybasket, y&, c& + x&, ins&
                       iamactive = False
            Else
-                If Not (GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1") Then
+                If Not (GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.NAME = "Form1") Then
                  
                       DestroyCaret
                       nomoveLCTC dq, mybasket, y&, c& + x&, ins&
@@ -2366,11 +2366,11 @@ SetTextBasketBack dq, mybasket
                 End If
      Else
   If Not Screen.ActiveForm Is Nothing Then
-            If GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1" Then
+            If GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.NAME = "Form1" Then
            
                           nomoveLCTC dq, mybasket, y&, c& + x&, ins&
                              iamactive = True
-                              If ShowCaret(dq.hWnd) = 0 And Screen.ActiveForm.name = "Form1" Then
+                              If ShowCaret(dq.hWnd) = 0 And Screen.ActiveForm.NAME = "Form1" Then
                                    HideCaret dq.hWnd
                                    .currow = y&
                                    .curpos = c& + x&
@@ -2638,7 +2638,7 @@ FrameText d, SzOne, Form1.Width, Form1.Height, PaperOne
 If lckfrm = 0 Then
 SetText d
 bstack.Owner.Font.charset = bstack.myCharSet
- Form3.StoreFont bstack.Owner.Font.name, SzOne, bstack.myCharSet
+ Form3.StoreFont bstack.Owner.Font.NAME, SzOne, bstack.myCharSet
  
  With players(basketcode)
 .mypen = PenOne
@@ -2657,11 +2657,11 @@ End With
  
  
 ' check to see if
-Dim SS$, skipthat As Boolean
+Dim ss$, skipthat As Boolean
 If Not IsSupervisor Then
-    SS$ = ReadUnicodeOrANSI(userfiles & "desktop.inf")
-    If SS$ <> "" Then
-     skipthat = interpret(bstack, SS$)
+    ss$ = ReadUnicodeOrANSI(userfiles & "desktop.inf")
+    If ss$ <> "" Then
+     skipthat = interpret(bstack, ss$)
     End If
 End If
 If SzOne < 36 And d.Height / SzOne > 250 Then SetDouble d: BAR = BAR + 1
@@ -2734,7 +2734,7 @@ End If
 'cr bstack
 End Sub
 Sub ClearScr(d As Object, c1 As Long)
-Dim aa As Long
+Dim AA As Long
 With players(GetCode(d))
 .Paper = c1
 .curpos = 0
@@ -2753,7 +2753,7 @@ spl = .mysplit * .Yt
 Set im = d.image
 .Paper = c1
 
-If d.name = "Form1" Then
+If d.NAME = "Form1" Then
 d.Line (0, spl)-(d.ScaleWidth - dv15, d.ScaleHeight - dv15), .Paper, BF
 .curpos = 0
 .currow = .mysplit
@@ -2838,14 +2838,16 @@ If Not bstack.toback Then d.TabStop = False
 If d Is Form1 Then
 d.lockme = True
 Else
-d.Parent.lockme = True
+d.parent.lockme = True
 End If
 If y1& - y& = 0 Then y& = y& - 1: If y1& < 0 Then y& = y& + 1: y1& = y1& + 1
 TextEditLineHeight = y1& - y& + 1
 
 With Form1.TEXT1
-MyDoEvents
-Hook Form1.hWnd, .glistN
+'MyDoEvents
+ProcTask2 bstack
+
+Hook Form1.hWnd, Nothing '.glistN
 .AutoNumber = Not Form1.EditTextWord
 
 .UsedAsTextBox = False
@@ -2853,7 +2855,7 @@ Hook Form1.hWnd, .glistN
 .glistN.maxchar = 0
 If d.ForeColor = tcol Then
 Set Form1.Point2Me = d
-If d.name = "Form1" Then
+If d.NAME = "Form1" Then
 .glistN.SkipForm = False
 Else
 .glistN.SkipForm = True
@@ -2889,12 +2891,12 @@ End If
 .ForeColor = d.ForeColor
 Form1.SetText1
 .glistN.overrideTextHeight = Form3.TextHeight("fj")
-.Font.name = d.Font.name
+.Font.NAME = d.Font.NAME
 .Font.Size = d.Font.Size ' SZ 'Int(d.font.Size) Why
 .Font.charset = d.Font.charset
 .Font.Italic = d.Font.Italic
 .Font.bold = d.Font.bold
-.Font.name = d.Font.name
+.Font.NAME = d.Font.NAME
 .Font.charset = d.Font.charset
 .Font.Size = prive.SZ
 With prive
@@ -2946,7 +2948,8 @@ End If
     .ResetUndoRedo
 
 End With
-MyDoEvents
+''MyDoEvents
+ProcTask2 bstack
 CancelEDIT = False
 Do
 BLOCKkey = False
@@ -2975,7 +2978,7 @@ If Form1.TEXT1.Visible Then Form1.TEXT1.Visible = False
 If d Is Form1 Then
 d.lockme = False
 Else
-d.Parent.lockme = False
+d.parent.lockme = False
 End If
 If Not CancelEDIT Then
 
@@ -3010,13 +3013,14 @@ Dim ot As Boolean
 
 If Not bstack.toback Then
 d.TabStop = False
-d.Parent.lockme = True
+d.parent.lockme = True
 Else
 d.lockme = True
 End If
 
 With Form1.TEXT1
-MyDoEvents
+'MyDoEvents
+ProcTask2 bstack
 Hook Form1.hWnd, Nothing
 '.Filename = ""
 .AutoNumber = Not Form1.EditTextWord
@@ -3029,7 +3033,7 @@ TextEditLineHeight = 1
 .glistN.BorderStyle = 0
 .glistN.BackStyle = 1
 Set Form1.Point2Me = d
-If d.name = "Form1" Then
+If d.NAME = "Form1" Then
 .glistN.SkipForm = False
 Else
 .glistN.SkipForm = True
@@ -3097,7 +3101,7 @@ End If
 .glistN.ZOrder 0
 .BackColor = d.BackColor
 .ForeColor = d.ForeColor
-.Font.name = d.Font.name
+.Font.NAME = d.Font.NAME
 Form1.SetText1
 .glistN.overrideTextHeight = Form3.TextHeight("fj")
 .Font.Size = d.Font.Size ' SZ 'Int(d.font.Size) Why
@@ -3105,7 +3109,7 @@ Form1.SetText1
 .Font.Italic = d.Font.Italic
 .Font.bold = d.Font.bold
 
-.Font.name = d.Font.name
+.Font.NAME = d.Font.NAME
 
 .Font.charset = d.Font.charset
 .Font.Size = prive.SZ 'Int(d.font.Size)
@@ -3151,7 +3155,8 @@ Else
 End If
 
 .Visible = True
-MyDoEvents
+''MyDoEvents
+ProcTask2 bstack
 .SetFocus
 
 If l <> 0 Then
@@ -3174,7 +3179,8 @@ End If
 
 
 End With
-MyDoEvents
+'MyDoEvents
+ProcTask2 bstack
 CancelEDIT = False
 Dim timeOut As Long
 
@@ -3205,7 +3211,7 @@ If Form1.TEXT1.Visible Then Form1.TEXT1.Visible = False
 If bstack.toback Then
 d.lockme = False
 Else
-d.Parent.lockme = False
+d.parent.lockme = False
 End If
 If Not CancelEDIT Then
 
@@ -3325,11 +3331,11 @@ prive = players(GetCode(d))
 Hook Form1.hWnd, Form1.List1
 Dim ot As Boolean, drop
 With Form1.List1
-.Font.name = d.Font.name
+.Font.NAME = d.Font.NAME
 Form1.Font.charset = d.Font.charset
 Form1.Font.Strikethrough = False
 .Font.Size = d.Font.Size
-.Font.name = d.Font.name
+.Font.NAME = d.Font.NAME
 Form1.Font.charset = d.Font.charset
 .Font.Size = d.Font.Size
 If LEVCOLMENU < 2 Then .BackColor = d.ForeColor
@@ -3615,7 +3621,7 @@ dd.Font.Size = Size
 Size = dd.Font.Size
 
 ''Sleep 1  '' USED TO GIVE TIME TO LOAD FONT
-Form3.StoreFont dd.Font.name, Size, dd.Font.charset
+Form3.StoreFont dd.Font.NAME, Size, dd.Font.charset
 .Yt = Form3.TextHeight("fj")
 .Xt = Form3.TextWidth("W")
 
@@ -3653,14 +3659,14 @@ If .Column < 4 Then .Column = 4
 
 .SZ = Size
 
-If dd.name = "Form1" Then
+If dd.NAME = "Form1" Then
 ' no change
 Else
-If dd.name <> "dSprite" Then
+If dd.NAME <> "dSprite" Then
 dd.Width = .mx * CLng(.Xt)
 dd.Height = .My * CLng(.Yt)
-dd.Left = (dd.Parent.ScaleWidth - dd.Width) \ 2
-dd.top = (dd.Parent.ScaleHeight - dd.Height) \ 2
+dd.Left = (dd.parent.ScaleWidth - dd.Width) \ 2
+dd.top = (dd.parent.ScaleHeight - dd.Height) \ 2
 ElseIf myCut Then
 dd.Width = .mx * .Xt
 dd.Height = .My * .Yt
@@ -3759,7 +3765,7 @@ LCTbasketCur dq, prive
 ins& = 0
 Dim fr1 As Long, fr2 As Long, p As Double
 UseEnter = False
-If dq.name = "DIS" Then
+If dq.NAME = "DIS" Then
 If Form1.Visible = False Then
     If Not Form3.Visible Then
         Form1.Hide: Sleep 100
@@ -3902,7 +3908,7 @@ Else
 If Screen.ActiveForm Is Nothing Then
 iamactive = False
 Else
-If Screen.ActiveForm.name <> "Form1" Then
+If Screen.ActiveForm.NAME <> "Form1" Then
 iamactive = False
 Else
 iamactive = GetForegroundWindow = Screen.ActiveForm.hWnd
@@ -4454,8 +4460,8 @@ s$ = mylcasefILE(s$)
             ' + LOAD NEW
                 cc.ValueKey = "FONT"
                     cc.ValueType = REG_SZ
-                   ' LoadFont (MCD & "TT6492M_.TTF")
-                  LoadFont (mcd & "TITUSCBZ.TTF")
+                    LoadFont (mcd & "TT6492M_.TTF")
+                 ' LoadFont (mcd & "TITUSCBZ.TTF")
                     
                cc.Value = "Monospac821Greek BT"
             ElseIf d$ = "LINESPACE" Then
@@ -5193,7 +5199,7 @@ End Sub
 Public Function getUniStringlINE(f As Long, s As String) As Boolean
 ' 2 bytes a time... stop to line end and advance to next line
 
-Dim A() As Byte, s1 As String, SS As Long, lbreak As String
+Dim A() As Byte, s1 As String, ss As Long, lbreak As String
 A = " "
 On Error GoTo a11
 Do While Not (LOF(f) < Seek(f))
@@ -5207,12 +5213,12 @@ If AscW(A()) < &H4000 Then Exit Function
 End If
 Else
 If Not (LOF(f) < Seek(f)) Then
-SS = Seek(f)
+ss = Seek(f)
 lbreak = s1
 Get #f, , A()
 s1 = A()
 If s1 <> vbCr And s1 <> vbLf Or lbreak = s1 Then
-Seek #f, SS  ' restore it
+Seek #f, ss  ' restore it
 End If
 End If
 Exit Do
@@ -5223,7 +5229,7 @@ a11:
 End Function
 Public Sub getAnsiStringlINE(f As Long, s As String)
 ' 2 bytes a time... stop to line end and advance to next line
-Dim A As Byte, s1 As String, SS As Long, lbreak As String
+Dim A As Byte, s1 As String, ss As Long, lbreak As String
 'a = " "
 On Error GoTo a11
 Do While Not (LOF(f) < Seek(f))
@@ -5234,13 +5240,13 @@ If s1 <> vbCr And s1 <> vbLf Then
 s = s + s1
 Else
 If Not (LOF(f) < Seek(f)) Then
-SS = Seek(f)
+ss = Seek(f)
 Get #f, , A
 lbreak = s1
 s1 = Chr(A)
 
 If s1 <> vbCr And s1 <> vbLf Or lbreak = s1 Then
-Seek #f, SS  ' restore it
+Seek #f, ss  ' restore it
 End If
 End If
 Exit Do
@@ -5253,7 +5259,7 @@ Public Sub getUniStringComma(f As Long, s As String)
 ' sring must be in quotes
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim A() As Byte, s1 As String, SS As Long, inside As Boolean
+Dim A() As Byte, s1 As String, ss As Long, inside As Boolean
 s = ""
 
 A = " "
@@ -5284,14 +5290,14 @@ inside = False
 Else
 ' look if we have one  more
 If Not (LOF(f) < Seek(f)) Then
-SS = Seek(f)
+ss = Seek(f)
 
 Get #f, , A()
 If A(0) = 34 Then
 s = s + Chr(34)
 GoTo nn1
 Else
-Seek #f, SS
+Seek #f, ss
 End If
 End If
 
@@ -5307,11 +5313,11 @@ Loop
 If s1 = "," Then Exit Do
 End If
 If s1 <> "," And (Not (LOF(f) < Seek(f))) And (Not inside) Then
-    SS = Seek(f)
+    ss = Seek(f)
     Get #f, , A()
     s1 = A()
     If s1 <> vbCr And s1 <> vbLf Then
-    Seek #f, SS  ' restore it
+    Seek #f, ss  ' restore it
     End If
     End If
 If Not inside Then Exit Do Else s = s + s1
@@ -5325,7 +5331,7 @@ Public Sub getAnsiStringComma(f As Long, s As String)
 ' sring must be in quotes
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim A As Byte, s1 As String, SS As Long, inside As Boolean
+Dim A As Byte, s1 As String, ss As Long, inside As Boolean
 s = ""
 
 On Error GoTo a1111
@@ -5355,14 +5361,14 @@ inside = False
 Else
 ' look if we have one  more
 If Not (LOF(f) < Seek(f)) Then
-SS = Seek(f)
+ss = Seek(f)
 
 Get #f, , A
 If A = 34 Then
 s = s + Chr(34)
 GoTo nn1
 Else
-Seek #f, SS
+Seek #f, ss
 End If
 End If
 
@@ -5378,11 +5384,11 @@ Loop
 If s1 = "," Then Exit Do
 End If
 If s1 <> "," And (Not (LOF(f) < Seek(f))) And (Not inside) Then
-    SS = Seek(f)
+    ss = Seek(f)
     Get #f, , A
     s1 = Chr(A)
     If s1 <> vbCr And s1 <> vbLf Then
-    Seek #f, SS  ' restore it
+    Seek #f, ss  ' restore it
     End If
     End If
 If Not inside Then Exit Do Else s = s + s1
@@ -5396,7 +5402,7 @@ End Sub
 Public Sub getUniRealComma(f As Long, r As Double)
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim A() As Byte, s1 As String, SS As Long, s As String
+Dim A() As Byte, s1 As String, ss As Long, s As String
 r = 0
 A = " "
 On Error GoTo a111
@@ -5408,11 +5414,11 @@ If s1 <> vbCr And s1 <> vbLf And s1 <> "," Then
 s = s + s1
 Else
 If s1 <> "," And Not (LOF(f) < Seek(f)) Then
-    SS = Seek(f)
+    ss = Seek(f)
     Get #f, , A()
     s1 = A()
     If s1 <> vbCr And s1 <> vbLf Then
-    Seek #f, SS  ' restore it
+    Seek #f, ss  ' restore it
     End If
 End If
 Exit Do
@@ -5426,7 +5432,7 @@ End Sub
 Public Sub getAnsiRealComma(f As Long, r As Double)
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim A As Byte, s1 As String, SS As Long, s As String
+Dim A As Byte, s1 As String, ss As Long, s As String
 r = 0
 
 On Error GoTo a112
@@ -5438,11 +5444,11 @@ If s1 <> vbCr And s1 <> vbLf And s1 <> "," Then
 s = s + s1
 Else
 If s1 <> "," And Not (LOF(f) < Seek(f)) Then
-    SS = Seek(f)
+    ss = Seek(f)
     Get #f, , A
     s1 = Chr(A)
     If s1 <> vbCr And s1 <> vbLf Then
-    Seek #f, SS  ' restore it
+    Seek #f, ss  ' restore it
     End If
 End If
 Exit Do

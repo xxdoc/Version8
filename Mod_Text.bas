@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 140
+Global Const Revision = 141
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2787,7 +2787,7 @@ Do
                 IsExpA = False
                 Exit Function
             End If
-ElseIf Fast2Label(AA$, "MOD", "упок", "упокоипо", 9) Then
+ElseIf Fast2Label(AA$, "MOD", "упокоипо", "упок", 9) Then
 
             If logical(bstack, AA$, r) Then
                 MUL = 5
