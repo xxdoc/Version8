@@ -23,7 +23,6 @@ Public LastComm$
 Public LastExecute As Long
 Public LastOnce As Boolean
 ''Public LastLoop As Boolean
-Private uSoros As New mStiva
 Private parentSoros As mStiva ' reference to parent..stiva
 Private MyParent As basetask  'reference to parent
 Private myOwner As Object
@@ -41,15 +40,14 @@ Private myRun As Boolean
 Private mprocess As TaskInterface ' reference to current process maybe same to parrent...
 Private mprocessOk As Boolean ' if i have a process class
 Private threadsnames As New Collection  ' δουλεύει
-Public mMap As New Collection
 Public TaskMain As Boolean
 Public OriginalName$
 Private mGroupName$
 Public UseGroupname$
 Public LastClick As Long
 Public Look2Parent As Boolean
-Private dotcollection As New Collection
-Public StaticCollection As New Collection
+Private dotcollection As Collection
+Public StaticCollection As Collection
 Private topdotlevel As Long
 Public reflimit As Long
 Public IndexSub As Long
@@ -194,7 +192,7 @@ dotcollection.Add A$, , , dotcollection.Count
 End If
 End Sub
 Public Function GetDotNew(A$, dotnum&) As Boolean
-If Look2Parent Then GetDotNew = parent.GetDotNew(A$, dotnum&): Exit Function
+If Look2Parent Then GetDotNew = Parent.GetDotNew(A$, dotnum&): Exit Function
 
 On Error Resume Next
 If dotcollection.Count = 0 Then
@@ -327,43 +325,14 @@ Public Property Get toback() As Boolean
 toback = mtoback
 End Property
 
-Public Property Get Map(Id As String) As Object  'variant class
-Set Map = mMap(Id)  ' get a reference write or read....and then throw the reference...
-End Property
 
-
-Public Function MapDelone(Id As String) As Boolean
-MapDelone = False
-On Error GoTo mmmm
-
- mMap.remove Id
- MapDelone = True
-mmmm:
-End Function
-Public Sub MapFlush()
-Dim i As Long
-If mMap.Count > 0 Then
-For i = 1 To mMap.Count
-mMap.remove 1
-Next i
-End If
-End Sub
-
-Public Function MapAdd(anObj As Object) As String
-Static counter As Long 'so we can "delete" a pointer...without reindexing
-Dim t$
-counter = counter + 1
-t$ = CStr(counter)
-mMap.Add anObj, t$
-MapAdd = t$
-End Function
 Public Property Get IamRunning() As Boolean
 IamRunning = myRun
 End Property
 Public Property Get IamChild() As Boolean
 IamChild = Mchild
 End Property
-Public Property Set parent(dady As basetask)
+Public Property Set Parent(dady As basetask)
 Set MyParent = dady
 Mchild = True
 Me.toback = dady.toback
@@ -372,8 +341,8 @@ Me.tolayer = dady.tolayer
 ' αν θέλω μαζί με την σύνδεση του Parent
 ' δίνω και την Sorosref από την Soros του Parent (την δική του ή από τον πατέρα του)
 End Property
-Public Property Get parent() As basetask
-Set parent = MyParent
+Public Property Get Parent() As basetask
+Set Parent = MyParent
 
 End Property
 Public Property Set Sorosref(A As mStiva)
@@ -429,23 +398,23 @@ Set Process = mprocess
 
 End Property
 Public Property Set LinkThread(Threadid As Long, A As TaskInterface)
-Dim AA As mThreadref
-Set AA = threadsnames(CStr(Threadid))
-Set AA.thread = A
+Dim aa As mThreadref
+Set aa = threadsnames(CStr(Threadid))
+Set aa.thread = A
 
 End Property
 
 Public Sub PushThread(Threadid As Long, threadvar As String)
-Dim AA As New mThreadref
+Dim aa As New mThreadref
 
-Set AA.thread = Nothing  ' no thread
-AA.Id = Threadid
-AA.VarName = threadvar
-threadsnames.Add AA, CStr(Threadid)
+Set aa.thread = Nothing  ' no thread
+aa.Id = Threadid
+aa.VarName = threadvar
+threadsnames.Add aa, CStr(Threadid)
 
 End Sub
 Public Function Exist(Threadid As Long, ThreadName As String) As Boolean
-Dim AA As mThreadref
+Dim aa As mThreadref
 On Error Resume Next
 Exist = threadsnames(CStr(Threadid)).VarName = ThreadName
 If Err.Number > 0 Then
@@ -456,47 +425,48 @@ End If
 End Function
 
 Public Function ThrowOne(Threadid As Long) As Boolean
-Dim AA As mThreadref
+Dim aa As mThreadref
 On Error Resume Next
 ' this is mandatory
+If TaskMaster Is Nothing Then Exit Function
 If TaskMaster.ThrowOne(Threadid) Then ThrowOne = True
 If Err.Number > 0 Then Err.clear: Exit Function
 ' maybe the task isn't on our list - because we send message from other thread!
-Set AA = threadsnames(CStr(Threadid))
+Set aa = threadsnames(CStr(Threadid))
 If Err.Number = 0 Then
 threadsnames.remove CStr(Threadid)
-AA.thread.Dispose tmAllTasks
+aa.thread.Dispose tmAllTasks
 ThrowOne = True
 Dim bb As basetask
-Set AA.thread = Nothing
+Set aa.thread = Nothing
 Else
 Err.clear
-ThrowOne = Me.parent.ThrowOne(Threadid)
+ThrowOne = Me.Parent.ThrowOne(Threadid)
 
 End If
 Err.clear
 'If Me.IamChild Then Me.Parent.ThrowOne Threadid
-Set AA = Nothing
+Set aa = Nothing
 End Function
 Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 '' use threadsnames
-Dim AA As mThreadref, A$
+Dim aa As mThreadref, A$
 If threadsnames.Count > 0 Then
-For Each AA In threadsnames
-If Left$(AA.VarName, 1) = "_" Then
+For Each aa In threadsnames
+If Left$(aa.VarName, 1) = "_" Then
 If lang = 0 Then
 A$ = A$ & "ΕΣΩΤΕΡΙΚΟ ΝΗΜΑ "
 Else
 A$ = A$ & "INTERNAL THREAD "
 End If
 Else
-A$ = A$ & AA.VarName + Str$(AA.Id) & " "
+A$ = A$ & aa.VarName + Str$(aa.Id) & " "
 End If
-Next AA
+Next aa
 End If
 If Me.IamChild Then
-If Not Me.parent Is Nothing Then
-ThreadsStr = Trim$(A$ & Me.parent.ThreadsStr(lang))
+If Not Me.Parent Is Nothing Then
+ThreadsStr = Trim$(A$ & Me.Parent.ThreadsStr(lang))
 Else
 ThreadsStr = ""
 End If
@@ -506,39 +476,41 @@ End If
 End Function
 Public Function ThreadsNumber() As Long
 '' use threadsnames
-Dim AA As mThreadref, KK
+Dim aa As mThreadref, KK
 If threadsnames.Count > 0 Then
-For Each AA In threadsnames
-If Left$(AA.VarName, 5) <> "_multi" Then KK = KK + 1
-Next AA
+For Each aa In threadsnames
+If Left$(aa.VarName, 5) <> "_multi" Then KK = KK + 1
+Next aa
 End If
 
 ThreadsNumber = KK
 End Function
 Public Sub ThrowThreads(Optional idexclude As Long = -1)
 
-Dim AA As mThreadref, Tid As Long
+Dim aa As mThreadref, Tid As Long
 Dim thatProcess As TaskInterface
 Dim thatBasetask As basetask
 
 If threadsnames.Count > 0 Then
-For Each AA In threadsnames
-If idexclude <> AA.Id Then
+For Each aa In threadsnames
+If idexclude <> aa.Id Then
 If Not TaskMaster Is Nothing Then
-If TaskMaster.ThrowOne(AA.Id) Then
-ThrowOne AA.Id
+If TaskMaster.ThrowOne(aa.Id) Then
+ThrowOne aa.Id
 End If
 Else
-ThrowOne AA.Id
+ThrowOne aa.Id
 End If
 End If
-Next AA
+Next aa
 End If
 
 End Sub
 
 Private Sub Class_Initialize()
-Set parentSoros = uSoros ' maybe this will change
+Set parentSoros = New mStiva ' maybe this will change
+Set dotcollection = New Collection
+Set StaticCollection = New Collection
 End Sub
 Public Function IsNumber(r As Double) As Boolean
 If parentSoros.LookNull Then
@@ -622,6 +594,7 @@ Set myOwner = Nothing
 Set mprocess = Nothing
 Set parentSoros = Nothing
 Set MyParent = Nothing
+Set dotcollection = Nothing
 Set StaticCollection = Nothing
 End Sub
 

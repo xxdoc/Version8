@@ -24,14 +24,14 @@ Dim mTeam As Boolean
 Dim LinkToGroup As Object
 Dim mTag As String
 Public Function PrepareSoros(ByRef V()) As mStiva
-Dim I As Long, AllSoros As New mStiva, s As String, vv As mStiva
-For I = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(I)
+Dim i As Long, AllSoros As New mStiva, s As String, VV As mStiva
+For i = 1 To OwnSoros.Total
+s = OwnSoros.StackItem(i)
 
 AllSoros.DataStr s
 If Left$(s$, 1) = "*" Then
- Set vv = V(Val(Split(s)(1))).PrepareSoros(V())
-AllSoros.MergeBottom vv
+ Set VV = V(Val(Split(s)(1))).PrepareSoros(V())
+AllSoros.MergeBottom VV
 End If
 Next
 Set PrepareSoros = AllSoros
@@ -39,56 +39,56 @@ Set PrepareSoros = AllSoros
 End Function
 
 Public Function types() As String
-Dim I As Long, s$
-I = OwnSoros.Total
+Dim i As Long, s$
+i = OwnSoros.Total
 On Error Resume Next
-While I > 0
-If InStr(OwnSoros.StackItem(I), ") ") > 0 Then
+While i > 0
+If InStr(OwnSoros.StackItem(i), ") ") > 0 Then
 s$ = "A" + s$
 Else
 s$ = "V" + s$
 End If
-I = I - 1
+i = i - 1
 
 Wend
 types = s$
 End Function
-Public Sub PeekItem(cursor As Long, item)
+Public Sub PeekItem(cursor As Long, ITEM)
 '' used in the float mode
-Dim jj As Variant
-If IsObject(bank.item(cursor)) Then
-Set item = bank.item(cursor)
+Dim JJ As Variant
+If IsObject(bank.ITEM(cursor)) Then
+Set ITEM = bank.ITEM(cursor)
 Else
 If mTeam Then
-        If cursor = bank.item(1) * 2 + 3 Then
+        If cursor = bank.ITEM(1) * 2 + 3 Then
             ' we need common definitions for functions and modules all elements
                 
                 
-                LinkToGroup.PeekItem 1, jj
-                LinkToGroup.PeekItem jj * 2 + 3, item
+                LinkToGroup.PeekItem 1, JJ
+                LinkToGroup.PeekItem JJ * 2 + 3, ITEM
                         Exit Sub
-            ElseIf cursor = bank.item(1) * 2 + 2 Then
-                    LinkToGroup.PeekItem 1, jj
-                    LinkToGroup.PeekItem jj * 2 + 2, item
+            ElseIf cursor = bank.ITEM(1) * 2 + 2 Then
+                    LinkToGroup.PeekItem 1, JJ
+                    LinkToGroup.PeekItem JJ * 2 + 2, ITEM
                           Exit Sub
             End If
 End If
 
-item = bank.item(cursor)
+ITEM = bank.ITEM(cursor)
 End If
 
 End Sub
-Public Sub PokeItem(cursor As Long, item)
+Public Sub PokeItem(cursor As Long, ITEM)
 ' used in the float mode
-If IsObject(item) Then
-Set bank.item(cursor) = item
+If IsObject(ITEM) Then
+Set bank.ITEM(cursor) = ITEM
 Else
 ' always last two items are for local vars and functions
-If mTeam And cursor >= bank.item(1) * 2 + 2 Then
+If mTeam And cursor >= bank.ITEM(1) * 2 + 2 Then
 ''Stop
 '' do nothing
 Else
- bank.item(cursor) = item
+ bank.ITEM(cursor) = ITEM
  End If
 End If
 End Sub
@@ -124,7 +124,7 @@ mTeam = False
 Set LinkToGroup = a
 If a Is Nothing Then Exit Property
 'erase functions,,,
- bank.item(bank.item(1) * 2 + 3) = ""
+ bank.ITEM(bank.ITEM(1) * 2 + 3) = ""
 mTeam = True
 Else
 ' only when is in an array as Float Group
@@ -140,15 +140,15 @@ Else
 Set OwnSoros = a
 End If
 End Property
-Public Property Get Soros() As mStiva
-Set Soros = OwnSoros
+Public Property Get soros() As mStiva
+Set soros = OwnSoros
 End Property
 
 Public Function VarlistTotal(V(), skip As Boolean) As String
-Dim I As Long, s As String, Sm As String
+Dim i As Long, s As String, Sm As String
 
-For I = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(I)
+For i = 1 To OwnSoros.Total
+s = OwnSoros.StackItem(i)
 If Left$(s, 1) = "*" Then
 Sm = Sm + V(Val(Split(s)(1))).VarlistTotal(V(), 0)
 End If
@@ -166,9 +166,9 @@ Public Property Get Varlist() As String
 Varlist = VarRef$
 End Property
 Public Function FunclistTotal(V(), skip As Boolean) As String
-Dim I As Long, s As String, Sm As String
-For I = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(I)
+Dim i As Long, s As String, Sm As String
+For i = 1 To OwnSoros.Total
+s = OwnSoros.StackItem(i)
 If Left$(s, 1) = "*" Then
 Sm = Sm + V(Val(Split(s)(1))).FunclistTotal(V(), False)
 End If
@@ -187,9 +187,9 @@ Public Property Let FuncList(ByVal vNewValue As String)
 FuncRef$ = vNewValue
 End Property
 Public Function ArrlistTotal(V(), skip As Boolean) As String
-    Dim I As Long, s As String, Sm As String
-    For I = 1 To OwnSoros.Total
-    s = OwnSoros.StackItem(I)
+    Dim i As Long, s As String, Sm As String
+    For i = 1 To OwnSoros.Total
+    s = OwnSoros.StackItem(i)
     If Left$(s, 1) = "*" Then
     Sm = Sm + V(Val(Split(s)(1))).ArrlistTotal(V(), 0)
     End If
@@ -218,7 +218,7 @@ Public Property Get Value() As Variant
 Attribute Value.VB_UserMemId = 0
 Value = 0
 End Property
-Public Property Let Value(Dummy As Variant)
+Public Property Let Value(DUMMY As Variant)
 '
 End Property
 

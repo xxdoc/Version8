@@ -1528,10 +1528,10 @@ Call SetWindowRgn(.hWnd, (0), False)
 End With
 End Sub
 Public Function RotateRegion(hRgn As Long, Angle As Single, ByVal piw As Long, ByVal pih As Long, ByVal Size As Single) As Long
-Dim k As Single, r As Single, AA As Single
-AA = (CLng(Angle! * 100) Mod 36000) / 100
+Dim k As Single, r As Single, aa As Single
+aa = (CLng(Angle! * 100) Mod 36000) / 100
 
-Angle! = -AA / 180# * Pi
+Angle! = -aa / 180# * Pi
    r = Atn(piw / CSng(pih)) + Pi / 2!
     k = piw / Cos(r)
  
@@ -1782,7 +1782,7 @@ End If
 End Sub
 Sub SpriteControl(ByVal aPrior As Long, ByVal bPrior As Long) ' these are priorities
 'If aPrior = bPrior Then Exit Sub ' just done...
-Dim k As Long, m As Long, i As Long, LL As Long, KK As Long
+Dim k As Long, m As Long, i As Long, ll As Long, KK As Long
 k = FindSpriteByTag(aPrior)
 
 If k = 0 Then Exit Sub  ' there is no such a player
@@ -2186,11 +2186,11 @@ Dim task As TaskInterface
 End Sub
 Public Sub sThreadInternal(bs As basetask, ByVal ThID As Long, ByVal Thinterval As Double, ByVal ThCode As String, holdtime As Double, threadhere$, Nostretch)
 Dim task As TaskInterface, bsdady As basetask
-Set bsdady = bs.parent
+Set bsdady = bs.Parent
 ' above 20000 the thid
  Set task = New myProcess
  
-          Set task.Owner = bs.parent.Owner
+          Set task.Owner = bs.Parent.Owner
           Set task.Process = bs
           
           Set bsdady.LinkThread(ThID) = bs.Process
@@ -2567,10 +2567,10 @@ b$ = b$ & CStr(AscW(Mid$(A$, i, 1))) & ","
 Next i
 SpellUnicode = b$ & CStr(AscW(Right$(A$, 1)))
 End Function
-Public Function ListenUnicode(ParamArray AA() As Variant) As String
+Public Function ListenUnicode(ParamArray aa() As Variant) As String
 Dim all$, i As Long
-For i = 0 To UBound(AA)
-    all$ = all$ & ChrW(AA(i))
+For i = 0 To UBound(aa)
+    all$ = all$ & ChrW(aa(i))
 Next i
 ListenUnicode = all$
 End Function
@@ -2973,31 +2973,31 @@ End If
 End Function
 Function ValidNum(A$, final As Boolean, Optional cutdecimals As Boolean = False) As Boolean
 Dim r As Long
-Dim R1 As Long
-R1 = 1
+Dim r1 As Long
+r1 = 1
 
 Dim V As Double, b$
 If final Then
-R1 = IsNumberOnly(A$, R1, V, r, cutdecimals)
- R1 = (R1 And Len(A$) <= r) Or (A$ = "")
+r1 = IsNumberOnly(A$, r1, V, r, cutdecimals)
+ r1 = (r1 And Len(A$) <= r) Or (A$ = "")
  
 Else
 If (A$ = "-") Or A$ = "" Then
-R1 = True
+r1 = True
 Else
- R1 = IsNumberQuery(A$, R1, V, r, cutdecimals)
+ r1 = IsNumberQuery(A$, r1, V, r, cutdecimals)
     If A$ <> "" Then
          If r < 2 Then
-                R1 = Not (r <= Len(A$))
+                r1 = Not (r <= Len(A$))
                 A$ = ""
         Else
-                R1 = R1 And Not r <= Len(A$)
+                r1 = r1 And Not r <= Len(A$)
                 A$ = Mid$(A$, 1, r - 1)
         End If
  End If
  End If
  End If
-ValidNum = R1
+ValidNum = r1
 End Function
 Function ValidNumberOnly(A$, r As Double, skipdec As Boolean) As Boolean
 ValidNumberOnly = IsNumberOnly(A$, (1), r, (0), skipdec)
@@ -3389,5 +3389,4 @@ End Function
 Public Function NLtrim$(A$)
 If Len(A$) > 0 Then NLtrim$ = Mid$(A$, MyTrimL(A$))
 End Function
-
 

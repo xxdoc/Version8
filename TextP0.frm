@@ -147,7 +147,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -448,7 +448,7 @@ End Sub
 
 
 
-Private Sub List1_ListError(code As Long)
+Private Sub List1_ListError(Code As Long)
 Dim DUMMY As Long
 List1.listindex = -1
 List1.LeaveonChoose = False
@@ -461,7 +461,7 @@ DUMMY = interpret(basestack1, List1.Tag)
 Me.KeyPreview = True
 End If
 End If
-MyEr "Menu Error " & CStr(code), "Λάθος στην ΕΠΙΛΟΓΗ αριθμός " & CStr(code)
+MyEr "Menu Error " & CStr(Code), "Λάθος στην ΕΠΙΛΟΓΗ αριθμός " & CStr(Code)
 End Sub
 
 
@@ -1381,21 +1381,21 @@ myBold = False
 End If
 myCharSet = 0
 With Form1
-.Font.name = MYFONT
+.Font.NAME = MYFONT
 .Font.Strikethrough = False
 .Font.Underline = False
 .Font.bold = myBold
-MYFONT = .Font.name
+MYFONT = .Font.NAME
     .Font.charset = myCharSet
     .DIS.Font.charset = myCharSet
-    .DIS.Font.name = MYFONT
+    .DIS.Font.NAME = MYFONT
     .DIS.Font.bold = myBold
     .TEXT1.Font.charset = myCharSet
-    .TEXT1.Font.name = MYFONT
+    .TEXT1.Font.NAME = MYFONT
     .TEXT1.Font.bold = myBold
     
     .List1.charset = myCharSet
-    .List1.Font.name = MYFONT
+    .List1.Font.NAME = MYFONT
     .List1.FontBold = myBold
      
 End With
@@ -1522,6 +1522,7 @@ AutoRedraw = True
 If OneOnly Then Exit Sub
 OneOnly = True
 
+If m_bInIDE Then funcdeep = 129 Else funcdeep = 14501 ' need stack 102400000 bytes
 
 escok = False
 Sleep 10
@@ -1731,7 +1732,7 @@ MediaPlayer1.closeMovie
 Dim x As Form
 For Each x In Forms
 'MsgBox x.name
-If x.name <> Me.name Then Unload x
+If x.NAME <> Me.NAME Then Unload x
 Next
 If App.UnattendedApp Then End
 End Sub
@@ -1769,7 +1770,7 @@ End Sub
 
 Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, A$, jj As Long, ii As Long
+Dim aa$, A$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -1958,16 +1959,16 @@ KeyCode = 0
 Case vbKeyTab
 nochange = True
 gList1.Enabled = False
-jj = TEXT1.SelStart
-where = jj
+JJ = TEXT1.SelStart
+where = JJ
 ii = 1 + TEXT1.SelStart - TEXT1.ParaSelStart
 
 If TEXT1.SelLength > 0 Then
 
-jj = TEXT1.SelLength + jj - ii
+JJ = TEXT1.SelLength + JJ - ii
 TEXT1.SelStart = ii
-TEXT1.SelLength = jj
-jj = where
+TEXT1.SelLength = JJ
+JJ = where
 Else
 TEXT1.SelStart = ii
 End If
@@ -2001,7 +2002,7 @@ If shift <> 0 Then
             TEXT1.SelStartSilent = ii
     End If
     Else
-        TEXT1.SelStartSilent = jj
+        TEXT1.SelStartSilent = JJ
         TEXT1.RemoveUndo Space(6)
         TEXT1.InsertText = Space(6)
         
@@ -2156,7 +2157,7 @@ If Form1.Visible Then Form1.refresh
 End Sub
 Private Sub PREPARE(basestack As basetask, ByVal Nb As String)
 Dim g As Long, ic As Long
-Dim VP As String, vv As String, cm$, b As String
+Dim VP As String, VV As String, CM$, b As String
 If needset Then
 Nb = StrConv(Nb, vbUnicode)
 For ic = 1 To Len(Nb) Step 2
@@ -2169,9 +2170,9 @@ End If
 g = InStr(b, "?")
 If g > 0 Then b = Mid$(b, g + 1) Else Exit Sub
 If b <> "" Then
-Do While Parameters(b, VP, vv)
-cm$ = VP & "$=" & """" + vv + """"
-Execute basestack, cm$, True
+Do While Parameters(b, VP, VV)
+CM$ = VP & "$=" & """" + VV + """"
+Execute basestack, CM$, True
 Loop
 MyDoEvents
 ''Me.KeyPreview = True
@@ -2414,6 +2415,10 @@ MYFONT = defFontname
                 cc.ValueKey = "HTML"
         cc.ValueType = REG_SZ
         cc.Value = pagiohtml$
+               cc.ValueKey = "FUNCDEEP"  ' BY DEFAULT
+             cc.ValueType = REG_DWORD
+             If Not m_bInIDE Then cc.Value = funcdeep
+                    
                cc.ValueKey = "CASESENSITIVE"
         cc.ValueType = REG_SZ
         If cc.Value = "" Then
@@ -2434,10 +2439,10 @@ Else
         MYFONT = cc.Value
         On Error Resume Next
         
-        Me.Font.name = MYFONT
+        Me.Font.NAME = MYFONT
         Me.Font.Italic = False
-        Me.Font.name = MYFONT
-        If Me.Font.name <> MYFONT Then
+        Me.Font.NAME = MYFONT
+        If Me.Font.NAME <> MYFONT Then
         MYFONT = defFontname
         End If
        
@@ -2502,7 +2507,15 @@ End If
         cc.Value = "DARK"
         End If
          pagiohtml$ = cc.Value
-        
+        cc.ValueKey = "FUNCDEEP"  ' RESET
+        cc.ValueType = REG_DWORD
+        If Not m_bInIDE Then
+            If Not cc.Value = 0 Then funcdeep = cc.Value
+            
+        Else
+            cc.Value = 14501
+            funcdeep = 129
+        End If
         
         cc.ValueKey = "CASESENSITIVE"
         cc.ValueType = REG_SZ
