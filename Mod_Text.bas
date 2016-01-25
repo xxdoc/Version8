@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 142
+Global Const Revision = 143
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -9287,9 +9287,9 @@ backitem1:
     r$ = ""
     Select Case Abs(IsLabel(bstackstr, s$, q2$))
     Case 1, 3, 4
-    If GetGlobalVar(s$, w2) Then r$ = "ReferVar"
+    If GetGlobalVar(q2$, w2) Then r$ = "ReferVar"   '' change s$ to q2$
     Case 5, 6, 7
-    If CopyArrayItemsNoFormated(s$) <> "" Then r$ = "ReferArray"
+    If CopyArrayItemsNoFormated(q2$) <> "" Then r$ = "ReferArray"
     End Select
     If r$ = "" Then r$ = "String"
             IsString = FastSymbol(A$, ")", True)
@@ -10741,8 +10741,8 @@ If A$ <> "" Then
 If Asc(A$) < 128 Then codeW = 1
 End If
 End Function
-Function placeme$(gre$, Eng$, Code As Long)
-If Code = 1 Then placeme$ = Eng$ Else placeme$ = gre$
+Function placeme$(gre$, Eng$, code As Long)
+If code = 1 Then placeme$ = Eng$ Else placeme$ = gre$
 End Function
 
 Function IsSymbol(A$, c$, Optional mis As Boolean = False) As Boolean
@@ -11262,13 +11262,13 @@ End Function
 Function MaybeIsSymbolNoSpace(A$, c$) As Boolean
 MaybeIsSymbolNoSpace = Left$(A$, 1) Like c$
 End Function
-Function IsLabelSymbolNew(A$, gre$, Eng$, Code As Long, Optional mis As Boolean = False, Optional ByVal Bypass As Boolean = False, Optional checkonly As Boolean = False, Optional free As Boolean = True) As Boolean
+Function IsLabelSymbolNew(A$, gre$, Eng$, code As Long, Optional mis As Boolean = False, Optional ByVal Bypass As Boolean = False, Optional checkonly As Boolean = False, Optional free As Boolean = True) As Boolean
 ' code 2  gre or eng, set new value to code 1 or 0
 ' 0 for gre
 ' 1 for eng
 ' return true if we have label
 Dim what As Boolean, drop$
-Select Case Code
+Select Case code
 Case 0
 IsLabelSymbolNew = IsLabelSymbol3(1032, A$, gre$, drop$, mis, Bypass, checkonly, free)
 Case 1
@@ -11276,24 +11276,24 @@ IsLabelSymbolNew = IsLabelSymbol3(1033, A$, Eng$, drop$, mis, Bypass, checkonly,
 Case 2
 what = IsLabelSymbol3(1032, A$, gre$, drop$, mis, Bypass, checkonly, free)
 If what Then
-Code = 0
+code = 0
 IsLabelSymbolNew = what
 Exit Function
 End If
 what = IsLabelSymbol3(1033, A$, Eng$, drop$, mis, Bypass, checkonly, free)
-If what Then Code = 1
+If what Then code = 1
 IsLabelSymbolNew = what
 End Select
 End Function
 
-Function IsLabelSymbolNewExp(A$, gre$, Eng$, Code As Long, usethis$) As Boolean
+Function IsLabelSymbolNewExp(A$, gre$, Eng$, code As Long, usethis$) As Boolean
 ' code 2  gre or eng, set new value to code 1 or 0
 ' 0 for gre
 ' 1 for eng
 ' return true if we have label
 If Len(usethis$) = 0 Then
 Dim what As Boolean
-Select Case Code
+Select Case code
 Case 0
 IsLabelSymbolNewExp = IsLabelSymbol3(1032, A$, gre$, usethis$, False, False, False, True)
 Case 1
@@ -11301,16 +11301,16 @@ IsLabelSymbolNewExp = IsLabelSymbol3(1033, A$, Eng$, usethis$, False, False, Fal
 Case 2
 what = IsLabelSymbol3(1032, A$, gre$, usethis$, False, False, False, True)
 If what Then
-Code = 0
+code = 0
 IsLabelSymbolNewExp = what
 Exit Function
 End If
 what = IsLabelSymbol3(1033, A$, Eng$, usethis$, False, False, False, True)
-If what Then Code = 1
+If what Then code = 1
 IsLabelSymbolNewExp = what
 End Select
 Else
-Select Case Code
+Select Case code
 Case 0, 2
 IsLabelSymbolNewExp = gre$ = usethis$
 Case 1
@@ -11323,7 +11323,7 @@ usethis$ = ""
 End If
 End Function
 
-Function IsLabelSymbol3(ByVal Code As Double, A$, c$, useth$, Optional mis As Boolean = False, Optional ByVal Bypass As Boolean = False, Optional checkonly As Boolean = False, Optional needspace As Boolean = False) As Boolean
+Function IsLabelSymbol3(ByVal code As Double, A$, c$, useth$, Optional mis As Boolean = False, Optional ByVal Bypass As Boolean = False, Optional checkonly As Boolean = False, Optional needspace As Boolean = False) As Boolean
 Dim test$, what$, pass As Long
 If Bypass Then Exit Function
 
@@ -11352,7 +11352,7 @@ If A$ <> "" And c$ <> "" Then
         IsLabelSymbol3 = IsLabelSYMB33(test$, what$, pass)
    
       If Len(what$) <> Len(c$) Then
-               If Code = 1032 Then
+               If code = 1032 Then
                 useth$ = myUcase(what$, True)
             Else
                 useth$ = UCase(what$)
@@ -11367,7 +11367,7 @@ If A$ <> "" And c$ <> "" Then
         If mis Then GoTo theremiss
         Exit Function
     End If
-    If Code = 1032 Then
+    If code = 1032 Then
         what$ = myUcase(what$, True)
     Else
         what$ = UCase(what$)
