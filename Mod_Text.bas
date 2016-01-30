@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 143
+Global Const Revision = 144
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -545,13 +545,13 @@ On Error Resume Next
 With players(GetCode(scr))
     x1 = scr.Width
     y1 = scr.Height
-    If scr.NAME = "Form1" Then
+    If scr.name = "Form1" Then
     DisableTargets q(), -1
     
-    ElseIf scr.NAME = "DIS" Then
+    ElseIf scr.name = "DIS" Then
     DisableTargets q(), 0
     
-    ElseIf scr.NAME = "dSprite" Then
+    ElseIf scr.name = "dSprite" Then
     DisableTargets q(), Val(scr.Index)
     End If
 
@@ -560,9 +560,9 @@ With players(GetCode(scr))
         scr.Font.Size = .SZ
         If Err.Number > 0 Then
                 MYFONT = "ARIAL"
-                scr.Font.NAME = MYFONT
+                scr.Font.name = MYFONT
                 scr.Font.charset = .charset
-                scr.Font.NAME = MYFONT
+                scr.Font.name = MYFONT
                 scr.Font.charset = .charset
         End If
         .uMineLineSpace = .MineLineSpace
@@ -2454,11 +2454,11 @@ With BoxTarget
 .Xt = XXT&
 .Yt = YYT&
 .sUAddTwipsTop = prive.uMineLineSpace
-If d.NAME = "DIS" Then
+If d.name = "DIS" Then
 .layer = 0
-ElseIf d.NAME = "Form1" Then
+ElseIf d.name = "Form1" Then
 .layer = -1
-ElseIf d.NAME = "dSprite" Then
+ElseIf d.name = "dSprite" Then
 .layer = d.Index
 End If
 End With
@@ -8963,7 +8963,7 @@ rvalObjectstring:
                   If Screen.ActiveForm Is Nothing Then
                   r$ = ""
                   Else
-                  Select Case Screen.ActiveForm.NAME
+                  Select Case Screen.ActiveForm.name
                   Case "AVI"
                   r$ = "AVI"
                   Case "Form1"
@@ -8981,7 +8981,7 @@ rvalObjectstring:
                   If Screen.ActiveForm Is Nothing Then
                   r$ = ""
                   Else
-                  Select Case Screen.ActiveForm.NAME
+                  Select Case Screen.ActiveForm.name
                   Case "AVI"
                   r$ = "‘¡…Õ…¡"
                   Case "Form1"
@@ -9111,13 +9111,13 @@ rvalObjectstring:
     Case "FONTNAME$", "√—¡ÃÃ¡‘œ”≈…—¡$"
     With bstackstr
                  If .tolayer > 0 Then
-                 r$ = Form1.dSprite(.tolayer).Font.NAME
+                 r$ = Form1.dSprite(.tolayer).Font.name
                  ElseIf .toback Then
-                 r$ = Form1.Font.NAME
+                 r$ = Form1.Font.name
                  ElseIf .toprinter Then
-                 r$ = Form1.PrinterDocument1.Font.NAME
+                 r$ = Form1.PrinterDocument1.Font.name
                  Else
-                r$ = Form1.DIS.Font.NAME
+                r$ = Form1.DIS.Font.name
                 End If
                 End With
                  IsString = True
@@ -12904,7 +12904,7 @@ ElseIf IsLabelSymbolNewExp(b$, "¡’‘œ", "THIS", lang, Us$) Then
       If bstack.Process Is Nothing Then
 dothesame:
                 b$ = ""
-                MyEr "Clause This can't used outside a thread", "œ ¸ÒÔÚ AYTO ‰ÂÌ ÏÔÒÂﬂ Ì· ˜ÒÁÛÈÏÔÔÈÁËÂﬂ ›Ó˘ ·¸ ›Ì· ÌﬁÏ·"
+                MyEr "Clause This can't used outside a thread", "œ ¸ÒÔÚ ¡’‘œ ‰ÂÌ ÏÔÒÂﬂ Ì· ˜ÒÁÛÈÏÔÔÈÁËÂﬂ ›Ó˘ ·¸ ›Ì· ÌﬁÏ·"
                 Execute = 0: Exit Function
                 Once = False
             ElseIf IsLabelSymbolNewExp(b$, "”¬«”≈", "ERASE", lang, Us$) Then
@@ -14761,7 +14761,7 @@ contHere2FromOn:
         Case Else
 varonly:
         If Len(w$) > 3 Then
-            If Fast2LabelCheck(w$, "THIS", "AYTO", "", 4) Then
+            If Fast2LabelCheck(w$, "THIS", "¡’‘œ", "", 4) Then
            ' If Left$(w$, 4) = "THIS" Or Left$(w$, 4) = "¡’‘œ" Then
             ss$ = ".DELETEME"
             If IsLabel(bstack, ss$, bb$) < 0 Then
@@ -20962,13 +20962,13 @@ Set scr = bstack.Owner
 With players(GetCode(scr))
 x1 = scr.Width
 y1 = scr.Height
-If scr.NAME = "Form1" Then
+If scr.name = "Form1" Then
 DisableTargets q(), -1
 
-ElseIf scr.NAME = "DIS" Then
+ElseIf scr.name = "DIS" Then
 DisableTargets q(), 0
 
-ElseIf scr.NAME = "dSprite" Then
+ElseIf scr.name = "dSprite" Then
 DisableTargets q(), Val(scr.Index)
 End If
 If IsExp(bstack, rest$, p) Then
@@ -20995,9 +20995,9 @@ scr.Font.Size = .SZ
 If Err.Number > 0 Then
 
 MYFONT = "ARIAL"
-scr.Font.NAME = MYFONT
+scr.Font.name = MYFONT
 scr.Font.charset = bstack.myCharSet
-scr.Font.NAME = MYFONT
+scr.Font.name = MYFONT
 scr.Font.charset = bstack.myCharSet
 End If
 
@@ -21051,7 +21051,7 @@ End If
 
 DialogSetupLang lang
 With bstack.Owner
-    ReturnFontName = .Font.NAME
+    ReturnFontName = .Font.name
     ReturnBold = .Font.bold
     ReturnItalic = .Font.Italic
     ReturnSize = CSng(.Font.Size)
@@ -23219,21 +23219,21 @@ Case "FONT", "√—¡ÃÃ¡‘œ”≈…—¡"     '**********************************************
     If IsStrExp(bstack, rest$, s$) Then
         On Error Resume Next
         x1 = bstack.Owner.Font.charset
-        bstack.Owner.Font.NAME = s$
+        bstack.Owner.Font.name = s$
         If Not (x1 = bstack.Owner.Font.charset) Then
             bstack.Owner.Font.charset = x1
         End If
     
-        If LCase(bstack.Owner.Font.NAME) <> LCase(s$) Then
+        If LCase(bstack.Owner.Font.name) <> LCase(s$) Then
         
-            bstack.Owner.Font.NAME = MYFONT
+            bstack.Owner.Font.name = MYFONT
             bstack.Owner.Font.charset = bstack.myCharSet
         Else
              ''MYFONT = s$
         End If
     End If
-        Form3.StoreFont bstack.Owner.Font.NAME, players(prive).SZ, bstack.Owner.Font.charset
-        players(prive).FontName = bstack.Owner.Font.NAME
+        Form3.StoreFont bstack.Owner.Font.name, players(prive).SZ, bstack.Owner.Font.charset
+        players(prive).FontName = bstack.Owner.Font.name
     Exit Function
 Case "SCROLL", " ’À…”«"
 If bstack.toprinter Then
@@ -23486,7 +23486,7 @@ prive = GetCode(scr)
     scr.Font.charset = CInt(p)
     Form1.TEXT1.Font.charset = scr.Font.charset
     Form1.List1.Font.charset = scr.Font.charset
-      Form3.StoreFont scr.Font.NAME, players(prive).SZ, scr.Font.charset
+      Form3.StoreFont scr.Font.name, players(prive).SZ, scr.Font.charset
       players(prive).charset = scr.Font.charset
           Set scr = Nothing
 Exit Function
@@ -24165,14 +24165,14 @@ On Error Resume Next
 End If
 j = var2used
 End Sub
-Function ReboundArr(bstack As basetask, NAME$, arrcode$) As Boolean
+Function ReboundArr(bstack As basetask, name$, arrcode$) As Boolean
 On Error GoTo 0
 
 Dim j As Long, k As Long, ss$
-NAME$ = myUcase(NAME$)
-If Left$(NAME$, 5) = "¡’‘œ." Or Left$(NAME$, 5) = "THIS." Then
+name$ = myUcase(name$)
+If Left$(name$, 5) = "¡’‘œ." Or Left$(name$, 5) = "THIS." Then
 ''If StripThis2(bstack.UseGroupname) = "" Then
-ss$ = Chr$(13) + bstack.UseGroupname & Mid(NAME$, 6)
+ss$ = Chr$(13) + bstack.UseGroupname & Mid(name$, 6)
 
 
 ''Else
@@ -24180,9 +24180,9 @@ ss$ = Chr$(13) + bstack.UseGroupname & Mid(NAME$, 6)
 ''End If
 Else
 If HERE$ = "" Then
-ss$ = Chr(13) + NAME$
+ss$ = Chr(13) + name$
 Else
-ss$ = Chr(13) + myUcase(HERE$) & "." & NAME$
+ss$ = Chr(13) + myUcase(HERE$) & "." & name$
 End If
 
 End If
@@ -24192,20 +24192,20 @@ Mid$(arrname$, j + Len(ss$), 17) = arrcode$
 ReboundArr = True
 End If
 End Function
-Function ReboundVar(bstack As basetask, NAME$, q As Variant) As Boolean
+Function ReboundVar(bstack As basetask, name$, q As Variant) As Boolean
 On Error GoTo 0
 
 Dim j As Long, k As Long, ss$
-NAME$ = myUcase(NAME$)
-If Left$(NAME$, 5) = "¡’‘œ." Or Left$(NAME$, 5) = "THIS." Then
+name$ = myUcase(name$)
+If Left$(name$, 5) = "¡’‘œ." Or Left$(name$, 5) = "THIS." Then
 
-ss$ = Chr$(1) + bstack.UseGroupname & Mid(NAME$, 6) + " "
+ss$ = Chr$(1) + bstack.UseGroupname & Mid(name$, 6) + " "
 
 Else
 If HERE$ = "" Then
-ss$ = Chr(1) + NAME$ + " "
+ss$ = Chr(1) + name$ + " "
 Else
-ss$ = Chr(1) + myUcase(HERE$) & "." & NAME$ + " "
+ss$ = Chr(1) + myUcase(HERE$) & "." & name$ + " "
 End If
 
 End If
@@ -24215,7 +24215,7 @@ Mid$(VarName$, j + Len(ss$) - 1, 16) = constwidth(CLng(q))
 ReboundVar = True
 End If
 End Function
-Function GlobalVar(NAME$, q As Variant, Optional Link As Boolean = False, Optional makeitglobal As Boolean = False) As Long
+Function GlobalVar(name$, q As Variant, Optional Link As Boolean = False, Optional makeitglobal As Boolean = False) As Long
 On Error GoTo 0
 Dim j As Long
 
@@ -24235,7 +24235,7 @@ If Not Link Then
             
         End If
         j = var2used
-            If Right$(NAME$, 1) = "%" Then
+            If Right$(name$, 1) = "%" Then
                 On Error Resume Next
                 q = Int(q)
                 If Err.Number = 6 Then q = 0
@@ -24252,13 +24252,13 @@ Else
 End If
 End If
 If HERE$ = "" Or makeitglobal Then
-VarName$ = VarName$ & Chr(1) + myUcase(NAME$) + constwidth(j)
+VarName$ = VarName$ & Chr(1) + myUcase(name$) + constwidth(j)
 Else
-VarName$ = VarName$ & Chr(1) + myUcase(HERE$) & "." & myUcase(NAME$) + constwidth(j)
+VarName$ = VarName$ & Chr(1) + myUcase(HERE$) & "." & myUcase(name$) + constwidth(j)
 End If
 GlobalVar = j
 End Function
-Function GlobalVarRefOnly(NAME$) As Long
+Function GlobalVarRefOnly(name$) As Long
 On Error GoTo 0
 Dim j As Long
 var2used = var2used + 1
@@ -24276,36 +24276,36 @@ End If
 j = var2used
  var(j) = CLng(0)  ' like an empty...
 If HERE$ = "" Then
-VarName$ = VarName$ & Chr(1) + myUcase(NAME$) + constwidth(j)
+VarName$ = VarName$ & Chr(1) + myUcase(name$) + constwidth(j)
 Else
-VarName$ = VarName$ & Chr(1) + myUcase(HERE$) & "." & myUcase(NAME$) + constwidth(j)
+VarName$ = VarName$ & Chr(1) + myUcase(HERE$) & "." & myUcase(name$) + constwidth(j)
 End If
 GlobalVarRefOnly = j
 End Function
-Function LinkGroup(ByVal NAME$, q As Variant) As Boolean
+Function LinkGroup(ByVal name$, q As Variant) As Boolean
 Dim i As Long, Vlist, AList, FList, f$
 
 If Typename(q) <> "Group" Then Exit Function
 
 If HERE$ = "" Then
-NAME$ = myUcase(NAME$) + "."
+name$ = myUcase(name$) + "."
 Else
- NAME$ = myUcase(HERE$) & "." & myUcase(NAME$) + "."
+ name$ = myUcase(HERE$) & "." & myUcase(name$) + "."
 End If
 With q
 Vlist = .VarlistTotal(var(), True)
 AList = .ArrlistTotal(var(), True)
 FList = .FunclistTotal(var(), True)
-If Vlist <> "" Then f$ = Chr$(1) + "_ ": VarName$ = VarName$ + Replace(Vlist, f$, Chr$(1) + NAME$)
-If AList <> "" Then f$ = Chr$(13) + "__": arrname$ = arrname$ + Replace(AList, f$, Chr$(13) + NAME$)
-If FList <> "" Then SubName$ = Replace(Replace(FList, Chr$(3), NAME$), Chr$(2), NAME$) + SubName$
+If Vlist <> "" Then f$ = Chr$(1) + "_ ": VarName$ = VarName$ + Replace(Vlist, f$, Chr$(1) + name$)
+If AList <> "" Then f$ = Chr$(13) + "__": arrname$ = arrname$ + Replace(AList, f$, Chr$(13) + name$)
+If FList <> "" Then SubName$ = Replace(Replace(FList, Chr$(3), name$), Chr$(2), name$) + SubName$
 
 LinkGroup = Vlist <> "" Or AList <> "" Or FList <> ""
 End With
 
 End Function
 
-Sub GlobalArr(bstack As basetask, NAME$, rst$, items As Long, q As Long, Optional useglobalname As Boolean = False)
+Sub GlobalArr(bstack As basetask, name$, rst$, items As Long, q As Long, Optional useglobalname As Boolean = False)
 ' new mArray..
 Dim afto As New mArray, newkey As String
 If rst$ = "" And q = -1 Then
@@ -24343,11 +24343,11 @@ dummyarray:
     
     If q = -1 Then rst$ = newkey 'a way to return the handler
     If HERE$ = "" Or useglobalname Then
-        arrname$ = arrname$ & Chr(13) + bstack.GroupName + myUcase(NAME$) & " " & newkey
-        afto.arrname = NAME$
+        arrname$ = arrname$ & Chr(13) + bstack.GroupName + myUcase(name$) & " " & newkey
+        afto.arrname = name$
     Else
-        arrname$ = arrname$ & Chr(13) + myUcase(HERE$) + "." & bstack.GroupName + myUcase(NAME$) & " " & newkey
-        afto.arrname = myUcase(HERE$) & "." & myUcase(NAME$)
+        arrname$ = arrname$ & Chr(13) + myUcase(HERE$) + "." & bstack.GroupName + myUcase(name$) & " " & newkey
+        afto.arrname = myUcase(HERE$) & "." & myUcase(name$)
     End If
     
     neoArray.Add afto, newkey
@@ -24362,7 +24362,7 @@ Else
     End If
 End If
 End Sub
-Sub GlobalArrResize(afto As mArray, bstack As basetask, NAME$, rst$, items As Long, q As Long)
+Sub GlobalArrResize(afto As mArray, bstack As basetask, name$, rst$, items As Long, q As Long)
 ' new mArray..
 
 Dim j As Long, i As Long, p As Double, aa As Boolean
@@ -24573,7 +24573,7 @@ If k > 0 Then
 End If
 End Function
 
-Function GlobalSub(NAME$, q As String, Optional sbgroupname As String = "") As Long
+Function GlobalSub(name$, q As String, Optional sbgroupname As String = "") As Long
 Dim j As Long
 
 On Error Resume Next
@@ -24585,7 +24585,7 @@ End If
 sb2used = sb2used + 1
 SB(sb2used) = q
 sbgroup(sb2used) = sbgroupname
-SubName$ = Chr(1) + myUcase(NAME$) + Str$(sb2used) + Chr(1) + SubName$
+SubName$ = Chr(1) + myUcase(name$) + Str$(sb2used) + Chr(1) + SubName$
 GlobalSub = sb2used
 End Function
 
@@ -24652,35 +24652,6 @@ StripThis2 = b$
 End If
 Else
 StripThis2 = b$
-End If
-End Function
-Function GetVar2(bstack As basetask, ByVal nm$, i As Long) As Boolean
-nm$ = myUcase(nm$)
-Dim n$
-If Len(nm$) > 5 Then
-
-If Left$(nm$, 5) = "THIS." Then
-n$ = Chr(1) + StripThis2(HERE$) & "." & bstack.GroupName & Mid(nm$, 6) & " "
-ElseIf Left$(nm$, 5) = "¡’‘œ." Then
-n$ = Chr(1) + StripThis2(HERE$) & "." & bstack.GroupName & Mid(nm$, 6) & " "
-Else
-n$ = Chr(1) + HERE$ & "." & nm$ & " "
-End If
-
-Else
-n$ = Chr(1) + HERE$ & "." & nm$ & " "
-End If
-i = InStrRev(VarName$, n$)
-
-If i = 0 Then
-n$ = Chr(1) + nm$ & " "
-i = InStrRev(VarName$, n$)
-End If
-If i > 0 Then
-GetVar2 = True
-i = Val(Mid$(VarName$, i + Len(n$)))
-Else
-GetVar2 = False
 End If
 End Function
 Function GetVar(bstack As basetask, ByVal nm$, i As Long, Optional lookglobalonly As Boolean = False, Optional skip As Boolean, Optional looklocalonly As Boolean = False) As Boolean
@@ -28285,7 +28256,7 @@ End Function
 Public Sub CopyGroup(mg As Variant, bstack As basetask)
 Dim mgroup As Group
 Set mgroup = mg
-Dim NAME$, k As Group, i As Long, j As Long, s$, V As Variant, W3 As Long
+Dim name$, k As Group, i As Long, j As Long, s$, V As Variant, W3 As Long
 Dim b$(), vvl As Variant, delme As Document, myArray As mArray, mySecondArray As mArray
 Dim c$(), arrIndex As Long, choose$
 Set k = New Group
@@ -28753,7 +28724,7 @@ Sub CopyUnfloatGroup(mg As Variant, bstack As basetask, w$)
 ' run all variables and copy values...
 Dim mgroup As Group
 Set mgroup = mg
-Dim NAME$, k As Group, i As Long, j As Long, s$, V As Variant, W3 As Long
+Dim name$, k As Group, i As Long, j As Long, s$, V As Variant, W3 As Long
 Dim b$(), vvl As Variant, delme As Document, myArray As mArray, mySecondArray As mArray
 Dim c$(), arrIndex As Long, choose$
 
@@ -28862,6 +28833,7 @@ Dim s() As String, w$, i As Long, nm$, nt$, CM$, nt1$, j As Long, k As Long
                                         Else
                                         .soros.DataStr Left$(s(i), InStr(s(i), " ") - 1) + Str(j)
                                         End If
+                                    
                                         .Varlist = .Varlist + Chr$(1) + "_ " + Mid$(s(i), Len(w$) + 1)
                            Else
                       ''     GetVar bstack, Left$(S(i), InStr(S(i), " ") - 1), j
@@ -29495,7 +29467,7 @@ Dim basketcode As Long, mAddTwipsTop As Long
 
 
 
-If scr.NAME = "Form1" Then
+If scr.name = "Form1" Then
 
 Else
 basketcode = GetCode(scr)
@@ -29506,7 +29478,7 @@ If IsExp(basestack, rest$, p) Then
     If p < 10 Then p = 10
     x = 4
     XX = 4
-    If scr.NAME = "DIS" Then
+    If scr.name = "DIS" Then
     Do
     y = CDbl(XX)
     XX = CSng(x)
@@ -29553,7 +29525,7 @@ If IsExp(basestack, rest$, p) Then
         End If
    
 End If
-If FastSymbol(rest$, ";") And scr.NAME = "DIS" Then
+If FastSymbol(rest$, ";") And scr.name = "DIS" Then
 adjustlinespace = False
     Form1.Move 0, 0, ScrX(), ScrY()
     Form1.BackColor = players(-1).Paper
@@ -29565,7 +29537,7 @@ Dim mmx As Long, mmy As Long
 If sx = 0 Then
 SZ = CSng(x)
 mmx = scr.Width
- If scr.NAME = "DIS" Then
+ If scr.name = "DIS" Then
  mmy = CLng(mmx * Form1.Height / Form1.Width) ' WHY 3/4 ??
  Else
  mmy = scr.Width
@@ -29574,7 +29546,7 @@ mmx = scr.Width
  players(basketcode).uMineLineSpace = mAddTwipsTop
 FrameText scr, SZ, CLng(W3 * p), mmy, players(basketcode).Paper
 Else
-If scr.NAME = "DIS" Then
+If scr.name = "DIS" Then
 If (sx * W4) > Form1.Height Then
 y = Form1.Height
 While sx * W4 > Form1.Height
@@ -29604,7 +29576,7 @@ Wend
 End If
 
 End If
-If scr.NAME = "DIS" Then
+If scr.name = "DIS" Then
 If Not adjustlinespace Then If scr.Height >= Form1.Height - dv15 Then mAddTwipsTop = dv15 * (((scr.Height - sx * W4) / sx / 2) \ dv15)
 End If
 nForm basestack, (x), W3, W4, mAddTwipsTop
@@ -29616,7 +29588,7 @@ mmx = scr.Width
 'If mmx < scr.Width Then
 mmy = scr.Height
 If adjustlinespace Then
-If scr.NAME = "DIS" Then
+If scr.name = "DIS" Then
 mAddTwipsTop = dv15 * (((Form1.Height - sx * W4) / sx / 2) \ dv15)
 Else
 mAddTwipsTop = dv15 * (((scr.Height - sx * W4) / sx / 2) \ dv15)
@@ -29627,13 +29599,13 @@ sx = CLng(sx * W4)
 End If
 players(basketcode).MineLineSpace = mAddTwipsTop
 players(basketcode).uMineLineSpace = mAddTwipsTop
-FrameText scr, SZ, CLng(W3 * p), CLng(sx), players(basketcode).Paper, Not (scr.NAME = "DIS")
+FrameText scr, SZ, CLng(W3 * p), CLng(sx), players(basketcode).Paper, Not (scr.name = "DIS")
 
 
 End If
 
 
-ElseIf FastSymbol(rest$, ";") And scr.NAME = "DIS" Then
+ElseIf FastSymbol(rest$, ";") And scr.name = "DIS" Then
 Form1.Move 0, 0, ScrX(), ScrY()
 Form1.BackColor = players(-1).Paper
 Form1.Cls
@@ -29642,7 +29614,7 @@ Form1.Cls
 ''x = interpret(basestack, "MOTION CENTER")
 ''x = interpret(basestack, "MODE" & Str$(players(GetCode(scr)).SZ) & "," & Str$(scr.Width) & "," & Str$(scr.Height))
 MyMode scr
-ElseIf scr.NAME = "DIS" Then
+ElseIf scr.name = "DIS" Then
 Form1.Move Form1.Left + scr.Left, Form1.top + scr.top, scr.Width, scr.Height
 scr.Move 0, 0
 Form1.Cls
@@ -30055,7 +30027,7 @@ If IsExp(basestack, rest$, x) Then
                 If x < 0 Then
                 MediaPlayer1.pauseMovie
                 AVIRUN = MediaPlayer1.isMoviePlaying
-                If scr.NAME <> "Printer" Then
+                If scr.name <> "Printer" Then
                 If scr.Visible Then scr.SetFocus
                 End If
                 ElseIf x = 0 Then
@@ -31853,13 +31825,13 @@ pa = 0
             Err.clear
             On Error Resume Next
 If IsStrExp(basestack, rest$, s$) Then
-            If s$ <> "" And s$ <> "*" Then MYFONT = s$ Else MYFONT = scr.Font.NAME
+            If s$ <> "" And s$ <> "*" Then MYFONT = s$ Else MYFONT = scr.Font.name
       
                 scr.Font.charset = 0
-                scr.Font.NAME = MYFONT
-               If Not myLcase(MYFONT) = myLcase(scr.Font.NAME) Then
+                scr.Font.name = MYFONT
+               If Not myLcase(MYFONT) = myLcase(scr.Font.name) Then
                scr.Font.charset = 1
-               scr.Font.NAME = MYFONT
+               scr.Font.name = MYFONT
                End If
                Sleep 1
               '  mydoevents
@@ -31872,10 +31844,10 @@ If IsStrExp(basestack, rest$, s$) Then
                 scr.FontItalic = False
             If Err.Number > 0 Then
                 Err.clear
-                scr.Font.NAME = FFONT
+                scr.Font.name = FFONT
                 scr.Font.charset = basestack.myCharSet
             End If
-        Form3.StoreFont scr.Font.NAME, scr.FontSize, scr.Font.charset
+        Form3.StoreFont scr.Font.name, scr.FontSize, scr.Font.charset
         
         SetText scr, -2, True
             s$ = ""
@@ -31918,7 +31890,7 @@ End Function
 Sub newHide(basestack As basetask)
 Dim scr As Object
 Set scr = basestack.Owner
-If scr.NAME = "DIS" Or scr.NAME = "dSprite" Then
+If scr.name = "DIS" Or scr.name = "dSprite" Then
 scr.Visible = False
 End If
 MyDoEvents1 scr
@@ -31927,7 +31899,7 @@ End Sub
 Sub newshow(bstack As basetask)
 Dim scr As Object
 Set scr = bstack.Owner
-If scr.NAME = "DIS" Or scr.NAME = "dSprite" Then
+If scr.name = "DIS" Or scr.name = "dSprite" Then
 If Form1.Visible = False Then
 If ttl Then
 ' we have title
@@ -32065,7 +32037,7 @@ With thisbasket
 .MineLineSpace = alinespace
 .uMineLineSpace = alinespace
 ''.Paper = ddd.BackColor
-FrameText ddd, .SZ, 0, 0, -.Paper, (ddd.NAME <> "Form1")
+FrameText ddd, .SZ, 0, 0, -.Paper, (ddd.name <> "Form1")
 
 End With
 End Sub
@@ -32097,7 +32069,7 @@ ddd.ForeColor = .mypen
 End With
 End Sub
 Function GetCode(dq As Object) As Long
-Select Case dq.NAME
+Select Case dq.name
 Case "DIS"
 GetCode = 0
 Case "Form1"
@@ -32132,11 +32104,11 @@ Sub ProcWindow(bstack As basetask, rest$, scr As Object, ifier As Boolean)
 Dim x1 As Long, y1 As Long, p As Double
 
 
-If scr.NAME = "Form1" Then
+If scr.name = "Form1" Then
     DisableTargets q(), -1
-ElseIf scr.NAME = "DIS" Then
+ElseIf scr.name = "DIS" Then
     DisableTargets q(), 0
-ElseIf scr.NAME = "dSprite" Then
+ElseIf scr.name = "dSprite" Then
     DisableTargets q(), Val(scr.Index)
 End If
 With players(GetCode(scr))
@@ -32146,7 +32118,7 @@ With players(GetCode(scr))
             If FastSymbol(rest$, ",") Then
                 If IsExp(bstack, rest$, p) Then
                     x1 = CLng(p)
-                    If x1 = 0 And scr.NAME = "DIS" Then
+                    If x1 = 0 And scr.name = "DIS" Then
                     If Not Form1.WindowState = 0 Then Form1.WindowState = 0: Form1.refresh
                     Form1.Move 0, 0, ScrX(), ScrY()
         
@@ -32158,7 +32130,7 @@ With players(GetCode(scr))
 End If
 If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then y1 = CLng(p)
 End If
-If scr.NAME = "dSprite" Then
+If scr.name = "dSprite" Then
             RsetRegion scr
             Set scr.Picture = LoadPicture("")
                 If FastSymbol(rest$, ";") Then 'CENTER

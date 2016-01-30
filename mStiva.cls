@@ -138,7 +138,7 @@ Private Sub dec()
 mMany = mMany - 1
 
 End Sub
-Public Sub DROP(ByVal items As Long)
+Public Sub drop(ByVal items As Long)
 Dim Num As Long
 On Error Resume Next
 mMany = mMany - items
@@ -286,7 +286,7 @@ mstack.remove i
 If mstack.Count = 0 Then
 mstack.Add aa
 ElseIf i = 1 Then
-mstack.Add aa, , , 1
+mstack.Add aa, , 1
 Else
 mstack.Add aa, , , i - 1
 End If
@@ -368,7 +368,7 @@ Private Sub Class_Terminate()
 Flush
 End Sub
 Sub CopyGroup(myobject As Object, myobject2 As Object)
- Dim ps As New mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, SS$
+ Dim ps As New mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
 Dim subgroup As Object, sub2 As Object
  Set myobject2 = New Group
              With myobject

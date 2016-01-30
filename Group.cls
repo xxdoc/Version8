@@ -53,42 +53,42 @@ i = i - 1
 Wend
 types = s$
 End Function
-Public Sub PeekItem(cursor As Long, ITEM)
+Public Sub PeekItem(cursor As Long, item)
 '' used in the float mode
 Dim JJ As Variant
-If IsObject(bank.ITEM(cursor)) Then
-Set ITEM = bank.ITEM(cursor)
+If IsObject(bank.item(cursor)) Then
+Set item = bank.item(cursor)
 Else
 If mTeam Then
-        If cursor = bank.ITEM(1) * 2 + 3 Then
+        If cursor = bank.item(1) * 2 + 3 Then
             ' we need common definitions for functions and modules all elements
                 
                 
                 LinkToGroup.PeekItem 1, JJ
-                LinkToGroup.PeekItem JJ * 2 + 3, ITEM
+                LinkToGroup.PeekItem JJ * 2 + 3, item
                         Exit Sub
-            ElseIf cursor = bank.ITEM(1) * 2 + 2 Then
+            ElseIf cursor = bank.item(1) * 2 + 2 Then
                     LinkToGroup.PeekItem 1, JJ
-                    LinkToGroup.PeekItem JJ * 2 + 2, ITEM
+                    LinkToGroup.PeekItem JJ * 2 + 2, item
                           Exit Sub
             End If
 End If
 
-ITEM = bank.ITEM(cursor)
+item = bank.item(cursor)
 End If
 
 End Sub
-Public Sub PokeItem(cursor As Long, ITEM)
+Public Sub PokeItem(cursor As Long, item)
 ' used in the float mode
-If IsObject(ITEM) Then
-Set bank.ITEM(cursor) = ITEM
+If IsObject(item) Then
+Set bank.item(cursor) = item
 Else
 ' always last two items are for local vars and functions
-If mTeam And cursor >= bank.ITEM(1) * 2 + 2 Then
+If mTeam And cursor >= bank.item(1) * 2 + 2 Then
 ''Stop
 '' do nothing
 Else
- bank.ITEM(cursor) = ITEM
+ bank.item(cursor) = item
  End If
 End If
 End Sub
@@ -118,13 +118,13 @@ If FloatGroup Then bank.SerialItem (0), 0, 7
 FloatGroup = False
 Set bank = Nothing
 End Sub
-Public Property Set LinkRef(a As Object)
+Public Property Set LinkRef(A As Object)
 If FloatGroup Then
 mTeam = False
-Set LinkToGroup = a
-If a Is Nothing Then Exit Property
+Set LinkToGroup = A
+If A Is Nothing Then Exit Property
 'erase functions,,,
- bank.ITEM(bank.ITEM(1) * 2 + 3) = ""
+ bank.item(bank.item(1) * 2 + 3) = ""
 mTeam = True
 Else
 ' only when is in an array as Float Group
@@ -133,11 +133,11 @@ End Property
 Public Property Get Link() As Object
 Set Link = LinkToGroup
 End Property
-Public Property Set Sorosref(a As mStiva)
+Public Property Set Sorosref(A As mStiva)
 If FloatGroup Then
 ' we can't do anything with stored values
 Else
-Set OwnSoros = a
+Set OwnSoros = A
 End If
 End Property
 Public Property Get soros() As mStiva

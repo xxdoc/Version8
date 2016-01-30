@@ -62,20 +62,20 @@ Private RetSoros As New mStiva  ' for basic mimic functions- for education only
 Public SubLevel As Long
 Public OriginalCode As Long
 Public StaticInUse$
-Public Sub SetVar(ByVal NAME$, var As Variant)
+Public Sub SetVar(ByVal name$, var As Variant)
     On Error Resume Next
-    StaticCollection.Add var, NAME$
+    StaticCollection.Add var, name$
     If Err.Number > 0 Then
-    StaticCollection.remove NAME$
-    StaticCollection.Add var, NAME$
+    StaticCollection.remove name$
+    StaticCollection.Add var, name$
     End If
    
    '' Debug.Print "Put to ", Me.StaticInUse, " Var ", NAME$, " type ", Typename$(VAR)
 End Sub
-Function AlterVar(ByVal NAME$, p As Double, ss$, inttype As Boolean) As Boolean
+Function AlterVar(ByVal name$, p As Double, ss$, inttype As Boolean) As Boolean
 Dim var As Variant
-  var = StaticCollection(NAME$)
-    StaticCollection.remove NAME$
+  var = StaticCollection(name$)
+    StaticCollection.remove name$
             Select Case ss$
             Case "!!"
             var = -1 - (var <> 0)
@@ -107,7 +107,7 @@ Dim var As Variant
             Else
             var = MyRound(var, 13)
             End If
-   StaticCollection.Add var, NAME$
+   StaticCollection.Add var, name$
    AlterVar = True
 End Function
 Function MyRound(ByVal x, Optional d As Double = 0) As Double
@@ -146,28 +146,29 @@ Case 13
 MyRound = Fix(x * 10000000000000# + n) / 10000000000000#
 End Select
 End Function
-Public Function ExistVar(ByVal NAME$) As Boolean
+Public Function ExistVar(ByVal name$) As Boolean
     Dim i As Long
-    If StaticCollection.Count = 0 Then Exit Function
     On Error Resume Next
-    i = VarType(StaticCollection(NAME$))
+    If StaticCollection.Count = 0 Then Exit Function
+    If Err Then Exit Function
+    i = VarType(StaticCollection(name$))
     If Err.Number > 0 Then Exit Function
     ExistVar = True
 End Function
-Public Sub ReadVar(ByVal NAME$, var As Variant)
+Public Sub ReadVar(ByVal name$, var As Variant)
     Dim i As Long, VV As Variant
     On Error Resume Next
-    i = VarType(StaticCollection(NAME$))
+    i = VarType(StaticCollection(name$))
     If Err.Number Then var = Empty: Exit Sub
     ''Debug.Print NAME$, OriginalName, OriginalCode, HERE$, mGroupName
     If i = vbObject Then
-            Set var = StaticCollection(NAME$)
-            StaticCollection.remove NAME$  '' we do a remove
+            Set var = StaticCollection(name$)
+            StaticCollection.remove name$  '' we do a remove
             Set VV = Nothing
-            StaticCollection.Add VV, NAME$
+            StaticCollection.Add VV, name$
             ' objects are popped
     Else
-            var = StaticCollection(NAME$)
+            var = StaticCollection(name$)
     End If
 
 End Sub
