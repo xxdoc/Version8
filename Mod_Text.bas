@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 144
+Global Const Revision = 145
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -18409,11 +18409,11 @@ arrconthere:
                     arrname$ = arrname$ & Chr(13) + myUcase(what$) + w$
             End If
         Else
-            If InStr(arrname$, Chr(13) + myUcase(HERE$) & "." & myUcase(what$) + w$) > 0 Then
+            If InStr(arrname$, Chr(13) + HERE$ & "." & myUcase(what$) + w$) > 0 Then
                 MyEr "Try other array name", "Δοκίμασε άλλο όνομα πίνακα"
                 Exit Do
             Else
-                arrname$ = arrname$ & Chr(13) + myUcase(HERE$) & "." & myUcase(what$) + w$
+                arrname$ = arrname$ & Chr(13) + HERE$ & "." & myUcase(what$) + w$
             End If
         End If
     End If
@@ -24182,7 +24182,7 @@ Else
 If HERE$ = "" Then
 ss$ = Chr(13) + name$
 Else
-ss$ = Chr(13) + myUcase(HERE$) & "." & name$
+ss$ = Chr(13) + HERE$ & "." & name$
 End If
 
 End If
@@ -24205,7 +24205,7 @@ Else
 If HERE$ = "" Then
 ss$ = Chr(1) + name$ + " "
 Else
-ss$ = Chr(1) + myUcase(HERE$) & "." & name$ + " "
+ss$ = Chr(1) + HERE$ & "." & name$ + " "
 End If
 
 End If
@@ -24254,7 +24254,7 @@ End If
 If HERE$ = "" Or makeitglobal Then
 VarName$ = VarName$ & Chr(1) + myUcase(name$) + constwidth(j)
 Else
-VarName$ = VarName$ & Chr(1) + myUcase(HERE$) & "." & myUcase(name$) + constwidth(j)
+VarName$ = VarName$ & Chr(1) + HERE$ & "." & myUcase(name$) + constwidth(j)
 End If
 GlobalVar = j
 End Function
@@ -24278,7 +24278,7 @@ j = var2used
 If HERE$ = "" Then
 VarName$ = VarName$ & Chr(1) + myUcase(name$) + constwidth(j)
 Else
-VarName$ = VarName$ & Chr(1) + myUcase(HERE$) & "." & myUcase(name$) + constwidth(j)
+VarName$ = VarName$ & Chr(1) + HERE$ & "." & myUcase(name$) + constwidth(j)
 End If
 GlobalVarRefOnly = j
 End Function
@@ -24290,7 +24290,7 @@ If Typename(q) <> "Group" Then Exit Function
 If HERE$ = "" Then
 name$ = myUcase(name$) + "."
 Else
- name$ = myUcase(HERE$) & "." & myUcase(name$) + "."
+ name$ = HERE$ & "." & myUcase(name$) + "."
 End If
 With q
 Vlist = .VarlistTotal(var(), True)
@@ -24342,12 +24342,13 @@ dummyarray:
 
     
     If q = -1 Then rst$ = newkey 'a way to return the handler
+    name$ = myUcase(name$)
     If HERE$ = "" Or useglobalname Then
-        arrname$ = arrname$ & Chr(13) + bstack.GroupName + myUcase(name$) & " " & newkey
+        arrname$ = arrname$ & Chr(13) + bstack.GroupName + name$ & " " & newkey
         afto.arrname = name$
     Else
-        arrname$ = arrname$ & Chr(13) + myUcase(HERE$) + "." & bstack.GroupName + myUcase(name$) & " " & newkey
-        afto.arrname = myUcase(HERE$) & "." & myUcase(name$)
+        arrname$ = arrname$ & Chr(13) + HERE$ + "." & bstack.GroupName + name$ & " " & newkey
+        afto.arrname = HERE$ & "." & name$
     End If
     
     neoArray.Add afto, newkey
@@ -27421,11 +27422,6 @@ againgroup:
                      
                                      Exit Function
     End If
-        Else
-     '         If Not ExecuteVarOnly(bstack, W$, Rest$) Then
-             ''  ExecuteVarOnly = 0: Exit Function
-          ''     End If
-          ''  If Left$(HERE$ & "#", 1) = "!" Then HERE$ = Mid$(HERE$, 2): HERE$ = HERE$
         End If
         
     End If
