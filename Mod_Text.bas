@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 145
+Global Const Revision = 146
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -9289,7 +9289,7 @@ backitem1:
     Case 1, 3, 4
     If GetGlobalVar(q2$, w2) Then r$ = "ReferVar"   '' change s$ to q2$
     Case 5, 6, 7
-    If CopyArrayItemsNoFormated(q2$) <> "" Then r$ = "ReferArray"
+    If CopyArrayItems(bstackstr, q2$) <> "" Then r$ = "ReferArray"
     End Select
     If r$ = "" Then r$ = "String"
             IsString = FastSymbol(A$, ")", True)
@@ -18393,7 +18393,7 @@ If bs.IsString(s$) Then
             End If
     End If
     Else
-    w$ = CopyArrayItemsNoFormated(s$)
+    w$ = CopyArrayItems(basestack, s$)
     If w$ <> "" Then
     If Not FastSymbol(rest$, ")") Then MyEr "Syntax error, use )", "Συντακτικό λάθος βάλε )": Exit Do
    If f Then
@@ -18689,7 +18689,7 @@ Do
    Else
     Select Case it
     Case 5, 6, 7
-    GlobalArr basestack, w$, rest$, i, f ''basestack.GroupName &
+    GlobalArr basestack, w$, rest$, i, f   ''basestack.GroupName &
     p = i
     If i < 0 Then it = 0
     Case Else
@@ -20185,7 +20185,7 @@ Case 6
 : Exit Function
      End If
     
-    w$ = "A" & Trim(CopyArrayItems(ss$)) + CStr(it) ''''''''''εδω για τον νεο πίνακα πρέπει να δώσω το mArray???
+    w$ = "A" & Trim(CopyArrayItems(bstack, ss$)) + CStr(it) ''''''''''εδω για τον νεο πίνακα πρέπει να δώσω το mArray???
     s$ = frm$
     frm$ = pppp.item(it)
     If Typename(pppp.item(it)) = doc Then
@@ -24536,28 +24536,15 @@ End If
 
 End Function
 
-Function CopyArrayItems(nm$) As String
-Dim k As Long, nd As Long, sd1 As Long
-Dim n$
-n$ = Chr(13) + HERE$ & "." & myUcase(nm$)
-k = InStrRev(arrname$, n$)
-If k = 0 Then
-n$ = Chr(13) + myUcase(nm$)
-k = InStrRev(arrname$, n$)
-End If
-If k > 0 Then
-
-    k = k + Len(n$) + 1 'for space
-   sd1 = k
-   
-    k = InStr(k + 1, arrname$ & Chr$(13), Chr(13)) + 1
-    If k > 0 Then
-    CopyArrayItems = Mid$(arrname$, sd1, k - sd1 - 1)
-    End If
+Function CopyArrayItems(bstack As basetask, nm$) As String
+Dim ss$
+If neoGetArrayLinkOnly(bstack, nm$, ss$) Then
+CopyArrayItems = " " + ss$
 End If
 End Function
 
-Function CopyArrayItemsNoFormated(nm$) As String
+
+Function CopyArrayItemsNoFormatedOld(nm$) As String
 Dim k As Long, nd As Long, sd1 As Long
 Dim n$
 n$ = Chr(13) + myUcase(nm$) + "("
@@ -24569,7 +24556,7 @@ If k > 0 Then
    
     k = InStr(k + 1, arrname$ & Chr$(13), Chr(13)) + 1
     If k > 0 Then
-    CopyArrayItemsNoFormated = Mid$(arrname$, sd1, k - sd1 - 1)
+    CopyArrayItemsNoFormatedOld = Mid$(arrname$, sd1, k - sd1 - 1)
     End If
 End If
 End Function
