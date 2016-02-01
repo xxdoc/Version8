@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 146
+Global Const Revision = 147
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -24530,7 +24530,7 @@ End If
 End If
 If k > 0 Then
 k = k + Len(n$) + 1
-Link$ = Mid$(arrname$, k, 16)
+Link$ = Mid$(arrname$, k, 17)
 neoGetArrayLinkOnly = True
 End If
 
@@ -24539,7 +24539,7 @@ End Function
 Function CopyArrayItems(bstack As basetask, nm$) As String
 Dim ss$
 If neoGetArrayLinkOnly(bstack, nm$, ss$) Then
-CopyArrayItems = " " + ss$
+CopyArrayItems = ss$
 End If
 End Function
 
