@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 147
+Global Const Revision = 148
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -1891,9 +1891,11 @@ subsentry10:
                             loopthis = False
                             End If
                                                Else
+                                               If kolpo Then b$ = "BREAK"
                                   Once = kolpo
+                                
                                 SpeedGroup = 2: Set bstack.LastObj = Nothing
-                                  GoTo normalexit
+                                  GoTo breakexit
                     End If
 
                             Case Else
@@ -1914,6 +1916,7 @@ subsentry10:
               SpeedGroup = Abs(FastSymbol(b$, "}"))
             End If
   End If
+breakexit:
         While MM.Total > 0
         y1 = MM.PopVal
         V = MM.PopVal
