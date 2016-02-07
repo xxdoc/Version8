@@ -141,13 +141,13 @@ Else
  End If
 
 End Function
-Private Sub glistN_Find(key As String, where As Long, skip As Boolean)
+Private Sub glistN_Find(Key As String, where As Long, skip As Boolean)
 If NostateDir Then Exit Sub
 
 skip = True
 ' find file only
 Dim i As Long, s$
-s$ = mylcasefILE(key)
+s$ = mylcasefILE(Key)
 'Command2.Enabled = False
 For i = 0 To Mydir.listcount - 1
 If Mydir.abort Then Exit For
@@ -641,18 +641,18 @@ Function DriveType(path$) As String
 End Function
 Function DriveSerial(ByVal path$) As Long
 ' need trailing slash
-    Dim Serial As Long, VName As String, FSName As String
-    VName = String$(255, Chr$(0))
+    Dim Serial As Long, vname As String, FSName As String
+    vname = String$(255, Chr$(0))
     FSName = String$(255, Chr$(0))
-    GetVolumeInformation path$, VName, 255, Serial, 0, 0, FSName, 255
+    GetVolumeInformation path$, vname, 255, Serial, 0, 0, FSName, 255
     DriveSerial = Serial
 End Function
 Function WeCanWrite(ByVal path$) As Boolean
 ' need trailing slash
-    Dim Serial As Long, VName As String, FSName As String, SystemFlags As Long
-    VName = String$(255, Chr$(0))
+    Dim Serial As Long, vname As String, FSName As String, SystemFlags As Long
+    vname = String$(255, Chr$(0))
     FSName = String$(255, Chr$(0))
-    GetVolumeInformation path$, VName, 255, 0, 0, SystemFlags, FSName, 255
+    GetVolumeInformation path$, vname, 255, 0, 0, SystemFlags, FSName, 255
     WeCanWrite = (SystemFlags And &H80000) = 0
 End Function
 
@@ -716,14 +716,14 @@ GetPath = mDoc1.TextParagraphOrder(1)
 End If
 End Function
 Sub SetPath(Mdoc1Text As String)
-Dim SS$
-                 SS$ = UCase(Mdoc1Text)
-                    DropLeft "\M2000_USER\", SS$
-If SS$ = "" Then
+Dim ss$
+                 ss$ = UCase(Mdoc1Text)
+                    DropLeft "\M2000_USER\", ss$
+If ss$ = "" Then
 hiddenDir = ""
 mDoc1.TextParagraphOrder(1) = Mdoc1Text
 Else
 hiddenDir = Mdoc1Text
-mDoc1.TextParagraphOrder(1) = SS$
+mDoc1.TextParagraphOrder(1) = ss$
 End If
 End Sub

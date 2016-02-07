@@ -11,8 +11,9 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+' MAKE VALUE AS DEFAULT PROPERTY
+
 Dim VarRef As String
-Dim ArrRef As String
 Dim FuncRef As String
 Dim LocalRef As String  ' used only for classes
 Dim OwnSoros As mStiva
@@ -23,15 +24,28 @@ Dim bank As mArray
 Dim mTeam As Boolean
 Dim LinkToGroup As Object
 Dim mTag As String
-Public Function PrepareSoros(ByRef V()) As mStiva
-Dim i As Long, AllSoros As New mStiva, s As String, VV As mStiva
-For i = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(i)
+Public Function PrepareSoros(ByRef v(), ByVal topname$) As mStiva
+Dim I As Long, AllSoros As New mStiva, s As String, VV As mStiva
+For I = 1 To OwnSoros.Total
+s = OwnSoros.StackItem(I)
+'Debug.Print s, topname$, GroupName
 
-AllSoros.DataStr s
 If Left$(s$, 1) = "*" Then
- Set VV = V(Val(Split(s)(1))).PrepareSoros(V())
+AllSoros.DataStr "*" + topname$ + GroupName + Mid$(s, 2)
+ If Not IsObject(v(Val(Split(s)(1)))) Then Set v(Val(Split(s)(1))) = New Group
+ If HERE$ <> "" Then
+ Set VV = v(Val(Split(s)(1))).PrepareSoros(v(), HERE$ + "." + GroupName)
+ Else
+ Set VV = v(Val(Split(s)(1))).PrepareSoros(v(), GroupName)
+ End If
+ 
 AllSoros.MergeBottom VV
+Else
+If Val(Split(s)(1)) = 0 Then
+AllSoros.DataStr s
+Else
+AllSoros.DataStr topname$ + GroupName + s
+End If
 End If
 Next
 Set PrepareSoros = AllSoros
@@ -39,16 +53,17 @@ Set PrepareSoros = AllSoros
 End Function
 
 Public Function types() As String
-Dim i As Long, s$
-i = OwnSoros.Total
+Dim I As Long, s$
+I = OwnSoros.Total
 On Error Resume Next
-While i > 0
-If InStr(OwnSoros.StackItem(i), ") ") > 0 Then
+While I > 0
+If InStr(OwnSoros.StackItem(I), "( ") > 0 Then
 s$ = "A" + s$
 Else
 s$ = "V" + s$
 End If
-i = i - 1
+
+I = I - 1
 
 Wend
 types = s$
@@ -56,6 +71,7 @@ End Function
 Public Sub PeekItem(cursor As Long, item)
 '' used in the float mode
 Dim JJ As Variant
+
 If IsObject(bank.item(cursor)) Then
 Set item = bank.item(cursor)
 Else
@@ -85,7 +101,7 @@ Set bank.item(cursor) = item
 Else
 ' always last two items are for local vars and functions
 If mTeam And cursor >= bank.item(1) * 2 + 2 Then
-''Stop
+
 '' do nothing
 Else
  bank.item(cursor) = item
@@ -118,11 +134,11 @@ If FloatGroup Then bank.SerialItem (0), 0, 7
 FloatGroup = False
 Set bank = Nothing
 End Sub
-Public Property Set LinkRef(A As Object)
+Public Property Set LinkRef(a As Object)
 If FloatGroup Then
 mTeam = False
-Set LinkToGroup = A
-If A Is Nothing Then Exit Property
+Set LinkToGroup = a
+If a Is Nothing Then Exit Property
 'erase functions,,,
  bank.item(bank.item(1) * 2 + 3) = ""
 mTeam = True
@@ -133,44 +149,31 @@ End Property
 Public Property Get Link() As Object
 Set Link = LinkToGroup
 End Property
-Public Property Set Sorosref(A As mStiva)
+Public Property Set Sorosref(a As mStiva)
 If FloatGroup Then
 ' we can't do anything with stored values
 Else
-Set OwnSoros = A
+Set OwnSoros = a
 End If
 End Property
 Public Property Get soros() As mStiva
 Set soros = OwnSoros
 End Property
 
-Public Function VarlistTotal(V(), skip As Boolean) As String
-Dim i As Long, s As String, Sm As String
-
-For i = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(i)
-If Left$(s, 1) = "*" Then
-Sm = Sm + V(Val(Split(s)(1))).VarlistTotal(V(), 0)
-End If
-Next
-If skip Then
-VarlistTotal = VarRef + Sm$
-Else
-VarlistTotal = Replace(VarRef + Sm$, Chr$(1) + "_ ", Chr$(1) + "_ " + mName)
-End If
-End Function
 Public Property Let Varlist(ByVal vNewValue As String)
 VarRef$ = vNewValue
 End Property
 Public Property Get Varlist() As String
 Varlist = VarRef$
 End Property
-Public Function FunclistTotal(V(), skip As Boolean) As String
-Dim i As Long, s As String, Sm As String
-For i = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(i)
+Public Function FunclistTotal(v(), skip As Boolean) As String
+Dim I As Long, s As String, Sm As String
+For I = 1 To OwnSoros.Total
+s = OwnSoros.StackItem(I)
 If Left$(s, 1) = "*" Then
-Sm = Sm + V(Val(Split(s)(1))).FunclistTotal(V(), False)
+If Not IsObject(v(Val(Split(s)(1)))) Then Set v(Val(Split(s)(1))) = New Group
+
+ Sm = Sm + v(Val(Split(s)(1))).FunclistTotal(v(), False)
 End If
 Next
 If skip Then
@@ -186,12 +189,13 @@ End Property
 Public Property Let FuncList(ByVal vNewValue As String)
 FuncRef$ = vNewValue
 End Property
-Public Function ArrlistTotal(V(), skip As Boolean) As String
-    Dim i As Long, s As String, Sm As String
-    For i = 1 To OwnSoros.Total
-    s = OwnSoros.StackItem(i)
+Public Function ArrlistTotal(v(), skip As Boolean) As String
+    Dim I As Long, s As String, Sm As String
+    For I = 1 To OwnSoros.Total
+    s = OwnSoros.StackItem(I)
     If Left$(s, 1) = "*" Then
-    Sm = Sm + V(Val(Split(s)(1))).ArrlistTotal(V(), 0)
+    If Not IsObject(v(Val(Split(s)(1)))) Then Set v(Val(Split(s)(1))) = New Group
+    Sm = Sm + v(Val(Split(s)(1))).ArrlistTotal(v(), 0)
     End If
     Next
     If skip Then
@@ -200,13 +204,7 @@ Public Function ArrlistTotal(V(), skip As Boolean) As String
     ArrlistTotal = Replace(ArrRef + Sm$, Chr$(13) + "__", Chr$(13) + "__" + mName)
     End If
 End Function
-Public Property Get ArrList() As String
-ArrList = ArrRef$
-End Property
 
-Public Property Let ArrList(ByVal vNewValue As String)
-ArrRef$ = vNewValue
-End Property
 Public Property Get LocalList() As String
 LocalList = LocalRef$
 End Property
@@ -259,3 +257,4 @@ End Property
 Public Property Let edittag(ByVal vNewValue As String)
 If Not mTeam Then mTag = vNewValue
 End Property
+

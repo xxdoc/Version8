@@ -448,7 +448,7 @@ End Sub
 
 
 
-Private Sub List1_ListError(Code As Long)
+Private Sub List1_ListError(code As Long)
 Dim DUMMY As Long
 List1.listindex = -1
 List1.LeaveonChoose = False
@@ -461,7 +461,7 @@ DUMMY = interpret(basestack1, List1.Tag)
 Me.KeyPreview = True
 End If
 End If
-MyEr "Menu Error " & CStr(Code), "Λάθος στην ΕΠΙΛΟΓΗ αριθμός " & CStr(Code)
+MyEr "Menu Error " & CStr(code), "Λάθος στην ΕΠΙΛΟΓΗ αριθμός " & CStr(code)
 End Sub
 
 
@@ -492,8 +492,7 @@ End Sub
 
 Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
 If item = List1.listindex Then
-' is our cursor
-'If item = 0 Then Stop
+
 List1.FillThere thisHDC, thisrect, &HFFFFFF, -List1.LeftMarginPixels  ' or black in reverse
 List1.WriteThere thisrect, List1.List(item), List1.PanPos / dv15, List1.addpixels / 2, 0
 skip = True
@@ -948,7 +947,7 @@ End Sub
 Private Sub Form_KeyDown(KeyCode As Integer, shift As Integer)
 Dim i As Long
 Form1.Font.charset = GetCharSet(GetCodePage(GetLCIDFromKeyboard))
-'If BLOCKkey Then Stop
+
 Static ctrl As Boolean, noentrance As Boolean
 If KeyCode = 13 And List1.Visible And (Not List1.LeaveonChoose) And Not QRY Then
 KeyCode = 0
@@ -1381,21 +1380,21 @@ myBold = False
 End If
 myCharSet = 0
 With Form1
-.Font.NAME = MYFONT
+.Font.name = MYFONT
 .Font.Strikethrough = False
 .Font.Underline = False
 .Font.bold = myBold
-MYFONT = .Font.NAME
+MYFONT = .Font.name
     .Font.charset = myCharSet
     .DIS.Font.charset = myCharSet
-    .DIS.Font.NAME = MYFONT
+    .DIS.Font.name = MYFONT
     .DIS.Font.bold = myBold
     .TEXT1.Font.charset = myCharSet
-    .TEXT1.Font.NAME = MYFONT
+    .TEXT1.Font.name = MYFONT
     .TEXT1.Font.bold = myBold
     
     .List1.charset = myCharSet
-    .List1.Font.NAME = MYFONT
+    .List1.Font.name = MYFONT
     .List1.FontBold = myBold
      
 End With
@@ -1522,7 +1521,7 @@ AutoRedraw = True
 If OneOnly Then Exit Sub
 OneOnly = True
 
-If m_bInIDE Then funcdeep = 129 Else funcdeep = 14501 ' need stack 102400000 bytes
+If m_bInIDE Then funcdeep = 128 Else funcdeep = 14800 ' need stack 102400000 bytes
 
 escok = False
 Sleep 10
@@ -1732,7 +1731,7 @@ MediaPlayer1.closeMovie
 Dim x As Form
 For Each x In Forms
 'MsgBox x.name
-If x.NAME <> Me.NAME Then Unload x
+If x.name <> Me.name Then Unload x
 Next
 If App.UnattendedApp Then End
 End Sub
@@ -1936,7 +1935,7 @@ End If
 KeyCode = 0
 Case vbKeyF10
 TEXT1.showparagraph = Not TEXT1.showparagraph
-TEXT1.mdoc.WrapAgainColor
+TEXT1.mdoc.WrapAgain
 TEXT1.Render
 KeyCode = 0
 
@@ -2439,10 +2438,10 @@ Else
         MYFONT = cc.Value
         On Error Resume Next
         
-        Me.Font.NAME = MYFONT
+        Me.Font.name = MYFONT
         Me.Font.Italic = False
-        Me.Font.NAME = MYFONT
-        If Me.Font.NAME <> MYFONT Then
+        Me.Font.name = MYFONT
+        If Me.Font.name <> MYFONT Then
         MYFONT = defFontname
         End If
        
@@ -2513,8 +2512,8 @@ End If
             If Not cc.Value = 0 Then funcdeep = cc.Value
             
         Else
-            cc.Value = 14501
-            funcdeep = 129
+            cc.Value = 14500
+            funcdeep = 128
         End If
         
         cc.ValueKey = "CASESENSITIVE"

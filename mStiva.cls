@@ -99,12 +99,12 @@ End If
 Inc
 End Sub
 Public Property Get StackPick(where As Long) As VarItem
-Dim A As VarItem
+Dim a As VarItem
 dec
-Set A = mstack.item(where)
+Set a = mstack.item(where)
 mstack.remove where
 
-Set StackPick = A
+Set StackPick = a
 End Property
 Public Property Get StackItemType(where As Long) As String
 Dim aa As VarItem
@@ -139,21 +139,21 @@ mMany = mMany - 1
 
 End Sub
 Public Sub drop(ByVal items As Long)
-Dim Num As Long
+Dim num As Long
 On Error Resume Next
 mMany = mMany - items
 If mMany < 0 Then mMany = 0: Set mstack = New Collection: Exit Sub
-For Num = 1 To items
+For num = 1 To items
     mstack.remove 1
-Next Num
+Next num
 End Sub
 Public Sub Flush()
 
-Dim Num As Long
-For Num = 1 To mstack.Count
+Dim num As Long
+For num = 1 To mstack.Count
   mstack.remove 1
  dec
-Next Num
+Next num
 mMany = 0
 End Sub
 Public Sub PushUndefine()
@@ -167,10 +167,10 @@ End If
 Inc
 End Sub
 
-Public Sub PushVal(A As Double)
+Public Sub PushVal(a As Double)
 Dim aa As New VarItem
 aa.Typename = "N"
-aa.ItemDouble = A
+aa.ItemDouble = a
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -197,10 +197,10 @@ dec
 Set PopObj = mstack.item(1).ObjectRef
 mstack.remove 1   '
 End Property
-Public Sub PushStr(ByRef A As String)
+Public Sub PushStr(ByRef a As String)
 Dim aa As New VarItem
 aa.Typename = "S"
-aa.ItemStr = A
+aa.ItemStr = a
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -250,10 +250,10 @@ mstack.remove 1
 
 End Property
 
-Public Sub DataVal(A As Double)
+Public Sub DataVal(a As Double)
 Dim aa As New VarItem
 aa.Typename = "N"
-aa.ItemDouble = A
+aa.ItemDouble = a
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -261,10 +261,12 @@ mstack.Add aa, , , mstack.Count
 End If
 Inc
 End Sub
-Public Sub DataStr(ByRef A As String)
+Public Sub DataStr(ByRef a As String)
 Dim aa As New VarItem
 aa.Typename = "S"
-aa.ItemStr = A$
+aa.ItemStr = a$
+
+
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -272,16 +274,17 @@ mstack.Add aa, , , mstack.Count
 End If
 Inc
 End Sub
-Public Sub DataStrUn(A As String)
+Public Sub DataStrUn(a As String)
 Dim aa As New VarItem, i As Long, b As String
-b = Split(A)(0)
+b = Split(a)(0)
 aa.Typename = "S"
-aa.ItemStr = A
+aa.ItemStr = a
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
 For i = 1 To Total
 If Split(StackItem(i))(0) = b Then
+
 mstack.remove i
 If mstack.Count = 0 Then
 mstack.Add aa
@@ -313,10 +316,10 @@ End Sub
 Public Sub Begin(from As Long)
 BeginFrom = from
 End Sub
-Public Sub additem(ByRef A As String)
+Public Sub additem(ByRef a As String)
 Dim aa As New VarItem
     aa.Typename = "S"
-    aa.ItemStr = A$
+    aa.ItemStr = a$
     If mstack.Count = 0 Then
         BeginFrom = 1
         mstack.Add aa
@@ -333,13 +336,13 @@ Dim aa As New VarItem
 
 Inc
 End Sub
-Public Sub MergeTop(A As mStiva)
-If Me Is A Then Exit Sub
+Public Sub MergeTop(a As mStiva)
+If Me Is a Then Exit Sub
 Dim i As Long, aa As VarItem
-If A.Total > 0 Then
+If a.Total > 0 Then
 Do
-i = A.Total
-Set aa = A.StackPick(i)
+i = a.Total
+Set aa = a.StackPick(i)
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -349,26 +352,26 @@ Inc
 Loop Until i <= 1
 End If
 End Sub
-Public Sub MergeBottom(A As mStiva)
-If Me Is A Then Exit Sub
+Public Sub MergeBottom(a As mStiva)
+If Me Is a Then Exit Sub
 Dim i As Long, aa As VarItem
-If A.Total > 0 Then
+If a.Total > 0 Then
 Do
-Set aa = A.StackPick(1)
+Set aa = a.StackPick(1)
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
 mstack.Add aa, , , mstack.Count    'push so first of a is first on mstack
 End If
 Inc
-Loop Until A.Total < 1
+Loop Until a.Total < 1
 End If
 End Sub
 Private Sub Class_Terminate()
 Flush
 End Sub
 Sub CopyGroup(myobject As Object, myobject2 As Object)
- Dim ps As New mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
+ Dim ps As New mStiva, v As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
 Dim subgroup As Object, sub2 As Object
  Set myobject2 = New Group
              With myobject
@@ -396,6 +399,7 @@ Function Copy() As mStiva
 Dim i As Long
 Set Copy = New mStiva
 For i = Total To 1 Step -1
+'Debug.Print Me.StackItem(i)
 Copy.PushStr Me.StackItem(i)
 Next i
 End Function

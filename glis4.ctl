@@ -192,6 +192,8 @@ Event OutPopUp(x As Single, y As Single, myButton As Integer)
 Event SplitLine()
 Event LineUp()
 Event LineDown()
+Event PureListOn()
+Event PureListOff()
 Event MarkIn()
 Event MarkOut()
 Event MarkDestroyAny()
@@ -212,7 +214,7 @@ Event GetBackPicture(pic As Object)
 Event KeyDown(KeyCode As Integer, shift As Integer)
 Event KeyDownAfter(KeyCode As Integer, shift As Integer)
 Event SyncKeyboard(item As Integer)
-Event find(key As String, where As Long, skip As Boolean)
+Event find(Key As String, where As Long, skip As Boolean)
 Event ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
 Event ExposeListcount(cListCount As Long)
 Event ExposeItemMouseMove(Button As Integer, ByVal item As Long, ByVal x As Long, ByVal y As Long)
@@ -454,10 +456,12 @@ End Property
 Public Property Get Text() As String
 Attribute Text.VB_UserMemId = 0
 Dim i As Long
+RaiseEvent PureListOn
 For i = 0 To listcount - 2
 Text = Text + List(i) + vbCrLf
 Next i
 Text = Text + List(i)
+RaiseEvent PureListOff
 End Property
 Public Sub ScrollTo(ThatTopItem As Long, Optional this As Long = -2)
 On Error GoTo scroend
@@ -519,7 +523,9 @@ calcend:
 End Sub
 Public Property Get ListValue() As String
 ' this was text before
+RaiseEvent PureListOn
 If SELECTEDITEM <= 0 Then Else ListValue = List(listindex)
+RaiseEvent PureListOff
 End Property
 
 Public Property Get listcount() As Long
@@ -803,9 +809,9 @@ Else
             If SelStart = 0 Then mSelstart = 1
            
             SelStartEventAlways = SelStart + 1
-   
+            RaiseEvent PureListOn
                 List(SELECTEDITEM - 1) = Left$(List(SELECTEDITEM - 1), SelStart - 2) + KK$ + Mid$(List(SELECTEDITEM - 1), SelStart - 1)
-            
+            RaiseEvent PureListOff
          
             End If
          End If
@@ -826,6 +832,7 @@ If listcount > 0 Then
 Else
   ShowMe
 End If
+
 refresh
 
 End Sub
@@ -1125,8 +1132,19 @@ If mSelstart = 0 Then mSelstart = 1
      RaiseEvent PushUndoIfMarked
      RaiseEvent MarkDelete(False)
  Enabled = bb
-List(SELECTEDITEM - 1) = Left$(List(SELECTEDITEM - 1), SelStart - 1) & " " & Mid$(List(SELECTEDITEM - 1), SelStart)
+ RaiseEvent PureListOn
+ If shift = 5 Then
+ List(SELECTEDITEM - 1) = Left$(List(SELECTEDITEM - 1), SelStart - 1) & ChrW(&H2007) & Mid$(List(SELECTEDITEM - 1), SelStart)
+ RaiseEvent RemoveOne(ChrW(&H2007))
+ ElseIf shift = 3 Then
+ List(SELECTEDITEM - 1) = Left$(List(SELECTEDITEM - 1), SelStart - 1) & ChrW(&HA0) & Mid$(List(SELECTEDITEM - 1), SelStart)
+ RaiseEvent RemoveOne(ChrW(&HA0))
+ 
+ Else
+  List(SELECTEDITEM - 1) = Left$(List(SELECTEDITEM - 1), SelStart - 1) & " " & Mid$(List(SELECTEDITEM - 1), SelStart)
  RaiseEvent RemoveOne(" ")
+ End If
+ RaiseEvent PureListOff
 SelStartEventAlways = SelStart + 1
 KeyCode = 0
 PrepareToShow 10
@@ -1201,9 +1219,10 @@ RaiseEvent addone(vbCrLf)
 End If
 End If
 Else
- 
+ RaiseEvent PureListOn
  RaiseEvent addone(Mid$(List(SELECTEDITEM - 1), SelStart, 1))
 List(SELECTEDITEM - 1) = Left$(List(SELECTEDITEM - 1), SelStart - 1) + Mid$(List(SELECTEDITEM - 1), SelStart + 1)
+RaiseEvent PureListOff
 ShowMe2
 End If
 End If
@@ -1213,11 +1232,12 @@ Case vbKeyBack
 If EditFlag Then
     If SelStart > 1 Then
         SelStart = SelStart - 1  ' make it a delete because we want selstart to take place before list() take value
-     
+     RaiseEvent PureListOn
         RaiseEvent addone(Mid$(List(SELECTEDITEM - 1), SelStart, 1))
       
 
         List(SELECTEDITEM - 1) = Left$(List(SELECTEDITEM - 1), SelStart - 1) + Mid$(List(SELECTEDITEM - 1), SelStart + 1)
+        RaiseEvent PureListOff
         ShowMe2  'refresh now
     Else
         If mSelstart = 0 Then mSelstart = 1
@@ -2154,7 +2174,11 @@ End Property
 Property Let List(item As Long, ByVal b$)
 On Error GoTo nnn1
 If itemcount = 0 Or BlockItemcount Then
-If List(item) <> b$ Then RaiseEvent ChangeListItem(item, b$)
+If List(item) <> b$ Then
+RaiseEvent PureListOff
+RaiseEvent ChangeListItem(item, b$)
+End If
+
 Exit Property
 End If
 If item >= 0 Then
@@ -2289,43 +2313,47 @@ End With
 End If
 End If
 End Property
-Public Sub moveto(ByVal key As String)
+Public Sub moveto(ByVal Key As String)
 Dim i As Long
+RaiseEvent PureListOn
 For i = 0 To listcount - 1
-If List(i) Like key Then Exit For
+If List(i) Like Key Then Exit For
 Next i
+RaiseEvent PureListOff
 If i < listcount Then
 listindex = i
 End If
 End Sub
-Public Function FindItemStartWidth(ByVal key As String, NoCase As Boolean, ByVal offset) As Long
+Public Function FindItemStartWidth(ByVal Key As String, NoCase As Boolean, ByVal offset) As Long
 Dim i As Long, j As Long
-j = Len(key)
+j = Len(Key)
 i = -1
 FindItemStartWidth = -1
 If j = 0 Then Exit Function
 If NoCase Then
 For i = offset To listcount - 1
-If StrComp(Left$(List(i), j), key, vbTextCompare) = 0 Then Exit For
+If StrComp(Left$(List(i), j), Key, vbTextCompare) = 0 Then Exit For
 Next i
 Else
 For i = offset To listcount - 1
-If StrComp(Left$(List(i), j), key, vbBinaryCompare) = 0 Then Exit For
+If StrComp(Left$(List(i), j), Key, vbBinaryCompare) = 0 Then Exit For
 Next i
 End If
 If i < listcount Then
 FindItemStartWidth = i
 End If
 End Function
-Public Function find(ByVal key As String) As Long
+Public Function find(ByVal Key As String) As Long
 Dim i As Long, skipme As Boolean
 i = -1
-RaiseEvent find(key, i, skipme)
+RaiseEvent find(Key, i, skipme)
 If skipme Then find = i: Exit Function
 find = -1
+RaiseEvent PureListOn
 For i = 0 To listcount - 1
-If List(i) Like key Then Exit For
+If List(i) Like Key Then Exit For
 Next i
+RaiseEvent PureListOff
 If i < listcount Then
 find = i
 End If
@@ -2931,6 +2959,7 @@ If SELECTEDITEM > 0 Then
                  If EditFlag And Not BlockItemcount Then
                     If SelStart = 0 Then SelStart = 1
                                              DrawStyle = vbSolid
+                                             RaiseEvent PureListOff
                                           If CenterText Then
                                         ' (UserControl.ScaleWidth- LeftMarginPixels * scrTwips-UserControlTextWidth(list$(selecteitem-1)))/2
                                           REALX = UserControlTextWidth(Mid$(List(SELECTEDITEM - 1), 1, SelStart - 1)) + LeftMarginPixels * scrTwips + (UserControl.ScaleWidth - LeftMarginPixels * scrTwips - UserControlTextWidth(List$(SELECTEDITEM - 1))) / 2
@@ -2939,7 +2968,7 @@ If SELECTEDITEM > 0 Then
                                    REALX = UserControlTextWidth(Mid$(List(SELECTEDITEM - 1), 1, SelStart - 1)) + LeftMarginPixels * scrTwips
                                     REALX2 = scrollme + REALX
                                    End If
-                                   
+                                   RaiseEvent PureListOn
                                   If Noflashingcaret Or Not havefocus Then
                                  
                                   Line (scrollme + REALX, (SELECTEDITEM - topitem - 1) * myt + myt1 + mHeadlineHeightTwips)-(scrollme + REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips), ForeColor
@@ -3327,7 +3356,7 @@ End Sub
 Private Sub Redraw(ParamArray status())
 
 If EnabledBar Then
-Dim fakeLargeChange As Long, newheight As Long, newtop As Long
+Dim fakeLargeChange As Long, newheight As Long, newTop As Long
 Dim b As Boolean, nstatus As Boolean
 Timer2bar.Enabled = False
 If UBound(status) >= 0 Then
@@ -3338,7 +3367,7 @@ End If
 With UserControl
 If mHeadline <> "" Then
 newheight = .Height - mHeadlineHeightTwips
-newtop = mHeadlineHeightTwips
+newTop = mHeadlineHeightTwips
 Else
 newheight = .Height
 End If
@@ -3355,9 +3384,9 @@ Else
         End If
         valuepoint = (Value - Min) / (largechange + Max - Min) * (newheight * (1 - 2 * Percent)) + newheight * Percent
 
-       Shape Shape1, Width - barwidth, newtop + valuepoint, barwidth, minimumWidth
-       Shape Shape2, Width - barwidth, newtop + newheight * (1 - Percent), barwidth, newheight * Percent ' newtop + newheight * Percent - scrTwips
-        Shape Shape3, Width - barwidth, newtop, barwidth, newheight * Percent   ' left or top
+       Shape Shape1, Width - barwidth, newTop + valuepoint, barwidth, minimumWidth
+       Shape Shape2, Width - barwidth, newTop + newheight * (1 - Percent), barwidth, newheight * Percent ' newtop + newheight * Percent - scrTwips
+        Shape Shape3, Width - barwidth, newTop, barwidth, newheight * Percent   ' left or top
 End If
 End With
 If UBound(status) >= 0 Then
@@ -4128,22 +4157,23 @@ End Sub
 Public Function Pixels2Twips(pixels As Long) As Long
 Pixels2Twips = pixels * scrTwips
 End Function
-Public Function BreakLine(data As String, datanext As String, Optional thatTwipsPreserveRight As Long = -1) As Boolean
+Public Function BreakLine(data As String, datanext As String, Optional thatTwipsPreserveRight As Long = -1, Optional aSpace$ = " ") As Boolean
 Dim i As Long, k As Long, m As Long
 If thatTwipsPreserveRight = -1 Then
 m = widthtwips
 Else
 m = widthtwips - thatTwipsPreserveRight
 End If
+''If aSpace$ <> "" Then m = m - UserControlTextWidth(aSpace$)
 REALCURb data, m, k, i, True
 datanext = Mid$(data, 1, i)
 data = Mid$(data, i + 1)
 
 ' lets see if we have space in data
 If Len(data) > 0 Then
-    If Right$(datanext, 1) <> " " And Left$(data, 1) <> " " Then
+    If Right$(datanext, 1) <> aSpace$ And Left$(data, 1) <> aSpace$ Then
     ' we have a broken word
-    m = InStrRev(datanext, " ")
+    m = InStrRev(datanext, aSpace$)
     If m > 0 Then
     ' we have a space inside datanext
     If m > 1 Then
@@ -4165,8 +4195,8 @@ If Len(data) > 0 Then
     End If
     
     i = 1
-    If data <> " " Or data$ = "" Then
-    While Left$(data, i) = " "
+    If data <> aSpace$ Or data$ = "" Then
+    While Left$(data, i) = aSpace$
     i = i + 1
     Wend
     End If
@@ -4182,7 +4212,6 @@ Dim n As Long, st As Long, st1 As Long, st0 As Long
 
 If Not notextonly Then probeX = probeX - UserControlTextWidth("W") ' Else' probeX = probeX + 2 * scrTwips
 n = UserControlTextWidth(s$)
-
 
 probeX = probeX - 2 * LeftMarginPixels * scrTwips - 2 * scrTwips
 
@@ -4381,14 +4410,16 @@ If ExtSelStart <= 0 Then ExtSelStart = 1
                                              DrawStyle = vbSolid
              
                                    REALX = UserControlTextWidth(Mid$(that$, 1, ExtSelStart - 1)) + LeftMarginPixels * scrTwips
+              
                                     REALX2 = scrollme + REALX
                                     If (Not marvel) And (havefocus And Not Noflashingcaret) Then
-                                    ShowMyCaretInTwips REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips + scrTwips
+                                             ShowMyCaretInTwips REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips + scrTwips
                                     Else
-                   DrawMode = vbInvert
-                Line (REALX2, (SELECTEDITEM - topitem - 1) * myt + myt1 + mHeadlineHeightTwips + scrTwips)-(REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips + scrTwips), ForeColor
-                 DrawMode = vbCopyPen
+                                               DrawMode = vbInvert
+                                            Line (REALX2, (SELECTEDITEM - topitem - 1) * myt + myt1 + mHeadlineHeightTwips + scrTwips)-(REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips + scrTwips), ForeColor
+                                             DrawMode = vbCopyPen
                                  End If
+                     
                                    If Not NoScroll Then If REALX2 > Width * 0.8 Then scrollme = scrollme - Width * 0.2: PrepareToShow 10
                                    If REALX2 < 0 Then
                               If Not NoScroll Then
@@ -4432,7 +4463,9 @@ Private Sub MarkWord()
 If listindex < 0 Then Exit Sub
 Dim one$
 Dim mline$, pos As Long, Epos As Long, oldselstart As Long
+RaiseEvent PureListOn
 mline$ = List(listindex)
+RaiseEvent PureListOff
 'Enabled = False
 pos = SelStart
 If pos <> 0 Then

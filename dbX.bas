@@ -65,7 +65,7 @@ End If
 isdir = lookfirst
 End Function
 Public Sub fHelp(bstack As basetask, d$, Optional Eng As Boolean = False)
-Dim sql$, b$, p$, c$, gp$, r As Double, bb As Long, i As Long
+Dim sql$, b$, p$, c$, gp$, r As Double, bb As Long, I As Long
 Dim cd As String, doriginal$
 On Error GoTo E5
 'ON ERROR GoTo 0
@@ -76,7 +76,7 @@ If d$ <> "" Then If Right$(d$, 1) = "(" Then d$ = d$ + ")"
 If d$ = "" Or d$ = "F12" Then
 d$ = ""
 If Right$(d$, 1) = "(" Then d$ = d$ + ")"
-p$ = SubName
+p$ = subHash.Show
 
 While ISSTRINGA(p$, c$)
 IsLabelA "", c$, b$
@@ -91,8 +91,8 @@ Else
 End If
 vHelp Not Form4.Visible
 Exit Sub
-ElseIf GetSub(d$, i) Or d$ = HERE$ Then
-If d$ = HERE$ Then i = bstack.OriginalCode
+ElseIf GetSub(d$, I) Or d$ = HERE$ Then
+If d$ = HERE$ Then I = bstack.OriginalCode
 If vH_title$ <> "" Then
 b$ = "<| " & vH_title$ & vbCrLf & vbCrLf
 Else
@@ -109,15 +109,15 @@ Else
 If Eng Then c$ = "[Module]" Else c$ = "[Function]"
 End If
 
-Dim SS$
-    SS$ = GetNextLine((SBcode(i)))
-    If Left$(SS$, 10) = "'11001EDIT" Then
+Dim ss$
+    ss$ = GetNextLine((SBcode(I)))
+    If Left$(ss$, 10) = "'11001EDIT" Then
     
-    SS$ = Mid$(SBcode(i), Len(SS$) + 3)
+    ss$ = Mid$(SBcode(I), Len(ss$) + 3)
     Else
-     SS$ = SBcode(i)
+     ss$ = SBcode(I)
      End If
-        sHelp d$, c$ + "  " & b$ & SS$, (ScrX() - 1) * 3 / 5, (ScrY() - 1) * 4 / 7
+        sHelp d$, c$ + "  " & b$ & ss$, (ScrX() - 1) * 3 / 5, (ScrY() - 1) * 4 / 7
     
         vHelp Not Form4.Visible
 Exit Sub
@@ -191,9 +191,9 @@ DBUser = extDBUser
 DBUserPassword = extDBUserPassword
 Err.clear
 End Sub
-Public Function inames(i As Long, Lang As Long) As String
-If (i And &H3) <> 1 Then
-Select Case Lang
+Public Function inames(I As Long, lang As Long) As String
+If (I And &H3) <> 1 Then
+Select Case lang
 Case 1
 
 inames = "DESCENDING"
@@ -201,7 +201,7 @@ Case Else
 inames = "ΦΘΙΝΟΥΣΑ"
 End Select
 Else
-Select Case Lang
+Select Case lang
 Case 1
 inames = "ASCENDING"
 Case Else
@@ -211,10 +211,10 @@ End Select
 End If
 
 End Function
-Public Function fnames(i As Long, Lang As Long) As String
-Select Case i
+Public Function fnames(I As Long, lang As Long) As String
+Select Case I
 Case 1
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "BOOLEAN"
     Case Else
@@ -222,7 +222,7 @@ Case 1
     End Select
     Exit Function
 Case 2
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "BYTE"
     Case Else
@@ -231,7 +231,7 @@ Case 2
    Exit Function
 
 Case 3
-        Select Case Lang
+        Select Case lang
     Case 1
     fnames = "INTEGER"
     Case Else
@@ -239,7 +239,7 @@ Case 3
     End Select
    Exit Function
 Case 4
-        Select Case Lang
+        Select Case lang
     Case 1
     fnames = "LONG"
     Case Else
@@ -248,7 +248,7 @@ Case 4
    Exit Function
  
 Case 5
-        Select Case Lang
+        Select Case lang
     Case 1
     fnames = "CURRENCY"
     Case Else
@@ -257,7 +257,7 @@ Case 5
    Exit Function
 
 Case 6
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "SINGLE"
     Case Else
@@ -266,7 +266,7 @@ Case 6
    Exit Function
 
 Case 7
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "DOUBLE"
     Case Else
@@ -274,7 +274,7 @@ Case 7
     End Select
    Exit Function
 Case 8
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "DATEFIELD"
     Case Else
@@ -282,7 +282,7 @@ Case 8
     End Select
    Exit Function
 Case 9 '.....................ole 205
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "BINARY"
     Case Else
@@ -290,7 +290,7 @@ Case 9 '.....................ole 205
     End Select
    Exit Function
 Case 10 '..........................................202
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "TEXT"
     Case Else
@@ -301,7 +301,7 @@ Case 11 '...........205
     fnames = "OLE"
     Exit Function
 Case 12 '...........................202
-    Select Case Lang
+    Select Case lang
     Case 1
     fnames = "MEMO"
     Case Else
@@ -342,7 +342,7 @@ End If
 
 End Sub
 
-Public Sub TABLENAMES(bstackstr As basetask, r$, Lang As Long)
+Public Sub TABLENAMES(bstackstr As basetask, r$, lang As Long)
 Dim base As String, tablename As String, scope As Long, cnt As Long, srl As Long, stac1 As New mStiva
 Dim myBase  ' variant
 scope = 1
@@ -372,7 +372,7 @@ End If
             If DriveType(Left$(base, 3)) = "Cd-Rom" Then
                 srl = DriveSerial(Left$(base, 3))
                 If srl = 0 And Not GetDosPath(base) = "" Then
-                    If Lang = 0 Then
+                    If lang = 0 Then
                         If Not ask("Βάλε το CD/Δισκέτα με το αρχείο " & ExtractName(base)) = vbCancel Then Exit Sub
                     Else
                         If Not ask("Put CD/Disk with file " & ExtractName(base)) = vbCancel Then Exit Sub
@@ -391,7 +391,7 @@ End If
                 End If
                 If Err.Number > 0 Then
                     Do While srl <> DriveSerial(Left$(base, 3))
-                        If Lang = 0 Then
+                        If lang = 0 Then
                             If ask("Βάλε το CD/Δισκέτα με αριθμό σειράς " & CStr(srl) & " στον οδηγό " & Left$(base, 1)) = vbCancel Then Exit Do
                         Else
                             If ask("Put CD/Disk with serial number " & CStr(srl) & " in drive " & Left$(base, 1)) = vbCancel Then Exit Do
@@ -420,7 +420,7 @@ End If
         PushOne base, myBase
     End If
   Dim cat, TBL, rs
-     Dim i As Long, j As Long, k As Long, KB As Boolean
+     Dim I As Long, j As Long, k As Long, KB As Boolean
   
            Set rs = CreateObject("ADODB.Recordset")
         Set TBL = CreateObject("ADOX.TABLE")
@@ -485,12 +485,12 @@ End If
                                             Else
                                             stac1.DataVal CDbl(0)
                                         End If
-                     For i = 0 To rs.FIELDS.Count - 1
-                     With rs.FIELDS(i)
+                     For I = 0 To rs.FIELDS.Count - 1
+                     With rs.FIELDS(I)
                              stac1.DataStr .name
                              If .Type = 203 And .DEFINEDSIZE >= 536870910# Then
                              
-                                         If Lang = 1 Then
+                                         If lang = 1 Then
                                         stac1.DataStr "ΜΕΜΟ"
                                         Else
                                         stac1.DataStr "ΥΠΟΜΝΗΜΑ"
@@ -505,7 +505,7 @@ End If
                                        
                                             stac1.DataVal CDbl(0)
                                      ElseIf .Type = 202 And .DEFINEDSIZE <> 536870910# Then
-                                            If Lang = 1 Then
+                                            If lang = 1 Then
                                             stac1.DataStr "TEXT"
                                             Else
                                             stac1.DataStr "ΚΕΙΜΕΝΟ"
@@ -513,12 +513,12 @@ End If
                                             stac1.DataVal CDbl(.DEFINEDSIZE)
                                     
                              Else
-                                        stac1.DataStr ftype(.Type, Lang)
+                                        stac1.DataStr ftype(.Type, lang)
                                         stac1.DataVal CDbl(.DEFINEDSIZE)
                              
                              End If
                      End With
-                     Next i
+                     Next I
                      rs.Close
                      If vindx Then
                     If TBL.indexes.Count > 0 Then
@@ -528,7 +528,7 @@ End If
                           stac1.DataVal CDbl(.Columns.Count)
                           For k = 0 To .Columns.Count - 1
                             stac1.DataStr .Columns(k).name
-                             stac1.DataStr inames(.Columns(k).sortorder, Lang)
+                             stac1.DataStr inames(.Columns(k).sortorder, lang)
                           Next k
                              Exit For
                              
@@ -551,7 +551,7 @@ End If
      MyEr "No such TABLE in DATABASE", "Δεν υπάρχει τέτοιο αρχείο στη βάση δεδομένων"
     End If
     End If
-     bstackstr.Soros.MergeTop stac1
+     bstackstr.soros.MergeTop stac1
      Else
      RemoveOneConn myBase
      MyEr "No such DATABASE", "Δεν υπάρχει τέτοια βάση δεδομένων"
@@ -559,8 +559,8 @@ End If
 g102:
 End Sub
 
-Public Sub append_table(bstackstr As basetask, base As String, r$, ED As Boolean, Optional Lang As Long = -1)
-Dim table$, i&, par$, ok As Boolean, t As Double, j&
+Public Sub append_table(bstackstr As basetask, base As String, r$, ED As Boolean, Optional lang As Long = -1)
+Dim table$, I&, par$, ok As Boolean, t As Double, j&
 Dim gindex As Long
 ok = False
 
@@ -569,7 +569,7 @@ If IsStrExp(bstackstr, r$, table$) Then
 ok = True
 End If
 End If
-If Lang <> -1 Then If IsLabelSymbolNew(r$, "ΣΤΟ", "TO", Lang) Then If IsExp(bstackstr, r$, t) Then gindex = CLng(t) Else SyntaxError
+If lang <> -1 Then If IsLabelSymbolNew(r$, "ΣΤΟ", "TO", lang) Then If IsExp(bstackstr, r$, t) Then gindex = CLng(t) Else SyntaxError
 Dim Id$
   If InStr(UCase(Trim$(table$)) + " ", "SELECT") = 1 Then
 Id$ = table$
@@ -617,18 +617,18 @@ End If
            
            
          '  Set rec = myBase.OpenRecordset(table$, dbOpenDynaset)
-          Dim rec, LL$
+          Dim rec, ll$
           
            Set rec = CreateObject("ADODB.Recordset")
             Err.clear
            rec.Open Id$, myBase, 3, 4 'adOpenStatic, adLockBatchOptimistic
 
  If Err.Number <> 0 Then
-LL$ = myBase ' AS A STRING
+ll$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = LL$
+ myBase.Open = ll$
  PushOne base, myBase
  Err.clear
 rec.Open Id$, myBase, 3, 4
@@ -655,20 +655,20 @@ End If
 Else
 rec.AddNew
 End If
-i& = 0
+I& = 0
 While FastSymbol(r$, ",")
 If ED Then
     While FastSymbol(r$, ",")
-    i& = i& + 1
+    I& = I& + 1
     Wend
 End If
 If IsStrExp(bstackstr, r$, par$) Then
-    rec.FIELDS(i&) = par$
+    rec.FIELDS(I&) = par$
 ElseIf IsExp(bstackstr, r$, t) Then
-    rec.FIELDS(i&) = CStr(t)   '??? convert to a standard format
+    rec.FIELDS(I&) = CStr(t)   '??? convert to a standard format
 End If
 
-i& = i& + 1
+I& = I& + 1
 Wend
 Err.clear
 rec.UpdateBatch  ' update be an updatebatch
@@ -677,9 +677,9 @@ MyEr "Can't append " & Err.Description, "Αδυναμία προσθήκης:" & Err.Description
 End If
 
 End Sub
-Public Sub getrow(bstackstr As basetask, r$, Optional ERL As Boolean = True, Optional search$ = " = ", Optional Lang As Long = 0, Optional IamHelpFile As Boolean = False)
+Public Sub getrow(bstackstr As basetask, r$, Optional ERL As Boolean = True, Optional search$ = " = ", Optional lang As Long = 0, Optional IamHelpFile As Boolean = False)
 
-Dim base As String, table$, from As Long, first$, Second$, ok As Boolean, fr As Double, stac1$, p As Double, i&
+Dim base As String, table$, from As Long, first$, Second$, ok As Boolean, fr As Double, stac1$, p As Double, I&
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -771,7 +771,7 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
     If DriveType(Left$(base, 3)) = "Cd-Rom" Then
         srl = DriveSerial(Left$(base, 3))
         If srl = 0 And Not GetDosPath(base) = "" Then
-                If Lang = 0 Then
+                If lang = 0 Then
                     If Not ask("Βάλε το CD/Δισκέτα με το αρχείο " & ExtractName(base)) = vbCancel Then Exit Sub
                 Else
                     If Not ask("Put CD/Disk with file " & ExtractName(base)) = vbCancel Then Exit Sub
@@ -785,7 +785,7 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
             If Err.Number > 0 Then
             
             Do While srl <> DriveSerial(Left$(base, 3))
-                If Lang = 0 Then
+                If lang = 0 Then
                 If ask("Βάλε το CD/Δισκέτα με αριθμό σειράς " & CStr(srl) & " στον οδηγό " & Left$(base, 1)) = vbCancel Then Exit Do
                 Else
                 If ask("Put CD/Disk with serial number " & CStr(srl) & " in drive " & Left$(base, 1)) = vbCancel Then Exit Do
@@ -821,16 +821,16 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
       
       End If
 
-Dim LL$
+Dim ll$
    Set rec = CreateObject("ADODB.Recordset")
  Err.clear
   rec.Open Id$, myBase, 3, 4
 If Err.Number <> 0 Then
-LL$ = myBase ' AS A STRING
+ll$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = LL$
+ myBase.Open = ll$
  PushOne base, myBase
  Err.clear
 rec.Open Id$, myBase, 3, 4
@@ -845,7 +845,7 @@ End If
    
   If rec.EOF Then
    ' stack$(BASESTACK) = " 0" & stack$(BASESTACK)
-   bstackstr.Soros.PushVal CDbl(0)
+   bstackstr.soros.PushVal CDbl(0)
    rec.Close
   myBase.Close
     
@@ -861,43 +861,43 @@ If from >= 0 Then
   rec.Move from - 1
   End If
 End If
-    For i& = rec.FIELDS.Count - 1 To 0 Step -1
+    For I& = rec.FIELDS.Count - 1 To 0 Step -1
 
-   Select Case rec.FIELDS(i&).Type
+   Select Case rec.FIELDS(I&).Type
 Case 1, 2, 3, 4, 5, 6, 7
 
- If IsNull(rec.FIELDS(i&)) Then
-        bstackstr.Soros.PushUndefine          '.PushStr "0"
+ If IsNull(rec.FIELDS(I&)) Then
+        bstackstr.soros.PushUndefine          '.PushStr "0"
     Else
-        bstackstr.Soros.PushVal CDbl(rec.FIELDS(i&))
+        bstackstr.soros.PushVal CDbl(rec.FIELDS(I&))
     
 End If
 
 
 Case 130, 8, 203, 202
-If IsNull(rec.FIELDS(i&)) Then
+If IsNull(rec.FIELDS(I&)) Then
     
-     bstackstr.Soros.PushStr ""
+     bstackstr.soros.PushStr ""
  Else
   
-   bstackstr.Soros.PushStr CStr(rec.FIELDS(i&))
+   bstackstr.soros.PushStr CStr(rec.FIELDS(I&))
   End If
 Case 11, 12 ' this is the binary field so we can save unicode there
    Case Else
 '
-   bstackstr.Soros.PushStr "?"
+   bstackstr.soros.PushStr "?"
  End Select
-   Next i&
+   Next I&
    End If
    
    'stack$(BaseSTACK) = " " & Trim$(Str$(II)) + stack$(BaseSTACK)
-   bstackstr.Soros.PushVal CDbl(ii)
+   bstackstr.soros.PushVal CDbl(ii)
 
 
 Exit Sub
 g10:
 If ERL Then
-If Lang = 0 Then
+If lang = 0 Then
 If ask("Το ερώτημα SQL δεν μπορεί να ολοκληρωθεί" & vbCrLf & table$, True) = vbRetry Then GoTo g05
 Else
 If ask("SQL can't complete" & vbCrLf & table$) = vbRetry Then GoTo g05
@@ -910,8 +910,8 @@ On Error Resume Next
 
 End Sub
 
-Public Sub getnames(bstackstr As basetask, r$, bv As Object, Lang)
-Dim base As String, table$, from As Long, many As Long, ok As Boolean, fr As Double, stac1$, i&
+Public Sub getnames(bstackstr As basetask, r$, bv As Object, lang)
+Dim base As String, table$, from As Long, many As Long, ok As Boolean, fr As Double, stac1$, I&
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -959,7 +959,7 @@ End If
        srl = DriveSerial(Left$(base, 3))
     If srl = 0 And Not GetDosPath(base) = "" Then
     
-       If Lang = 0 Then
+       If lang = 0 Then
     If Not ask("Βάλε το CD/Δισκέτα με το αρχείο " & ExtractName(base)) = vbCancel Then Exit Sub
     Else
       If Not ask("Put CD/Disk with file " & ExtractName(base)) = vbCancel Then Exit Sub
@@ -971,7 +971,7 @@ End If
                If Err.Number > 0 Then
         
             Do While srl <> DriveSerial(Left$(base, 3))
-            If Lang = 0 Then
+            If lang = 0 Then
             If ask("Βάλε το CD/Δισκέτα με αριθμό σειράς " & CStr(srl) & " στον οδηγό " & Left$(base, 1)) = vbCancel Then Exit Do
             Else
             If ask("Put CD/Disk with serial number " & CStr(srl) & " in drive " & Left$(base, 1)) = vbCancel Then Exit Do
@@ -999,16 +999,16 @@ On Error GoTo g101
       PushOne base, myBase
       
       End If
- Dim LL$
+ Dim ll$
    Set rec = CreateObject("ADODB.Recordset")
     Err.clear
      rec.Open Id$, myBase, 3, 4
       If Err.Number <> 0 Then
-LL$ = myBase ' AS A STRING
+ll$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = LL$
+ myBase.Open = ll$
  PushOne base, myBase
  Err.clear
 rec.Open Id$, myBase, 3, 4
@@ -1023,7 +1023,7 @@ End If
 
   If rec.EOF Then
    ''''''''''''''''' stack$(BASESTACK) = " 0" & stack$(BASESTACK)
-bstackstr.Soros.PushVal CDbl(0)
+bstackstr.soros.PushVal CDbl(0)
   Exit Sub
  
 '    wrkDefault.Close
@@ -1039,13 +1039,13 @@ If from >= 0 Then
   End If
 End If
 If many + from - 1 > ii Then many = ii - from + 1
-bstackstr.Soros.PushVal CDbl(ii)
+bstackstr.soros.PushVal CDbl(ii)
 ''''''''''''''''' stack$(BASESTACK) = " " & Trim$(Str$(II)) + stack$(BASESTACK)
 
-    For i& = 1 To many
+    For I& = 1 To many
     bv.additemFast CStr(rec.FIELDS(0))   ' USING gList
     
-    If i& < many Then rec.MoveNext
+    If I& < many Then rec.MoveNext
     Next
   End If
 rec.Close
@@ -1124,7 +1124,7 @@ End Sub
 
 
 Public Sub MyOrder(bstackstr As basetask, r$)
-Dim base As String, tablename As String, fs As String, i&, o As Double, ok As Boolean
+Dim base As String, tablename As String, fs As String, I&, o As Double, ok As Boolean
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -1169,7 +1169,7 @@ End If
                 PushOne base, myBase
             End If
            Err.clear
-           Dim LL$, mcat, pindex, mtable
+           Dim ll$, mcat, pindex, mtable
            Dim okntable As Boolean
           
             Err.clear
@@ -1179,11 +1179,11 @@ End If
             
 
         If Err.Number <> 0 Then
-LL$ = myBase ' AS A STRING
+ll$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = LL$
+ myBase.Open = ll$
  PushOne base, myBase
  Err.clear
             Set mcat = CreateObject("ADOX.Catalog")
@@ -1257,7 +1257,7 @@ End If
 End Sub
 Public Sub NewTable(bstackstr As basetask, r$)
 'BASE As String, tablename As String, ParamArray flds()
-Dim base As String, tablename As String, fs As String, i&, n As Double, l As Double, ok As Boolean
+Dim base As String, tablename As String, fs As String, I&, n As Double, l As Double, ok As Boolean
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -1305,17 +1305,17 @@ End If
 
     On Error Resume Next
    okntable = True
-Dim cat, mtable, LL$
+Dim cat, mtable, ll$
   Set cat = CreateObject("ADOX.Catalog")
            Set cat.activeconnection = myBase
 
 
 If Err.Number <> 0 Then
-LL$ = myBase ' AS A STRING
+ll$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = LL$
+ myBase.Open = ll$
  PushOne base, myBase
  Err.clear
  Set cat.activeconnection = myBase
@@ -1600,41 +1600,41 @@ Dim Cnn1
 End Function
 
 
-Private Sub PushOne(conname As String, V As Variant)
+Private Sub PushOne(conname As String, v As Variant)
 On Error Resume Next
-conCollection.Add V, conname
-Set V = conCollection(conname)
+conCollection.Add v, conname
+Set v = conCollection(conname)
 End Sub
 Sub CloseAllConnections()
-Dim V As Variant, bb As Boolean
+Dim v As Variant, bb As Boolean
 On Error Resume Next
 If Not Init Then Exit Sub
 If conCollection.Count > 0 Then
-Dim i As Long
+Dim I As Long
 Err.clear
-For i = conCollection.Count To 1 Step -1
+For I = conCollection.Count To 1 Step -1
 On Error Resume Next
-bb = conCollection(i).connectionstring <> ""
+bb = conCollection(I).connectionstring <> ""
 If Err.Number = 0 Then
 
-  If conCollection(i).activeconnection <> "" Then conCollection(i).Close
+  If conCollection(I).activeconnection <> "" Then conCollection(I).Close
      ''   If conCollection(I) <> "" Then conCollection(I).Close
 End If
-conCollection.remove i
+conCollection.remove I
 Err.clear
-Next i
+Next I
 Set conCollection = New Collection
 End If
 Err.clear
 End Sub
 Public Sub RemoveOneConn(conname)
 On Error Resume Next
-Dim vv
-vv = conCollection(conname)
+Dim VV
+VV = conCollection(conname)
 If Not Err.Number <> 0 Then
 Err.clear
-If vv.connectionstring <> "" Then
-If Err.Number = 0 Then If vv.activeconnection <> "" Then vv.Close
+If VV.connectionstring <> "" Then
+If Err.Number = 0 Then If VV.activeconnection <> "" Then VV.Close
 Err.clear
 End If
 conCollection.remove conname
@@ -1643,11 +1643,11 @@ End If
 End Sub
 Private Function getone(conname As String, this As Variant) As Boolean
 On Error Resume Next
-Dim V As Variant
+Dim v As Variant
 InitMe
 Err.clear
-Set V = conCollection(conname)
-If Err.Number = 0 Then getone = True: Set this = V
+Set v = conCollection(conname)
+If Err.Number = 0 Then getone = True: Set this = v
 Err.clear
 End Function
 
@@ -1656,10 +1656,10 @@ If Init Then Exit Sub
 Set conCollection = New Collection
 Init = True
 End Sub
-Function ftype(ByVal A As Long, Lang As Long) As String
-Select Case Lang
+Function ftype(ByVal a As Long, lang As Long) As String
+Select Case lang
 Case 0
-Select Case A
+Select Case a
     Case 0
 ftype = "ΑΔΕΙΟ"
     Case 2
@@ -1747,7 +1747,7 @@ ftype = "????"
 End Select
 
 Case Else  ' this is for 1
-Select Case A
+Select Case a
     Case 0
 ftype = "EMPTY"
     Case 2

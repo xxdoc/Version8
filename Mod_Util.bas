@@ -426,7 +426,7 @@ DrawFocusRect m.hDC, r
 Case 4
 DrawFrameControl m.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
 Case 5
-b$ = CStr(par)
+b$ = Replace(CStr(par), ChrW(&HFFFFF8FB), ChrW(&H2007))
 DrawText m.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
 Case 6
 DrawFrameControl m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
@@ -460,8 +460,7 @@ DrawFocusRect m.hDC, r
 Case 4
 DrawFrameControl m.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
 Case 5
-b$ = CStr(par)
-
+b$ = Replace(CStr(par), ChrW(&HFFFFF8FB), ChrW(&H2007))
 DrawText m.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
 Case 6
 DrawFrameControl m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
@@ -612,14 +611,14 @@ End If
 dqq.FillStyle = vbFSTransparent
 End With
 End Sub
-Sub Ffill(dqq As Object, x1 As Long, y1 As Long, c As Long, V As Boolean)
+Sub Ffill(dqq As Object, x1 As Long, y1 As Long, c As Long, v As Boolean)
 Dim osm
 With players(GetCode(dqq))
 osm = dqq.ScaleMode
 dqq.ScaleMode = vbPixels
 dqq.FillColor = mycolor(c)
 dqq.FillStyle = vbFSSolid
-If V Then
+If v Then
 ExtFloodFill dqq.hDC, dqq.ScaleX(x1, 1, 3), dqq.ScaleY(y1, 1, 3), dqq.Point(dqq.ScaleX(x1, 1, 3), dqq.ScaleY(y1, 1, 3)), FLOODFILLSURFACE
 Else
 ExtFloodFill dqq.hDC, dqq.ScaleX(x1, 1, 3), dqq.ScaleY(y1, 1, 3), mycolor(.mypen), FLOODFILLBORDER
@@ -712,10 +711,10 @@ Dim d1 As Object, amask$
 Set d1 = bstack.Owner
 Dim raster As Object
 Set raster = New cDIBSection
-Dim p As Double, i As Long, ROT As Double, sp As Double
+Dim p As Double, I As Long, ROT As Double, sp As Double
 Dim Pcw As Long, Pch As Long, blend As Double
     If FastSymbol(rst$, ",") Then
-    If IsExp(bstack, rst$, p) Then i = CLng(p) Else i = -players(GetCode(d1)).Paper 'SZ = False
+    If IsExp(bstack, rst$, p) Then I = CLng(p) Else I = -players(GetCode(d1)).Paper 'SZ = False
     Else
 
 
@@ -763,7 +762,7 @@ Exit Sub
         End If
         
     End If
-    If i > 0 Then i = QBColor(i) Else i = -i
+    If I > 0 Then I = QBColor(I) Else I = -I
     If sp = 0 Or f = "" Then
          BACKSPRITE = ""
     Exit Sub
@@ -790,7 +789,7 @@ If raster.Width = 0 Then
 Set raster = Nothing: Exit Sub
 End If
 
-RotateDib bstack, raster, ROT, sp, i, True, (blend), , , amask$
+RotateDib bstack, raster, ROT, sp, I, True, (blend), , , amask$
 Pcw = raster.Width \ 2
 Pch = raster.Height \ 2
 With players(GetCode(d1))
@@ -1055,7 +1054,7 @@ If NoCR Then Exit Do Else PY = PY + 1
 
 If PY >= .My And Not ONELINE Then
 
-If ddd.NAME = "PrinterDocument1" Then
+If ddd.name = "PrinterDocument1" Then
 getnextpage
  With nr
  .top = PY * pixY + mb.uMineLineSpace
@@ -1149,8 +1148,7 @@ With mybasket
      skip = GetStringTypeExW(&HB, 1, StrPtr(WHAT1$), Len(WHAT1$), a(0)) = 0  ' Or IsWine
         Do While (lenw& - r) >= .mx - PX And (.mx - PX) > 0
         
-        '' p$ = Left$(what, .mx - PX)
-       '' realstop& = .mx - PX
+
         With nr2
                 .Left = PX * pixX
                  .Right = mybasket.mx * pixX + 1
@@ -1170,8 +1168,9 @@ With mybasket
                If Not skip Then
               If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 Then
                           Do
-                        
-                            c$ = c$ + Mid$(WHAT1$, r + 2, 1)
+                p$ = Mid$(WHAT1$, r + 2, 1)
+                If AscW(p$) < 0 Then Mid$(WHAT1$, r + 2, 1) = " ": Exit Do
+                c$ = c$ + p$
                              r = r + 1
                     If r >= r1 Then Exit Do
                     
@@ -1205,7 +1204,7 @@ With mybasket
         
         If PY >= .My And Not ONELINE Then
         
-        If ddd.NAME = "PrinterDocument1" Then
+        If ddd.name = "PrinterDocument1" Then
         getnextpage
          With nr
          .top = PY * pixY + mUAddPixelsTop
@@ -1266,7 +1265,9 @@ r1 = RealLen(what$) - 1
              If Not skip Then
            If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 Then
             Do
-                c$ = c$ + Mid$(WHAT1$, r + 2, 1)
+                p$ = Mid$(WHAT1$, r + 2, 1)
+                If AscW(p$) < 0 Then Mid$(WHAT1$, r + 2, 1) = " ": Exit Do
+                c$ = c$ + p$
                 r = r + 1
                 If r >= r1 Then Exit Do
             Loop Until a(r * 2 + 2) <> 0 Or a(r * 2 + 3) = 0
@@ -1302,7 +1303,7 @@ Dim prive As Long
 prive = GetCode(ddd)
 On Error Resume Next
 With players(prive)
-BFONT = ddd.Font.NAME
+BFONT = ddd.Font.name
 If Font <> "" Then
 If Size = 0 Then Size = ddd.FontSize
 Form3.StoreFont Font, Size, .charset
@@ -1349,7 +1350,7 @@ Dim prive As Long
 prive = GetCode(ddd)
 On Error Resume Next
 With players(prive)
-BFONT = ddd.Font.NAME
+BFONT = ddd.Font.name
 If Font <> "" Then
 If Size = 0 Then Size = ddd.FontSize
 Form3.StoreFont Font, Size, .charset
@@ -1385,7 +1386,7 @@ PlaceBasket ddd, players(prive)
 
 End Function
 Public Sub fullPlain(dd As Object, mb As basket, ByVal wh$, ByVal wi, Optional fake As Boolean = False)
-Dim whNoSpace$, Displ As Long, DisplLeft As Long, i As Long, whSpace$, INTD As Long, MinDispl As Long, some As Long
+Dim whNoSpace$, Displ As Long, DisplLeft As Long, I As Long, whSpace$, INTD As Long, MinDispl As Long, some As Long
 Dim st As Long
 st = DXP
 MinDispl = (TextWidth(dd, "A") \ 2) \ st
@@ -1416,8 +1417,8 @@ Else
         whsp = Len(whSpace)
                 whNoSpace$ = ""
                 
-        For i = 1 To Len(wh$)
-            If Mid$(wh$, i, 1) = " " Then
+        For I = 1 To Len(wh$)
+            If Mid$(wh$, I, 1) = " " Then
             whsp = whsp - 1
             
                If whNoSpace$ <> "" Then
@@ -1434,9 +1435,9 @@ Else
               dd.CurrentX = ((dd.CurrentX + Displ) \ st) * st
               End If
             Else
-                whNoSpace$ = whNoSpace$ & Mid$(wh$, i, 1)
+                whNoSpace$ = whNoSpace$ & Mid$(wh$, I, 1)
             End If
-        Next i
+        Next I
 
           whl = Len(whNoSpace$) * magicratio + whl
       dd.CurrentX = dd.CurrentX + CLng(whl) * st
@@ -1448,7 +1449,7 @@ Else
 End If
 End Sub
 Public Sub fullPlainWhere(dd As Object, mb As basket, ByVal wh$, ByVal wi As Long, whr As Long, Optional fake As Boolean = False)
-Dim whNoSpace$, Displ As Long, DisplLeft As Long, i As Long, whSpace$, INTD As Long, MinDispl As Long
+Dim whNoSpace$, Displ As Long, DisplLeft As Long, I As Long, whSpace$, INTD As Long, MinDispl As Long
 MinDispl = (TextWidth(dd, "A") \ 2) \ DXP
 If MinDispl <= 1 Then MinDispl = 3
 MinDispl = DXP * MinDispl
@@ -1484,8 +1485,8 @@ Else
      
     
                 whNoSpace$ = ""
-        For i = 1 To Len(wh$)
-            If Mid$(wh$, i, 1) = " " Then
+        For I = 1 To Len(wh$)
+            If Mid$(wh$, I, 1) = " " Then
             whSpace$ = Mid$(whSpace$, 2)
             
                If whNoSpace$ <> "" Then
@@ -1495,9 +1496,9 @@ Else
               dd.CurrentX = dd.CurrentX + Displ
               
             Else
-                whNoSpace$ = whNoSpace$ & Mid$(wh$, i, 1)
+                whNoSpace$ = whNoSpace$ & Mid$(wh$, I, 1)
             End If
-        Next i
+        Next I
         If whNoSpace$ <> "" Then
 
         End If
@@ -1963,7 +1964,7 @@ Dim PX As Long, PY As Long, OLDFONT As String, OLDSIZE As Long, DEGR As Double
 Dim f As LOGFONT, hPrevFont As Long, hFont As Long, fline$, ruler As Long
 Dim BFONT As String
 On Error Resume Next
-BFONT = ddd.Font.NAME
+BFONT = ddd.Font.name
 If ExtraWidth <> 0 Then
 SetTextCharacterExtra ddd.hDC, ExtraWidth
 End If
@@ -2017,7 +2018,7 @@ If ExtraWidth <> 0 Then SetTextCharacterExtra ddd.hDC, 0
 End Sub
 
 Public Sub nForm(bstack As basetask, TheSize As Single, nW As Long, nH As Long, myLineSpace As Long)
-    Form3.StoreFont bstack.Owner.Font.NAME, TheSize, bstack.myCharSet
+    Form3.StoreFont bstack.Owner.Font.name, TheSize, bstack.myCharSet
     nH = Form3.TextHeight("Wq") + myLineSpace * 2
     nW = Form3.TextWidth("W") + dv15
 End Sub
@@ -2224,7 +2225,7 @@ mSz = mSz * factor
 .uMineLineSpace = AddTwipsTop * factor
 .double = factor <> 1
 End If
-Form3.StoreFont dq.Font.NAME, mSz, dq.Font.charset
+Form3.StoreFont dq.Font.name, mSz, dq.Font.charset
 dq.FontSize = mSz
 
 .Yt = Form3.TextHeight("fj")
@@ -2349,7 +2350,7 @@ SetTextBasketBack dq, mybasket
                       nomoveLCTC dq, mybasket, y&, c& + x&, ins&
                       iamactive = False
            Else
-                If Not (GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.NAME = "Form1") Then
+                If Not (GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1") Then
                  
                       DestroyCaret
                       nomoveLCTC dq, mybasket, y&, c& + x&, ins&
@@ -2366,11 +2367,11 @@ SetTextBasketBack dq, mybasket
                 End If
      Else
   If Not Screen.ActiveForm Is Nothing Then
-            If GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.NAME = "Form1" Then
+            If GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1" Then
            
                           nomoveLCTC dq, mybasket, y&, c& + x&, ins&
                              iamactive = True
-                              If ShowCaret(dq.hWnd) = 0 And Screen.ActiveForm.NAME = "Form1" Then
+                              If ShowCaret(dq.hWnd) = 0 And Screen.ActiveForm.name = "Form1" Then
                                    HideCaret dq.hWnd
                                    .currow = y&
                                    .curpos = c& + x&
@@ -2638,7 +2639,7 @@ FrameText d, SzOne, Form1.Width, Form1.Height, PaperOne
 If lckfrm = 0 Then
 SetText d
 bstack.Owner.Font.charset = bstack.myCharSet
- Form3.StoreFont bstack.Owner.Font.NAME, SzOne, bstack.myCharSet
+ Form3.StoreFont bstack.Owner.Font.name, SzOne, bstack.myCharSet
  
  With players(basketcode)
 .mypen = PenOne
@@ -2753,7 +2754,7 @@ spl = .mysplit * .Yt
 Set im = d.image
 .Paper = c1
 
-If d.NAME = "Form1" Then
+If d.name = "Form1" Then
 d.Line (0, spl)-(d.ScaleWidth - dv15, d.ScaleHeight - dv15), .Paper, BF
 .curpos = 0
 .currow = .mysplit
@@ -2769,7 +2770,7 @@ d.CurrentX = 0
 d.CurrentY = 0
 End With
 End Sub
-Function iText(bb As basetask, ByVal V$, wi&, Hi&, aTitle$, n As Long, Optional NumberOnly As Boolean = False, Optional UseIntOnly As Boolean = False) As String
+Function iText(bb As basetask, ByVal v$, wi&, Hi&, aTitle$, n As Long, Optional NumberOnly As Boolean = False, Optional UseIntOnly As Boolean = False) As String
 Dim x&, y&, dd As Object, wh&, shiftlittle As Long, OLDV$
 Set dd = bb.Owner
 With players(GetCode(dd))
@@ -2789,7 +2790,7 @@ End If
 If .mx - x& - 1 < wi& Then wi& = .mx - x&
 If .My - y& - 1 < Hi& Then Hi& = .My - y& - 1
 If wi& = 0 Or Hi& < 0 Then
-iText = V$
+iText = v$
 Exit Function
 End If
 wi& = wi& + x&
@@ -2800,21 +2801,21 @@ If n <= 0 Then Form1.TEXT1.title = aTitle$ + " ": wh& = Abs(n - 1)
 If NumberOnly Then
 Form1.TEXT1.NumberOnly = True
 Form1.TEXT1.NumberIntOnly = UseIntOnly
-OLDV$ = V$
-ScreenEdit bb, V$, x&, y&, wi& - 1, Hi&, wh&, , n, shiftlittle
-If result = 99 Then V$ = OLDV$
+OLDV$ = v$
+ScreenEdit bb, v$, x&, y&, wi& - 1, Hi&, wh&, , n, shiftlittle
+If result = 99 Then v$ = OLDV$
 Form1.TEXT1.NumberIntOnly = False
 Form1.TEXT1.NumberOnly = False
 Else
-OLDV$ = V$
-ScreenEdit bb, V$, x&, y&, wi& - 1, Hi&, wh&, , n, shiftlittle
-If result = 99 And Hi& = wi& Then V$ = OLDV$
+OLDV$ = v$
+ScreenEdit bb, v$, x&, y&, wi& - 1, Hi&, wh&, , n, shiftlittle
+If result = 99 And Hi& = wi& Then v$ = OLDV$
 End If
-iText = V$
+iText = v$
 End With
 End Function
 Sub ScreenEditDOC(bstack As basetask, aaa As Variant, x&, y&, x1&, y1&, Optional l As Long = 0, Optional usecol As Boolean = False, Optional col As Long)
-Dim ot As Boolean, back As New Document, i As Long, d As Object
+Dim ot As Boolean, back As New Document, I As Long, d As Object
 Dim prive As basket
 Set d = bstack.Owner
 prive = players(GetCode(d))
@@ -2824,11 +2825,11 @@ oldesc = escok
 escok = False
 ' we have a limit here
 If Not aaa.IsEmpty Then
-For i = 1 To aaa.DocParagraphs
-back.AppendParagraph aaa.TextParagraph(i)
-Next i
+For I = 1 To aaa.DocParagraphs
+back.AppendParagraph aaa.TextParagraph(I)
+Next I
 End If
-i = back.LastSelStart
+I = back.LastSelStart
 Dim aaaa As Document, tcol As Long, trans As Boolean
 If usecol Then tcol = mycolor(col) Else tcol = d.BackColor
 
@@ -2855,7 +2856,7 @@ Hook Form1.hWnd, Nothing '.glistN
 .glistN.maxchar = 0
 If d.ForeColor = tcol Then
 Set Form1.Point2Me = d
-If d.NAME = "Form1" Then
+If d.name = "Form1" Then
 .glistN.SkipForm = False
 Else
 .glistN.SkipForm = True
@@ -2891,12 +2892,12 @@ End If
 .ForeColor = d.ForeColor
 Form1.SetText1
 .glistN.overrideTextHeight = Form3.TextHeight("fj")
-.Font.NAME = d.Font.NAME
+.Font.name = d.Font.name
 .Font.Size = d.Font.Size ' SZ 'Int(d.font.Size) Why
 .Font.charset = d.Font.charset
 .Font.Italic = d.Font.Italic
 .Font.bold = d.Font.bold
-.Font.NAME = d.Font.NAME
+.Font.name = d.Font.name
 .Font.charset = d.Font.charset
 .Font.Size = prive.SZ
 With prive
@@ -2984,7 +2985,7 @@ If Not CancelEDIT Then
 
 Else
 Set aaa = back
-back.LastSelStart = i
+back.LastSelStart = I
 End If
 Set Form1.TEXT1.mdoc = New Document
 
@@ -3033,7 +3034,7 @@ TextEditLineHeight = 1
 .glistN.BorderStyle = 0
 .glistN.BackStyle = 1
 Set Form1.Point2Me = d
-If d.NAME = "Form1" Then
+If d.name = "Form1" Then
 .glistN.SkipForm = False
 Else
 .glistN.SkipForm = True
@@ -3101,7 +3102,7 @@ End If
 .glistN.ZOrder 0
 .BackColor = d.BackColor
 .ForeColor = d.ForeColor
-.Font.NAME = d.Font.NAME
+.Font.name = d.Font.name
 Form1.SetText1
 .glistN.overrideTextHeight = Form3.TextHeight("fj")
 .Font.Size = d.Font.Size ' SZ 'Int(d.font.Size) Why
@@ -3109,7 +3110,7 @@ Form1.SetText1
 .Font.Italic = d.Font.Italic
 .Font.bold = d.Font.bold
 
-.Font.NAME = d.Font.NAME
+.Font.name = d.Font.name
 
 .Font.charset = d.Font.charset
 .Font.Size = prive.SZ 'Int(d.font.Size)
@@ -3238,27 +3239,27 @@ End Sub
 
 Function blockCheck(ByVal s$, ByVal lang As Long, Optional ByVal sbname$ = "") As Boolean
 If s$ = "" Then blockCheck = True: Exit Function
-Dim i As Long, j As Long, c As Long, b$, resp&
+Dim I As Long, j As Long, c As Long, b$, resp&
 lang = Not lang
 Dim a1 As Boolean
 Dim jump As Boolean
 If Trim(s$) = "" Then Exit Function
 c = Len(s$)
 a1 = True
-i = 1
+I = 1
 Do
-Select Case Asc(Mid$(s$, i, 1))
+Select Case Asc(Mid$(s$, I, 1))
 Case 32
 ' nothing
 Case 34
-Do While i < c
-i = i + 1
-If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+Do While I < c
+I = I + 1
+If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
 Loop
 Case 39, 92
-Do While i < c
-i = i + 1
-If Mid$(s$, i, 2) = vbCrLf Then Exit Do
+Do While I < c
+I = I + 1
+If Mid$(s$, I, 2) = vbCrLf Then Exit Do
 Loop
 Case 61
 jump = True
@@ -3271,19 +3272,19 @@ jump = False
 Dim target As Long
 target = j
     Do
-    Select Case Asc(Mid$(s$, i, 1))
+    Select Case Asc(Mid$(s$, I, 1))
     Case 34
-    Do While i < c
-    i = i + 1
-    If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+    Do While I < c
+    I = I + 1
+    If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
     Loop
     Case 123
     j = j - 1
     Case 125
     j = j + 1: If j = target Then Exit Do
     End Select
-    i = i + 1
-    Loop Until i > c
+    I = I + 1
+    Loop Until I > c
     If j <> target Then Exit Do
     Else
 j = j - 1
@@ -3296,8 +3297,8 @@ Case Else
 jump = False
 
 End Select
-i = i + 1
-Loop Until i > c
+I = I + 1
+Loop Until I > c
 
 If j = 0 Then
 
@@ -3331,11 +3332,11 @@ prive = players(GetCode(d))
 Hook Form1.hWnd, Form1.List1
 Dim ot As Boolean, drop
 With Form1.List1
-.Font.NAME = d.Font.NAME
+.Font.name = d.Font.name
 Form1.Font.charset = d.Font.charset
 Form1.Font.Strikethrough = False
 .Font.Size = d.Font.Size
-.Font.NAME = d.Font.NAME
+.Font.name = d.Font.name
 Form1.Font.charset = d.Font.charset
 .Font.Size = d.Font.Size
 If LEVCOLMENU < 2 Then .BackColor = d.ForeColor
@@ -3586,7 +3587,7 @@ Targets = ot
 End Sub
 
 Public Sub FrameText(dd As Object, ByVal Size As Single, x As Long, y As Long, cc As Long, Optional myCut As Boolean = False)
-Dim i As Long, mymul As Long
+Dim I As Long, mymul As Long
 
 If dd Is Form1.PrinterDocument1 Then
 ' check this please
@@ -3621,7 +3622,7 @@ dd.Font.Size = Size
 Size = dd.Font.Size
 
 ''Sleep 1  '' USED TO GIVE TIME TO LOAD FONT
-Form3.StoreFont dd.Font.NAME, Size, dd.Font.charset
+Form3.StoreFont dd.Font.name, Size, dd.Font.charset
 .Yt = Form3.TextHeight("fj")
 .Xt = Form3.TextWidth("W")
 
@@ -3659,10 +3660,10 @@ If .Column < 4 Then .Column = 4
 
 .SZ = Size
 
-If dd.NAME = "Form1" Then
+If dd.name = "Form1" Then
 ' no change
 Else
-If dd.NAME <> "dSprite" Then
+If dd.name <> "dSprite" Then
 dd.Width = .mx * CLng(.Xt)
 dd.Height = .My * CLng(.Yt)
 dd.Left = (dd.Parent.ScaleWidth - dd.Width) \ 2
@@ -3765,7 +3766,7 @@ LCTbasketCur dq, prive
 ins& = 0
 Dim fr1 As Long, fr2 As Long, p As Double
 UseEnter = False
-If dq.NAME = "DIS" Then
+If dq.name = "DIS" Then
 If Form1.Visible = False Then
     If Not Form3.Visible Then
         Form1.Hide: Sleep 100
@@ -3908,7 +3909,7 @@ Else
 If Screen.ActiveForm Is Nothing Then
 iamactive = False
 Else
-If Screen.ActiveForm.NAME <> "Form1" Then
+If Screen.ActiveForm.name <> "Form1" Then
 iamactive = False
 Else
 iamactive = GetForegroundWindow = Screen.ActiveForm.hWnd
@@ -4098,7 +4099,7 @@ End With
 End Sub
 Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, ByVal yy1&, ByVal yy2&, ByVal hor As Boolean, ByVal all As Boolean)
     Dim Redval&, Greenval&, Blueval&
-    Dim r1&, g1&, b1&, sr&, SG&, SB&
+    Dim r1&, g1&, b1&, sr&, SG&, sb&
     f& = f& Mod &H1000000
     t& = t& Mod &H1000000
     Redval& = f& And &H10000FF
@@ -4109,7 +4110,7 @@ Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, By
     b1& = (t& And &HFF0000) / &H10000
     sr& = (r1& - Redval&) * 1000 / 127
     SG& = (g1& - Greenval&) * 1000 / 127
-    SB& = (b1& - Blueval&) * 1000 / 127
+    sb& = (b1& - Blueval&) * 1000 / 127
     Redval& = Redval& * 1000
     
     Greenval& = Greenval& * 1000
@@ -4155,7 +4156,7 @@ Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, By
         End If
         Redval& = Redval& + sr&
         Greenval& = Greenval& + SG&
-        Blueval& = Blueval& + SB&
+        Blueval& = Blueval& + sb&
         FillTop = FillBottom
         FillBottom = FillTop + Step
     Else
@@ -4164,7 +4165,7 @@ Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, By
         End If
         Redval& = Redval& + sr&
         Greenval& = Greenval& + SG&
-        Blueval& = Blueval& + SB&
+        Blueval& = Blueval& + sb&
         FillLeft = FillRight
         FillRight = FillRight + Step
     End If
@@ -4271,7 +4272,7 @@ If exWnd = 0 Then Form1.SetFocus
 End Sub
 
 Function FileNameType(extension As String) As String
-Dim i As Long, fs, b
+Dim I As Long, fs, b
  strTemp = String(200, Chr$(0))
     'Get
     GetTempPath 200, strTemp
@@ -4281,10 +4282,10 @@ Dim i As Long, fs, b
      If Right$(strTemp, 1) <> "\" Then strTemp = strTemp & "\"
     End If
     
-    i = FreeFile
-    Open strTemp & "dummy." & extension For Output As i
-    Print #i, "test"
-    Close #i
+    I = FreeFile
+    Open strTemp & "dummy." & extension For Output As I
+    Print #I, "test"
+    Close #I
     Sleep 10
     Set fs = CreateObject("Scripting.FileSystemObject")
   Set b = fs.GetFile(strTemp & "dummy." & extension)
@@ -4303,45 +4304,45 @@ Else
 End Function
 
 Function myUcase(ByVal a$, Optional Convert As Boolean = False) As String
-Dim i As Long
+Dim I As Long
 If a$ = "" Then Exit Function
  If AscW(a$) > 255 Or Convert Then
- For i = 1 To Len(a$)
- Select Case AscW(Mid$(a$, i, 1))
+ For I = 1 To Len(a$)
+ Select Case AscW(Mid$(a$, I, 1))
 Case 902
-Mid$(a$, i, 1) = ChrW(913)
+Mid$(a$, I, 1) = ChrW(913)
 Case 904
-Mid$(a$, i, 1) = ChrW(917)
+Mid$(a$, I, 1) = ChrW(917)
 Case 906
-Mid$(a$, i, 1) = ChrW(921)
+Mid$(a$, I, 1) = ChrW(921)
 Case 912
-Mid$(a$, i, 1) = ChrW(921)
+Mid$(a$, I, 1) = ChrW(921)
 Case 905
-Mid$(a$, i, 1) = ChrW(919)
+Mid$(a$, I, 1) = ChrW(919)
 Case 908
-Mid$(a$, i, 1) = ChrW(927)
+Mid$(a$, I, 1) = ChrW(927)
 Case 911
-Mid$(a$, i, 1) = ChrW(937)
+Mid$(a$, I, 1) = ChrW(937)
 Case 910
-Mid$(a$, i, 1) = ChrW(933)
+Mid$(a$, I, 1) = ChrW(933)
 Case 940
-Mid$(a$, i, 1) = ChrW(913)
+Mid$(a$, I, 1) = ChrW(913)
 Case 941
-Mid$(a$, i, 1) = ChrW(917)
+Mid$(a$, I, 1) = ChrW(917)
 Case 943
-Mid$(a$, i, 1) = ChrW(921)
+Mid$(a$, I, 1) = ChrW(921)
 Case 942
-Mid$(a$, i, 1) = ChrW(919)
+Mid$(a$, I, 1) = ChrW(919)
 Case 972
-Mid$(a$, i, 1) = ChrW(927)
+Mid$(a$, I, 1) = ChrW(927)
 Case 974
-Mid$(a$, i, 1) = ChrW(937)
+Mid$(a$, I, 1) = ChrW(937)
 Case 973
-Mid$(a$, i, 1) = ChrW(933)
+Mid$(a$, I, 1) = ChrW(933)
 Case 962
-Mid$(a$, i, 1) = ChrW(931)
+Mid$(a$, I, 1) = ChrW(931)
 End Select
-Next i
+Next I
 End If
 myUcase = UCase(a$)
 End Function
@@ -4616,29 +4617,29 @@ End If
 
 End Sub
 Function blockStringPOS(s$, pos As Long) As Boolean
-Dim i As Long, j As Long, c As Long
+Dim I As Long, j As Long, c As Long
 Dim a1 As Boolean
 c = Len(s$)
 a1 = True
-i = pos
-If i > Len(s$) Then Exit Function
+I = pos
+If I > Len(s$) Then Exit Function
 Do
-Select Case Asc(Mid$(s$, i, 1))
+Select Case Asc(Mid$(s$, I, 1))
 Case 34
-Do While i < c
-i = i + 1
-If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+Do While I < c
+I = I + 1
+If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
 Loop
 Case 123
 j = j - 1
 Case 125
 j = j + 1: If j = 1 Then Exit Do
 End Select
-i = i + 1
-Loop Until i > c
+I = I + 1
+Loop Until I > c
 If j = 1 Then
 blockStringPOS = True
-pos = i
+pos = I
 Else
 pos = Len(s$)
 End If
@@ -4646,31 +4647,31 @@ End If
 End Function
 Function BlockParam2(s$, pos As Long) As Boolean
 ' need to be open
-Dim i As Long, j As Long
+Dim I As Long, j As Long
 j = 1
-For i = pos To Len(s$)
-Select Case Asc(Mid$(s$, i, 1))
+For I = pos To Len(s$)
+Select Case Asc(Mid$(s$, I, 1))
 Case 0
 Exit For
 Case 34
-i = InStr(i + 1, s$, """")
-If i = 0 Then Exit Function
+I = InStr(I + 1, s$, """")
+If I = 0 Then Exit Function
 Case 40
 j = j + 1
 Case 41
 j = j - 1
 If j = 0 Then Exit For
 Case 123
-i = i + 1
-If blockStringPOS(s$, i) Then
+I = I + 1
+If blockStringPOS(s$, I) Then
 Else
-i = 0
+I = 0
 '' i = InStr(i + 1, s$, Chr$(125))
 End If
-If i = 0 Then Exit Function
+If I = 0 Then Exit Function
 End Select
-Next i
-If j = 0 Then pos = i: BlockParam2 = True
+Next I
+If j = 0 Then pos = I: BlockParam2 = True
 End Function
 Public Function aheadstatus(a$, Optional srink As Boolean = True, Optional pos As Long = 1) As String
 Dim b$, part$, w$, pos2 As Long, level&
@@ -4913,29 +4914,29 @@ End If
 
 End Function
 Function blockStringAhead(s$, pos1 As Long) As Long
-Dim i As Long, j As Long, c As Long
+Dim I As Long, j As Long, c As Long
 Dim a1 As Boolean
 c = Len(s$)
 a1 = True
-i = pos1
-If i > c Then blockStringAhead = c: Exit Function
+I = pos1
+If I > c Then blockStringAhead = c: Exit Function
 Do
 
-Select Case Asc(Mid$(s$, i, 1))
+Select Case Asc(Mid$(s$, I, 1))
 Case 34
-Do While i < c
-i = i + 1
-If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+Do While I < c
+I = I + 1
+If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
 Loop
 Case 123
 j = j - 1
 Case 125
 j = j + 1: If j = 0 Then Exit Do
 End Select
-i = i + 1
-Loop Until i > c
+I = I + 1
+Loop Until I > c
 If j = 0 Then
-pos1 = i
+pos1 = I
 blockStringAhead = True
 Else
 blockStringAhead = False
@@ -4944,15 +4945,15 @@ End If
 
 End Function
 Public Function CleanStr(sStr As String, noValidcharList As String) As String
-Dim a$, i As Long '', ddt As Boolean
+Dim a$, I As Long '', ddt As Boolean
 If noValidcharList <> "" Then
 ''If Len(sStr) > 20000 Then ddt = True
 If Len(sStr) > 0 Then
-For i = 1 To Len(sStr)
+For I = 1 To Len(sStr)
 ''If ddt Then If i Mod 321 = 0 Then Sleep 20
-If InStr(noValidcharList, Mid$(sStr, i, 1)) = 0 Then a$ = a$ & Mid$(sStr, i, 1)
+If InStr(noValidcharList, Mid$(sStr, I, 1)) = 0 Then a$ = a$ & Mid$(sStr, I, 1)
 
-Next i
+Next I
 End If
 Else
 a$ = sStr
@@ -5062,7 +5063,7 @@ End Function
 
 
 Function ReadUnicodeOrANSI(FileName As String, Optional ByVal EnsureWinLFs As Boolean, Optional feedback As Long) As String
-Dim i&, FNr&, BLen&, WChars&, BOM As Integer, BTmp As Byte, b() As Byte
+Dim I&, FNr&, BLen&, WChars&, BOM As Integer, BTmp As Byte, b() As Byte
 ' code from Schmidt, member of vbforums
 If FileName = "" Then Exit Function
 On Error GoTo ErrHandler
@@ -5079,8 +5080,8 @@ On Error GoTo ErrHandler
           feedback = 0
           If BOM = &HFFFE Then 'big endian, so lets swap the byte-pairs
           feedback = 1
-            For i = 0 To UBound(b) Step 2
-              BTmp = b(i): b(i) = b(i + 1): b(i + 1) = BTmp
+            For I = 0 To UBound(b) Step 2
+              BTmp = b(I): b(I) = b(I + 1): b(I + 1) = BTmp
             Next
           End If
           ReadUnicodeOrANSI = b
@@ -5127,7 +5128,7 @@ End Function
 Public Function SaveUnicode(ByVal FileName As String, ByVal buf As String, mode2save As Long, Optional Append As Boolean = False) As Boolean
 ' using doc as extension you can read it from word...with automatic conversion to unicode
 ' OVERWRITE ALWAYS
-Dim w As Long, a() As Byte, f$, i As Long, bb As Byte, yesswap As Boolean
+Dim w As Long, a() As Byte, f$, I As Long, bb As Byte, yesswap As Boolean
 On Error GoTo t12345
 If Not Append Then
 If Not NeoUnicodeFile(FileName) Then Exit Function
@@ -5174,9 +5175,9 @@ maxmw = 32000 ' check it with maxmw 20 OR 1
 If yesswap Then
 For iPos = 1 To Len(buf) Step maxmw
 a() = Mid$(buf, iPos, maxmw)
-For i = 0 To UBound(a()) - 1 Step 2
-bb = a(i): a(i) = a(i + 1): a(i + 1) = bb
-Next i
+For I = 0 To UBound(a()) - 1 Step 2
+bb = a(I): a(I) = a(I + 1): a(I + 1) = bb
+Next I
 Put #w, 3, a()
 Next iPos
 Else
@@ -5468,7 +5469,7 @@ a112:
 
 End Sub
 Public Function RealLenOld(s$) As Long
-Dim a() As Byte, ctype As Long, s1$, i As Long, ll As Long
+Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long
 If IsWine Then
 RealLenOld = Len(s$)
 Else
@@ -5477,54 +5478,60 @@ ll = Len(s$)
    If ll Then
       ReDim a(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), a(0)) <> 0 Then
-      For i = 1 To Len(s$) * 2 - 1 Step 2
-      If a(i - 1) > 0 Then
-      If a(i) = 0 Then If a(i - 1) < 8 Then ll = ll - 1
-      ElseIf a(i) = 0 Then
+      For I = 1 To Len(s$) * 2 - 1 Step 2
+      If a(I - 1) > 0 Then
+      If a(I) = 0 Then If a(I - 1) < 8 Then ll = ll - 1
+      ElseIf a(I) = 0 Then
       ll = ll - 1
       End If
       
-          Next i
+          Next I
       End If
    End If
 RealLenOld = ll
 End If
 End Function
 Public Function RealLen(s$, Optional checkone As Boolean = False) As Long
-Dim a() As Byte, s1$, i As Long, ll As Long, ii As Long, l$, LLL$
+Dim a() As Byte, s1$, I As Long, ll As Long, ii As Long, l$, LLL$
 ll = Len(s$)
    If ll Then
       ReDim a(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, 1, StrPtr(s$), Len(s$), a(0)) <> 0 Then
 ii = 0
-      For i = 1 To Len(s$) * 2 - 1 Step 2
+      For I = 1 To Len(s$) * 2 - 1 Step 2
 ii = ii + 1
-        If a(i - 1) = 0 Then
-        If a(i) <> 0 Then
-        If ii > 1 Then
-            If l$ = Mid$(s$, ii, 1) Then
-                If LLL$ = "" Then ll = ll + 1
-                    LLL$ = l$
-                Else
-                    l$ = Mid$(s$, ii, 1)
-                    ll = ll - 1
-                End If
-            Else
+       ' Debug.Print I, a(I - 1), a(I)
+        If a(I - 1) = 0 Then
+        If a(I) <> 0 Then
+        
+                 If ii > 1 Then
+                    s1$ = Mid$(s$, ii, 1)
+                    If (AscW(s1$) And &HFFFF0000) = &HFFFF0000 Then
+                    Else
+                    If l$ = s1$ Then
+                        If LLL$ = "" Then ll = ll + 1
+                        LLL$ = l$
+                    Else
+                        l$ = Mid$(s$, ii, 1)
+                        ll = ll - 1
+                    End If
+                    End If
+                 Else
+                 If checkone Then ll = ll - 1
+                 End If
             
-           If checkone Then ll = ll - 1
-            End If
         Else
         LLL$ = ""
         End If
         End If
            l$ = Mid$(s$, ii, 1)
-          Next i
+          Next I
       End If
    End If
 RealLen = ll
 End Function
 Public Function PopOne(s$) As String
-Dim a() As Byte, ctype As Long, s1$, i As Long, ll As Long, MM As Long
+Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long, MM As Long
 ctype = CT_CTYPE3
 Dim one As Boolean
 ll = Len(s$)
@@ -5532,10 +5539,10 @@ MM = ll
    If ll Then
       ReDim a(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, a(0)) <> 0 Then
-      For i = 1 To Len(s$) * 2 - 1 Step 2
-            If a(i) = 0 Then
-            If a(i - 1) > 0 Then
-            If a(i - 1) < 8 Then ll = ll - 1
+      For I = 1 To Len(s$) * 2 - 1 Step 2
+            If a(I) = 0 Then
+            If a(I - 1) > 0 Then
+            If a(I - 1) < 8 Then ll = ll - 1
             Else
             If Not one Then Exit For
             
@@ -5544,7 +5551,7 @@ MM = ll
             If one Then Exit For
             one = Not one
             End If
-      Next i
+      Next I
       End If
         ll = ll - 1
       MM = MM - ll
@@ -5559,23 +5566,23 @@ End If
 
 End Function
 Public Sub ExcludeOne(s$)
-Dim a() As Byte, ctype As Long, s1$, i As Long, ll As Long
+Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long
 ll = Len(s$)
 ctype = CT_CTYPE3
    If ll > 1 Then
       ReDim a(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, a(0)) <> 0 Then
-      For i = ll * 2 - 1 To 1 Step -2
-      If a(i) = 0 Then
-      If a(i - 1) > 0 Then
-      If a(i - 1) < 8 Then ll = ll - 1
+      For I = ll * 2 - 1 To 1 Step -2
+      If a(I) = 0 Then
+      If a(I - 1) > 0 Then
+      If a(I - 1) < 8 Then ll = ll - 1
       Else
       Exit For
       End If
       Else
       Exit For
       End If
-          Next i
+          Next I
       End If
        ll = ll - 1
        If ll <= 0 Then

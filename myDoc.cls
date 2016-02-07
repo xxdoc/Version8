@@ -442,7 +442,7 @@ End Sub
 Public Function textFormat(ByVal linebreak2use$) As String
 '
 Dim mlines As Long, neodata As String
- Dim mycur As Long, thiscur, L As Long
+ Dim mycur As Long, thiscur, l As Long
 mycur = DocParaNext(0)
 textFormat = Space$(500)
 Do While mycur <> 0
@@ -450,10 +450,10 @@ Do While mycur <> 0
     For mlines = 1 To para(mycur).lines
         neodata = neodata + para(mycur).content(mlines)
     Next mlines
-L = Len(neodata)
-If Len(textFormat) < thiscur + L Then textFormat = textFormat + Space$((thiscur + L) + 100)
-Mid$(textFormat, thiscur, L) = neodata
-thiscur = thiscur + L
+l = Len(neodata)
+If Len(textFormat) < thiscur + l Then textFormat = textFormat + Space$((thiscur + l) + 100)
+Mid$(textFormat, thiscur, l) = neodata
+thiscur = thiscur + l
 mycur = DocParaNext(mycur)
 Loop
 textFormat = Left$(textFormat, thiscur - 1)
@@ -461,7 +461,7 @@ End Function
 Private Function textArray(ByVal linebreak2use$, mycur As Long, minimumbytes2exit As Long) As Byte()
 '
 Dim mlines As Long, neodata As String
- Dim thiscur, L As Long, textbuf As String
+ Dim thiscur, l As Long, textbuf As String
 If minimumbytes2exit < 500 Then minimumbytes2exit = 500
 textbuf = Space$(500)
 Do While mycur <> 0 And Not Len(textbuf) > minimumbytes2exit
@@ -469,10 +469,10 @@ Do While mycur <> 0 And Not Len(textbuf) > minimumbytes2exit
     For mlines = 1 To para(mycur).lines
         neodata = neodata + para(mycur).content(mlines)
     Next mlines
-L = Len(neodata)
-If Len(textbuf) < thiscur + L Then textbuf = textbuf + Space$((thiscur + L) + 100)
-Mid$(textbuf, thiscur, L) = neodata
-thiscur = thiscur + L
+l = Len(neodata)
+If Len(textbuf) < thiscur + l Then textbuf = textbuf + Space$((thiscur + l) + 100)
+Mid$(textbuf, thiscur, l) = neodata
+thiscur = thiscur + l
 mycur = DocParaNext(mycur)
 Loop
 textArray = Left$(textbuf, thiscur - 1)
@@ -480,7 +480,7 @@ End Function
 Private Function textString(ByVal linebreak2use$, mycur As Long, minimumbytes2exit As Long) As String
 '
 Dim mlines As Long, neodata As String
- Dim thiscur, L As Long, textbuf As String
+ Dim thiscur, l As Long, textbuf As String
 If minimumbytes2exit < 500 Then minimumbytes2exit = 500
 textbuf = Space$(500)
 Do While mycur <> 0 And Not Len(textbuf) > minimumbytes2exit
@@ -488,10 +488,10 @@ Do While mycur <> 0 And Not Len(textbuf) > minimumbytes2exit
     For mlines = 1 To para(mycur).lines
         neodata = neodata + para(mycur).content(mlines)
     Next mlines
-L = Len(neodata)
-If Len(textbuf) < thiscur + L Then textbuf = textbuf + Space$((thiscur + L) + 100)
-Mid$(textbuf, thiscur, L) = neodata
-thiscur = thiscur + L
+l = Len(neodata)
+If Len(textbuf) < thiscur + l Then textbuf = textbuf + Space$((thiscur + l) + 100)
+Mid$(textbuf, thiscur, l) = neodata
+thiscur = thiscur + l
 mycur = DocParaNext(mycur)
 Loop
 textString = Left$(textbuf, thiscur - 1)
@@ -499,7 +499,7 @@ End Function
 Property Get textDoc() As String
 Attribute textDoc.VB_UserMemId = 0
 Dim mlines As Long, neodata As String
- Dim mycur As Long, thiscur, L As Long
+ Dim mycur As Long, thiscur, l As Long
 mycur = DocParaNext(0)
 textDoc = Space$(500)
 Do While mycur <> 0
@@ -507,10 +507,10 @@ Do While mycur <> 0
     For mlines = 1 To para(mycur).lines
         neodata = neodata + para(mycur).content(mlines)
     Next mlines
-L = Len(neodata)
-If Len(textDoc) < thiscur + L Then textDoc = textDoc + Space$((thiscur + L) + 100)
-Mid$(textDoc, thiscur, L) = neodata
-thiscur = thiscur + L
+l = Len(neodata)
+If Len(textDoc) < thiscur + l Then textDoc = textDoc + Space$((thiscur + l) + 100)
+Mid$(textDoc, thiscur, l) = neodata
+thiscur = thiscur + l
 mycur = DocParaNext(mycur)
 Loop
 If Typename(thiscur) = "Empty" Then
@@ -521,7 +521,7 @@ End If
 End Sub
 Function textHtmlDoc(colortable() As Variant) As String
 Dim mlines As Long, neodata As String
- Dim mycur As Long, thiscur, L As Long, A$, i As Long, mcolor() As Variant, qu$
+ Dim mycur As Long, thiscur, l As Long, A$, i As Long, mcolor() As Variant, qu$
  qu$ = """"
 mycur = DocParaNext(0)
 textHtmlDoc = Space$(500)
@@ -542,43 +542,43 @@ A$ = ReplaceStr(Chr$(7) + " ", Chr$(7) + Chr$(7), A$)
 If UBound(para(mycur).colordata()) > 1 Then
 mcolor() = para(mycur).colordata()
 neodata = ""
-L = 1
-If mcolor(L) > 1 Then mcolor(L) = 1
+l = 1
+If mcolor(l) > 1 Then mcolor(l) = 1
 Do
-If L > 3 Then
-If mcolor(L - 3) <> 15 And mcolor(L - 3) <> 7 Then
-If mcolor(L) - mcolor(L - 2) < 1 Then
-If L > 1 Then neodata = neodata + Replace(Mid$(A$, mcolor(L - 2)), Chr$(7), " ") + "</font>"
+If l > 3 Then
+If mcolor(l - 3) <> 15 And mcolor(l - 3) <> 7 Then
+If mcolor(l) - mcolor(l - 2) < 1 Then
+If l > 1 Then neodata = neodata + Replace(Mid$(A$, mcolor(l - 2)), Chr$(7), " ") + "</font>"
 Else
-If L > 1 Then neodata = neodata + Replace(Mid$(A$, mcolor(L - 2), mcolor(L) - mcolor(L - 2)), Chr$(7), " ") + "</font>"
+If l > 1 Then neodata = neodata + Replace(Mid$(A$, mcolor(l - 2), mcolor(l) - mcolor(l - 2)), Chr$(7), " ") + "</font>"
 End If
 Else
-If L > 1 Then
-    If mcolor(L) - mcolor(L - 2) < 1 Then
-    neodata = neodata + Mid$(A$, mcolor(L - 2)) + "</font>"
+If l > 1 Then
+    If mcolor(l) - mcolor(l - 2) < 1 Then
+    neodata = neodata + Mid$(A$, mcolor(l - 2)) + "</font>"
     Else
-neodata = neodata + Mid$(A$, mcolor(L - 2), mcolor(L) - mcolor(L - 2)) + "</font>"
+neodata = neodata + Mid$(A$, mcolor(l - 2), mcolor(l) - mcolor(l - 2)) + "</font>"
 End If
 End If
 End If
 Else
-If L > 1 Then
-    If mcolor(L) - mcolor(L - 2) < 1 Then
-    neodata = neodata + Mid$(A$, mcolor(L - 2)) + "</font>"
+If l > 1 Then
+    If mcolor(l) - mcolor(l - 2) < 1 Then
+    neodata = neodata + Mid$(A$, mcolor(l - 2)) + "</font>"
     Else
-    neodata = neodata + Mid$(A$, mcolor(L - 2), mcolor(L) - mcolor(L - 2)) + "</font>"
+    neodata = neodata + Mid$(A$, mcolor(l - 2), mcolor(l) - mcolor(l - 2)) + "</font>"
     End If
 End If
 End If
-neodata = neodata + "<font color=" + qu$ + "#" + colortable(mcolor(L - 1)) + qu$ + ">"
+neodata = neodata + "<font color=" + qu$ + "#" + colortable(mcolor(l - 1)) + qu$ + ">"
 
-  L = L + 2
-Loop Until L > UBound(mcolor())
-If mcolor(L - 2) > 0 Then
-If mcolor(L - 3) <> 15 And mcolor(L - 3) <> 7 Then
-A$ = neodata + Replace(Mid$(A$, mcolor(L - 2)), Chr$(7), " ") + "</font>"
+  l = l + 2
+Loop Until l > UBound(mcolor())
+If mcolor(l - 2) > 0 Then
+If mcolor(l - 3) <> 15 And mcolor(l - 3) <> 7 Then
+A$ = neodata + Replace(Mid$(A$, mcolor(l - 2)), Chr$(7), " ") + "</font>"
 Else
-A$ = neodata + Mid$(A$, mcolor(L - 2)) + "</font>"
+A$ = neodata + Mid$(A$, mcolor(l - 2)) + "</font>"
 End If
 Else
 A$ = neodata + "</font>"
@@ -593,10 +593,10 @@ A$ = ReplaceStr(Chr$(7), "&nbsp;", A$)
 If thiscur <> 0 Then neodata = "<br>" + A$ Else thiscur = 1: neodata = A$
 
 End If
-L = Len(neodata)
-If Len(textHtmlDoc) < thiscur + L Then textHtmlDoc = textHtmlDoc + Space$((thiscur + L) + 100)
-Mid$(textHtmlDoc, thiscur, L) = neodata
-thiscur = thiscur + L
+l = Len(neodata)
+If Len(textHtmlDoc) < thiscur + l Then textHtmlDoc = textHtmlDoc + Space$((thiscur + l) + 100)
+Mid$(textHtmlDoc, thiscur, l) = neodata
+thiscur = thiscur + l
 mycur = DocParaNext(mycur)
 Loop
 If Typename(thiscur) = "Empty" Then
@@ -607,17 +607,17 @@ End If
 End Function
 Property Get textDoc1LINE() As String  ' MORE SPEED IF WE KNOW THAT WE DON'T USE LINE BREAK
 Dim mlines As Long, neodata As String
- Dim mycur As Long, thiscur, L As Long
+ Dim mycur As Long, thiscur, l As Long
 mycur = DocParaNext(0)
 textDoc1LINE = Space$(1000)
 Do While mycur <> 0
     If thiscur <> 0 Then neodata = vbCrLf Else thiscur = 1
         neodata = neodata + para(mycur).content(1)
    
-L = Len(neodata)
-If Len(textDoc1LINE) < thiscur + L Then textDoc1LINE = textDoc1LINE + Space$((thiscur + L) + 100)
-Mid$(textDoc1LINE, thiscur, L) = neodata
-thiscur = thiscur + L
+l = Len(neodata)
+If Len(textDoc1LINE) < thiscur + l Then textDoc1LINE = textDoc1LINE + Space$((thiscur + l) + 100)
+Mid$(textDoc1LINE, thiscur, l) = neodata
+thiscur = thiscur + l
 mycur = DocParaNext(mycur)
 Loop
 textDoc1LINE = Left$(textDoc1LINE, thiscur - 1)
@@ -926,6 +926,32 @@ If lineno < 1 Then Exit Property
     lastlinelastchar = lastlinelastchar + Len(para(mycur).content(mlines))
     Next mlines
         TextLine = para(mycur).content(lineno - mlinesold)
+    End If
+End Property
+Property Get TextLine2(lineno As Long, showspaces As Boolean) As String
+If lineno < 1 Then Exit Property
+    Dim mycur As Long, mlines As Long, mlinesold As Long
+    mlinesold = 0
+    mycur = DocParaNext(0)
+    Do While mycur <> 0
+        mlinesold = mlines
+        mlines = para(mycur).lines + mlines
+        
+        If lineno <= mlines Then Exit Do
+        mycur = DocParaNext(mycur)
+    Loop
+    If lineno <= mlines Then
+    lastcolordatacur = mycur
+    lastlinelastchar = 0
+    For mlines = 1 To lineno - mlinesold - 1
+    lastlinelastchar = lastlinelastchar + Len(para(mycur).content(mlines))
+    Next mlines
+    If showspaces Then
+        TextLine2 = Replace(Replace(para(mycur).content(lineno - mlinesold), " ", ChrW(&HB7)), ChrW(&H2007), ChrW(&H2423))
+    
+    Else
+    TextLine2 = para(mycur).content(lineno - mlinesold)
+        End If
     End If
 End Property
 Property Let TextLine(lineno As Long, that As String)
@@ -1237,7 +1263,42 @@ Dim mlines As Long, counter As Long
     If Charpos > counter Then newselstart = Len(para(Paranum).content(para(Paranum).lines)) + 1
     TextParagraph2Line = mlines - 2
 End Property
-
+Function TextParagraphLine2(ByVal lineno As Long, thistext As String, Paranum As Long, showpar As Boolean) As Long
+    ' for lineno get line and paragraph id..
+    ' we want to mark the current paragraph
+    Dim mycur As Long, mlines As Long, mlinesold As Long, i As Long
+    mlinesold = 0
+    mycur = DocParaNext(0)
+    Do While mycur <> 0
+        mlinesold = mlines
+        mlines = para(mycur).lines + mlines
+        If lineno <= mlines Then Exit Do
+        mycur = DocParaNext(mycur)
+    Loop
+    If lineno <= mlines Then
+    If lineno = mlines Then RaiseEvent Lastline
+      If (lineno - mlinesold) > 0 Then
+      If showpar Then
+      thistext = Replace(para(mycur).content(lineno - mlinesold), " ", ChrW(&HB7))
+      thistext = Replace(thistext, ChrW(&H2007), ChrW(&H2423))
+      Else
+      thistext = para(mycur).content(lineno - mlinesold)
+      End If
+      End If
+        Paranum = mycur
+        If (lineno - mlinesold) = 1 Then
+            TextParagraphLine2 = 0
+        Else
+            For i = 1 To lineno - mlinesold - 1
+                TextParagraphLine2 = TextParagraphLine2 + Len(para(mycur).content(i))
+            Next i
+        End If
+        
+    Else
+        thistext = ""
+        Paranum = 0
+    End If
+End Function
 Function TextParagraphLine(ByVal lineno As Long, thistext As String, Paranum As Long) As Long
     ' for lineno get line and paragraph id..
     ' we want to mark the current paragraph
@@ -1497,20 +1558,20 @@ End Sub
 
 
 Sub SortDoc(KeyStart As Long, order1 As Long, order2 As Long)
-Dim ndx() As Long, i As Long
-ReDim ndx(DocParagraphs) As Long
+Dim NDX() As Long, i As Long
+ReDim NDX(DocParagraphs) As Long
 If KeyStart < 0 Then
 mKeystart = 1
 Else
 mKeystart = KeyStart
 End If
-ndx(0) = 0
-For i = 1 To UBound(ndx())
-ndx(i) = DocParaNext(ndx(i - 1))
+NDX(0) = 0
+For i = 1 To UBound(NDX())
+NDX(i) = DocParaNext(NDX(i - 1))
 Next i
 If order1 <= 0 Then order1 = 1
 If order2 <= 0 Then order2 = i - 1
-QuickSortExtended ndx, order1, order2
+QuickSortExtended NDX, order1, order2
 
 End Sub
 Public Function Advance(cursor As Long)
@@ -1732,12 +1793,12 @@ mycur = DocParaNext(mycur)
 Loop
 End Property
 Private Function mWordCount(ByVal s$) As Long
-Dim i&, L As Long
+Dim i&, l As Long
 Static p2 As Long, P1 As Integer, p4 As Long
-  L = Len(s): If L = 0 Then Exit Function
-  p2 = StrPtr(s): L = L - 1
+  l = Len(s): If l = 0 Then Exit Function
+  p2 = StrPtr(s): l = l - 1
   p4 = p2 - 2
-  For i = p2 To p2 + L * 2 Step 2
+  For i = p2 To p2 + l * 2 Step 2
   GetMem2 i, P1
   Select Case P1
     Case 65 To 90, 97 To 122, Is > 127
@@ -1750,16 +1811,16 @@ Static p2 As Long, P1 As Integer, p4 As Long
   Next i
 End Function
 Private Function mWordMap(s$) As String
-Dim i&, L As Long
+Dim i&, l As Long
 Static p2 As Long, P1 As Integer, p3 As Long, p4 As Long
-Dim SS$, pos As Long
+Dim ss$, pos As Long
 pos = -2
-  L = Len(s): If L = 0 Then mWordMap = " ": Exit Function
+  l = Len(s): If l = 0 Then mWordMap = " ": Exit Function
 
-  p2 = StrPtr(s$): L = L - 1
+  p2 = StrPtr(s$): l = l - 1
   p3 = p2
   p4 = p2 - 2
-  For i = p2 To p2 + L * 2 Step 2
+  For i = p2 To p2 + l * 2 Step 2
   GetMem2 i, P1
   Select Case P1
     Case 65 To 90, 97 To 122, Is > 127
@@ -1822,11 +1883,11 @@ Unique = CountWords2(words$, uLCID)
 UniqueWords = Unique
 End Function
 Private Function CountWords2(A$, uLCID As Long) As Long
-Dim L As Long
+Dim l As Long
 Const NORM_IGNORECASE = &H1
 Dim top As Long
-L = Len(A$)
-If L = 1 Then
+l = Len(A$)
+If l = 1 Then
 CountWords2 = -(Trim(A$) <> "")
 top = CountWords2
 If top > 0 Then
@@ -1843,10 +1904,10 @@ Dim p2 As Long, p4 As Long, p6 As Long, bb As Integer
 p2 = StrPtr(A$)
 p3 = p2
 Dim md As Long, mda As Long, mtop As Long
-L = p2 + 2 * L
+l = p2 + 2 * l
 p4 = p2
 Do
-         If p4 >= L Then
+         If p4 >= l Then
          If p4 <> p2 Then GoTo there1
         CountWords2 = top: Exit Function
         End If
@@ -2002,7 +2063,7 @@ Dim Piv As String, Tmp As String '<- adjust types here, when switching to someth
   If M1 < UB Then QuickSortString Arr, M1, UB
 End Sub
 Private Function getAnsiStringlINE(f As Long, thislof As Long, Optional linebreaktype As Long) As String
-Dim A() As Byte, s1 As String, SS As Long, lbreak As Byte, check As Byte
+Dim A() As Byte, s1 As String, ss As Long, lbreak As Byte, check As Byte
 Dim se As Long, st1 As Long
 On Error GoTo a11
 Do While Not (thislof < SeekBuf)
@@ -2011,11 +2072,11 @@ Do While Not (thislof < SeekBuf)
      getAnsiStringlINE = getAnsiStringlINE + Chr(check)
     Else
         If Not (thislof < SeekBuf) Then
-            SS = SeekBuf
+            ss = SeekBuf
             lbreak = check
             GetByte f, SeekBuf, check
             If check <> 10 And check <> 13 Or lbreak = check Then
-                NewSeek f, SS  ' restore it
+                NewSeek f, ss  ' restore it
             If check = 10 Then linebreaktype = 10 Else linebreaktype = 20
             End If
             
@@ -2030,7 +2091,7 @@ On Error GoTo 0
 SeekBuf = thislof + 1
 End Function
 Private Function getUniStringlINE(f As Long, thislof As Long, Optional LEndian As Boolean = True, Optional linebreaktype As Long) As String
-Dim A() As Byte, s1 As String, SS As Long, lbreak As String, Tmp As Byte
+Dim A() As Byte, s1 As String, ss As Long, lbreak As String, Tmp As Byte
 A = " "
 Dim p As Integer
 On Error GoTo a12
@@ -2050,7 +2111,7 @@ Do While Not (thislof < SeekBuf)
     Else
     ' linebreal mybe is a CR or LF or CRLF (or LFCR???)
         If Not (thislof < SeekBuf) Then
-            SS = SeekBuf
+            ss = SeekBuf
             lbreak = s1
                 GetWord f, SeekBuf, p
                 s1 = ChrW(p)
@@ -2060,7 +2121,7 @@ Do While Not (thislof < SeekBuf)
                 s1 = A()
                 End If
             If s1 <> vbCr And s1 <> vbLf Or lbreak = s1 Then
-                  NewSeek f, SS
+                  NewSeek f, ss
             If s1 = vbLf Then linebreaktype = 10 Else linebreaktype = 20
             End If
         End If
@@ -2074,7 +2135,7 @@ SeekBuf = thislof + 1
 End Function
 Private Function getUniStringLineUtF8(f As Long, thislof As Long, Optional linebreaktype As Long) As String
 
-Dim SS As Long, lbreak As Byte, check As Byte
+Dim ss As Long, lbreak As Byte, check As Byte
 Dim st As Long, WChars&
 Dim shortbuf() As Byte
 ReDim shortbuf(1 To 200) As Byte
@@ -2096,7 +2157,7 @@ tryagain:
     shortbuf(st) = check
     Else
         If Not (thislof < SeekBuf) Then
-            SS = SeekBuf
+            ss = SeekBuf
             lbreak = check
               GetByte f, SeekBuf, check
             If (check And &H80) <> 0 Then GoTo notryother
@@ -2104,7 +2165,7 @@ tryagain:
             If (check <> 10) And (check <> 13) Or (lbreak = check) Then
 notryother:
 
-                NewSeek f, SS  ' restore it
+                NewSeek f, ss  ' restore it
                 If check = 10 Then linebreaktype = 10 Else linebreaktype = 20
      
             End If
