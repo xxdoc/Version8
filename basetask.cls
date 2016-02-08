@@ -22,6 +22,7 @@ Public LastComm$
 Public LastExecute As Long
 Public LastOnce As Boolean
 ''Public LastLoop As Boolean
+Public priveflag As Boolean
 Private parentSoros As mStiva ' reference to parent..stiva
 Private MyParent As basetask  'reference to parent
 Private myOwner As Object
@@ -110,11 +111,11 @@ Dim var As Variant
    AlterVar = True
 End Function
 Function MyRound(ByVal x, Optional d As Double = 0) As Double
-Dim i, n
-  i = Abs(Int(d)): If i > 13 Then i = 13
+Dim I, n
+  I = Abs(Int(d)): If I > 13 Then I = 13
   n = Sgn(x) * 0.5
 
-Select Case i
+Select Case I
 Case 0
 MyRound = Fix(x + n)
 Case 1
@@ -146,21 +147,21 @@ MyRound = Fix(x * 10000000000000# + n) / 10000000000000#
 End Select
 End Function
 Public Function ExistVar(ByVal name$) As Boolean
-    Dim i As Long
+    Dim I As Long
     On Error Resume Next
     If StaticCollection.Count = 0 Then Exit Function
     If Err Then Exit Function
-    i = VarType(StaticCollection(name$))
+    I = VarType(StaticCollection(name$))
     If Err.Number > 0 Then Exit Function
     ExistVar = True
 End Function
 Public Sub ReadVar(ByVal name$, var As Variant)
-    Dim i As Long, VV As Variant
+    Dim I As Long, VV As Variant
     On Error Resume Next
-    i = VarType(StaticCollection(name$))
+    I = VarType(StaticCollection(name$))
     If Err.Number Then var = Empty: Exit Sub
     ''Debug.Print NAME$, OriginalName, OriginalCode, HERE$, mGroupName
-    If i = vbObject Then
+    If I = vbObject Then
             Set var = StaticCollection(name$)
             StaticCollection.remove name$  '' we do a remove
             Set VV = Nothing
@@ -174,13 +175,13 @@ End Sub
 Public Sub DropNdot(n As Long)
 ''On Error Resume Next
 If n = 0 Then Exit Sub
-Dim i As Long
+Dim I As Long
 If dotcollection.Count - n < 0 Then
 Set dotcollection = New Collection
 Else
-For i = dotcollection.Count To dotcollection.Count - n + 1 Step -1
+For I = dotcollection.Count To dotcollection.Count - n + 1 Step -1
 dotcollection.remove dotcollection.Count
-Next i
+Next I
 End If
 End Sub
 Public Sub MoveNameDot(a$)
@@ -255,7 +256,7 @@ Else
 End Function
 Public Function GetDot(a$, st&) As Boolean
 On Error Resume Next
-Dim i&
+Dim I&
 Err.clear
 If dotcollection.Count = 0 Then a$ = Mid$(a$, 2): Exit Function
 Do While Mid$(a$, st&, 1) = " "
@@ -263,12 +264,12 @@ st& = st& + 1
 If st& > Len(a$) Then Exit Function
 Loop
 
-For i& = st& + 1 To Len(a$)
-If Mid$(a$, i&, 1) <> "." Then i& = i& + 1: Exit For
-Next i&
-i& = i& - 2
+For I& = st& + 1 To Len(a$)
+If Mid$(a$, I&, 1) <> "." Then I& = I& + 1: Exit For
+Next I&
+I& = I& - 2
 ' from st& to i& replace name
-a$ = Left$(a$, st& - 1) + dotcollection(i& - st& + 1) + Mid$(a$, i&)
+a$ = Left$(a$, st& - 1) + dotcollection(I& - st& + 1) + Mid$(a$, I&)
 
 If Not Err Then GetDot = True
 End Function

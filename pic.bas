@@ -782,7 +782,7 @@ Dim tSA2 As SAFEARRAY2D
 
 Public Sub CanvasSize(cDIBbuffer0 As cDIBSection, ByVal wcm As Double, ByVal hcm As Double, Optional ByVal rep As Boolean = False, Optional Max As Integer = 0, Optional yshift As Long = 0, Optional bcolor As Long = &HFFFFFF, Optional usepixel As Boolean = False, Optional ByVal Percent As Single = 85, Optional ByVal linewidth As Long = 4)
 ' top left align only
-Dim piw As Long, pih As Long, stx As Long, sty As Long, stOffx As Long, stOffy As Long, stBorderX As Long, stBorderY As Long, strx As Long, stry As Long, i As Long, j As Long
+Dim piw As Long, pih As Long, stx As Long, sty As Long, stOffx As Long, stOffy As Long, stBorderX As Long, stBorderY As Long, strx As Long, stry As Long, I As Long, j As Long
 
 Dim cDIBbuffer1 As New cDIBSection
 If Not usepixel Then
@@ -809,14 +809,14 @@ If cDIBbuffer1.Create(piw, pih) Then
        sty = stBorderY
                 For j = 1 To stry
                 stx = stBorderX
-                             For i = 1 To strx
+                             For I = 1 To strx
                            
                             If Max = 0 Then Exit For
                             cDIBbuffer0.PaintPicture cDIBbuffer1.HDC1, stx, sty + yshift
                             Max = Max - 1
                                stx = stx + cDIBbuffer0.Width + stBorderX
                            
-                            Next i
+                            Next I
                  If Max = 0 Then Exit For
                    sty = sty + cDIBbuffer0.Height + stBorderY
                 Next j
@@ -1513,13 +1513,13 @@ Public Function CmpHeight(s As Single) As Single
 CmpHeight = s * 20#
 End Function
 Public Function FindSpriteByTag(sp As Long) As Long
-Dim i As Long
-For i = 0 To PobjNum
-If Val("0" & Form1.dSprite(i).Tag) = sp Then
-FindSpriteByTag = i
+Dim I As Long
+For I = 0 To PobjNum
+If Val("0" & Form1.dSprite(I).Tag) = sp Then
+FindSpriteByTag = I
 Exit For
 End If
-Next i
+Next I
 End Function
 Sub RsetRegion(ob As Control)
 With ob
@@ -1655,17 +1655,17 @@ GetNewSpriteObj = PobjNum
 End If
 
 End If
-Dim i As Long, k As Integer
+Dim I As Long, k As Integer
 
-For i = Priority To 32
-k = FindSpriteByTag(i)
+For I = Priority To 32
+k = FindSpriteByTag(I)
 If k <> 0 Then Form1.dSprite(k).ZOrder 0
-Next i
+Next I
 
 
 End Function
 Function CollidePlayers(Priority As Long, Percent As Long) As Long
-Dim i As Long, k As Integer, suma As Long
+Dim I As Long, k As Integer, suma As Long
 Dim x1 As Long, y1 As Long, x2 As Long, y2 As Long
 k = FindSpriteByTag(Priority)
 If k = 0 Then Exit Function
@@ -1673,15 +1673,15 @@ x1 = Form1.dSprite(k).Left + Form1.dSprite(k).Width * (100 - Percent) / 200
 y1 = Form1.dSprite(k).top + Form1.dSprite(k).Height * (100 - Percent) / 200
 x2 = x1 + Form1.dSprite(k).Width * (1 - 2 * (100 - Percent) / 200)
 y2 = y1 + Form1.dSprite(k).Height * (1 - 2 * (100 - Percent) / 200)
-For i = Priority - 1 To 1 Step -1
-k = FindSpriteByTag(i)
+For I = Priority - 1 To 1 Step -1
+k = FindSpriteByTag(I)
 If k <> 0 Then
 If x2 < Form1.dSprite(k).Left Or x1 >= Form1.dSprite(k).Left + Form1.dSprite(k).Width Or y2 <= Form1.dSprite(k).top Or y1 > Form1.dSprite(k).top + Form1.dSprite(k).Height Then
 Else
 suma = suma + 2 ^ (k - 1)
 End If
 End If
-Next i
+Next I
 CollidePlayers = suma
 End Function
 
@@ -1735,11 +1735,11 @@ On Error Resume Next
 .ZOrder 0
 End With
 GetNewLayerObj = PobjNum
-Dim i As Long, k As Integer
-For i = Priority To 32
-k = FindSpriteByTag(i)
+Dim I As Long, k As Integer
+For I = Priority To 32
+k = FindSpriteByTag(I)
 If k <> 0 Then Form1.dSprite(k).ZOrder 0
-Next i
+Next I
 End If
 End Function
 
@@ -1782,7 +1782,7 @@ End If
 End Sub
 Sub SpriteControl(ByVal aPrior As Long, ByVal bPrior As Long) ' these are priorities
 'If aPrior = bPrior Then Exit Sub ' just done...
-Dim k As Long, m As Long, i As Long, ll As Long, KK As Long
+Dim k As Long, m As Long, I As Long, ll As Long, KK As Long
 k = FindSpriteByTag(aPrior)
 
 If k = 0 Then Exit Sub  ' there is no such a player
@@ -1793,15 +1793,15 @@ If k = 0 Then Exit Sub  ' there is no such a player
         Form1.dSprite(m).Tag = aPrior
 
     If m < k Then
-    For i = m To 32
-        k = FindSpriteByTag(i)
+    For I = m To 32
+        k = FindSpriteByTag(I)
         If k <> 0 Then Form1.dSprite(k).ZOrder 0
-    Next i
+    Next I
     Else
-    For i = k To 32
-        m = FindSpriteByTag(i)
+    For I = k To 32
+        m = FindSpriteByTag(I)
         If m <> 0 Then Form1.dSprite(m).ZOrder 0
-    Next i
+    Next I
 End If
 End Sub
 Private Sub SpriteGetOtherImage(s As Long, b$, tran As Long, rrr As Long, SZ As Single, ROT As Single, Optional bb$ = "") ' before take from priority the original sprite
@@ -1871,13 +1871,13 @@ PobjNum = PobjNum + 1
 '
 End Sub
 Sub ClrSprites()
-Dim i As Long
+Dim I As Long
 If PobjNum > 0 Then
-For i = PobjNum To 1 Step -1
-players(i).x = 0: players(i).y = 0
-PobjNum = i
+For I = PobjNum To 1 Step -1
+players(I).x = 0: players(I).y = 0
+PobjNum = I
 Unload Form1.dSprite(PobjNum)
-Next i
+Next I
 PobjNum = 0
 
 End If
@@ -1914,7 +1914,7 @@ BG = Val("&h" & Mid$(ba$, 3, 2))
 bbb = Val("&h" & Mid$(ba$, 5, 2))
 
 '..................................
-Dim mmx As Long, mmy As Long, CC As Long
+Dim mmx As Long, mmy As Long, cc As Long
 
 Dim GLHEIGHT, GLWIDTH As Long
     GLHEIGHT = picSource.Height
@@ -2004,7 +2004,7 @@ BG = Val("&h" & Mid$(ba$, 3, 2))
 bbb = Val("&h" & Mid$(ba$, 5, 2))
 
 '..................................
-Dim mmx As Long, mmy As Long, CC As Long
+Dim mmx As Long, mmy As Long, cc As Long
 
 Dim GLHEIGHT, GLWIDTH As Long
     GLHEIGHT = picSource.Height
@@ -2062,13 +2062,13 @@ Public Function GetNote(Oct As Integer, No As Integer) As Long
 GetNote = Oct * 12 + No
 End Function
 Public Sub PlayTune(ss$)
-Dim octave As Integer, i As Long, v$
+Dim octave As Integer, I As Long, v$
 Dim note As Integer
 Dim silence As Boolean
 octave = 4
 ss$ = ss$ & " "
-For i = 1 To Len(ss$) - 1
-v$ = Mid$(ss$, i, 2)
+For I = 1 To Len(ss$) - 1
+v$ = Mid$(ss$, I, 2)
 note = InStr(FACE$, UCase(v$))
 If note = 24 Then
 
@@ -2079,27 +2079,27 @@ silence = True
 Sleep beeperBEAT + beeperBEAT / 2
 End If
 Else
-If note = 0 Then note = InStr(FACE$, UCase(Left$(v$, 1)) & " ") Else i = i + 1
+If note = 0 Then note = InStr(FACE$, UCase(Left$(v$, 1)) & " ") Else I = I + 1
 If note <> 0 Then
 ' look for number
 
-If Mid$(ss$, i + 1, 1) <> "" Then If InStr("1234567", Mid$(ss$, i + 1, 1)) > 0 Then octave = Val(Mid$(ss$, i + 1, 1)): i = i + 1
+If Mid$(ss$, I + 1, 1) <> "" Then If InStr("1234567", Mid$(ss$, I + 1, 1)) > 0 Then octave = Val(Mid$(ss$, I + 1, 1)): I = I + 1
 ' no volume control here
 silence = False
 Beeper GetFrequency(octave, (note + 1) / 2), beeperBEAT
 End If
 End If
-Next i
+Next I
 End Sub
 Public Function PlayTuneMIDI(ss$, octave2play As Integer, note2play As Integer, subbeat As Long, volume2play As Long) As Boolean
 
-Dim i As Long, v$, nomore As Boolean, yesvol As Boolean, probe2play As Integer
+Dim I As Long, v$, nomore As Boolean, yesvol As Boolean, probe2play As Integer
 ss$ = ss$ & " "
 note2play = 0
-i = 1
+I = 1
 If Trim$(ss$) = "" Then note2play = 0: Exit Function
 If Asc(ss$) <> 32 Then
-v$ = Mid$(ss$, i, 2)
+v$ = Mid$(ss$, I, 2)
 probe2play = InStr(FACE$, UCase(v$))
 Else
 probe2play = 24
@@ -2108,20 +2108,20 @@ End If
 If probe2play = 24 Then
 
     note2play = 24
-    i = i + 1
-If Mid$(ss$, i, 1) = "@" Then
-            i = i + 1
-           If InStr("12345", Mid$(ss$, i, 1)) > 0 Then
-           subbeat = Val(Mid$(ss$, i, 1))
-        i = i + 1
+    I = I + 1
+If Mid$(ss$, I, 1) = "@" Then
+            I = I + 1
+           If InStr("12345", Mid$(ss$, I, 1)) > 0 Then
+           subbeat = Val(Mid$(ss$, I, 1))
+        I = I + 1
       End If
      End If
-     If Mid$(ss$, i, 1) = "V" Then
-            i = i + 1
+     If Mid$(ss$, I, 1) = "V" Then
+            I = I + 1
             v$ = ""
-        Do While InStr("1234567890", Mid$(ss$, i, 1)) > 0 And (Mid$(ss$, i, 1) <> "")
-        v$ = v$ & Mid$(ss$, i, 1)
-        i = i + 1
+        Do While InStr("1234567890", Mid$(ss$, I, 1)) > 0 And (Mid$(ss$, I, 1) <> "")
+        v$ = v$ & Mid$(ss$, I, 1)
+        I = I + 1
         Loop
         volume2play = Val("0" & v$)
      End If
@@ -2131,32 +2131,32 @@ Else
 If probe2play = 0 Then
 probe2play = InStr(FACE$, UCase(Left$(v$, 1)) & " ")
 Else
-i = i + 1
+I = I + 1
 End If
 
 
 If probe2play <> 0 Then
-i = i + 1
+I = I + 1
 ' look for number
-If Mid$(ss$, i, 1) <> "" Then
-      If InStr("1234567", Mid$(ss$, i, 1)) > 0 Then
-        octave2play = Val(Mid$(ss$, i, 1))
-         i = i + 1
+If Mid$(ss$, I, 1) <> "" Then
+      If InStr("1234567", Mid$(ss$, I, 1)) > 0 Then
+        octave2play = Val(Mid$(ss$, I, 1))
+         I = I + 1
         End If
-        If Mid$(ss$, i, 1) = "@" Then
-            i = i + 1
-           If InStr("12345", Mid$(ss$, i, 1)) > 0 Then
-           subbeat = Val(Mid$(ss$, i, 1))
-        i = i + 1
+        If Mid$(ss$, I, 1) = "@" Then
+            I = I + 1
+           If InStr("12345", Mid$(ss$, I, 1)) > 0 Then
+           subbeat = Val(Mid$(ss$, I, 1))
+        I = I + 1
       End If
        
     End If
-         If Mid$(ss$, i, 1) = "V" Then
-            i = i + 1
+         If Mid$(ss$, I, 1) = "V" Then
+            I = I + 1
             v$ = ""
-        Do While InStr("1234567890", Mid$(ss$, i, 1)) > 0 And (Mid$(ss$, i, 1) <> "")
-        v$ = v$ & Mid$(ss$, i, 1)
-        i = i + 1
+        Do While InStr("1234567890", Mid$(ss$, I, 1)) > 0 And (Mid$(ss$, I, 1) <> "")
+        v$ = v$ & Mid$(ss$, I, 1)
+        I = I + 1
         Loop
         volume2play = Val("0" & v$)
      End If
@@ -2170,9 +2170,9 @@ End If
 End If
 th:
 ss$ = Mid$(ss$, 1, Len(ss$) - 1) ' drop space
-If i = 1 Then note2play = 0: PlayTuneMIDI = False: Exit Function
+If I = 1 Then note2play = 0: PlayTuneMIDI = False: Exit Function
 
-ss$ = Mid$(ss$, i)
+ss$ = Mid$(ss$, I)
 
 End Function
 Public Sub sThread(ByVal ThID As Long, ByVal Thinterval As Double, ByVal ThCode As String, ByVal where$)
@@ -2561,47 +2561,47 @@ End Function
 Public Function SpellUnicode(a$)
 ' use spellunicode to get numbers
 ' and make a ListenUnicode...with numbers for input text
-Dim b$, i As Long
-For i = 1 To Len(a$) - 1
-b$ = b$ & CStr(AscW(Mid$(a$, i, 1))) & ","
-Next i
+Dim b$, I As Long
+For I = 1 To Len(a$) - 1
+b$ = b$ & CStr(AscW(Mid$(a$, I, 1))) & ","
+Next I
 SpellUnicode = b$ & CStr(AscW(Right$(a$, 1)))
 End Function
 Public Function ListenUnicode(ParamArray aa() As Variant) As String
-Dim all$, i As Long
-For i = 0 To UBound(aa)
-    all$ = all$ & ChrW(aa(i))
-Next i
+Dim all$, I As Long
+For I = 0 To UBound(aa)
+    all$ = all$ & ChrW(aa(I))
+Next I
 ListenUnicode = all$
 End Function
 Function Convert2(a$, localeid As Long) As String  ' to feed textboxes
-Dim b$, i&
+Dim b$, I&
 If a$ <> "" Then
-For i& = 1 To Len(a$)
-b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(a$, i, 1) + Chr$(0), 128, localeid), 1))), 64, 1033), 1)
+For I& = 1 To Len(a$)
+b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(a$, I, 1) + Chr$(0), 128, localeid), 1))), 64, 1033), 1)
 
-Next i&
+Next I&
 Convert2 = b$
 End If
 End Function
 Function Convert3(a$, localeid As Long) As String  ' to feed textboxes
-Dim b$, i&
+Dim b$, I&
 If a$ <> "" Then
 If localeid = 0 Then localeid = cLid
-For i& = 1 To Len(a$)
-b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(a$, i, 1) + Chr$(0), 128, 1033), 1))), 64, localeid), 1)
+For I& = 1 To Len(a$)
+b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(a$, I, 1) + Chr$(0), 128, 1033), 1))), 64, localeid), 1)
 
-Next i&
+Next I&
 Convert3 = b$
 End If
 End Function
 Function Convert2Ansi(a$, localeid As Long) As String
-Dim b$, i&
+Dim b$, I&
 If a$ <> "" Then
-For i& = 1 To Len(a$)
-b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(a$, i, 1) + Chr$(0), 128, localeid), 1))), 64, 1032), 1)
+For I& = 1 To Len(a$)
+b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(a$, I, 1) + Chr$(0), 128, localeid), 1))), 64, 1032), 1)
 
-Next i&
+Next I&
 Convert2Ansi = b$
 End If
 End Function
@@ -2628,17 +2628,17 @@ Sub SwapVariant(ByRef a As Variant, ByRef b As Variant)
    CopyMemory ByVal VarPtr(a), ByVal VarPtr(b), 16
    CopyMemory ByVal VarPtr(b), t(0), 16
 End Sub
-Sub SwapVariant2(ByRef a As Variant, ByRef b As mArray, i As Long)
+Sub SwapVariant2(ByRef a As Variant, ByRef b As mArray, I As Long)
    Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
    CopyMemory t(0), ByVal VarPtr(a), 16
-   CopyMemory ByVal VarPtr(a), ByVal b.itemPtr(i), 16
-   CopyMemory ByVal b.itemPtr(i), t(0), 16
+   CopyMemory ByVal VarPtr(a), ByVal b.itemPtr(I), 16
+   CopyMemory ByVal b.itemPtr(I), t(0), 16
 End Sub
-Sub SwapVariant3(ByRef a As mArray, k As Long, ByRef b As mArray, i As Long)
+Sub SwapVariant3(ByRef a As mArray, k As Long, ByRef b As mArray, I As Long)
    Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
    CopyMemory t(0), ByVal a.itemPtr(k), 16
-   CopyMemory ByVal a.itemPtr(k), ByVal b.itemPtr(i), 16
-   CopyMemory ByVal b.itemPtr(i), t(0), 16
+   CopyMemory ByVal a.itemPtr(k), ByVal b.itemPtr(I), 16
+   CopyMemory ByVal b.itemPtr(I), t(0), 16
 End Sub
 
 Private Function c_CreatePartialRegion(rgnRects() As RECT, ByVal lIndex As Long, ByVal uIndex As Long, ByVal leftOffset As Long, ByVal cX As Long, Optional ByVal xFrmPtr As Long) As Long
@@ -2762,7 +2762,7 @@ Case "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPTIMIZATION", "OR", "ORDER", "OS$", "O
 Case "OVER", "OVERWRITE", "PAGE", "PARAGRAPH$(", "PARAGRAPH(", "PARAGRAPH.INDEX(", "PARAM(", "PARAM$(", "PARAMETERS$", "PART", "PASSWORD"
 Case "PATH", "PATH$(", "PAUSE", "PEN", "PI", "PIPE", "PIPENAME$(", "PLATFORM$", "PLAY"
 Case "PLAYER", "PLAYSCORE", "POINT", "POINT(", "POLYGON", "POS", "POS.X", "POS.Y", "PRINT"
-Case "PRINTER", "PRINTERNAME$", "PRINTING", "PROFILER", "PROPERTIES", "PROPERTIES$", "PUSH", "PUT", "QUOTE$("
+Case "PRINTER", "PRINTERNAME$", "PRINTING", "PRIVATE", "PROFILER", "PROPERTIES", "PROPERTIES$", "PUBLIC", "PUSH", "PUT", "QUOTE$("
 Case "RANDOM", "RANDOM(", "READ", "RECORDS(", "RECURSION.LIMIT", "REFER", "REFRESH", "RELEASE", "REM"
 Case "REMOVE", "REPEAT", "REPLACE$(", "REPORT", "REPORTLINES", "RESTART", "RETRIEVE", "RETURN", "REVISION"
 Case "RIGHT$(", "RIGHTPART$(", "RINSTR(", "ROUND(", "ROW", "SAVE", "SAVE.AS", "SAVE.DOC", "SCALE.X"
@@ -2791,7 +2791,7 @@ Case "аукос$(", "аукоу", "ауноуса", "ауто", "ауто.", "ажаияесг", "ажгсе", "баке"
 Case "басг(", "басг.паяовос", "басг.вягстгс", "баье", "бектистопоигсг", "бгла", "богхеиа", "целисе", "целисла"
 Case "цемийес", "цемийг", "цемийо", "циа", "цяалла$", "цяаллатосеияа", "цяаллатосеияа$", "цяаллесамажояас", "цяаллг"
 Case "цяажг$(", "цяаье", "цягцояа", "цымиа", "деийтг.лояжг", "деийтгс", "деийтгс.йол", "деийтгс.у", "деийтгс.в"
-Case "деийтгса.у", "деийтгса.в", "деине", "дей(", "дейаен", "дейаен$(", "дем", "дени$(", "денилеяос$(", "дес"
+Case "деийтгса.у", "деийтгса.в", "деине", "дей(", "дейаен", "дейаен$(", "дем", "дени$(", "денилеяос$(", "дес", "дглосио"
 Case "диа", "диабасе", "диацяажг", "диадовийо", "диайопг", "диайоптес", "диалесоу", "диаяйеиа", "диастасг("
 Case "диастиво", "диажамеиа", "диажамеиа$", "диажамо", "диажуцг", "диейоье", "дийтуо$", "диояхысе"
 Case "дипка", "дипкос", "дойилг", "долг", "дяолеас", "дуадийг.пеяистяожг(", "дуадийо", "дуадийо(", "дуадийо.айеяаио("
@@ -2806,7 +2806,7 @@ Case "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцес$(", "епикоцес.жаме
 Case "епистяожг", "епижамеиа", "еполемо", "еуяеиа", "еуяесг", "еуяиа", "ежап(", "ежаялоцг.аявеиоу$(", "ежаялоцг.йат$"
 Case "еыс", "г", "гл(", "глеяа$(", "глеяа(", "глеяолгмиа", "гво$(", "гвоцяажгсг"
 Case "гвои", "гвос", "хесе", "хесг", "хесг(", "хесг.у", "хесг.в", "хесгдениа("
-Case "идиотгтес", "идиотгтес$", "исвмг", "исвмг$(", "ивмос", "йахаяг", "йахаяо", "йахе", "йаи", "йакесе", "йалпукг"
+Case "идиотгтес", "идиотгтес$", "идиытийо", "исвмг", "исвмг$(", "ивмос", "йахаяг", "йахаяо", "йахе", "йаи", "йакесе", "йалпукг"
 Case "йаме", "йамомийа", "йат", "йат$", "йатакоцои", "йатакоцос", "йатастасг.таимиас$", "йатавыягсг", "йаты"
 Case "йатылисо(", "йеилемо", "йемг", "йемо", "йемтяо", "йеж$(", "йимгсг", "йимгсг.п", "йимгсг.пу"
 Case "йимгсг.пв", "йимгсг.у", "йимгсг.уп", "йимгсг.в", "йимгсг.вп", "йкасг", "йкеиди", "йкеисе", "йкилан.у"
@@ -3115,56 +3115,56 @@ Public Function ScrY() As Long
 ScrY = GetSystemMetrics(SM_CYSCREEN) * dv15
 End Function
 Public Function MyTrimLi(s$, l As Long) As Long
-Dim i&
+Dim I&
 Dim p2 As Long, P1 As Integer, p4 As Long
  If l > Len(s) Then MyTrimLi = Len(s) + 1: Exit Function
  If l <= 0 Then MyTrimLi = 1: Exit Function
   l = l - 1
-  i = Len(s)
-  p2 = StrPtr(s) + l * 2:  p4 = p2 + i * 2
-  For i = p2 To p4 Step 2
-  GetMem2 i, P1
+  I = Len(s)
+  p2 = StrPtr(s) + l * 2:  p4 = p2 + I * 2
+  For I = p2 To p4 Step 2
+  GetMem2 I, P1
   Select Case P1
     Case 32, 160
     Case Else
-     MyTrimLi = (i - p2) \ 2 + 1 + l
+     MyTrimLi = (I - p2) \ 2 + 1 + l
    Exit Function
   End Select
-  Next i
+  Next I
  MyTrimLi = Len(s) + 1
 End Function
 Public Function MyTrimL(s$) As Long
-Dim i&, l As Long
+Dim I&, l As Long
 Dim p2 As Long, P1 As Integer, p4 As Long
   l = Len(s): If l = 0 Then MyTrimL = 1: Exit Function
   p2 = StrPtr(s): l = l - 1
   p4 = p2 + l * 2
-  For i = p2 To p4 Step 2
-  GetMem2 i, P1
+  For I = p2 To p4 Step 2
+  GetMem2 I, P1
   Select Case P1
     Case 32, 160
     Case Else
-     MyTrimL = (i - p2) \ 2 + 1
+     MyTrimL = (I - p2) \ 2 + 1
    Exit Function
   End Select
-  Next i
+  Next I
  MyTrimL = l + 2
 End Function
 Public Function excludespace(s$) As Long
-Dim i&, l As Long
+Dim I&, l As Long
 Dim p2 As Long, P1 As Integer, p4 As Long
   l = Len(s): If l = 0 Then Exit Function
   p2 = StrPtr(s): l = l - 1
   p4 = p2 + l * 2
-  For i = p2 To p4 Step 2
-  GetMem2 i, P1
+  For I = p2 To p4 Step 2
+  GetMem2 I, P1
   Select Case P1
     Case 32, 160
     Case Else
-     excludespace = (i - p2) \ 2
+     excludespace = (I - p2) \ 2
    Exit Function
   End Select
-  Next i
+  Next I
 
 End Function
 Public Function IsLabelDotSub(where$, a$, rrr$, r$, lang As Long) As Long
@@ -3174,42 +3174,42 @@ Dim RR&, one As Boolean, c$, firstdot$, gr As Boolean
 
 rrr$ = ""
 r$ = ""
-Dim i&, l As Long, p3 As Integer
+Dim I&, l As Long, p3 As Integer
 Dim p2 As Long, P1 As Integer, p4 As Long '', excludesp As Long
   l = Len(a$): If l = 0 Then IsLabelDotSub = 0: lang = 1: Exit Function
 p2 = StrPtr(a$): l = l - 1
   p4 = p2 + l * 2
-  For i = p2 To p4 Step 2
-  GetMem2 i, P1
+  For I = p2 To p4 Step 2
+  GetMem2 I, P1
   Select Case P1
     Case 13
     
-    If i < p4 Then
-    GetMem2 i + 2, p3
+    If I < p4 Then
+    GetMem2 I + 2, p3
     If p3 = 10 Then
     IsLabelDotSub = 1234
-    If i + 6 > p4 Then
+    If I + 6 > p4 Then
     a$ = ""
     Else
-    i = i + 4
-    Do While i < p4
+    I = I + 4
+    Do While I < p4
 
-    GetMem2 i, P1
+    GetMem2 I, P1
     If P1 = 32 Or P1 = 160 Then
-    i = i + 2
+    I = I + 2
     Else
-    GetMem2 i + 2, p3
+    GetMem2 I + 2, p3
     If P1 <> 13 And p3 <> 10 Then Exit Do
-    i = i + 4
+    I = I + 4
     End If
     Loop
-    a$ = Mid$(a$, (i + 2 - p2) \ 2)
+    a$ = Mid$(a$, (I + 2 - p2) \ 2)
     End If
     Else
-    If i > p2 Then a$ = Mid$(a$, (i - 2 - p2) \ 2)
+    If I > p2 Then a$ = Mid$(a$, (I - 2 - p2) \ 2)
     End If
     Else
-    If i > p2 Then a$ = Mid$(a$, (i - 2 - p2) \ 2)
+    If I > p2 Then a$ = Mid$(a$, (I - 2 - p2) \ 2)
     End If
     
     lang = 1
@@ -3219,33 +3219,33 @@ p2 = StrPtr(a$): l = l - 1
      ''excludesp = (i - p2) \ 2
    Exit For
   End Select
-  Next i
+  Next I
   
-  If i > p4 Then a$ = "": IsLabelDotSub = 0: Exit Function
+  If I > p4 Then a$ = "": IsLabelDotSub = 0: Exit Function
   
-  For i = i To p4 Step 2
-  GetMem2 i, P1
+  For I = I To p4 Step 2
+  GetMem2 I, P1
   If P1 < 256 Then
   Select Case ChrW(P1)
     Case "@"
-            If i < p4 And r$ <> "" Then
-            GetMem2 i + 2, P1
+            If I < p4 And r$ <> "" Then
+            GetMem2 I + 2, P1
             If ChrW(P1) <> "(" Then
               where$ = r$
             r$ = ""
             rrr$ = ""
             Else
-              IsLabelDotSub = 0: a$ = firstdot$ + Mid$(a$, (i - p2) \ 2): Exit Function
+              IsLabelDotSub = 0: a$ = firstdot$ + Mid$(a$, (I - p2) \ 2): Exit Function
             End If
             Else
-              IsLabelDotSub = 0: a$ = firstdot$ + Mid$(a$, (i - p2) \ 2): Exit Function
+              IsLabelDotSub = 0: a$ = firstdot$ + Mid$(a$, (I - p2) \ 2): Exit Function
             End If
     Case "?"
         If r$ = "" And firstdot$ = "" Then
         rrr$ = "?"
         r$ = rrr$
-        i = i + 4
-        a$ = Mid$(a$, (i - p2) \ 2) ' mid$(a$, 2)
+        I = I + 4
+        a$ = Mid$(a$, (I - p2) \ 2) ' mid$(a$, 2)
         IsLabelDotSub = 1
         lang = 1 + CLng(gr)
         Exit Function
@@ -3254,30 +3254,30 @@ p2 = StrPtr(a$): l = l - 1
         IsLabelDotSub = 1
         lang = 1 + CLng(gr)
         rrr$ = r$
-        a$ = Mid$(a$, (i + 2 - p2) \ 2)
+        a$ = Mid$(a$, (I + 2 - p2) \ 2)
         Exit Function
         Else
         IsLabelDotSub = 0
-        a$ = Mid$(a$, (i + 2 - p2) \ 2)
+        a$ = Mid$(a$, (I + 2 - p2) \ 2)
         Exit Function
         End If
     Case "."
             If one Then
             Exit For
-            ElseIf r$ <> "" And i < p4 Then
-            GetMem2 i + 2, P1
+            ElseIf r$ <> "" And I < p4 Then
+            GetMem2 I + 2, P1
             If ChrW(P1) = "." Or ChrW(P1) = " " Then
-            If ChrW(P1) = "." And i + 2 < p4 Then
+            If ChrW(P1) = "." And I + 2 < p4 Then
             
-                GetMem2 i + 4, P1
-                If ChrW(P1) = " " Then i = i + 4: Exit For
+                GetMem2 I + 4, P1
+                If ChrW(P1) = " " Then I = I + 4: Exit For
             Else
-                i = i + 2
+                I = I + 2
                Exit For
             End If
             End If
 ''            If Mid$(A$, 2, 2) = ". " Or Mid$(A$, 2, 1) = " " Then Exit for
-            GetMem2 i, P1
+            GetMem2 I, P1
             r$ = r$ & ChrW(P1)
             ''A$ = Mid$(A$, 2)
             RR& = 1
@@ -3330,12 +3330,12 @@ p2 = StrPtr(a$): l = l - 1
             End If
     Case "("
             If r$ <> "" Then
-            If i + 4 <= p4 Then
-                GetMem2 i + 2, P1
-                GetMem2 i + 2, p3
+            If I + 4 <= p4 Then
+                GetMem2 I + 2, P1
+                GetMem2 I + 2, p3
                 If ChrW(P1) + ChrW(p3) = ")@" Then
                     r$ = r$ & "()."
-                    i = i + 4
+                    I = I + 4
             '                     A$ = Mid$(A$, 4)
                 Else
                     GoTo i123
@@ -3352,9 +3352,9 @@ i123:
                                        Case Else
                                        Exit For
                                        End Select
-                     GetMem2 i, P1
+                     GetMem2 I, P1
                                         r$ = r$ & ChrW(P1)
-                                        i = i + 2
+                                        I = I + 2
                                       ' A$ = Mid$(A$, 2)
                                    Exit For
                             
@@ -3377,8 +3377,8 @@ i123:
               RR& = 1 'is an identifier or floating point variable
               End If
     End If
-  Next i
-  If i > p4 Then a$ = "" Else If (i + 2 - p2) \ 2 > 1 Then a$ = Mid$(a$, (i + 2 - p2) \ 2)
+  Next I
+  If I > p4 Then a$ = "" Else If (I + 2 - p2) \ 2 > 1 Then a$ = Mid$(a$, (I + 2 - p2) \ 2)
        rrr$ = firstdot$ + myUcase(r$, gr)
        lang = 1 + CLng(gr)
     IsLabelDotSub = RR&

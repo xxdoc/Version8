@@ -19,7 +19,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 152
+Global Const Revision = 153
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -4316,18 +4316,8 @@ Case Else
 LOOKFORVARNUM:
 
 If GetVar(bstack, v$, VR) Then
-If Typename(var(VR)) = "Group" Then
-
-
-CopyGroup var(VR), bstack
-
-
-End If
-
+If Typename(var(VR)) = "Group" Then CopyGroup var(VR), bstack
 r = SG * var(VR)
-
-
-
 a$ = n$
 IsNumber = True
 ElseIf VR = -1 Then
@@ -6744,7 +6734,7 @@ If GetlocalSub(s1$, V1&) Then
 ElseIf GetSub(s1$, V1&) Then
 GoTo contAr1
 Else
-GoTo skiperror
+GoTo skiphere
 End If
 
 Else
@@ -6757,6 +6747,14 @@ GoTo contAr2
 ElseIf GetSub(s1$, V1&) Then
 GoTo contAr1
 Else
+skiphere:
+If bstack.UseGroupname <> "" Then
+If InStr(s1$, bstack.UseGroupname) = 1 Then
+
+s1$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(s1$, Len(bstack.UseGroupname) + 1)
+If GetSub(s1$, V1&) Then GoTo contAr1
+End If
+End If
 GoTo skiperror
 End If
 End If
@@ -8870,7 +8868,8 @@ If w1& = -100 Then
        ElseIf bstackstr.UseGroupname <> "" Then
            If Len(r$) = 8 Then IsString = False: Exit Function
            r$ = Left$(r$, Len(r$) - 9)
-           If InStr(r$, ".") = 0 Then
+           If r$ + "." = bstackstr.UseGroupname Then
+           ElseIf InStr(r$, ".") = 0 Then
             If HERE$ <> "" Then r$ = HERE$ + "." + r$
            End If
            
@@ -9633,7 +9632,7 @@ If Trim$(r$ + q2$) <> "" Then
                  s$ = ms.StackItem(CLng(p))
                 If Left$(s$, 1) = "*" Then s$ = Mid$(s$, 2)
                          r$ = Split(s$)(0)
-                   
+                 If InStr(r$, ChrW(&HFFBF)) > 0 Then r$ = Replace$(r$, ChrW(&HFFBF), "")
                 Else
                 MissNumExpr
                 Exit Function
@@ -16708,7 +16707,11 @@ End If
 End If
 Loop Until Not FastSymbol(rest$, ",")
 Exit Function
+Case "GROUP!", "œÃ¡ƒ¡!"
+flag2 = True
+GoTo contgroup
 Case "GROUP", "œÃ¡ƒ¡"
+contgroup:
   If IsLabelSymbolNew(rest$, "¡’‘œ", "THIS", lang) Then
   If basestack.UseGroupname <> "" Then
   Identifier = False
@@ -16741,31 +16744,34 @@ Exit Function
   If IsLabelSymbolNew(rest$, "‘’–œ”", "TYPE", lang) Then
 If IsStrExp(basestack, rest$, ss$) Then
 s$ = basestack.GroupName
-prepareGroup basestack, what$, y1
+prepareGroup basestack, what$, y1, flag2
  Identifier = ExecuteVarOnly(basestack, basestack.GroupName & what$, y1, ss$, lang) <> 0
  basestack.GroupName = s$
 End If
 
 Else
+
 par = Not FastSymbol(rest$, "+")
    If FastSymbol(rest$, "{") Then
  If par Then
 
  '' GROUP
               s$ = basestack.GroupName
-              prepareGroup basestack, what$, y1
+              
+              prepareGroup basestack, what$, y1, flag2
+
             If ExecuteVarOnly(basestack, basestack.GroupName & what$, y1, rest$, lang) = 0 Then
-            
+ 
             var(y1).edittag = "'11001EDIT " + HERE$ + ", " + CStr(Len(rest$))
              End If
-        
+
             Identifier = FastSymbol(rest$, "}")
            
 Else
 '' CLASS
             ss$ = block(rest$)
               s$ = basestack.GroupName
-              prepareGroup basestack, what$, y1
+              prepareGroup basestack, what$, y1, flag2
             If ExecuteVarOnly(basestack, basestack.GroupName & what$, y1, ss$, lang) = 0 Then
             rest$ = ss$ + rest$
 Else
@@ -16773,12 +16779,27 @@ Identifier = FastSymbol(rest$, "}")
 End If
 End If
  basestack.GroupName = s$
+
 Else
-If GetVar(basestack, basestack.GroupName & what$, I) Then
+If GetVar(basestack, basestack.GroupName & what$, I, flag2) Then
 Else
- I = GlobalVar(basestack.GroupName & what$, CLng(0))
+  I = GlobalVar(basestack.GroupName & what$, CLng(0), False, flag2)
  Set var(I) = New Group
- 
+ If FastSymbol(rest$, "=") Then
+ If IsExp(basestack, rest$, p) Then
+   If Not basestack.LastObj Is Nothing Then
+                                If Typename(basestack.LastObj) = "Group" Then
+         s$ = HERE$: HERE$ = ""
+            UnFloatGroup basestack, basestack.GroupName & what$, I, basestack.LastObj
+            HERE$ = s$
+             Set basestack.LastObj = Nothing
+                                End If
+End If
+ Else
+ Identifier = False
+ End If
+ End If
+ Exit Function
  End If
 End If
   End If
@@ -17919,6 +17940,7 @@ Case "LONG", "Ã¡ —’”"
 Identifier = True
 
      Do While Abs(IsLabel(basestack, rest$, what$)) = 1
+     If basestack.priveflag Then what$ = ChrW(&HFFBF) + what$
      If Not FastSymbol(rest$, "<") Then  ' get local var first
             If GetlocalVar(basestack.GroupName & what$, I) Then
             p = var(I)
@@ -17967,6 +17989,7 @@ Identifier = True
 ss$ = ""
 Do
     x1 = Abs(IsLabel(basestack, rest$, what$))
+        If basestack.priveflag Then what$ = ChrW(&HFFBF) + what$
     If x1 = 3 Or x1 = 6 Then
         If x1 = 3 Then
         
@@ -18235,20 +18258,19 @@ If bs.IsString(s$) Then
           
     
     If GetGlobalVar(s$, I) Then
-If flag2 Then
-        If Not f Then
-               If Not flag Then
-                          If HERE$ <> "" Then
-                           GoTo contpush12
-                              Else
-                          NoSecReF
-                          
-                         Exit Do
-                       End If
+conthereifglobal:
+        If flag2 Then
+            If Not f Then
+                If Not flag Then
+                    If HERE$ <> "" Then
+                        GoTo contpush12
+                    Else
+                        NoSecReF
+                        Exit Do
+                    End If
+                End If
             End If
-    
-    End If
-ElseIf GetVar(basestack, what$, it, , , flag) And Not f Then
+        ElseIf GetVar(basestack, what$, it, , , flag) And Not f Then
                If Not flag Then
                           If GetlocalVar(what$, y1) = False And HERE$ <> "" Then
                                    GoTo contpush12
@@ -18284,6 +18306,8 @@ contpush12:
      
      End If
      Else
+        If GetVar(basestack, s$, I, True) Then GoTo conthereifglobal
+
          NoReference
     Identifier = False
     Exit Function
@@ -18633,7 +18657,7 @@ Case "DIM", "–…Õ¡ ¡”", "–…Õ¡ ≈”"
 Do
 
     it = Abs(IsLabelDIM(basestack, rest$, w$))
- 
+    If basestack.priveflag Then w$ = ChrW(&HFFBF) + w$
     If MaybeIsSymbol(rest$, ")") Then rest$ = "0" + rest$
     
     ''*********************
@@ -18642,7 +18666,7 @@ Do
    ' ·Í¸Ï· Í·È delete ·Ì ÂÈÎ›ÓÔıÏÂ 0 ÛÙÁ Ò˛ÙÁ ‰È‹ÛÙ·ÛÁ
        Select Case it
     Case 5, 6, 7
-   GlobalArrResize pppp, basestack, w$, rest$, I, f ''basestack.GroupName &
+   GlobalArrResize pppp, basestack, w$, rest$, I, f  ''basestack.GroupName &
    p = I
     If I < 0 Then it = 0
     Case Else
@@ -18651,7 +18675,7 @@ Do
    Else
     Select Case it
     Case 5, 6, 7
-    GlobalArr basestack, w$, rest$, I, f ''basestack.GroupName &
+    GlobalArr basestack, w$, rest$, I, f    ''basestack.GroupName &
     p = I
     If I < 0 Then it = 0
     Case Else
@@ -18797,17 +18821,33 @@ If Not I2(basestack, what$, rest$, myIdentifier, lang) Then
 JUMPHEREFORMODULESFAST:
                 myIdentifier = True
                 '''START TO SEE MODULES...HERE
+                
           If GetSub(what$, y1) Then
                it = 0
             ElseIf GetSub(ohere$ & "." & what$, y1) Then
 it = 1
+            ElseIf basestack.UseGroupname <> "" Then
+             If what$ Like basestack.UseGroupname + "*" Then
+            what$ = basestack.UseGroupname + ChrW(&HFFBF) + Mid$(what$, Len(basestack.UseGroupname) + 1)
+            If GetSub(what$, y1) Then
+                it = 0
+            ElseIf GetSub(ohere$ & "." & what$, y1) Then
+            it = 1
             Else
-    rest$ = what$ + rest$
+            GoTo conthereplease
+            End If
+            Else
+            GoTo conthereplease
+            End If
+            Else
+conthereplease:
+                rest$ = what$ + rest$
                    MyEr "unknown module " & what$, "¢„Ì˘ÛÙÔ ÙÏﬁÏ· " & what$
                    
                    Identifier = False
                    Exit Function
-                   End If
+              End If
+                 
                 If NORUN1 Then rest$ = "": Exit Function
                 par = PushParamGeneral(basestack, rest$)
                 If LastErNum = -2 Then
@@ -24187,12 +24227,12 @@ varhash.ItemCreator HERE$ & "." & myUcase(name$), j, Link
 End If
 GlobalVar = j
 End Function
-Function GlobalVarRefOnly(name$) As Long
+Function GlobalVarRefOnly(name$, Optional gl As Boolean = False) As Long
 On Error GoTo 0
 Dim j As Long
 j = AllocVar() ' var2used
  var(j) = CLng(0)  ' like an empty...
-If HERE$ = "" Then
+If HERE$ = "" Or gl Then
 ''VarName$ = VarName$ & Chr(1) + myUcase(name$) + constwidth(j)
 varhash.ItemCreator myUcase(name$), j
 Else
@@ -24351,8 +24391,9 @@ Function neoGetArray(bstack As basetask, ByVal nm$, ga As mArray, Optional searc
 Dim k As Long
 Dim n$
 nm$ = myUcase(nm$)
+
 'If Right$(nm$, 1) = "(" Then nm$ = nm$ + ")"
-If useglobalname Then
+If useglobalname Or HERE$ = "" Then
 n$ = bstack.GroupName + nm$
 
 Else
@@ -24366,14 +24407,24 @@ If Left$(nm$, 5) = "¡’‘œ." Or Left$(nm$, 5) = "THIS." Then
     If useLocalOnly Then Exit Function
     If bstack.UseGroupname <> "" Then
     n$ = bstack.UseGroupname + Mid$(nm$, 6)
+     If Not varhash.find(n$, k) Then
+     n$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, 6)
      varhash.find n$, k
+     End If
     Else
     n$ = Mid$(nm$, 5)
       If bstack.GetDot(n$, 1) Then varhash.find HERE$ + "." + n$, k Else Exit Function
     End If
 
 ElseIf varhash.find(n$, k) = False Then
-
+If useLocalOnly Then
+If bstack.UseGroupname <> "" Then
+        If InStr(nm$, bstack.UseGroupname) = 1 Then
+        n$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, Len(bstack.UseGroupname) + 1)
+        varhash.find n$, k
+End If
+End If
+End If
 End If
 If k = 0 Then
 
@@ -24389,6 +24440,8 @@ If k > 0 Then
 If Typename(var(k)) = "Empty" Then
 Set ga = New mArray: neoGetArray = True
 Else
+
+
 Set ga = var(k): neoGetArray = True
 End If
        
@@ -24556,6 +24609,9 @@ If Len(nm$) > 5 Then
         If bstack.UseGroupname <> "" Then
                   n$ = bstack.UseGroupname + Mid$(nm$, 6)
                 If varhash.find(n$, cc) Then GoTo there12
+                
+                  n$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, 6)
+                If varhash.find(n$, cc) Then GoTo there12
         Else
         
             n$ = StripThis2(HERE$)
@@ -24563,11 +24619,11 @@ If Len(nm$) > 5 Then
                 n$ = n$ & "." & Mid(nm$, 6)
             
             Else
-            If IsLabel(bstack, Mid$(nm$, 6), n$) Then ' NO NEED DOT ANY MORE..(WE USE DOTNEW)
-                    n$ = HERE$ & "." & n$
-            Else
-                    n$ = HERE$ & "." & nm$
-            End If
+                If IsLabel(bstack, Mid$(nm$, 6), n$) Then ' NO NEED DOT ANY MORE..(WE USE DOTNEW)
+                        n$ = HERE$ & "." & n$
+                Else
+                        n$ = HERE$ & "." & nm$
+                End If
             End If
         End If
     Else
@@ -24601,7 +24657,16 @@ ElseIf Not looklocalonly Then
     If varhash.find(nm$, cc) Then
     I = cc
     GetVar = True
+    ElseIf bstack.UseGroupname <> "" Then
+        If InStr(nm$, bstack.UseGroupname) = 1 Then
+        nm$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, Len(bstack.UseGroupname) + 1)
+        If varhash.find(nm$, cc) Then
+        I = cc
+        GetVar = True
     End If
+    End If
+    End If
+    
 End If
 
 '***********************
@@ -24618,6 +24683,9 @@ If Len(nm$) > 5 Then
     If Left$(nm$, 5) = "¡’‘œ." Or Left$(nm$, 5) = "THIS." Then
         If bstack.UseGroupname <> "" Then
                   n$ = bstack.UseGroupname + Mid$(nm$, 6)
+                If varhash.find(n$, cc) Then GoTo there12
+                
+                    n$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, 6)
                 If varhash.find(n$, cc) Then GoTo there12
         Else
         
@@ -24664,6 +24732,14 @@ ElseIf Not looklocalonly Then
     If varhash.find(nm$, cc) Then
     I = cc
     getvar2 = True
+    ElseIf bstack.UseGroupname <> "" Then
+        If InStr(nm$, bstack.UseGroupname) = 1 Then
+        n$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, Len(bstack.UseGroupname) + 1)
+        If varhash.find(n$, cc) Then
+        I = cc
+        getvar2 = True
+    End If
+    End If
     End If
 End If
 
@@ -25632,20 +25708,29 @@ prive = GetCode(scr)
 Dim p As Double, I As Long, s$, pn&, x As Double, y As Double, it As Long, f As Long, pa$
 Dim x1 As Long, y1 As Long, frm$, par As Boolean, ohere$, ss$, w$, sx As Double, sy As Double
 Dim pppp As mArray, hlp$, h&, all$
-Dim w1 As Long, w2 As Long, DUM As Boolean
+Dim w1 As Long, w2 As Long, DUM As Boolean, virtualtop As Long
 pn& = 0
 ' DELETE ARRNAME$
 Dim arrname$
-
+virtualtop = varhash.Count - 1
+For pn& = virtualtop To 0 Step -1
+varhash.ReadVar pn&, s$, h&
+If InStr(s$, ChrW(&H1FFF)) = 0 And InStr(s$, ChrW(&HFFBF)) = 0 Then Exit For
+virtualtop = virtualtop - 1
+Next pn&
+pn& = 0
 With players(prive)
-Do While pn& < varhash.Count '  = Len(VarName$)
+Do While pn& < varhash.Count
 varhash.ReadVar pn&, s$, h&
 
 If h& = -1 Then
-'Debug.Print "problem in ", pn&
+
 Else
-If InStr(s$, ChrW(&H1FFF)) > 0 Then
+If InStr(s$, ChrW(&HFFBF)) > 0 Then
+GoTo LOOPNEXT
+ElseIf InStr(s$, ChrW(&H1FFF)) > 0 Then
 ' DO NOTHING
+GoTo LOOPNEXT
 ElseIf Right$(s$, 1) = "(" Then
     If IsObject(var(h&)) Then
         Set pppp = var(h&)
@@ -25670,7 +25755,7 @@ ElseIf Right$(s$, 1) = "(" Then
                 End If
             End If
         Else
-        If pn& < varhash.Count - 1 Then
+        If pn& < virtualtop Then
         If tofile < 0 Then
             If tofile = -1 Then
             If .mx - .curpos < Len(s$ & Trim$(Str$(w2)) & "), ") Then crNew bstack, players(prive)
@@ -25802,7 +25887,7 @@ Err.clear
 End If
 End If
 End If
-If pn& < varhash.Count - 1 Then s$ = s$ & ", "
+If pn& < virtualtop Then s$ = s$ & ", "
 If tofile < 0 Then
    If tofile = -1 Then
    If .mx - .curpos < Len(s$) Then crNew bstack, players(prive)
@@ -25825,32 +25910,7 @@ Loop
 
 
 
-If arrname$ <> "" Then
 
-pn& = 1
-Do While pn& <= Len(arrname$)
-Select Case Asc(Mid$(arrname$, pn&, 1))
-Case 13
-s$ = ""
-Case 32
-If InStr(s$, ChrW(&H1FFF)) > 0 Then
-Else
-If Mid$(arrname$, pn& + 1, 16) = "" Then Exit Do
-'Set pppp = neoArray(Mid$(arrname$, pn& + 1, 16))
-'pn& = pn& + 16
-'pppp.SerialItem (0), f, 5
-'w1 = 0
-'pppp.SerialItem w2, w1, 6
-'w1 = w1 + 1
-
-End If
-Case "0" To "9"
-Case Else
-s$ = s$ & Mid$(arrname$, pn&, 1)
-End Select
-pn& = pn& + 1
-Loop
-End If
     If tofile < -1 Then
     If scr.CurrentX <> 0 Then crNew bstack, players(prive)
     wwPlain bstack, players(prive), all$, scr.Width, 1000, True, , 3
@@ -25858,6 +25918,7 @@ End If
       If tofile < 0 Then crNew bstack, players(prive)
       End With
 End Sub
+
 Function NeoGetArrayItem(PP As mArray, bstack As basetask, v$, offset As Long, rst$, Optional noObject As Boolean = False) As Boolean
 If noObject And PP.IHaveClass Then Exit Function
 Dim dn As Long, dd As Long, W3 As Long
@@ -26742,15 +26803,15 @@ Set aa = New Group
 Set var = aa
 End Sub
 
-Sub prepareGroup(bstack As basetask, ByVal ohere$, vvv As Long)
+Sub prepareGroup(bstack As basetask, ByVal ohere$, vvv As Long, Optional glob As Boolean = False)
 Dim hv As Boolean
 '' ohere$ = myUcase(ohere$)
 
-If HERE$ = "" Then
-    hv = GetVar(bstack, bstack.GroupName & ohere$, vvv)
+If HERE$ = "" Or glob Then
+    hv = GetVar(bstack, bstack.GroupName & ohere$, vvv, glob)
 Else
     hv = GetlocalVar(bstack.GroupName & ohere$, vvv)
-End If
+ End If
 If hv Then
 ' so it is an object now
     If Not IsObject(var(vvv)) Then
@@ -26759,15 +26820,15 @@ If hv Then
         MakeitObject2 var(vvv)
     End If
 Else
-    vvv = GlobalVarRefOnly(bstack.GroupName & ohere$)
+    vvv = GlobalVarRefOnly(bstack.GroupName & ohere$, glob)
     MakeitObject2 var(vvv)
-
-    var(vvv).GroupName = ohere$ + "."
+ If Not glob Then var(vvv).GroupName = ohere$ + "."
 End If
 var(vvv).edittag = ""
 End Sub
 Function ExecuteVarOnly(bstack As basetask, ohere$, vvv As Long, rest$, lang As Long) As Long
 Dim w$, p As Double, v As Long, ss$, b$, I As Long, lcl As Boolean, j As Long, nm$, x1 As Long, y1 As Long, frm$
+Dim prv As Boolean
 Const tt$ = "=-+*/<!,{" + vbCr
 If Trim(rest$) = "" Then
     var(vvv) = CLng(0)
@@ -26775,12 +26836,12 @@ If Trim(rest$) = "" Then
     Exit Function
 End If
 Dim myobject As Object
-'' ohere$ = myUcase$(ohere$)
+
 Dim OvarnameLen As Long, OarrnameLen As Long
 Dim f$
 Dim pppp As mArray
 
-''OvarnameLen = Len(VarName$) + 1   'we record ...
+
 OvarnameLen = varhash.Count + 1 ' new way
 
 
@@ -26808,15 +26869,26 @@ Loop
 there12345:
 If rest$ = "" Then Exit Do
 v = IsLabelA(HERE$, rest$, w$)
-' DOCUMENT DIM LONG....
-' ≈√√—¡÷œ –…Õ¡ ¡” Ã¡ —’”...
 
 If v = 0 Then Exit Do
 
 
 
-''w$ = myUcase(w$)
 Select Case w$
+Case "PRIVATE", "…ƒ…Ÿ‘… œ"
+If Not IsOperator(rest$, ":") Then
+ExecuteVarOnly = False
+Exit Function
+End If
+prv = True
+GoTo there100
+Case "PUBLIC", "ƒ«Ãœ”…œ"
+If Not IsOperator(rest$, ":") Then
+ExecuteVarOnly = False
+Exit Function
+End If
+prv = False
+GoTo there100
 Case "LOCAL", "‘œ–… ¡", "‘œ–… «", "‘œ–… ≈”"
 lcl = True
 GoTo there12345
@@ -26894,6 +26966,7 @@ Exit Function
 End If
 classcontclass:
 x1 = Abs(IsLabel(bstack, rest$, f$))
+    If prv Then f$ = ChrW(&HFFBF) + f$
 ''f$ = myUcase$(f$)
 If x1 <> 0 Then
   If var(vvv).FuncList <> "" Then  ' maybe we have it
@@ -26987,6 +27060,7 @@ ExecuteVarOnly = False
 Exit Function
 End If
 x1 = Abs(IsLabel(bstack, rest$, f$))
+    If prv Then f$ = ChrW(&HFFBF) + f$
 ''f$ = myUcase$(f$)
 If x1 <> 0 Then
   If var(vvv).FuncList <> "" Then  ' maybe we have it
@@ -27071,19 +27145,21 @@ BYPASS4:
      End If
      If ExecuteVarOnly = 0 Then Exit Function
 
-Case "DOCUMENT", "≈√√—¡÷œ", "DIM", "–…Õ¡ ¡”", "GROUP", "œÃ¡ƒ¡", "LONG", "Ã¡ —’”"
+Case "DOCUMENT", "≈√√—¡÷œ", "DIM", "–…Õ¡ ¡”", "–…Õ¡ ≈”", "GROUP", "œÃ¡ƒ¡", "LONG", "Ã¡ —’”"
 ' put back, change HERE$ and
 contVar:
 If w$ = "GROUP" Or w$ = "œÃ¡ƒ¡" Then
                                                  x1 = Abs(IsLabel(bstack, rest$, w$))
+                                                 If prv Then w$ = ChrW(&HFFBF) + w$
                                                   If x1 = 1 Then
                                                                      If IsLabelSymbolNew(rest$, "‘’–œ”", "TYPE", lang) Then
                                                                                         If IsStrExp(bstack, rest$, ss$) Then
                                                                                         frm$ = bstack.GroupName
                                                                                         prepareGroup bstack, w$, y1
                                                                                         LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+                                                                                        bstack.priveflag = prv
                                                                                          ExecuteVarOnly = Abs(ExecuteVarOnly(bstack, bstack.GroupName & w$, y1, ss$, lang))
-                                                                                        
+                                                                                        bstack.priveflag = False
                                                                                             OvarnameLen = varhash.Count + 1 'Len(VarName$) + 1   'we record ...
                                                                                       
                                                                                         
@@ -27120,7 +27196,9 @@ If w$ = "GROUP" Or w$ = "œÃ¡ƒ¡" Then
 
 
 Else
+bstack.priveflag = prv
   ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$))
+  bstack.priveflag = False
 End If
 
      If ExecuteVarOnly = 0 Then Exit Function
@@ -27129,6 +27207,7 @@ Case Else
 ' check if we have a class
 
 nm$ = ""
+If prv Then w$ = ChrW(&HFFBF) + w$
 If Len(rest$) > 0 Then
 If Not MaybeIsSymbol(rest$, tt$) Then
     If GetSub(w$ + "()", j) Then
@@ -28670,15 +28749,15 @@ Function SBcode(I As Long) As String
 SBcode = sbf(I).sb
 End Function
 Function GlobalGroup(basestack As basetask, rest$, lang As Long) As Boolean
-Dim ohere$
-ohere$ = HERE$
-HERE$ = "" ' this is global......
+'Dim ohere$
+'ohere$ = HERE$
+'HERE$ = "" ' this is global......
 If lang Then
- GlobalGroup = Identifier(basestack, "@GROUP", rest$)
+ GlobalGroup = Identifier(basestack, "@GROUP!", rest$)
 Else
- GlobalGroup = Identifier(basestack, "@œÃ¡ƒ¡", rest$)
+ GlobalGroup = Identifier(basestack, "@œÃ¡ƒ¡!", rest$)
 End If
-HERE$ = ohere$
+'HERE$ = ohere$
 
 End Function
 Function GlobalMoveGroup(bstack As basetask, w$) As Boolean
