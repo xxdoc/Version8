@@ -290,29 +290,29 @@ UseEsc = True
 End Sub
 
 Private Sub Form_KeyUp(KeyCode As Integer, shift As Integer)
-Dim i As Long
+Dim I As Long
  If List1.LeaveonChoose Then Exit Sub
 clickMe = -1
-i = -1
+I = -1
 If KeyCode = vbKeyV Then
 Exit Sub
 End If
 If shift <> 4 And mynum$ <> "" Then
 On Error Resume Next
 If Left$(mynum$, 1) = "0" Then
-i = Val(mynum$)
+I = Val(mynum$)
 Else
-i = Val(mynum$)
+I = Val(mynum$)
 End If
 mynum$ = ""
 Else
-i = GetLastKeyPressed
+I = GetLastKeyPressed
 End If
 
- If i <> -1 And i <> 94 Then
-UKEY$ = ChrW(i)
+ If I <> -1 And I <> 94 Then
+UKEY$ = ChrW(I)
  Else
- If i <> -1 Then UKEY$ = ""
+ If I <> -1 Then UKEY$ = ""
  End If
 
 End Sub
@@ -331,16 +331,16 @@ TaskMaster.rest
 End Sub
 
 Private Sub gList1_ChangeListItem(item As Long, content As String)
-Dim i As Long
+Dim I As Long
 
 If nochange Then
 nochange = True
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
+I = TEXT1.SelLength
+Form1mn1Enabled = I > 1
+Form1mn2Enabled = I > 1
 Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > i
-Form1supEnabled = i > 0 And TEXT1.SelStart > i
+Form1sdnEnabled = I > 0 And (TEXT1.Length - TEXT1.SelStart) > I
+Form1supEnabled = I > 0 And TEXT1.SelStart > I
 Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
 Form1rthisEnabled = Form1mscatEnabled
 nochange = False
@@ -348,15 +348,15 @@ End If
 End Sub
 
 Private Sub gList1_ChangeSelStart(thisselstart As Long)
-Dim i As Long
+Dim I As Long
 
 If gList1.Enabled Then
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
+I = TEXT1.SelLength
+Form1mn1Enabled = I > 1
+Form1mn2Enabled = I > 1
 Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > i
-Form1supEnabled = i > 0 And TEXT1.SelStart > i
+Form1sdnEnabled = I > 0 And (TEXT1.Length - TEXT1.SelStart) > I
+Form1supEnabled = I > 0 And TEXT1.SelStart > I
 Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
 Form1rthisEnabled = Form1mscatEnabled
 End If
@@ -367,17 +367,17 @@ Set pic = Point2Me
 End Sub
 
 Private Sub gList1_HeaderSelected(Button As Integer)
-Dim i As Long
+Dim I As Long
 
 If Not gList1.Enabled Then Exit Sub
 
 If TEXT1.UsedAsTextBox Then Exit Sub
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
+I = TEXT1.SelLength
+Form1mn1Enabled = I > 1
+Form1mn2Enabled = I > 1
 Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > TEXT1.SelLength
-Form1supEnabled = i > 0 And TEXT1.SelStart > TEXT1.SelLength
+Form1sdnEnabled = I > 0 And (TEXT1.Length - TEXT1.SelStart) > TEXT1.SelLength
+Form1supEnabled = I > 0 And TEXT1.SelStart > TEXT1.SelLength
 Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
 Form1rthisEnabled = Form1mscatEnabled
 
@@ -396,14 +396,14 @@ Private Sub gList1_MarkOut()
 Pack1
 End Sub
 Public Sub Pack1()
-Dim i As Long
+Dim I As Long
 
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
+I = TEXT1.SelLength
+Form1mn1Enabled = I > 1
+Form1mn2Enabled = I > 1
 Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > i
-Form1supEnabled = i > 0 And TEXT1.SelStart > i
+Form1sdnEnabled = I > 0 And (TEXT1.Length - TEXT1.SelStart) > I
+Form1supEnabled = I > 0 And TEXT1.SelStart > I
 Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
 Form1rthisEnabled = Form1mscatEnabled
 End Sub
@@ -438,11 +438,11 @@ End If
 End If
 End Sub
 
-Private Sub ffhelp(A$)
-If Left$(A$, 1) < "Α" Then
-fHelp basestack1, A$, True
+Private Sub ffhelp(a$)
+If Left$(a$, 1) < "Α" Then
+fHelp basestack1, a$, True
 Else
-fHelp basestack1, A$
+fHelp basestack1, a$
 End If
 End Sub
 
@@ -945,7 +945,7 @@ MOUB = 0
 End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, shift As Integer)
-Dim i As Long
+Dim I As Long
 Form1.Font.charset = GetCharSet(GetCodePage(GetLCIDFromKeyboard))
 
 Static ctrl As Boolean, noentrance As Boolean
@@ -1149,7 +1149,7 @@ End If
 Case vbKeyPause  '(this is the break key!!!!!'
 If QRY Or GFQRY Then
 If Form4.Visible Then Form4.Visible = False
-i = MOUT
+I = MOUT
 If ASKINUSE Then
 If BreakMe Then Exit Sub
 Unload NeoMsgBox: ASKINUSE = False: Exit Sub
@@ -1157,7 +1157,7 @@ End If
 BreakMe = True
 If MsgBoxN("Break Key - Hard Reset" + vbCrLf + "Μ2000 - Execution Stop / Τερματισμός Εκτέλεσης", vbYesNo, MesTitle$) <> vbNo Then
 
-MOUT = i
+MOUT = I
 
 If AVIRUN Then AVI.GETLOST
 On Error Resume Next
@@ -1250,8 +1250,8 @@ End Select
 ctrl = False
  If List1.LeaveonChoose Then Exit Sub
  If KeyCode = 91 Then Exit Sub
-i = GetLastKeyPressed
- If i <> -1 And i <> 94 Then UKEY$ = ChrW(i) Else If i <> -1 Then UKEY$ = ""
+I = GetLastKeyPressed
+ If I <> -1 And I <> 94 Then UKEY$ = ChrW(I) Else If I <> -1 Then UKEY$ = ""
  If List1.Visible Then
  Else
 KeyCode = 0
@@ -1431,11 +1431,11 @@ Switches para$
 111:
 
   On Error Resume Next
-  Dim i As Long
+  Dim I As Long
   
-      For i = 0 To Controls.Count - 1
-     If Typename(Controls(i)) <> "Menu" Then Controls(i).TabStop = False
-      Next i
+      For I = 0 To Controls.Count - 1
+     If Typename(Controls(I)) <> "Menu" Then Controls(I).TabStop = False
+      Next I
  
 End Sub
 
@@ -1516,7 +1516,7 @@ Set DisStack.Owner = DIS
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
-Dim pn As Long, A As New cDIBSection
+Dim pn As Long, a As New cDIBSection
 AutoRedraw = True
 If OneOnly Then Exit Sub
 OneOnly = True
@@ -1549,7 +1549,7 @@ basestack1.Owner.Move 0, 0, ScaleWidth, ScaleHeight
 ''mmy = basestack1.Owner.Height
 
 If NoAction Then Exit Sub
-Dim DUMMY As Boolean, i
+Dim DUMMY As Boolean, I
 NOEXECUTION = False
 '
 myBreak basestack1
@@ -1769,7 +1769,7 @@ End Sub
 
 Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, A$, JJ As Long, ii As Long
+Dim aa$, a$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -1975,18 +1975,18 @@ End If
 
 If TEXT1.SelText <> "" Then
 
-    A$ = vbCrLf + TEXT1.SelText & "*"
+    a$ = vbCrLf + TEXT1.SelText & "*"
     If shift <> 0 Then  ' βγάλε
-        A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf + Space$(6), vbCrLf)
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
          TEXT1.SelStartSilent = ii
-         TEXT1.SelLengthSilent = Len(A$) - 3
+         TEXT1.SelLengthSilent = Len(a$) - 3
          TEXT1.mdoc.WrapAgainColor
     Else
-        A$ = Replace(A$, vbCrLf, vbCrLf + Space$(6))
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf, vbCrLf + Space$(6))
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
         TEXT1.SelStartSilent = where + 6
-        TEXT1.SelLengthSilent = Len(A$) - 3 - (where + 6 - ii)
+        TEXT1.SelLengthSilent = Len(a$) - 3 - (where + 6 - ii)
         TEXT1.mdoc.WrapAgainColor
     End If
   
@@ -2262,20 +2262,20 @@ End If
 End Sub
 
 
-Private Function Parameters(A As String, b As String, c As String) As Boolean
-Dim i, ch As Boolean, vl As Boolean, chs$, all$, many As Long
+Private Function Parameters(a As String, b As String, c As String) As Boolean
+Dim I, ch As Boolean, vl As Boolean, chs$, all$, many As Long
 b = ""
 c = ""
 
 'parameters = False
 ch = False
 vl = False
-Do While i < Len(A)
-i = i + 1
-Select Case Mid$(A, i, 1)
+Do While I < Len(a)
+I = I + 1
+Select Case Mid$(a, I, 1)
 Case "%"
-If Mid$(A, i + 1, 1) = "u" Then
-i = i + 1
+If Mid$(a, I + 1, 1) = "u" Then
+I = I + 1
 'we have four bytes
 many = 6
 Else
@@ -2304,7 +2304,7 @@ Exit Do
 End If
 Case Else
 If ch = True Then
-chs$ = chs$ & Mid$(A, i, 1)
+chs$ = chs$ & Mid$(a, I, 1)
 If Len(chs$) = many Then
 If many = 4 Then
 chs$ = Chr(Int(chs$))
@@ -2319,14 +2319,14 @@ b = b + chs$
 End If
 End If
 ElseIf vl = False Then
-b = b + Mid$(A, i, 1)
+b = b + Mid$(a, I, 1)
 Else
-c = c + Mid$(A, i, 1)
+c = c + Mid$(a, I, 1)
 End If
 End Select
 Loop
 If c <> "" Then Parameters = True
-A = Mid$(A, i + 1)
+a = Mid$(a, I + 1)
 End Function
 
 
@@ -2427,7 +2427,12 @@ MYFONT = defFontname
     
         cc.Value = "NO"
         End If
+        
         End If
+                 cc.ValueKey = "PRIORITY-OR"
+            cc.ValueType = REG_DWORD
+            cc.Value = False
+            priorityOr = False
 Else
 ' *****************************
         If cc.Value = "" Then
@@ -2525,7 +2530,9 @@ End If
     
        casesensitive = False
         End If
-        
+            cc.ValueKey = "PRIORITY-OR"
+            cc.ValueType = REG_DWORD
+            cc.Value = priorityOr
         Set cc = Nothing
         End If
        DIS.ForeColor = mycolor(PenOne) ' NOW PEN IS RGB VALUE
@@ -2707,9 +2714,9 @@ Public Sub hookme(this As gList)
 Set LastGlist = this
 End Sub
 Public Function mybreak1() As Boolean
-Dim i As Long
+Dim I As Long
 If Form4.Visible Then Form4.Visible = False
-i = MOUT
+I = MOUT
 If ASKINUSE Then
 If BreakMe Then Exit Function
 Unload NeoMsgBox: ASKINUSE = False: Exit Function

@@ -288,4 +288,11 @@ Show = Chr(1) + PriveSpace(I).Key + Str$(PriveSpace(I).NDX) + Chr(1) + Show
 End If
 Next I
 End Function
-
+Function ShowRev() As String
+Dim I As Long
+For I = 0 To toplim
+If InStr(PriveSpace(I).Key, ChrW(&H1FFF)) = 0 And InStr(PriveSpace(I).Key, ChrW(&HFFBF)) = 0 Then
+ShowRev = ShowRev + Chr(1) + PriveSpace(I).Key + Str$(PriveSpace(I).NDX) + Chr(1)
+End If
+Next I
+End Function

@@ -4512,7 +4512,11 @@ s$ = mylcasefILE(s$)
             cc.ValueKey = "CASESENSITIVE"
              cc.ValueType = REG_SZ
                     cc.Value = "NO"
-            
+            ElseIf d$ = "PRI" Then
+            cc.ValueKey = "PRIORITY-OR"
+            cc.ValueType = REG_DWORD
+            cc.Value = False
+            priorityOr = False
             ElseIf d$ = "REG" Then
             gsb_file False
             ElseIf d$ = "REC" Then
@@ -4599,6 +4603,11 @@ If IsLabel(basestack1, s$, d$) > 0 Then
                 cc.ValueKey = "CASESENSITIVE"
                 cc.ValueType = REG_SZ
                 cc.Value = "YES"
+        ElseIf d$ = "PRI" Then
+        cc.ValueKey = "PRIORITY-OR"
+                cc.ValueType = REG_DWORD
+                cc.Value = True
+            priorityOr = True
         ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
