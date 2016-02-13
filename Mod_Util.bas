@@ -5226,9 +5226,9 @@ Get #f, , a()
 s1 = a()
 If s1 <> vbCr And s1 <> vbLf Then
 s = s + s1
-If Asc(s1) = 63 And (AscW(a()) <> 63 And AscW(a()) <> -257) Then
-If AscW(a()) < &H4000 Then Exit Function
-End If
+'If Asc(s1) = 63 And (AscW(a()) <> 63 And AscW(a()) <> -257) Then
+'If AscW(a()) < &H4000 Then Exit Function
+''End If
 Else
 If Not (LOF(f) < Seek(f)) Then
 ss = Seek(f)
@@ -5245,6 +5245,7 @@ Loop
 getUniStringlINE = True
 a11:
 End Function
+
 Public Sub getAnsiStringlINE(f As Long, s As String)
 ' 2 bytes a time... stop to line end and advance to next line
 Dim a As Byte, s1 As String, ss As Long, lbreak As String

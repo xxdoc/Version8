@@ -20,7 +20,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 155
+Global Const Revision = 156
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -11525,7 +11525,7 @@ Set di = bstack.Owner
 Dim prive As basket
 'b$ = Trim$(b$)
 Dim w$, ww#, LLL As Long, sss As Long, v As Long, p As Double, ss$, ohere$
-Dim pppp As mArray, i1 As Long
+Dim pppp As mArray, i1 As Long, lang As Long
 Dim r1 As Long, r2 As Long
 ' uink$ = ""
 di.FontTransparent = True
@@ -11546,6 +11546,7 @@ Else
 interpret = False: HERE$ = ohere$: Exit Function
 End If
 End If
+jumpforCR1:
 If FastSymbol(b$, vbCrLf) Then
 UINK$ = ""
 sss = LLL
@@ -11557,11 +11558,11 @@ End If
 If NOEXECUTION Then interpret = False: HERE$ = ohere$: Exit Function
 If b$ = "" Then interpret = True: HERE$ = ohere$: Exit Function
 If IsSymbol(b$, "@") Then
-i1 = IsLabelA(HERE$, b$, w$)
+i1 = IsLabelAnew(HERE$, b$, w$, lang)
 w$ = "@" + w$
 GoTo PROCESSCOMMAND   'IS A COMMAND
 Else
-i1 = IsLabelA(HERE$, b$, w$)
+i1 = IsLabelAnew(HERE$, b$, w$, lang)
 End If
   If trace And (bstack.Process Is Nothing) Then
     Form2.Label1(0) = HERE$
@@ -11612,6 +11613,8 @@ Sleep 5
     End If
 End If
 Select Case i1
+Case 1234
+GoTo jumpforCR1
 Case 2
 MyEr "No with reference in left side of assignment", "º˜È ÏÂ ·Ì·ˆÔÒ‹ ÛÙÁÌ ÂÍ˜˛ÒÁÛÁ ÙÈÏﬁÚ"
 interpret = False
@@ -11938,7 +11941,7 @@ PROCESSCOMMAND:
                     LastErNum = 0 ' LastErNum1 = 0
                     LastErName = ""   ' every command from Query call identifier
                     LastErNameGR = ""  ' interpret is like execute without if for repeat while select structures
-                    If Not Identifier(bstack, w$, b$) Then
+                    If Not Identifier(bstack, w$, b$, , lang) Then
                     If NOEXECUTION Then
                     MyEr "", ""
                     interpret = False
@@ -15142,7 +15145,7 @@ again123456:
 parsecommand:
             If VarStat Or NewStat Then GoTo errstat
             
-               If Not Identifier(bstack, w$, b$, iscom) Then
+               If Not Identifier(bstack, w$, b$, iscom, lang) Then
                If LastErNum1 = -1 And bstack.IamThread Then Execute = 1 Else Execute = 0
                Exit Function
                Else
@@ -16650,10 +16653,10 @@ If IsLabelSymbolNew(rest$, "”‘œ", "TO", lang) Then
 End If
 
 End Function
-Function Identifier(basestack As basetask, what$, rest$, Optional nocom As Boolean = False) As Boolean
+Function Identifier(basestack As basetask, what$, rest$, Optional nocom As Boolean = False, Optional lang As Long = 1) As Boolean
 Dim p As Double, I As Long, w$, pa$, s$, ss$, x As Double, y As Double, it As Long, vvl As Variant
 Dim x1 As Long, y1 As Long, par As Boolean, ohere$, flag As Boolean, flag2 As Boolean
-Dim ps As mStiva, bs As basetask, lang As Long, f As Long
+Dim ps As mStiva, bs As basetask, f As Long
 Dim pppp As mArray, myobject As Object
 Dim col As Long
 Dim myIdentifier As Boolean
@@ -16677,12 +16680,13 @@ ohere$ = HERE$
 
 If what$ = "" Then
     Identifier = IsLabel(basestack, rest$, what$)
+     
     If Not Identifier Then Exit Function
     what$ = myUcase(what$)
     lang = codeW(what$)
 Else
-    what$ = myUcase(what$)
-    lang = codeW(what$)
+   If what$ <> myUcase(what$) Then Stop
+    'lang = codeW(what$)
     Identifier = True
     x1 = Len(rest$)
     If Left$(what$, 1) <> "@" Then
@@ -26993,13 +26997,13 @@ End If
             If FastSymbol(rest$, "{") Then
             ss$ = block(rest$)
             If Right$("  " + ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
-            rest$ = f$ + "  {  ÔÏ·‰· " + w$ + " {" + ss$ & "}" + vbCrLf + " try { call! " + w$ + "." + w$ + "}  : =" + w$ + rest$
+            rest$ = f$ + "  {  œÃ¡ƒ¡ " + w$ + " {" + ss$ & "}" + vbCrLf + " try { call! " + w$ + "." + w$ + "}  : =" + w$ + rest$
             'If glob Then rest$ = " ÌÂ· " + rest$
             w$ = ""
             GoTo classcontclass
             Else
              f$ = w$
-            w$ = "œÏ‹‰· "
+            w$ = "œÃ¡ƒ¡ "
             End If
             
         End If
@@ -27093,10 +27097,10 @@ If x1 <> 0 Then
   If w$ = "" Then
   If lang = 1 Then
     rest$ = "NEW " + f$ & " " & rest$
-    w$ = "Function"
+    w$ = "FUNCTION"
     Else
      rest$ = "Õ≈¡ " + f$ & " " & rest$
-     w$ = "”ıÌ‹ÒÙÁÛÁ"
+     w$ = "”’Õ¡—‘«”«"
     End If
   Else
   If lang = 1 Then
@@ -27110,15 +27114,15 @@ If x1 <> 0 Then
   rest$ = f$ & " " & rest$
     If w$ = "" Then
       If lang = 1 Then
-    w$ = "Function"
+    w$ = "FUNCTION"
     Else
-     w$ = "”ıÌ‹ÒÙÁÛÁ"
+     w$ = "”’Õ¡—‘«”«"
     End If
     End If
   End If
   
 BYPASS3:
- ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$))
+ ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$, , lang))
 
    
   If GetSub(bstack.GroupName + f$ + "()", I) Then
@@ -27216,13 +27220,13 @@ v = 123
   End If
   If glob Then
   If lang = 1 Then
-  rest$ = "new " + rest$
+  rest$ = "NEW " + rest$
   Else
-  rest$ = "ÌÂÔ " + rest$
+  rest$ = "Õ≈œ " + rest$
   End If
   End If
 BYPASS4:
- ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$))
+ ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$, , lang))
 
   If GetSub(bstack.GroupName + f$, I) Then
 
@@ -27304,7 +27308,7 @@ Case "–…Õ¡ ¡”", "–…Õ¡ ≈”"
 rest$ = " Õ≈œ " + rest$
 End Select
 End If
-  ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$))
+  ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$, , lang))
   bstack.priveflag = False
 End If
 
@@ -28868,9 +28872,9 @@ Function GlobalGroup(basestack As basetask, rest$, lang As Long) As Boolean
 'ohere$ = HERE$
 'HERE$ = "" ' this is global......
 If lang Then
- GlobalGroup = Identifier(basestack, "@GROUP!", rest$)
+ GlobalGroup = Identifier(basestack, "@GROUP!", rest$, , lang)
 Else
- GlobalGroup = Identifier(basestack, "@œÃ¡ƒ¡!", rest$)
+ GlobalGroup = Identifier(basestack, "@œÃ¡ƒ¡!", rest$, , lang)
 End If
 'HERE$ = ohere$
 

@@ -3167,6 +3167,207 @@ Dim p2 As Long, P1 As Integer, p4 As Long
   Next I
 
 End Function
+Function IsLabelAnew(where$, a$, r$, lang As Long) As Long
+' for left side...no &
+
+Dim RR&, one As Boolean, c$, gr As Boolean
+r$ = ""
+' NEW FOR REV 156  - WE WANT TO RUN WITH GREEK COMMANDS IN ANY COMPUTER
+Dim I&, l As Long, p3 As Integer
+Dim p2 As Long, P1 As Integer, p4 As Long
+l = Len(a$): If l = 0 Then IsLabelAnew = 0: lang = 1: Exit Function
+
+p2 = StrPtr(a$): l = l - 1
+  p4 = p2 + l * 2
+  For I = p2 To p4 Step 2
+  GetMem2 I, P1
+  Select Case P1
+    Case 13
+    
+    If I < p4 Then
+    GetMem2 I + 2, p3
+    If p3 = 10 Then
+    IsLabelAnew = 1234
+    If I + 6 > p4 Then
+    a$ = ""
+    Else
+    I = I + 4
+    Do While I < p4
+
+    GetMem2 I, P1
+    If P1 = 32 Or P1 = 160 Then
+    I = I + 2
+    Else
+    GetMem2 I + 2, p3
+    If P1 <> 13 And p3 <> 10 Then Exit Do
+    I = I + 4
+    End If
+    Loop
+    a$ = Mid$(a$, (I + 2 - p2) \ 2)
+    End If
+    Else
+    If I > p2 Then a$ = Mid$(a$, (I - 2 - p2) \ 2)
+    End If
+    Else
+    If I > p2 Then a$ = Mid$(a$, (I - 2 - p2) \ 2)
+    End If
+    
+    lang = 1
+    Exit Function
+    Case 32, 160
+    Case Else
+
+   Exit For
+  End Select
+  Next I
+    If I > p4 Then a$ = "": IsLabelAnew = 0: Exit Function
+  For I = I To p4 Step 2
+  GetMem2 I, P1
+  If P1 < 256 Then
+  Select Case ChrW(P1)
+        Case "@"
+            If I < p4 And r$ <> "" Then
+                GetMem2 I + 2, P1
+                where$ = r$
+                r$ = ""
+            Else
+              IsLabelAnew = 0: a$ = Mid$(a$, (I - p2) \ 2): Exit Function
+            End If
+        Case "?"
+        If r$ = "" Then
+            r$ = "?"
+            I = I + 4
+        Else
+            I = I + 2
+        End If
+        a$ = Mid$(a$, (I - p2) \ 2)
+        IsLabelAnew = 1
+        lang = 1 + CLng(gr)
+              
+        Exit Function
+
+        Case "."
+            If one Then
+                Exit For
+            ElseIf r$ <> "" And I < p4 Then
+                GetMem2 I + 2, P1
+                If ChrW(P1) = "." Or ChrW(P1) = " " Then
+                If ChrW(P1) = "." And I + 2 < p4 Then
+                    GetMem2 I + 4, P1
+                    If ChrW(P1) = " " Then I = I + 4: Exit For
+                Else
+                    I = I + 2
+                   Exit For
+                End If
+            End If
+                GetMem2 I, P1
+                r$ = r$ & ChrW(P1)
+                RR& = 1
+            End If
+      Case "&"
+            If r$ = "" Then
+            RR& = 2
+            'a$ = Mid$(a$, 2)
+            End If
+            Exit For
+    Case "\", "{" To "~", "^"
+          Exit For
+        
+        Case "0" To "9", "_"
+              If one Then
+
+            Exit For
+            ElseIf r$ <> "" Then
+            r$ = r$ & ChrW(P1)
+            '' A$ = Mid$(A$, 2)
+            RR& = 1 'is an identifier or floating point variable
+            Else
+            Exit For
+            End If
+        Case Is >= "A"
+            If one Then
+            Exit For
+            Else
+            r$ = r$ & ChrW(P1)
+            RR& = 1 'is an identifier or floating point variable
+            End If
+        Case "$"
+            If one Then Exit For
+            If r$ <> "" Then
+            one = True
+            RR& = 3 ' is string variable
+            r$ = r$ & ChrW(P1)
+            Else
+            Exit For
+            End If
+        Case "%"
+            If one Then Exit For
+            If r$ <> "" Then
+            one = True
+            RR& = 4 ' is long variable
+            r$ = r$ & ChrW(P1)
+            Else
+            Exit For
+            End If
+            
+        Case "("
+            If r$ <> "" Then
+            If I + 4 <= p4 Then
+                GetMem2 I + 2, P1
+                GetMem2 I + 2, p3
+                If ChrW(P1) + ChrW(p3) = ")@" Then
+                    r$ = r$ & "()."
+                    I = I + 4
+                Else
+                    GoTo i1233
+                End If
+                            Else
+i1233:
+                                       Select Case RR&
+                                       Case 1
+                                       RR& = 5 ' float array or function
+                                       Case 3
+                                       RR& = 6 'string array or function
+                                       Case 4
+                                       RR& = 7 ' long array
+                                       Case Else
+                                       Exit For
+                                       End Select
+                     GetMem2 I, P1
+                                        r$ = r$ & ChrW(P1)
+                                        I = I + 2
+                                      ' A$ = Mid$(A$, 2)
+                                   Exit For
+                            
+                          End If
+               Else
+                        Exit For
+            
+            End If
+        Case Else
+        Exit For
+  End Select
+
+        Else
+         If one Then
+              Exit For
+              Else
+              gr = True
+              r$ = r$ & ChrW(P1)
+              RR& = 1 'is an identifier or floating point variable
+              End If
+    End If
+
+
+    Next I
+  If I > p4 Then a$ = "" Else If (I + 2 - p2) \ 2 > 1 Then a$ = Mid$(a$, (I + 2 - p2) \ 2)
+       r$ = myUcase(r$, gr)
+       lang = 1 + CLng(gr)
+
+    IsLabelAnew = RR&
+
+
+End Function
 Public Function IsLabelDotSub(where$, a$, rrr$, r$, lang As Long) As Long
 ' for left side...no &
 
@@ -3282,7 +3483,6 @@ p2 = StrPtr(a$): l = l - 1
                Exit For
             End If
             End If
-''            If Mid$(A$, 2, 2) = ". " Or Mid$(A$, 2, 1) = " " Then Exit for
             GetMem2 I, P1
             r$ = r$ & ChrW(P1)
             ''A$ = Mid$(A$, 2)
@@ -3295,9 +3495,7 @@ p2 = StrPtr(a$): l = l - 1
             Exit For
         Case "0" To "9", "_"
            If one Then
-             '' do nothing
-             
-            '' If firstdot$ <> "" Then A$ = firstdot$ + A$
+
             Exit For
             ElseIf r$ <> "" Then
             r$ = r$ & ChrW(P1)
@@ -3311,7 +3509,6 @@ p2 = StrPtr(a$): l = l - 1
             Exit For
             Else
             r$ = r$ & ChrW(P1)
-            ''A$ = Mid$(A$, 2)
             RR& = 1 'is an identifier or floating point variable
             End If
         Case "$"
@@ -3320,7 +3517,6 @@ p2 = StrPtr(a$): l = l - 1
             one = True
             RR& = 3 ' is string variable
             r$ = r$ & ChrW(P1)
-'            A$ = Mid$(A$, 2)
             Else
             Exit For
             End If
@@ -3330,7 +3526,6 @@ p2 = StrPtr(a$): l = l - 1
             one = True
             RR& = 4 ' is long variable
             r$ = r$ & ChrW(P1)
-'            A$ = Mid$(A$, 2)
             Else
             Exit For
             End If
@@ -3342,7 +3537,6 @@ p2 = StrPtr(a$): l = l - 1
                 If ChrW(P1) + ChrW(p3) = ")@" Then
                     r$ = r$ & "()."
                     I = I + 4
-            '                     A$ = Mid$(A$, 4)
                 Else
                     GoTo i123
                 End If
@@ -3377,9 +3571,7 @@ i123:
               Exit For
               Else
               gr = True
-              ''r$ = r$ & Left$(A$, 1)
               r$ = r$ & ChrW(P1)
-              'A$ = Mid$(A$, 2)
               RR& = 1 'is an identifier or floating point variable
               End If
     End If
