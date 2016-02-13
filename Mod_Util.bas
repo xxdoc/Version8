@@ -4290,7 +4290,7 @@ Dim I As Long, fs, b
     Set fs = CreateObject("Scripting.FileSystemObject")
   Set b = fs.GetFile(strTemp & "dummy." & extension)
     FileNameType = b.Type
-    Kill strTemp & "dummy." & extension
+    KillFile strTemp & "dummy." & extension
 End Function
 Function mylcasefILE(ByVal a$) As String
 If a$ = "" Then Exit Function

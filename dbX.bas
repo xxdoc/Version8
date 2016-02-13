@@ -22,6 +22,10 @@ Public Const DBtypeHelp = ".mdb" 'allways help has an mdb as type"
 Const DBSecurityOFF = ";Persist Security Info=False"
 
 Private Declare Function MoveFileW Lib "kernel32.dll" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long) As Long
+Private Declare Function DeleteFileW Lib "kernel32.dll" (ByVal lpFileName As Long) As Long
+Public Sub KillFile(sFilenName As String)
+DeleteFileW StrPtr(sFilenName)
+End Sub
 
 Public Function MoveFile(pOldPath As String, pNewPath As String)
 
@@ -328,7 +332,7 @@ If CFname((base)) <> "" Then
 ' check to see if is our
 RemoveOneConn base
 If CheckMine(base) Then
-Kill base
+KillFile base
 Err.clear
 
 Else
@@ -1437,18 +1441,18 @@ If realtype$ <> "" Then
     
     If Err.Number = 0 Then
     If ExtractPath(base) <> ExtractPath(BASE2) Then
-       Kill GetDosPath(base)
+       KillFile base
        Sleep 50
         If Err.Number = 0 Then
             MoveFile BASE2, base
             Sleep 50
 
         Else
-            If GetDosPath(BASE2) <> "" Then Kill GetDosPath(BASE2)
+            If GetDosPath(BASE2) <> "" Then KillFile BASE2
         End If
     
     Else
-        Kill GetDosPath(base)
+        KillFile base
         MoveFile BASE2, base
             Sleep 50
     
@@ -1509,12 +1513,12 @@ End If
 Else
 On Error Resume Next
 If Left$(base, 1) = "(" Or JetPostfix = ";" Then
-'skip this we can 't kill the base for odbc
+'skip this we can 't killfile the base for odbc
 Else
     If ExtractPath(base) = "" Then base = mylcasefILE(mcd + base)
     If ExtractType(base) = "" Then base = base & ".mdb"
     If Not CanKillFile(base) Then FilePathNotForUser: DELfields = False: Exit Function
-    If CheckMine(base) Then Kill base
+    If CheckMine(base) Then KillFile base
 End If
 
 End If

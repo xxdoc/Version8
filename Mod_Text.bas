@@ -20,7 +20,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 156
+Global Const Revision = 157
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -677,13 +677,13 @@ If x1 <> 0 Then
         If Not WeCanWrite(pa$) Then Exit Function
         If par Then
                 If s$ = "*" Then
-                       '' If CFname(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck") <> "" Then Kill GetDosPath(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck"): Sleep 30
+                       '' If CFname(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck") <> "" Then killfile GetDosPath(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck"): Sleep 30
                         MakeACopy pa$, ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck"
                 End If
                 If Not SaveUnicode(pa$, prg$, 0) Then BadFilename
                 Else
                 If s$ <> "" Then
-                        ''If CFname(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck") <> "" Then Kill GetDosPath(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck"):  Sleep 30
+                        ''If CFname(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck") <> "" Then killfile GetDosPath(ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck"):  Sleep 30
                         MakeACopy pa$, ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck"
                 End If
                 ProcSave = SaveUnicode(pa$, prg$, 2)  ' 2 = utf-8 standard save mode for version 7
@@ -2524,7 +2524,7 @@ Sub Dispose()
 On Error Resume Next
 Dim r$
 While ISSTRINGA(kill2$, r$)
-Kill strTemp + r$
+KillFile strTemp + r$
 Wend
 End Sub
 
@@ -20363,7 +20363,7 @@ s$ = App.path
 AddDirSep s$
 s$ = s$ & "M2000.EXE "
 If Shell(s$ & Chr(34) + strTemp + ss$ & Chr(34), vbNormalFocus) > 0 Then
-'Kill strTemp + ss$
+'killfile strTemp + ss$
 End If
 
 End If
@@ -25491,13 +25491,13 @@ Dim chk As String
 ThisFile = strTemp + ThisFile
 chk = CFname(ThisFile)
 textDel = (chk <> "")
-If chk <> "" Then Kill chk
+If chk <> "" Then KillFile chk
 End Function
 Private Function textPUT(bstack As basetask, ByVal ThisFile As String, THISBODY As String, c$, mode2save As Long) As Boolean
 Dim chk As String, b$, j As Long, PREPARE$, VR$, s$, v As Double, buf$, I As Long
 ThisFile = strTemp + ThisFile
 chk = GetDosPath(ThisFile)
-If chk <> "" And c$ = "new" Then Kill GetDosPath(chk)
+If chk <> "" And c$ = "new" Then KillFile GetDosPath(chk)
 On Error GoTo HM
 textPUT = True
 Do
@@ -25589,7 +25589,7 @@ If rl$ <> "" Then
 rl$ = GetStrUntil(Chr(34), rl$)
 End If
 Sleep 10
-Kill strTemp & "tmp." & tP$
+KillFile strTemp & "tmp." & tP$
 myRegister = Trim$(rl$)
 End Function
 Public Function PCall(ByVal sFile As String) As String
@@ -26551,7 +26551,7 @@ Dim Tmp$
 On Error Resume Next
 While tempList2delete <> ""
 If Not ISSTRINGA(tempList2delete, Tmp$) Then Exit Sub
-Kill Tmp$
+KillFile Tmp$
 Wend
 
 End Sub
