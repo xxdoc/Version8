@@ -3802,7 +3802,6 @@ Dim a$
 s$ = ""
 oldLCTCB dq, prive, 0
 Do
-Debug.Print INK
 If Not Once Then
 If USELIST Then
  DoEvents
