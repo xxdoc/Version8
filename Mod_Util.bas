@@ -1123,7 +1123,7 @@ Dim pixX As Long, pixY As Long
 Dim rTop As Long, rBottom As Long
 Dim lenw&, realR&, realstop&, r1 As Long, WHAT1$
 
-Dim a() As Byte
+Dim a() As Byte, a1() As Byte
 '' LEAVEME = False -  NOT NEEDED
 With mybasket
     mUAddPixelsTop = mybasket.uMineLineSpace \ dv15  ' for now
@@ -1143,9 +1143,12 @@ With mybasket
     lenw& = Len(what)
     WHAT1$ = what + " "
      ReDim a(Len(WHAT1$) * 2 + 20)
+       ReDim a1(Len(WHAT1$) * 2 + 20)
+     
      Dim skip As Boolean
      
      skip = GetStringTypeExW(&HB, 1, StrPtr(WHAT1$), Len(WHAT1$), a(0)) = 0  ' Or IsWine
+     skip = GetStringTypeExW(&HB, 4, StrPtr(WHAT1$), Len(WHAT1$), a1(0)) = 0 Or skip
         Do While (lenw& - r) >= .mx - PX And (.mx - PX) > 0
         
 
@@ -1166,7 +1169,7 @@ With mybasket
             If c$ >= " " Then
             
                If Not skip Then
-              If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 Then
+              If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
                           Do
                 p$ = Mid$(WHAT1$, r + 2, 1)
                 If AscW(p$) < 0 Then Mid$(WHAT1$, r + 2, 1) = " ": Exit Do
@@ -5483,19 +5486,23 @@ a112:
 
 
 End Sub
-Public Function RealLenOld(s$) As Long
-Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long
+Public Function RealLenOLD(s$, Optional checkone As Boolean = False) As Long
+Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long, ii As Long
 If IsWine Then
-RealLenOld = Len(s$)
+RealLenOLD = Len(s$)
 Else
 ctype = CT_CTYPE3
 ll = Len(s$)
    If ll Then
       ReDim a(Len(s$) * 2 + 20)
       If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), a(0)) <> 0 Then
+      ii = 0
       For I = 1 To Len(s$) * 2 - 1 Step 2
+      ii = ii + 1
       If a(I - 1) > 0 Then
-      If a(I) = 0 Then If a(I - 1) < 8 Then ll = ll - 1
+      If a(I) = 0 Then
+      If ii > 1 Then If a(I - 1) < 8 Then ll = ll - 1
+      End If
       ElseIf a(I) = 0 Then
       ll = ll - 1
       End If
@@ -5503,24 +5510,26 @@ ll = Len(s$)
           Next I
       End If
    End If
-RealLenOld = ll
+RealLenOLD = ll
 End If
 End Function
 Public Function RealLen(s$, Optional checkone As Boolean = False) As Long
-Dim a() As Byte, s1$, I As Long, ll As Long, ii As Long, l$, LLL$
+Dim a() As Byte, a1() As Byte, s1$, I As Long, ll As Long, ii As Long, l$, LLL$
 ll = Len(s$)
    If ll Then
-      ReDim a(Len(s$) * 2 + 20)
-      If GetStringTypeExW(&HB, 1, StrPtr(s$), Len(s$), a(0)) <> 0 Then
+      ReDim a(Len(s$) * 2 + 20), a1(Len(s$) * 2 + 20)
+         If GetStringTypeExW(&HB, 1, StrPtr(s$), Len(s$), a(0)) <> 0 And GetStringTypeExW(&HB, 4, StrPtr(s$), Len(s$), a1(0)) <> 0 Then
+         
 ii = 0
       For I = 1 To Len(s$) * 2 - 1 Step 2
 ii = ii + 1
        ' Debug.Print I, a(I - 1), a(I)
         If a(I - 1) = 0 Then
-        If a(I) <> 0 Then
+        If a(I) = 2 And a1(2) < 8 Then
         
                  If ii > 1 Then
                     s1$ = Mid$(s$, ii, 1)
+                    
                     If (AscW(s1$) And &HFFFF0000) = &HFFFF0000 Then
                     Else
                     If l$ = s1$ Then
@@ -5538,6 +5547,8 @@ ii = ii + 1
         Else
         LLL$ = ""
         End If
+       
+        
         End If
            l$ = Mid$(s$, ii, 1)
           Next I
@@ -5553,10 +5564,11 @@ ll = Len(s$)
 MM = ll
    If ll Then
       ReDim a(Len(s$) * 2 + 20)
-      If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, a(0)) <> 0 Then
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), a(0)) <> 0 Then
       For I = 1 To Len(s$) * 2 - 1 Step 2
+      If a(I - 1) > 0 Then
             If a(I) = 0 Then
-            If a(I - 1) > 0 Then
+            
             If a(I - 1) < 8 Then ll = ll - 1
             Else
             If Not one Then Exit For
