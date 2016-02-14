@@ -3750,7 +3750,7 @@ End Function
 
 Function QUERY(bstack As basetask, Prompt$, s$, m&, Optional USELIST As Boolean = True, Optional endchars As String = vbCr, Optional excludechars As String = "", Optional checknumber As Boolean = False) As String
 'NoAction = True
-Dim dX As Long, dy As Long
+Dim dX As Long, dy As Long, safe$
 
 If excludechars = "" Then excludechars = Chr$(0)
 If QUERYLIST = "" Then QUERYLIST = Chr$(13): LASTQUERYLIST = 1
@@ -3802,7 +3802,7 @@ Dim a$
 s$ = ""
 oldLCTCB dq, prive, 0
 Do
-
+Debug.Print INK
 If Not Once Then
 If USELIST Then
  DoEvents
@@ -3975,7 +3975,7 @@ DE$ = " "
                 DE$ = ""
             End If
         End If
-        
+
        LCTbasketCur dq, prive
         dX = .curpos
         dy = .currow
@@ -3988,16 +3988,19 @@ DE$ = " "
             
     End If
 End If
-
-If Asc(a$) > 31 And (RealLen(s$) < m& Or RealLen(a$, True) = 0) Then
+If safe$ <> "" Then
+        a$ = 65
+End If
+If AscW(a$) > 31 And (RealLen(s$) < m& Or RealLen(a$, True) = 0) Then
 If RealLen(a$, True) = 0 Then
 If Asc(a$) = 63 And s$ <> "" Then
 s$ = s$ & a$: a$ = s$: ExcludeOne s$: a$ = Mid$(a$, Len(s$) + 1)
 s$ = s$ + a$
 MKEY$ = ""
-INK = Chr$(8) + a$
+'UINK = ""
+safe$ = a$
+INK = Chr$(8)
 Else
-''A$ = A$ + A$
 If s$ = "" Then a$ = " "
 GoTo cont12345
 End If
@@ -4021,6 +4024,9 @@ GdiFlush
                     End If
             Else
             If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
+                   If safe$ <> "" Then
+        a$ = safe$: safe$ = ""
+End If
                 PlainBaSket dq, prive, a$, , , 0: s$ = s$ & a$
               If .curpos >= .mx Then
                                 .curpos = 0

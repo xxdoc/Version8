@@ -128,26 +128,26 @@ Loop Until lNumberOf10ThmiliSeconds < 0
 
 End Sub
 
-Public Sub SleepWaitNO(ByVal A As Long)
+Public Sub SleepWaitNO(ByVal a As Long)
 Exit Sub
  Dim b As New clsProfiler
 Dim l As Boolean, k
 l = NOEDIT
   b.MARKONE
   ''If A > 10 Then Sleep 0
-While A > b.MARKTWO And l = NOEDIT
+While a > b.MARKTWO And l = NOEDIT
 MyDoEvents2 Form1
 If TaskMaster.Processing Then TaskMaster.TimerTick Else Sleep 0
 
- A = A \ 3
+ a = a \ 3
 Wend
 End Sub
-Private Sub SleepWaitNew(A As Long)
+Private Sub SleepWaitNew(a As Long)
  Dim b As New clsProfiler
   b.MARKONE
 Do
  MyDoEvents
-Loop Until A > b.MARKTWO
+Loop Until a > b.MARKTWO
 End Sub
 Public Sub SleepWaitEdit(lNumberOf10ThmiliSeconds As Long)
     
