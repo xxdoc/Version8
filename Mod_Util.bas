@@ -1266,7 +1266,7 @@ r1 = RealLen(what$) - 1
         If c$ >= " " Then
        ' skip = True
              If Not skip Then
-           If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 Then
+           If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
             Do
                 p$ = Mid$(WHAT1$, r + 2, 1)
                 If AscW(p$) < 0 Then Mid$(WHAT1$, r + 2, 1) = " ": Exit Do
