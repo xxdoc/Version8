@@ -1,4 +1,14 @@
-﻿ΤΜΗΜΑ B {\\ script for making needed batch files for setting stack for m2000.exe
+﻿MODULE A {function rec {
+      read bb
+      if bb<=0 then =0 : exit function
+      print bb
+      =rec(bb-1)
+      
+}
+
+a= rec(14500)
+}
+MODULE B {\\ script for making needed batch files for setting stack for m2000.exe
 \\ when we make the final exe
 curdir$=dir$
 \\ use editbin from masm32
@@ -33,14 +43,4 @@ print #i, dd$
 close #i
 dos "cd "+quote$(appdir$) + " &&  Info.bat"
 set end  
-}
-ΤΜΗΜΑ A {function rec {
-      read bb
-      if bb<=0 then =0 : exit function
-      print bb
-      =rec(bb-1)
-      
-}
-
-a= rec(14500)
 }

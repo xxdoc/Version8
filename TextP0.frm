@@ -1521,7 +1521,7 @@ AutoRedraw = True
 If OneOnly Then Exit Sub
 OneOnly = True
 
-If m_bInIDE Then funcdeep = 128 Else funcdeep = 14800 ' need stack 102400000 bytes
+If m_bInIDE Then funcdeep = 128 Else funcdeep = 14800 ' need stack 102440960 bytes
 
 escok = False
 Sleep 10
@@ -2517,7 +2517,7 @@ End If
             If Not cc.Value = 0 Then funcdeep = cc.Value
             
         Else
-            cc.Value = 14500
+            cc.Value = 14800
             funcdeep = 128
         End If
         

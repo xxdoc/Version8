@@ -20,7 +20,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 161
+Global Const Revision = 162
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2673,7 +2673,7 @@ Do
     Exit Function
 
    End If
-:
+
 r1 = 1
 MUL = 0
 ''second  loop Logic...
@@ -2775,57 +2775,52 @@ Do
                 IsExpA = False
                 Exit Function
             End If
-    ' ElseIf IsLabelSymbolLatin(aa$, "DIV") Or IsLabelSymbol(aa$, "диа") Then
-      ElseIf Fast2Label(aa$, "DIV", "диа", "", 3) Then
-            If logical(bstack, aa$, r) Then
-                MUL = 4
-                r1 = po
-                po = r
-            ElseIf FastSymbol(aa$, "(") Then
-                If IsExp(bstack, aa$, r) Then
-                    MUL = 4
-                    r1 = po
-                    po = r
-                    If Not FastSymbol(aa$, ")") Then
+     ElseIf MaybeIsSymbol(aa$, "DMдуdmДУ") Then
+              If Fast2Label(aa$, "DIV", "диа", "", 4) Then
+                    If logical(bstack, aa$, r) Then
+                        MUL = 4
+                        r1 = po
+                        po = r
+                    ElseIf FastSymbol(aa$, "(") Then
+                        If IsExp(bstack, aa$, r) Then
+                            MUL = 4
+                            r1 = po
+                            po = r
+                            If Not FastSymbol(aa$, ")") Then
+                                IsExpA = False
+                                Exit Function
+                            End If
+                        End If
+                    Else
                         IsExpA = False
                         Exit Function
                     End If
-                End If
-            Else
-                IsExpA = False
-                Exit Function
-            End If
-ElseIf Fast2Label(aa$, "MOD", "упокоипо", "упок", 9) Then
-
-            If logical(bstack, aa$, r) Then
-                MUL = 5
-                r1 = po
-                po = r
-            ElseIf FastSymbol(aa$, "(") Then
-                If IsExp(bstack, aa$, r) Then
-                    MUL = 5
-                    r1 = po
-                    po = r
-                    If Not FastSymbol(aa$, ")") Then
+        ElseIf Fast2Label(aa$, "MOD", "упокоипо", "упок", 9) Then
+        
+                    If logical(bstack, aa$, r) Then
+                        MUL = 5
+                        r1 = po
+                        po = r
+                    ElseIf FastSymbol(aa$, "(") Then
+                        If IsExp(bstack, aa$, r) Then
+                            MUL = 5
+                            r1 = po
+                            po = r
+                            If Not FastSymbol(aa$, ")") Then
+                                IsExpA = False
+                                Exit Function
+                            End If
+                        End If
+                    Else
                         IsExpA = False
                         Exit Function
                     End If
-                End If
-            Else
-                IsExpA = False
-                Exit Function
-            End If
-ElseIf FastSymbol(aa$, ")") Then
-            If parenthesis > 0 Then
-                parenthesis = parenthesis - 1
-                po = ac + po
-                ac = 0
-            Else
-                aa$ = ")" & aa$
-                RR = ac + po
-                Exit Function
-            End If
-ElseIf Fast2Label(aa$, "XOR", "апо", "", 3, Not noand) Then
+        Else
+         logic = True
+         Exit Do
+        End If
+ElseIf MaybeIsSymbol(aa$, "AаXйгOАaxЙГoч╧") And noand Then
+If Fast2Label(aa$, "XOR", "апо", "", 4) Then
 '  good
   MUL = 3
     If priorityOr Then
@@ -2862,7 +2857,7 @@ ElseIf Fast2Label(aa$, "XOR", "апо", "", 3, Not noand) Then
         End If
     End If
 
-ElseIf Fast2Label(aa$, "OR", "г", "", 2, Not noand) Then
+ElseIf Fast2Label(aa$, "OR", "г", "", 2) Then
 '  good
   MUL = 3
 If priorityOr Then
@@ -2900,7 +2895,7 @@ If FastSymbol(aa$, "(") Then
  End If
 End If
 
-ElseIf Fast2Label(aa$, "AND", "йаи", "", 3, Not noand) Then
+ElseIf Fast2Label(aa$, "AND", "йаи", "", 3) Then
 '  good
   MUL = 3
 If FastSymbol(aa$, "(") Then
@@ -2923,6 +2918,20 @@ If FastSymbol(aa$, "(") Then
   po = po And r
      ac = 0
  End If
+Else
+logic = True
+Exit Do
+ End If
+ElseIf FastSymbol(aa$, ")") Then
+            If parenthesis > 0 Then
+                parenthesis = parenthesis - 1
+                po = ac + po
+                ac = 0
+            Else
+                aa$ = ")" & aa$
+                RR = ac + po
+                Exit Function
+            End If
 ElseIf FastSymbol(aa$, "<>") Then
 '  good
   MUL = 3
@@ -10856,129 +10865,157 @@ End Select
 
 End Function
 '
-Function Fast2Label(a$, c$, d$, e$, ahead&, Optional ByVal Bypass As Boolean = False) As Boolean
+Function Fast2Label(a$, c$, d$, e$, ahead&) As Boolean
 Dim I As Long, pad$
-If Bypass Or a$ = "" Then Exit Function
+'If Bypass Or a$ = "" Then Exit Function
+If Len(a$) = 0 Then Exit Function
 I = MyTrimL(a$)
 If I > Len(a$) Then Exit Function
-pad$ = myUcase(Mid$(a$, I, ahead&))
+pad$ = myUcase(Mid$(a$, I, ahead&)) + " "
+
 Select Case Len(c$)
 Case 0
 Exit Function
 Case 1
 If InStr(c$, Left$(pad$, 1)) > 0 Then
-'A$ = LTrim(Mid$(A$, i + 1))
-a$ = Mid$(a$, MyTrimLi(a$, I + 1))
-
-Fast2Label = True
+If Mid$(pad$, Len(c$) + 1, 1) Like "[0123456789+-\( @]" Then
+    a$ = Mid$(a$, MyTrimLi(a$, I + 1))
+    Fast2Label = a$ = "" Or a$
+End If
 Exit Function
 End If
 Case 2
 If InStr(c$, Left$(pad$, 2)) > 0 Then
+If Mid$(pad$, Len(c$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 2))
 Fast2Label = True
+End If
 Exit Function
 End If
 
 Case 3
 If InStr(c$, Left$(pad$, 3)) > 0 Then
+If Mid$(pad$, Len(c$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 3))
 Fast2Label = True
+End If
 Exit Function
 End If
 
 Case 4
 If InStr(c$, Left$(pad$, 4)) > 0 Then
+If Mid$(pad$, Len(c$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 4))
 Fast2Label = True
+End If
 Exit Function
 End If
-
 Case Else
 If InStr(c$, Left$(pad$, Len(c$))) > 0 Then
+If Mid$(pad$, Len(c$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + Len(c$)))
 Fast2Label = True
+End If
 Exit Function
 End If
 End Select
+
+
 Select Case Len(d$)
 Case 0
 Exit Function
 Case 1
 If InStr(d$, Left$(pad$, 1)) > 0 Then
-'A$ = LTrim(Mid$(A$, i + 1))
+If Mid$(pad$, Len(d$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 1))
-
 Fast2Label = True
+End If
 Exit Function
 End If
 Case 2
 If InStr(d$, Left$(pad$, 2)) > 0 Then
+If Mid$(pad$, Len(d$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 2))
 Fast2Label = True
+End If
 Exit Function
 End If
-
 Case 3
 If InStr(d$, Left$(pad$, 3)) > 0 Then
+If Mid$(pad$, Len(d$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 3))
 Fast2Label = True
+End If
 Exit Function
 End If
 
 Case 4
 If InStr(d$, Left$(pad$, 4)) > 0 Then
+If Mid$(pad$, Len(d$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 4))
 Fast2Label = True
+End If
 Exit Function
 End If
 
 Case Else
 If InStr(d$, Left$(pad$, Len(d$))) > 0 Then
+If Mid$(pad$, Len(d$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + Len(d$)))
 Fast2Label = True
+End If
 Exit Function
 End If
 End Select
+
+
 Select Case Len(e$)
 Case 0
 Exit Function
 Case 1
 If InStr(e$, Left$(pad$, 1)) > 0 Then
-'A$ = LTrim(Mid$(A$, i + 1))
+If Mid$(pad$, Len(e$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 1))
-
 Fast2Label = True
+End If
 Exit Function
 End If
 Case 2
 If InStr(e$, Left$(pad$, 2)) > 0 Then
+If Mid$(pad$, Len(e$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 2))
 Fast2Label = True
+End If
 Exit Function
 End If
 
 Case 3
 If InStr(e$, Left$(pad$, 3)) > 0 Then
+If Mid$(pad$, Len(e$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 3))
 Fast2Label = True
+End If
 Exit Function
 End If
 
 Case 4
 If InStr(e$, Left$(pad$, 4)) > 0 Then
+If Mid$(pad$, Len(e$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + 4))
 Fast2Label = True
+End If
 Exit Function
 End If
-
 Case Else
 If InStr(e$, Left$(pad$, Len(e$))) > 0 Then
+If Mid$(pad$, Len(e$) + 1, 1) Like "[0123456789+-\( @]" Then
 a$ = Mid$(a$, MyTrimLi(a$, I + Len(e$)))
 Fast2Label = True
+End If
 Exit Function
 End If
 End Select
+
 End Function
 Function Fast2LabelCheck(a$, c$, d$, e$, ahead&, Optional ByVal NoSpace As Boolean = False, Optional ByVal Bypass As Boolean = False) As Boolean
 ' check only
