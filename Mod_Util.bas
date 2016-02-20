@@ -3825,7 +3825,8 @@ LCTbasketCur dq, prive                       ' here
  End If
  End If
  End If
-If Not QRY Then HideCaret dq.hWnd: Exit Do
+If Not QRY Then HideCaret dq.hWnd:   Exit Do
+
  BLOCKkey = False
  If USELIST Then
 
@@ -4054,7 +4055,14 @@ End If
  .pageframe = 0
  End If
 End If
-If Not QRY Then Exit Do
+If Not QRY Then
+      LCTCB dq, prive, -1: DestroyCaret
+ oldLCTCB dq, prive, 0
+Exit Do
+''HideCaret dq.hWnd:
+
+
+End If
 Loop
 
 

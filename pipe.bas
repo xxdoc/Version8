@@ -168,33 +168,33 @@ End Enum
    End Function
  
 Function PurifyPath(Spath$) As String
-Dim A$(), i
+Dim a$(), I
 If Spath$ = "" Then Exit Function
-A$() = Split(Spath, "\")
-If isdir(A$(LBound(A$()))) Then i = i + 1
-For i = LBound(A$()) + i To UBound(A$())
-A$(i) = PurifyName(A$(i))
-Next i
-If LBound(A()) = UBound(A()) Then
-PurifyPath = A$(UBound(A$()))
+a$() = Split(Spath, "\")
+If isdir(a$(LBound(a$()))) Then I = I + 1
+For I = LBound(a$()) + I To UBound(a$())
+a$(I) = PurifyName(a$(I))
+Next I
+If LBound(a()) = UBound(a()) Then
+PurifyPath = a$(UBound(a$()))
 Else
-PurifyPath = ExtractPath(Join(A$, "\") & "\", False)
+PurifyPath = ExtractPath(Join(a$, "\") & "\", False)
 End If
 End Function
 Function PurifyName(sStr As String) As String
 Const noValidcharList = "\<>:/|"
-Dim A$, i As Long, ddt As Boolean
+Dim a$, I As Long, ddt As Boolean
 If Len(sStr) > 0 Then
-For i = 1 To Len(sStr)
-If InStr(noValidcharList, Mid$(sStr, i, 1)) = 0 Then
-A$ = A$ & Mid$(sStr, i, 1)
+For I = 1 To Len(sStr)
+If InStr(noValidcharList, Mid$(sStr, I, 1)) = 0 Then
+a$ = a$ & Mid$(sStr, I, 1)
 Else
-A$ = A$ & "-"
+a$ = a$ & "-"
 End If
 
-Next i
+Next I
 End If
-PurifyName = A$
+PurifyName = a$
 End Function
 
 Public Sub FixPath(s$)
@@ -321,14 +321,14 @@ End Function
 Public Function GetDosPath(LongPath As String) As String
 
 Dim s As String
-Dim i As Long
+Dim I As Long
 Dim PathLength As Long
 
-        i = Len(LongPath) * 2 + 2
+        I = Len(LongPath) * 2 + 2
 
         s = String(1024, 0)
 
-        PathLength = GetShortPathName(StrPtr(LongPath), StrPtr(s), i)
+        PathLength = GetShortPathName(StrPtr(LongPath), StrPtr(s), I)
 
         GetDosPath = Left$(s, PathLength)
 
@@ -359,33 +359,23 @@ End Sub
 
 
 Private Function IsArrayEmpty(va As Variant) As Boolean
-    Dim V As Variant
+    Dim v As Variant
     On Error Resume Next
-    V = va(LBound(va))
+    v = va(LBound(va))
     IsArrayEmpty = (Err <> 0)
 End Function
-Private Sub StrToBytes(ab() As Byte, s As String)
-    If IsArrayEmpty(ab) Then
-        ' Assign to empty array
-        ab = StrConv(s, vbFromUnicode)
-    Else
-        Dim cab As Long
-        ' Copy to existing array, padding or truncating if necessary
-        cab = UBound(ab) - LBound(ab) + 1
-        If Len(s) < cab Then s = s & String$(cab - Len(s), 0)
-            CopyMemoryStr ab(LBound(ab)), s, cab
-         End If
-End Sub
+
 
 Function Trans2pipe(pipe$, what$) As Boolean
 Dim s$, IL As Long, ok As Long, hPipe As Long, ok2 As Long
 s$ = validpipename(pipe$)
 Dim b() As Byte
-StrToBytes b(), what$
+b() = what$
+ReDim Preserve b(Len(what$) * 2 + 20) As Byte
 Trans2pipe = True
 hPipe = CreateFile(StrPtr(s$), GENERIC_WRITE, ByVal 0, ByVal 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, ByVal 0)
 If hPipe <> INVALID_HANDLE_VALUE Then
-ok2 = WriteFile(hPipe, b(0), Len(what$), IL, ByVal 0)
+ok2 = WriteFile(hPipe, b(0), Len(what$) * 2, IL, ByVal 0)
 ok = WaitNamedPipe(StrPtr(s$), 1000)
 ok = GetLastError = 0
 Trans2pipe = ok2 > 0 Or ok
@@ -395,19 +385,19 @@ End If
 CloseHandle hPipe
 Sleep 1
 End Function
-Function validpipename(ByVal A$) As String
+Function validpipename(ByVal a$) As String
 Dim b$
-A$ = myUcase(A$)
-b$ = Left$(A$, InStr(1, A$, "\pipe\", vbTextCompare))
+a$ = myUcase(a$)
+b$ = Left$(a$, InStr(1, a$, "\pipe\", vbTextCompare))
 If b$ = "" Then
-validpipename = "\\" & strMachineName & "\pipe\" & A$
+validpipename = "\\" & strMachineName & "\pipe\" & a$
 Else
-validpipename = A$
+validpipename = a$
 End If
 End Function
 
 Function Included(afile$, simple$) As String
-Dim A As Document
+Dim a As Document
 On Error GoTo inc1
 Dim what As Long
 Dim st&, pa&, po&
@@ -417,23 +407,23 @@ If simple$ = "" Then
 Included = ExtractName(afile$)
 Else
     Sleep 1
-    Set A = New Document
+    Set a = New Document
     
-    A.LCID = cLid
-    A.ReadUnicodeOrANSI afile$, , what
+    a.LCID = cLid
+    a.ReadUnicodeOrANSI afile$, , what
     If InStr(simple$, vbCr) > 0 Then
     'work with any char but using computer locale
-    If InStr(1, A.textDoc, simple$, vbTextCompare) > 0 Then
+    If InStr(1, a.textDoc, simple$, vbTextCompare) > 0 Then
                 Included = ExtractName(afile$)
     End If
     Else
     ' work in paragraphs..
-    If A.FindStr(simple$, st&, pa&, po&) > 0 Then
+    If a.FindStr(simple$, st&, pa&, po&) > 0 Then
                                                                 '   'If InStr(1, A$, simple$, vbTextCompare) > 0 Then
             Included = ExtractName(afile$)
     End If
     End If
-    Set A = Nothing
+    Set a = Nothing
 
 End If
 inc1:

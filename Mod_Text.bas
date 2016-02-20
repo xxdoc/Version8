@@ -20,7 +20,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 162
+Global Const Revision = 163
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -21184,7 +21184,7 @@ If Not NOEDIT Then
 
 NOEDIT = True
 Else
-If QRY Then QRY = False
+If QRY Then QRY = False  ''INK$ = Chr$(13) '
 End If
 Exit Function
 End If
@@ -25921,7 +25921,7 @@ If tofile < 0 Then
          End If
     
 Else
-        If InStr(pn&, arrname$, Chr(13)) <> 0 Then
+        If pn& < virtualtop Then
          If tofile < 0 Then
             If tofile = -1 Then
             If .mx - .curpos < Len(Trim$(Str$(w2)) & "), ") Then crNew bstack, players(prive)

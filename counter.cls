@@ -130,7 +130,8 @@ poulos:
   
 End Sub
 Private Function BytesToStr(ab() As Byte) As String
-    BytesToStr = StrConv(ab, vbUnicode)
+    BytesToStr = ab() 'StrConv(ab, vbUnicode)
+    
 End Function
 Private Sub TaskInterface_Tick()
  Dim x As Integer, mycnt As Long
@@ -157,7 +158,7 @@ If m_duration <= uintnew(CDbl(timeGetTime)) Then
   If mycnt > 0 Then
 
   
-    Thing mytarget$, Left$(BytesToStr(lpBuffer()), mycnt)
+    Thing mytarget$, Left$(BytesToStr(lpBuffer()), mycnt / 2)
     DisconnectNamedPipe hPipe
   End If
   ElseIf GetLastError = ERROR_NO_DATA Then
