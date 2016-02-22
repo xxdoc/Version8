@@ -2517,7 +2517,7 @@ End If
             If Not cc.Value = 0 Then funcdeep = cc.Value
             
         Else
-            cc.Value = 14800
+            cc.Value = 128
             funcdeep = 128
         End If
         

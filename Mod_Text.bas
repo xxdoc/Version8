@@ -20,7 +20,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 163
+Global Const Revision = 164
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -15875,7 +15875,7 @@ LONGERR:
             
             End If
 End Function
-Function GoFunc(mystack As basetask, what$, rest$, vl As Variant) As Boolean
+Function GoFunc(mystack As basetask, what$, rest$, vl As Variant, Optional recursive As Long) As Boolean
 Dim p As Double, I As Long, s$, it As Long, pa$
 Dim x1 As Long, frm$, par As Boolean, ohere$, w$
 Dim vars As Long, vname As Long, subs As Long, snames As Long
@@ -15922,10 +15922,14 @@ If GetSub(what$, x1) Then
 End If
 ElseIf GetlocalSub(what$, x1) Then
  HERE$ = RVAL(HERE$, 1)
-'ElseIf GetlocalSubExtra(what$, x1) Then
-'HERE$ = RVAL(HERE$, 1)
+'ElseIf GetSub(StripThis(basestack.OriginalName) + "." + what$, x1) Then
+ ' HERE$ = RVAL(HERE$, 1)
  ElseIf GetSub(what$, x1) Then
   HERE$ = RVAL(HERE$, 1)
+ ' ElseIf RVAL2(HERE$, -1) = what$ Then
+ ElseIf recursive > 0 Then
+  HERE$ = RVAL(HERE$, 1)
+  x1 = recursive
 End If
 End If
 If basestack.StaticCollection.Count > 0 Then
@@ -16915,13 +16919,20 @@ If I = 1 Then
     If FastSymbol(rest$, ",") Then
     End If
   ''  what$ = myUcase$(what$)
+    
     MakeThisSub basestack, what$
    it = GetlocalSub(what$, x1)
-   ' If Not it Then it = GetlocalSubExtra(what$, x1)
-
-    '
+    ''If Not it Then it = GetlocalSubExtra(what$, x1)
     If Not it Then it = GetSub(what$, x1)
-    
+ If Not it Then
+ For I = -iRVAL(HERE$, 0) To -1
+ 
+    it = GetSub(RVAL2(HERE$, I) + "." + what$, x1)
+    If it Then Exit For
+    Next I
+ End If
+
+
     If it Then
      Set bs = New basetask
      bs.reflimit = varhash.Count
@@ -16931,8 +16942,7 @@ If I = 1 Then
         Set bs.Owner = basestack.Owner
         bs.UseGroupname = sbf(x1).sbgroup
         bs.OriginalCode = x1
-
-       Call GoFunc(bs, what$, rest$, vvl)
+       Call GoFunc(bs, what$, rest$, vvl, x1)
                
         Set bs = Nothing
         basestack.nokillvars = False
@@ -24629,6 +24639,7 @@ If varhash.find(myUcase(nm$), I) Then
 GetGlobalVar = True
 End If
 End Function
+
 Function StripThis(ByVal n$) As String
 
 Dim a$, b$, I&
@@ -24841,6 +24852,19 @@ End Function
 Function GetlocalVar(nm$, I As Long) As Boolean
 If varhash.find(HERE$ & "." & myUcase(nm$), I) Then
 GetlocalVar = True
+End If
+End Function
+Function RVAL2(ByVal s$, v As Long) As String
+Dim ss$
+If InStr(s$, "[") = 0 Then
+RVAL2 = s$ & "[" & CStr(v) & "]"
+Else
+ss$ = GetStrUntil("[", s$)
+If Val(s$) + v <= 0 Then
+RVAL2 = ss$
+Else
+RVAL2 = ss$ & "[" & CStr(Val(s$) + v) & "]"
+End If
 End If
 End Function
 

@@ -4627,7 +4627,8 @@ If IsLabel(basestack1, s$, d$) > 0 Then
         ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
-                    cc.Value = funcdeep ' SET REVISION DEFAULT
+             funcdeep = 14800
+                    cc.Value = 14800 ' SET REVISION DEFAULT
         Else
             s$ = "+" & d$ & s$
             Exit Do
