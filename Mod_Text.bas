@@ -20,7 +20,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 164
+Global Const Revision = 165
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -16925,13 +16925,21 @@ If I = 1 Then
     ''If Not it Then it = GetlocalSubExtra(what$, x1)
     If Not it Then it = GetSub(what$, x1)
  If Not it Then
+ If HERE$ = what$ Then
+  it = True: x1 = basestack.OriginalCode
+ Else
  For I = -iRVAL(HERE$, 0) To -1
  
-    it = GetSub(RVAL2(HERE$, I) + "." + what$, x1)
+    it = GetSub(RVAL2(HERE$, I) + what$, x1)
     If it Then Exit For
     Next I
+   End If
+  If it = 0 Then
+ If StripThis(HERE$) = what$ Then
+ it = True: x1 = basestack.OriginalCode
  End If
-
+ End If
+ End If
 
     If it Then
      Set bs = New basetask
@@ -24857,13 +24865,13 @@ End Function
 Function RVAL2(ByVal s$, v As Long) As String
 Dim ss$
 If InStr(s$, "[") = 0 Then
-RVAL2 = s$ & "[" & CStr(v) & "]"
+RVAL2 = s$
 Else
 ss$ = GetStrUntil("[", s$)
 If Val(s$) + v <= 0 Then
-RVAL2 = ss$
+RVAL2 = ss$ + "."
 Else
-RVAL2 = ss$ & "[" & CStr(Val(s$) + v) & "]"
+RVAL2 = ss$ & "[" & CStr(Val(s$) + v) & "]."
 End If
 End If
 End Function
