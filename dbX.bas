@@ -141,7 +141,7 @@ AddDirSep cd
 p$ = Chr(34)
 c$ = ","
 d$ = doriginal$
-If Eng Then
+If Asc(d$) < 128 Then
 sql$ = "SELECT * FROM [COMMANDS] WHERE ENGLISH >= '" & UCase(d$) & "'"
 Else
 sql$ = "SELECT * FROM [COMMANDS] WHERE DESCRIPTION >= '" & myUcase(d$, True) & "'"

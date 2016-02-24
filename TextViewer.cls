@@ -3106,7 +3106,7 @@ If (Val(c$) Mod 10 = 0) And Not skip Then
 TR$ = String$(Len(Trim$(c$)), "0")
 a$ = Format((Val(c$) + 10), TR$) + Space$(Len(CurrentParagraph) - Len(c$) - Len(NLtrim$(b$)))
 Else
-If e$ <> "" And CStr((Val(c$) + 1)) = Trim$(e$) Then
+If e$ <> "" And Trim$(Str((Val(c$) + 1))) = Trim$(e$) Then
 maxw = glistN.UserControlTextWidth(c$)
 a$ = Space$(Len(c$))
 While glistN.UserControlTextWidth(a$) < maxw

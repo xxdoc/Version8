@@ -2414,10 +2414,13 @@ MYFONT = defFontname
                 cc.ValueKey = "HTML"
         cc.ValueType = REG_SZ
         cc.Value = pagiohtml$
+       
                cc.ValueKey = "FUNCDEEP"  ' BY DEFAULT
              cc.ValueType = REG_DWORD
              If Not m_bInIDE Then cc.Value = funcdeep
-                    
+            cc.ValueKey = "DEC"
+             cc.ValueType = REG_DWORD
+                    cc.Value = NoUseDec
                cc.ValueKey = "CASESENSITIVE"
         cc.ValueType = REG_SZ
         If cc.Value = "" Then
@@ -2517,10 +2520,11 @@ End If
             If Not cc.Value = 0 Then funcdeep = cc.Value
             
         Else
-            cc.Value = 128
             funcdeep = 128
         End If
-        
+             cc.ValueKey = "DEC"
+             cc.ValueType = REG_DWORD
+                     NoUseDec = cc.Value
         cc.ValueKey = "CASESENSITIVE"
         cc.ValueType = REG_SZ
        

@@ -334,7 +334,7 @@ End Function
 Public Function openMovie()
 
     'Open a m"+cstr(myID)+" in the default window style(Popup)
-    Dim A As Long, LASTF As String
+    Dim a As Long, LASTF As String
     LASTF = """" & FileName & """"
   '  error = mciSendString("close all", 0, 0, 0)
     'Decide which way you want the mci device to work below
@@ -416,15 +416,15 @@ End Function
 Public Function extractCurrentMovieSize(wLeft As Long, wTop As Long, wWidth As Long, wHeight As Long)
     'Returns the size parameters of the m"+cstr(myID)+"
     On Error Resume Next
-    Dim A As String
+    Dim a As String
     Dim b As String
     Dim c As String
     Dim f As String
     Dim g As String
-    A = getCurrentSize
-    b = InStr(1, A, " ")
-    c = InStr(b + 1, A, " ")
-    f = Mid(A, c + 1)
+    a = getCurrentSize
+    b = InStr(1, a, " ")
+    c = InStr(b + 1, a, " ")
+    f = Mid(a, c + 1)
     g = InStr(1, f, " ")
     wWidth = Val(Left(f, g)) 'width
     wHeight = Val(Mid(f, g)) 'height
@@ -432,15 +432,15 @@ End Function
 Public Function MovieHeight() As Long
     'Returns the size parameters of the m"+cstr(myID)+"
     On Error Resume Next
-    Dim A As String
+    Dim a As String
     Dim b As String
     Dim c As String
     Dim f As String
     Dim g As String
-    A = getCurrentSize
-    b = InStr(1, A, " ")
-    c = InStr(b + 1, A, " ")
-    f = Mid(A, c + 1)
+    a = getCurrentSize
+    b = InStr(1, a, " ")
+    c = InStr(b + 1, a, " ")
+    f = Mid(a, c + 1)
     g = InStr(1, f, " ")
        MovieHeight = Val(Mid(f, g)) 'height
 End Function
@@ -448,15 +448,15 @@ Public Function extractDefaultMovieSize(wWidth As Long, wHeight As Long)
     'Returns the default size of the m"+cstr(myID)+" even if the size
     'of the m"+cstr(myID)+" has been changed
     On Error Resume Next
-    Dim A As String
+    Dim a As String
     Dim b As String
     Dim c As String
     Dim f As String
     Dim g As String
-    A = getDefaultSize
-    b = InStr(1, A, " ") '2
-    c = InStr(b + 1, A, " ") '4
-    f = Mid(A, c + 1) '9
+    a = getDefaultSize
+    b = InStr(1, a, " ") '2
+    c = InStr(b + 1, a, " ") '4
+    f = Mid(a, c + 1) '9
     g = InStr(1, f, " ")
     wWidth = Val(Left(f, g)) 'width
     wHeight = Val(Mid(f, g)) 'height
@@ -651,22 +651,22 @@ Private Function getThisTime(ByVal timein As Long) As String
     remTime = remTime Mod 60
     conS = remTime
     If conH > 0 Then
-        strRetTime = Trim(Str(conH)) & ":"
+        strRetTime = LTrim(Str(conH)) & ":"
     Else
         strRetTime = ""
     End If
     If conM >= 10 Then
-        strRetTime = strRetTime & Trim(Str(conM))
+        strRetTime = strRetTime & LTrim(Str(conM))
     ElseIf conM > 0 Then
-        strRetTime = strRetTime & Trim(Str(conM))
+        strRetTime = strRetTime & LTrim(Str(conM))
     Else
         strRetTime = strRetTime & "0"
     End If
     strRetTime = strRetTime & ":"
     If conS >= 10 Then
-        strRetTime = strRetTime & Trim(Str(conS))
+        strRetTime = strRetTime & LTrim(Str(conS))
     ElseIf conS > 0 Then
-        strRetTime = strRetTime & "0" & Trim(Str(conS))
+        strRetTime = strRetTime & "0" & LTrim(Str(conS))
     Else
         strRetTime = strRetTime & "00"
     End If

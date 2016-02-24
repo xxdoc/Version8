@@ -8,7 +8,8 @@ Public UseEsc As Boolean
 ' 1 to 32 for layers
 ' 0 for DIS
 ' 33 for Back
-Public priorityOr As Boolean
+Public NowDec$, NowThou$
+Public priorityOr As Boolean, NoUseDec As Boolean
 Public Const DisForm = 0
 Public Const BackForm = -1
 Public Const PrinterPage = -2
@@ -20,7 +21,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 165
+Global Const Revision = 166
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -226,7 +227,7 @@ Private Declare Function SysReAllocStringLen Lib "oleaut32.dll" (ByVal pBSTR As 
 
 Function enthesi(bstack As basetask, rest$) As String
 'first is the string "label {0} other {1}
-Dim counter As Long, pat$, final$, pat1$, pl1 As Long, pl2 As Long
+Dim counter As Long, pat$, final$, pat1$, pl1 As Long, pl2 As Long, pl3 As Long
 Dim q$, p As Double, P1 As Double, pd$
 If IsStrExp(bstack, rest$, final$) Then
   If FastSymbol(rest$, ",") Then
@@ -243,17 +244,58 @@ AGAIN1:
         pl2 = InStr(pl2, final$, pat1$)
         If pl2 > 0 Then
         pl1 = InStr(pl2, final$, "}")
+        If Mid$(final$, pl2 + Len(pat1$), 1) = ":" Then
+        P1 = 0
+        pl3 = Val(Mid$(final$, pl2 + Len(pat1$) + 1) + "}")
+        Else
         P1 = Val("0" + Mid$(final$, pl2 + Len(pat1$)))
+        
+        pl3 = Val(Mid$(final$, pl2 + Len(pat1$) + Str$(P1)) + "}")
         If P1 < 0 Then P1 = 22
         If P1 > 22 Then P1 = 22
-      pd$ = CStr(MyRound(p, P1))
+      p = MyRound(p, P1)
+      End If
+      pd$ = LTrim(Str(p))
+      
       If InStr(pd$, "E") > 0 Or InStr(pd$, "e") > 0 Then '' we can change e to greek Е
-      pd$ = Format$(p, "#." + String$(P1, "#") + "E+####")
+      pd$ = Format$(p, "#." + String$(P1, "0") + "E+####")
+           If Not NoUseDec Then
+            If InStr(pd$, NowDec$) > 0 Then
+                pd$ = Replace$(pd$, NowDec$, Chr(2))
+                pd$ = Replace$(pd$, NowThou$, ",")
+                pd$ = Replace$(pd$, Chr(2), ".")
+            
+            End If
+            End If
+      ElseIf P1 <> 0 Then
+       pd$ = Format$(p, "#." + String$(P1, "0"))
+               If Not NoUseDec Then
+            If InStr(pd$, NowDec$) > 0 Then
+                pd$ = Replace$(pd$, NowDec$, Chr(2))
+                pd$ = Replace$(pd$, NowThou$, ",")
+                pd$ = Replace$(pd$, Chr(2), ".")
+            
+            End If
+            End If
+      End If
+   
+      If pl3 <> 0 Then
+        If pl3 > 0 Then
+            pd$ = Left$(pd$ + Space$(pl3), pl3)
+            Else
+            pd$ = Right$(Space$(Abs(pl3)) + pd$, Abs(pl3))
+            End If
       End If
             final$ = Replace$(final$, Mid$(final$, pl2, pl1 - pl2 + 1), pd$)
             GoTo AGAIN1
         Else
+        If NoUseDec Then
             final$ = Replace$(final$, pat$, CStr(p))
+        Else
+        final$ = Replace$(final$, pat$, LTrim(Str(p)))
+        End If
+        
+        
             End If
             If Not FastSymbol(rest$, ",") Then Exit Do
         Else
@@ -1153,9 +1195,12 @@ work = True
         If xa Then
         s$ = PACKLNG2$(p)
         Else
-
-        s$ = CStr(p)
-
+If NoUseDec Then
+   s$ = CStr(p)
+   
+Else
+ s$ = Trim$(Str(p))
+End If
       If .FTEXT < 4 Then
         If InStr(s$, ".") > 0 Then
          If InStr(s$, ".") <= .Column Then
@@ -2298,12 +2343,14 @@ End If
 mcd = userfiles
 
 ' now for locale info changes
-q$ = "." & Chr$(0)
-DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDECIMAL, q$)
-DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SMONDECIMALSEP, q$)
-q$ = "," & Chr$(0)
-DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, q$)
-DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SMONTHOUSANDSEP, q$)
+'q$ = "." & Chr$(0)
+NowDec$ = GetlocaleString(LOCALE_SDECIMAL)
+NowThou$ = GetlocaleString(LOCALE_STHOUSAND)
+'DUMMY = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDECIMAL, q$)
+'DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SMONDECIMALSEP, q$)
+'q$ = "," & Chr$(0)
+'DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, q$)
+'DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SMONTHOUSANDSEP, q$)
 End Sub
 Public Function Originalusername()
 
@@ -10363,7 +10410,7 @@ Do
 If IsStrExp(bstackstr, a$, q$) Then
  r$ = r$ & q1$ & Chr(34) + q$ & Chr(34)
 ElseIf IsExp(bstackstr, a$, p) Then
-        r$ = r$ & q1$ & CStr(p)
+        r$ = r$ & q1$ & Trim(Str$(p))
         Else
         IsString = False: Exit Function
         End If
@@ -10507,13 +10554,43 @@ Case "FIELD$(", "педио$("
         If FastSymbol(a$, ",") Then
             If IsStrExp(bstackstr, a$, q$) Then
             r$ = Format(p, q$)
+            If Not NoUseDec Then
+            If InStr(r$, NowDec$) > 0 Then
+                r$ = Replace$(r$, NowDec$, Chr(2))
+                r$ = Replace$(r$, NowThou$, ",")
+                r$ = Replace$(r$, Chr(2), ".")
+            
+            End If
+            End If
+            If FastSymbol(a$, ",") Then
+            If IsExp(bstackstr, a$, PP) Then
+            If PP > 0 Then
+            r$ = Left$(r$ + Space$(PP), PP)
+            Else
+            r$ = Right$(Space$(Abs(PP)) + r$, Abs(PP))
+            End If
+            Else
+            IsString = False
+            Exit Function
+            End If
+            End If
+            
+            ElseIf IsExp(bstackstr, a$, PP) Then
+            
+            If PP > 0 Then
+            r$ = Left$(Trim$(Str(p)) + Space$(PP), PP)
+            Else
+            r$ = Right$(Space$(Abs(PP)) + Trim$(Str(p)), Abs(PP))
+            End If
             Else
             IsString = False
             Exit Function
             End If
         Else
         r$ = Str(p)
+        
         End If
+        
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
     IsString = True
     Exit Function
@@ -21231,7 +21308,7 @@ If FastSymbol(rest$, "!") Then
                     
                     If y < 1 And x1 = 0 Then y = 1
                      If GetVar(bstack, what$, I) Then
-                     s$ = CStr(var(I))
+                     s$ = LTrim(Str(var(I)))
                      Do
                      s$ = iText(bstack, s$, (x), (y), "", x1, True, f = 4)
                      Loop Until ValidNum(s$, True, f = 4)
@@ -21240,9 +21317,9 @@ If FastSymbol(rest$, "!") Then
                      Else
                      If I = -1 Then
                      If f = 4 Then
-                      s$ = CStr(ReadVarInt(bstack, what$))
+                      s$ = LTrim(Str(ReadVarInt(bstack, what$)))
                      Else
-                      s$ = CStr(ReadVarDouble(bstack, what$))
+                      s$ = LTrim(Str(ReadVarDouble(bstack, what$)))
                       End If
                       Do
                      s$ = iText(bstack, s$, (x), (y), "", x1, True, f = 4)
@@ -21324,7 +21401,7 @@ If y < 1 And x1 = 0 Then y = 1
 
             
             
-       s$ = CStr(pppp.item(it))
+       s$ = LTrim(Str(pppp.item(it)))
                       Do
                      s$ = iText(bstack, s$, (x), (y), "", x1, True, f = 7)
                      Loop Until ValidNum(s$, True, f = 7)
@@ -21376,7 +21453,7 @@ If y < 1 And x1 = 0 Then y = 1
                 End If
                 Form1.ShadowMarks = True
                 If y < 1 And x1 = 0 Then y = 1
-                s$ = iText(bstack, CStr(pppp.item(it)), (x), (y), frm$, x1)
+                s$ = iText(bstack, LTrim(Str(pppp.item(it))), (x), (y), frm$, x1)
                 Form1.ShadowMarks = False
                 If Typename(pppp.item(it)) = doc Then
                         Set pppp.item(it) = New Document
@@ -23284,7 +23361,7 @@ Select Case .StackItemType(I)
 Case "?"
 s$ = s$ & "(?) "
 Case "N"
-s$ = s$ & CStr(.StackItem(I)) & " "
+s$ = s$ & Trim$(Str(.StackItem(I))) & " "
 Case "S"
 ss$ = .StackItem(I)
     If Len(ss$) > 78 Then
@@ -24323,10 +24400,8 @@ Else
 End If
 End If
 If HERE$ = "" Or makeitglobal Then
-''VarName$ = VarName$ & Chr(1) + myUcase(NAME$) + constwidth(j)
 varhash.ItemCreator myUcase(name$), j, Link
 Else
-''VarName$ = VarName$ & Chr(1) + here$ & "." & myUcase(NAME$) + constwidth(j)
 varhash.ItemCreator HERE$ & "." & myUcase(name$), j, Link
 End If
 GlobalVar = j
@@ -24337,10 +24412,8 @@ Dim j As Long
 j = AllocVar() ' var2used
  var(j) = CLng(0)  ' like an empty...
 If HERE$ = "" Or gl Then
-''VarName$ = VarName$ & Chr(1) + myUcase(name$) + constwidth(j)
 varhash.ItemCreator myUcase(name$), j
 Else
-'VarName$ = VarName$ & Chr(1) + here$ & "." & myUcase(name$) + constwidth(j)
 varhash.ItemCreator HERE$ & "." & myUcase(name$), j
 
 End If
@@ -26472,11 +26545,7 @@ Next I
    st$ = Left$(st$, I)
     VALIDATE = ok
 End Function
-Function constwidth(one As Long) As String
-' I use constwidth to perform rebound..;;
-constwidth = " ..............."
-Mid$(constwidth, 2) = CStr(one)
-End Function
+
 Public Function VALIDATEpart(st$, p$) As Boolean
 Dim DUMMY As Double
 Dim I As Long, j As Long, ok As Boolean, s$
@@ -28207,9 +28276,9 @@ Else
                                 End If
               Case 3
               If GetVar(bstack, what$, it) Then
-                                    var(it) = CStr(result)
+                                    var(it) = result
                                 Else
-                                    GlobalVar what$, CStr(result), glob
+                                    GlobalVar what$, result, glob
                                     
                                 End If
               End Select
@@ -29031,7 +29100,7 @@ Dim s() As String
                            If I = OvarnameLen Then CM$ = "Local " Else CM$ = ", "
                            If nt$ = "Long" Then
                            If CM$ = "," Then nt1$ = "" Else nt1$ = nt$ + " "
-                           .LocalList = .LocalList + CM$ + nt1$ + nm$ + "=" + CStr(var(j))
+                           .LocalList = .LocalList + CM$ + nt1$ + nm$ + "=" + Trim$(Str(var(j)))
                            ElseIf nt$ = "mArray" Then
                             .LocalList = .LocalList + vbCrLf + "local DIM " + dimString(nm$ + Str$(j)) + vbCrLf
                            ElseIf nt$ = doc Then
@@ -31820,7 +31889,7 @@ againhere:
                                                                                                                   
                                                                                                                      Select Case VarType(.item(I + v))
                                                                                                                      Case 5
-                                                                                                                     var(V1) = var(V1) + " " + CStr(.item(I + v))
+                                                                                                                     var(V1) = var(V1) + " " + Trim$(Str(.item(I + v)))
                                                                                                                      Case 8
                                                                                                                      w$ = .item(I + v)
                                                                                                                      If IsNumberD2(w$, p) Then

@@ -4535,10 +4535,16 @@ s$ = mylcasefILE(s$)
             priorityOr = False
             ElseIf d$ = "REG" Then
             gsb_file False
+            ElseIf d$ = "DEC" Then
+            cc.ValueKey = "DEC"
+             cc.ValueType = REG_DWORD
+                    cc.Value = True
+                    NoUseDec = True
             ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
                     cc.Value = 128
+                    funcdeep = 128
             Else
             s$ = "-" & d$ & s$
             Exit Do
@@ -4624,6 +4630,11 @@ If IsLabel(basestack1, s$, d$) > 0 Then
                 cc.ValueType = REG_DWORD
                 cc.Value = True
             priorityOr = True
+        ElseIf d$ = "DEC" Then
+            cc.ValueKey = "DEC"
+             cc.ValueType = REG_DWORD
+                    cc.Value = False
+                    NoUseDec = False
         ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
