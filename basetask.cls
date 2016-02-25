@@ -111,11 +111,11 @@ Dim var As Variant
    AlterVar = True
 End Function
 Function MyRound(ByVal x, Optional d As Double = 0) As Double
-Dim I, n
-  I = Abs(Int(d)): If I > 13 Then I = 13
+Dim i, n
+  i = Abs(Int(d)): If i > 13 Then i = 13
   n = Sgn(x) * 0.5
 
-Select Case I
+Select Case i
 Case 0
 MyRound = Fix(x + n)
 Case 1
@@ -147,21 +147,21 @@ MyRound = Fix(x * 10000000000000# + n) / 10000000000000#
 End Select
 End Function
 Public Function ExistVar(ByVal name$) As Boolean
-    Dim I As Long
+    Dim i As Long
     On Error Resume Next
     If StaticCollection.Count = 0 Then Exit Function
     If Err Then Exit Function
-    I = VarType(StaticCollection(name$))
+    i = VarType(StaticCollection(name$))
     If Err.Number > 0 Then Exit Function
     ExistVar = True
 End Function
 Public Sub ReadVar(ByVal name$, var As Variant)
-    Dim I As Long, VV As Variant
+    Dim i As Long, VV As Variant
     On Error Resume Next
-    I = VarType(StaticCollection(name$))
+    i = VarType(StaticCollection(name$))
     If Err.Number Then var = Empty: Exit Sub
     ''Debug.Print NAME$, OriginalName, OriginalCode, HERE$, mGroupName
-    If I = vbObject Then
+    If i = vbObject Then
             Set var = StaticCollection(name$)
             StaticCollection.remove name$  '' we do a remove
             Set VV = Nothing
@@ -175,37 +175,37 @@ End Sub
 Public Sub DropNdot(n As Long)
 ''On Error Resume Next
 If n = 0 Then Exit Sub
-Dim I As Long
+Dim i As Long
 If dotcollection.Count - n < 0 Then
 Set dotcollection = New Collection
 Else
-For I = dotcollection.Count To dotcollection.Count - n + 1 Step -1
+For i = dotcollection.Count To dotcollection.Count - n + 1 Step -1
 dotcollection.remove dotcollection.Count
-Next I
+Next i
 End If
 End Sub
-Public Sub MoveNameDot(a$)
-If a$ = "" Then Exit Sub
+Public Sub MoveNameDot(A$)
+If A$ = "" Then Exit Sub
 If dotcollection.Count = 0 Then
-dotcollection.Add a$
+dotcollection.Add A$
 Else
-dotcollection.Add a$, , , dotcollection.Count
+dotcollection.Add A$, , , dotcollection.Count
 End If
 End Sub
-Public Function GetDotNew(a$, dotnum&) As Boolean
-If Look2Parent Then GetDotNew = Parent.GetDotNew(a$, dotnum&): Exit Function
+Public Function GetDotNew(A$, dotnum&) As Boolean
+If Look2Parent Then GetDotNew = Parent.GetDotNew(A$, dotnum&): Exit Function
 
 On Error Resume Next
 If dotcollection.Count = 0 Then
 If UseGroupname <> "" Then
- If InStr(a$, "(") > 0 Then
- If AscW(Left$(a$, 1)) > 255 Then
- a$ = "¡’‘œ." + a$
+ If InStr(A$, "(") > 0 Then
+ If AscW(Left$(A$, 1)) > 255 Then
+ A$ = "¡’‘œ." + A$
  Else
- a$ = "THIS." + a$
+ A$ = "THIS." + A$
  End If
  Else
- a$ = UseGroupname + a$
+ A$ = UseGroupname + A$
  End If
 
  
@@ -226,7 +226,7 @@ Else
  'End If
   '          Else
             
-            a$ = UseGroupname + a$
+            A$ = UseGroupname + A$
    '         End If
 
  End If
@@ -234,42 +234,42 @@ Else
 
   If dotcollection(dotnum) = "THIS" Then
     If UseGroupname <> "" Then
-      a$ = UseGroupname + a$
+      A$ = UseGroupname + A$
     Else
-    a$ = "THIS." + a$
+    A$ = "THIS." + A$
     End If
   Else
-    a$ = dotcollection(dotnum) + "." + a$
+    A$ = dotcollection(dotnum) + "." + A$
 
     End If
-    If Asc(a$) = 46 Then
+    If Asc(A$) = 46 Then
     dotnum = 1
-    While Asc(Mid$(a$, dotnum + 1) + " ") = 46
+    While Asc(Mid$(A$, dotnum + 1) + " ") = 46
     dotnum = dotnum + 1
     Wend
-    a$ = Mid$(a$, dotnum + 1)
+    A$ = Mid$(A$, dotnum + 1)
     GoTo newrun
     End If
     End If
     End If
     GetDotNew = Err.Number = 0
 End Function
-Public Function GetDot(a$, st&) As Boolean
+Public Function GetDot(A$, st&) As Boolean
 On Error Resume Next
-Dim I&
+Dim i&
 Err.clear
-If dotcollection.Count = 0 Then a$ = Mid$(a$, 2): Exit Function
-Do While Mid$(a$, st&, 1) = " "
+If dotcollection.Count = 0 Then A$ = Mid$(A$, 2): Exit Function
+Do While Mid$(A$, st&, 1) = " "
 st& = st& + 1
-If st& > Len(a$) Then Exit Function
+If st& > Len(A$) Then Exit Function
 Loop
 
-For I& = st& + 1 To Len(a$)
-If Mid$(a$, I&, 1) <> "." Then I& = I& + 1: Exit For
-Next I&
-I& = I& - 2
+For i& = st& + 1 To Len(A$)
+If Mid$(A$, i&, 1) <> "." Then i& = i& + 1: Exit For
+Next i&
+i& = i& - 2
 ' from st& to i& replace name
-a$ = Left$(a$, st& - 1) + dotcollection(I& - st& + 1) + Mid$(a$, I&)
+A$ = Left$(A$, st& - 1) + dotcollection(i& - st& + 1) + Mid$(A$, i&)
 
 If Not Err Then GetDot = True
 End Function
@@ -346,8 +346,8 @@ Public Property Get Parent() As basetask
 Set Parent = MyParent
 
 End Property
-Public Property Set Sorosref(a As mStiva)
-Set parentSoros = a
+Public Property Set Sorosref(A As mStiva)
+Set parentSoros = A
 End Property
 Public Property Get RetStack() As mStiva
 Set RetStack = RetSoros
@@ -355,8 +355,8 @@ End Property
 Public Property Get soros() As mStiva
 Set soros = parentSoros
 End Property
-Public Property Set Owner(a As Object)
-Set myOwner = a
+Public Property Set Owner(A As Object)
+Set myOwner = A
 End Property
 Public Property Get Owner() As Object
 If mtoprinter Then
@@ -384,12 +384,12 @@ Public Sub EndRun()
 ' Ï¸ÌÔ ·¸ ÙÔ Myprocess.tick
 myRun = False
 End Sub
-Public Property Set Process(a As TaskInterface)
-If mprocess Is a Then
+Public Property Set Process(A As TaskInterface)
+If mprocess Is A Then
 Set mprocess = Nothing
 mprocessOk = True
 Else
-Set mprocess = a
+Set mprocess = A
 
 mprocessOk = True
 End If
@@ -398,10 +398,10 @@ Public Property Get Process() As TaskInterface
 Set Process = mprocess
 
 End Property
-Public Property Set LinkThread(Threadid As Long, a As TaskInterface)
+Public Property Set LinkThread(Threadid As Long, A As TaskInterface)
 Dim aa As mThreadref
 Set aa = threadsnames(CStr(Threadid))
-Set aa.thread = a
+Set aa.thread = A
 
 End Property
 
@@ -451,28 +451,28 @@ Set aa = Nothing
 End Function
 Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 '' use threadsnames
-Dim aa As mThreadref, a$
+Dim aa As mThreadref, A$
 If threadsnames.Count > 0 Then
 For Each aa In threadsnames
 If Left$(aa.varname, 1) = "_" Then
 If lang = 0 Then
-a$ = a$ & "≈”Ÿ‘≈—… œ Õ«Ã¡ "
+A$ = A$ & "≈”Ÿ‘≈—… œ Õ«Ã¡ "
 Else
-a$ = a$ & "INTERNAL THREAD "
+A$ = A$ & "INTERNAL THREAD "
 End If
 Else
-a$ = a$ & aa.varname + Str$(aa.Id) & " "
+A$ = A$ & aa.varname + Str$(aa.Id) & " "
 End If
 Next aa
 End If
 If Me.IamChild Then
 If Not Me.Parent Is Nothing Then
-ThreadsStr = Trim$(a$ & Me.Parent.ThreadsStr(lang))
+ThreadsStr = Trim$(A$ & Me.Parent.ThreadsStr(lang))
 Else
 ThreadsStr = ""
 End If
 Else
-ThreadsStr = Trim$(a$)
+ThreadsStr = Trim$(A$)
 End If
 End Function
 Public Function ThreadsNumber() As Long

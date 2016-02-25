@@ -9,7 +9,7 @@ Public UseEsc As Boolean
 ' 0 for DIS
 ' 33 for Back
 Public NowDec$, NowThou$
-Public priorityOr As Boolean, NoUseDec As Boolean
+Public priorityOr As Boolean, NoUseDec As Boolean, mNoUseDec As Boolean
 Public Const DisForm = 0
 Public Const BackForm = -1
 Public Const PrinterPage = -2
@@ -21,7 +21,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 167
+Global Const Revision = 168
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2028,7 +2028,7 @@ On Error Resume Next
 Dim it As Long, pppp As mArray
 If Len(w$) < 2 Then Exit Sub
 
-If Asc(w$) = 65 Then
+If AscW(w$) = 65 Then
 On Error Resume Next
 Err.clear
 Set pppp = var(Split(Mid$(w$, 2))(0)) ''  "A...16charRef....ItemNo"
@@ -2039,7 +2039,7 @@ pppp.item(it).textDoc = v$  ' no checked yet
 Else
 pppp.item(it) = pppp.item(it) + v$
 End If
-ElseIf Asc(w$) = 86 Then
+ElseIf AscW(w$) = 86 Then
 it = Val("0" & Mid$(w$, 2))          ''"VItemNo"
 If Typename(var(it)) = doc Then
 var(it).textDoc = v$    ' no checked yet
@@ -2341,16 +2341,20 @@ MkDir userfiles
 End If
 
 mcd = userfiles
-
-' now for locale info changes
-'q$ = "." & Chr$(0)
 NowDec$ = GetlocaleString(LOCALE_SDECIMAL)
 NowThou$ = GetlocaleString(LOCALE_STHOUSAND)
-'DUMMY = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDECIMAL, q$)
-'DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SMONDECIMALSEP, q$)
-'q$ = "," & Chr$(0)
-'DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, q$)
-'DUMMY = SetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SMONTHOUSANDSEP, q$)
+
+CheckDec
+
+End Sub
+Public Sub CheckDec()
+
+
+If NowDec$ = "." Then
+NoUseDec = False
+Else
+NoUseDec = mNoUseDec
+End If
 End Sub
 Public Function Originalusername()
 
@@ -7526,7 +7530,7 @@ Function IsLabel(bstack As basetask, A$, rrr$, Optional NoSpace As Boolean = Fal
 Dim RR&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean, r$, cc As Long
 'r$ = ""
 If A$ = "" Then IsLabel = 0: Exit Function
-If Not NoSpace Then A$ = NLtrim$(A$) Else If Asc(A$) = 32 Then Exit Function
+If Not NoSpace Then A$ = NLtrim$(A$) Else If AscW(A$) = 32 Then Exit Function
     Do While Len(A$) > 0
      c$ = Left$(A$, 1) 'ANYCHAR HERE
     If AscW(c$) < 256 Then
@@ -10778,7 +10782,7 @@ If q$ <> "" Then A$ = q$ & " " & A$
 q$ = ""
 End Select
 If A$ = "" Then IsString = False: Exit Function
-Select Case Asc(A$)
+Select Case AscW(A$)
 Case 1
 q$ = Chr(1)
 Case 2
@@ -10812,7 +10816,7 @@ Dim q$, w As Long, A$
 A$ = NLtrim$(bb$)
 r$ = ""
 If A$ = "" Then Exit Function
-Select Case Asc(A$)
+Select Case AscW(A$)
 Case 1
 q$ = Chr(1)
 Case 2
@@ -10851,7 +10855,7 @@ End If
 End Function
 Function codeW(A$) As Long
 If A$ <> "" Then
-If Asc(A$) < 128 Then codeW = 1
+If AscW(A$) < 128 Then codeW = 1
 End If
 End Function
 Function placeme$(gre$, Eng$, code As Long)
@@ -11474,7 +11478,7 @@ If A$ <> "" And c$ <> "" Then
         If FastSymbol(test$, c$) Then
             If needspace Then
                 If test$ = "" Then
-                ElseIf Asc(test$) < 36 Then
+                ElseIf AscW(test$) < 36 Then
                 ElseIf InStr(":;\',", Left$(test$, 1)) > 0 Then ' : ; ,
                 Else
                     Exit Function
@@ -11518,7 +11522,7 @@ If A$ <> "" And c$ <> "" Then
         test$ = Mid$(test$, pass)
         If needspace Then
             If test$ = "" Then
-            ElseIf Asc(test$) < 36 Then
+            ElseIf AscW(test$) < 36 Then
             ElseIf InStr(":;\',", Left$(test$, 1)) > 0 Then
             ' : ; ,
             Else
@@ -13180,7 +13184,7 @@ dothesame:
         Case "FOR", "циа"
         If VarStat Or NewStat Then GoTo errstat
                   If linebyline Then
-                  If Asc(b$) <> 32 Then
+                  If AscW(b$) <> 32 Then
                 
           b$ = w$ + " " + b$
           Else
@@ -15264,7 +15268,7 @@ parsecommand:
                Exit Function
                Else
                iscom = False
-               If b$ <> "" Then lbl = Asc(b$) = 13
+               If b$ <> "" Then lbl = AscW(b$) = 13
           If Len(HERE$) > 0 Then
           If Left$(HERE$, 1) = "!" Then
           HERE$ = Mid$(HERE$, 2): ohere$ = HERE$
@@ -15557,7 +15561,7 @@ End If
 
 Case 5
 
-If Asc(w$) = 46 Then
+If AscW(w$) = 46 Then
 IsLabel bstack, (w$), w$
 End If
 If VarStat Or NewStat Then
@@ -15727,7 +15731,7 @@ Execute = 0: Exit Function
 End If
 End If
 Case 6
-If Asc(w$) = 46 Then
+If AscW(w$) = 46 Then
 IsLabel bstack, (w$), w$
 End If
 If VarStat Or NewStat Then
@@ -15828,7 +15832,7 @@ Else
 Execute = 0: Exit Function
 End If
 Case 7
-If Asc(w$) = 46 Then
+If AscW(w$) = 46 Then
 IsLabel bstack, (w$), w$
 End If
 If VarStat Or NewStat Then
@@ -18072,7 +18076,7 @@ Loop
 ss$ = Replace(ss$, Chr$(9), "      ")
 If ss$ <> "" Then
 If par Then GoTo skipme
-If (Asc(ss$) > 127 And myUcase(Left$(ss$, 5)) <> "йкасг" And myUcase(Left$(ss$, 5)) <> "тлгла" And myUcase(Left$(ss$, 9)) <> "сумаятгсг") Or (((AscW(ss$) And &H4000) = &H4000)) Then
+If (AscW(ss$) > 127 And myUcase(Left$(ss$, 5)) <> "йкасг" And myUcase(Left$(ss$, 5)) <> "тлгла" And myUcase(Left$(ss$, 9)) <> "сумаятгсг") Or (((AscW(ss$) And &H4000) = &H4000)) Then
     ss$ = mycoder.must(ss$)
     If NORUN1 Then
         Clipboard.clear
@@ -20791,7 +20795,7 @@ If Abs(IsLabel(bstack, rest$, s$)) > 0 Then
 'If Form4.Visible Then Form4.Visible = False
 vH_title$ = ""
 
-    fHelp bstack, s$, Asc(s$ + Mid$(" с", Abs(pagio$ = "GREEK") + 1)) < 128
+    fHelp bstack, s$, AscW(s$ + Mid$(" с", Abs(pagio$ = "GREEK") + 1)) < 128
   
 Else
 If Not ISSTRINGA(rest$, s$) Then
@@ -25313,7 +25317,7 @@ Function BlockParam(s$) As String
 Dim i As Long, j As Long
 j = 1
 For i = 1 To Len(s$)
-Select Case Asc(Mid$(s$, i, 1))
+Select Case AscW(Mid$(s$, i, 1))
 Case 0
 Exit For
 Case 34
@@ -25342,13 +25346,13 @@ c = Len(s$)
 a1 = True
 i = 1
 Do
-Select Case Asc(Mid$(s$, i, 1))
+Select Case AscW(Mid$(s$, i, 1))
 Case 32
 ' nothing
 Case 34
 Do While i < c
 i = i + 1
-If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
 Loop
 Case 39, 92
 Do While i < c
@@ -25366,11 +25370,11 @@ jump = False
 Dim target As Long
 target = j
     Do
-    Select Case Asc(Mid$(s$, i, 1))
+    Select Case AscW(Mid$(s$, i, 1))
     Case 34
     Do While i < c
     i = i + 1
-    If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+    If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
     Loop
     Case 123
     j = j - 1
@@ -25415,13 +25419,13 @@ c = Len(s$)
 a1 = True
 i = 1
 Do
-Select Case Asc(Mid$(s$, i, 1))
+Select Case AscW(Mid$(s$, i, 1))
 Case 32
 ' nothing
 Case 34
 Do While i < c
 i = i + 1
-If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
 Loop
 Case 39, 92
 Do While i < c
@@ -25439,11 +25443,11 @@ jump = False
 Dim target As Long
 target = j
     Do
-    Select Case Asc(Mid$(s$, i, 1))
+    Select Case AscW(Mid$(s$, i, 1))
     Case 34
     Do While i < c
     i = i + 1
-    If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+    If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
     Loop
     Case 123
     j = j - 1
@@ -25484,11 +25488,11 @@ c = Len(s$)
 a1 = True
 i = 1
 Do
-Select Case Asc(Mid$(s$, i, 1))
+Select Case AscW(Mid$(s$, i, 1))
 Case 34
 Do While i < c
 i = i + 1
-If Asc(Mid$(s$, i, 1)) = 34 Then Exit Do
+If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
 Loop
 Case 123
 j = j - 1
@@ -25880,7 +25884,7 @@ Case Else ' its a document
 PP$ = ReplaceStr("file:", "", PP$)
 frm$ = PCall(PP$ & EXE$)
 If frm$ <> "" Then
-If Asc(frm$) = 34 Then
+If AscW(frm$) = 34 Then
 frm$ = frm$ & "@"
 frm$ = ReplaceStr(Chr(34) & "@", PARAM$ & Chr(34), frm$)
 frm$ = ReplaceStr("@", "", frm$)
@@ -28739,7 +28743,7 @@ With myobject
                 
        
                 sss$ = NLtrim$(sss$) + " "
-                While Asc(sss$) = 13
+                While AscW(sss$) = 13
                     SetNextLine sss$
                     sss$ = NLtrim$(sss$) + " "
                 Wend
@@ -28929,7 +28933,7 @@ End If
                 
        
                 sss$ = NLtrim$(sss$) + " "
-                While Asc(sss$) = 13
+                While AscW(sss$) = 13
                     SetNextLine sss$
                     sss$ = NLtrim$(sss$) + " "
                 Wend

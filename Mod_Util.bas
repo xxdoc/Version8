@@ -711,10 +711,10 @@ Dim d1 As Object, amask$
 Set d1 = bstack.Owner
 Dim raster As Object
 Set raster = New cDIBSection
-Dim p As Double, I As Long, ROT As Double, sp As Double
+Dim p As Double, i As Long, ROT As Double, sp As Double
 Dim Pcw As Long, Pch As Long, blend As Double
     If FastSymbol(rst$, ",") Then
-    If IsExp(bstack, rst$, p) Then I = CLng(p) Else I = -players(GetCode(d1)).Paper 'SZ = False
+    If IsExp(bstack, rst$, p) Then i = CLng(p) Else i = -players(GetCode(d1)).Paper 'SZ = False
     Else
 
 
@@ -762,7 +762,7 @@ Exit Sub
         End If
         
     End If
-    If I > 0 Then I = QBColor(I) Else I = -I
+    If i > 0 Then i = QBColor(i) Else i = -i
     If sp = 0 Or f = "" Then
          BACKSPRITE = ""
     Exit Sub
@@ -789,7 +789,7 @@ If raster.Width = 0 Then
 Set raster = Nothing: Exit Sub
 End If
 
-RotateDib bstack, raster, ROT, sp, I, True, (blend), , , amask$
+RotateDib bstack, raster, ROT, sp, i, True, (blend), , , amask$
 Pcw = raster.Width \ 2
 Pch = raster.Height \ 2
 With players(GetCode(d1))
@@ -975,14 +975,14 @@ ddd.CurrentY = nl
 ddd.CurrentX = 0
 End If
 End Sub
-Public Function TextWidth(ddd As Object, a$) As Long
+Public Function TextWidth(ddd As Object, A$) As Long
 Dim nr As RECT
-CalcRect ddd.hDC, a$, nr
+CalcRect ddd.hDC, A$, nr
 TextWidth = nr.Right * dv15
 End Function
-Private Function TextHeight(ddd As Object, a$) As Long
+Private Function TextHeight(ddd As Object, A$) As Long
 Dim nr As RECT
-CalcRect ddd.hDC, a$, nr
+CalcRect ddd.hDC, A$, nr
 
 TextHeight = nr.Bottom * dv15
 End Function
@@ -1123,7 +1123,7 @@ Dim pixX As Long, pixY As Long
 Dim rTop As Long, rBottom As Long
 Dim lenw&, realR&, realstop&, r1 As Long, WHAT1$
 
-Dim a() As Byte, a1() As Byte
+Dim A() As Byte, a1() As Byte
 '' LEAVEME = False -  NOT NEEDED
 With mybasket
     mUAddPixelsTop = mybasket.uMineLineSpace \ dv15  ' for now
@@ -1142,12 +1142,12 @@ With mybasket
     rBottom = rTop + pixY - plusone
     lenw& = Len(what)
     WHAT1$ = what + " "
-     ReDim a(Len(WHAT1$) * 2 + 20)
+     ReDim A(Len(WHAT1$) * 2 + 20)
        ReDim a1(Len(WHAT1$) * 2 + 20)
      
      Dim skip As Boolean
      
-     skip = GetStringTypeExW(&HB, 1, StrPtr(WHAT1$), Len(WHAT1$), a(0)) = 0  ' Or IsWine
+     skip = GetStringTypeExW(&HB, 1, StrPtr(WHAT1$), Len(WHAT1$), A(0)) = 0  ' Or IsWine
      skip = GetStringTypeExW(&HB, 4, StrPtr(WHAT1$), Len(WHAT1$), a1(0)) = 0 Or skip
         Do While (lenw& - r) >= .mx - PX And (.mx - PX) > 0
         
@@ -1169,7 +1169,7 @@ With mybasket
             If c$ >= " " Then
             
                If Not skip Then
-              If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
+              If A(r * 2 + 2) = 0 And A(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
                           Do
                 p$ = Mid$(WHAT1$, r + 2, 1)
                 If AscW(p$) < 0 Then Mid$(WHAT1$, r + 2, 1) = " ": Exit Do
@@ -1177,7 +1177,7 @@ With mybasket
                              r = r + 1
                     If r >= r1 Then Exit Do
                     
-                     Loop Until a(r * 2 + 2) <> 0 Or a(r * 2 + 3) = 0
+                     Loop Until A(r * 2 + 2) <> 0 Or A(r * 2 + 3) = 0
                  End If
          
                  End If
@@ -1266,14 +1266,14 @@ r1 = RealLen(what$) - 1
         If c$ >= " " Then
        ' skip = True
              If Not skip Then
-           If a(r * 2 + 2) = 0 And a(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
+           If A(r * 2 + 2) = 0 And A(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
             Do
                 p$ = Mid$(WHAT1$, r + 2, 1)
                 If AscW(p$) < 0 Then Mid$(WHAT1$, r + 2, 1) = " ": Exit Do
                 c$ = c$ + p$
                 r = r + 1
                 If r >= r1 Then Exit Do
-            Loop Until a(r * 2 + 2) <> 0 Or a(r * 2 + 3) = 0
+            Loop Until A(r * 2 + 2) <> 0 Or A(r * 2 + 3) = 0
             End If
          End If
                
@@ -1389,7 +1389,7 @@ PlaceBasket ddd, players(prive)
 
 End Function
 Public Sub fullPlain(dd As Object, mb As basket, ByVal wh$, ByVal wi, Optional fake As Boolean = False)
-Dim whNoSpace$, Displ As Long, DisplLeft As Long, I As Long, whSpace$, INTD As Long, MinDispl As Long, some As Long
+Dim whNoSpace$, Displ As Long, DisplLeft As Long, i As Long, whSpace$, INTD As Long, MinDispl As Long, some As Long
 Dim st As Long
 st = DXP
 MinDispl = (TextWidth(dd, "A") \ 2) \ st
@@ -1420,8 +1420,8 @@ Else
         whsp = Len(whSpace)
                 whNoSpace$ = ""
                 
-        For I = 1 To Len(wh$)
-            If Mid$(wh$, I, 1) = " " Then
+        For i = 1 To Len(wh$)
+            If Mid$(wh$, i, 1) = " " Then
             whsp = whsp - 1
             
                If whNoSpace$ <> "" Then
@@ -1438,9 +1438,9 @@ Else
               dd.CurrentX = ((dd.CurrentX + Displ) \ st) * st
               End If
             Else
-                whNoSpace$ = whNoSpace$ & Mid$(wh$, I, 1)
+                whNoSpace$ = whNoSpace$ & Mid$(wh$, i, 1)
             End If
-        Next I
+        Next i
 
           whl = Len(whNoSpace$) * magicratio + whl
       dd.CurrentX = dd.CurrentX + CLng(whl) * st
@@ -1452,7 +1452,7 @@ Else
 End If
 End Sub
 Public Sub fullPlainWhere(dd As Object, mb As basket, ByVal wh$, ByVal wi As Long, whr As Long, Optional fake As Boolean = False)
-Dim whNoSpace$, Displ As Long, DisplLeft As Long, I As Long, whSpace$, INTD As Long, MinDispl As Long
+Dim whNoSpace$, Displ As Long, DisplLeft As Long, i As Long, whSpace$, INTD As Long, MinDispl As Long
 MinDispl = (TextWidth(dd, "A") \ 2) \ DXP
 If MinDispl <= 1 Then MinDispl = 3
 MinDispl = DXP * MinDispl
@@ -1488,8 +1488,8 @@ Else
      
     
                 whNoSpace$ = ""
-        For I = 1 To Len(wh$)
-            If Mid$(wh$, I, 1) = " " Then
+        For i = 1 To Len(wh$)
+            If Mid$(wh$, i, 1) = " " Then
             whSpace$ = Mid$(whSpace$, 2)
             
                If whNoSpace$ <> "" Then
@@ -1499,9 +1499,9 @@ Else
               dd.CurrentX = dd.CurrentX + Displ
               
             Else
-                whNoSpace$ = whNoSpace$ & Mid$(wh$, I, 1)
+                whNoSpace$ = whNoSpace$ & Mid$(wh$, i, 1)
             End If
-        Next I
+        Next i
         If whNoSpace$ <> "" Then
 
         End If
@@ -1527,7 +1527,7 @@ npy = PY
 ruller& = wi&
 For ttt = 1 To Len(what)
     b$ = Mid$(what, ttt, 1)
-    Select Case Asc(b$)
+    Select Case AscW(b$)
     Case Is > 31
     If TextWidth(ddd, buf$ & b$) <= (wi& * .Xt) Then
     buf$ = buf$ & b$
@@ -1623,7 +1623,7 @@ For ttt = 1 To Len(what)
 If NOEXECUTION Then Exit For
 b$ = Mid$(what, ttt, 1)
 If paragr Then INTD = Len(buf$ & b$) - Len(NLtrim$(buf$ & b$))
-Select Case Asc(b$)
+Select Case AscW(b$)
 Case Is > 31
 spcc = (Len(buf$ & b$) - Len(ReplaceStr(" ", "", Trim$(buf$ & b$))))
 
@@ -2267,7 +2267,7 @@ End If
 End With
 End Sub
 
-Function gf$(bstack As basetask, ByVal y&, ByVal x&, ByVal a$, c&, f&, Optional STAR As Boolean = False)
+Function gf$(bstack As basetask, ByVal y&, ByVal x&, ByVal A$, c&, f&, Optional STAR As Boolean = False)
 Dim cLast&, b$, cc$, dq As Object, ownLinespace
 Dim mybasket As basket, addpixels As Long
 GFQRY = True
@@ -2286,8 +2286,8 @@ If exWnd = 0 Then dq.SetFocus
 dq.FontTransparent = False
 LCTbasket dq, mybasket, y&, x&
 Dim o$
-o$ = a$
-If a$ = "" Then a$ = " "
+o$ = A$
+If A$ = "" Then A$ = " "
 INK$ = ""
 
 Dim XX&
@@ -2295,16 +2295,16 @@ XX& = x&
 
 x& = x& - 1
 
-cLast& = Len(a$)
+cLast& = Len(A$)
 '*****************
 If cLast& + x& >= .mx Then
 MyDoEvents
 If dq.Font.charset = 161 Then
-b$ = InputBoxN("Εισαγωγή Μεταβλητής", MesTitle$, a$)
+b$ = InputBoxN("Εισαγωγή Μεταβλητής", MesTitle$, A$)
 Else
-b$ = InputBoxN("Input Variable", MesTitle$, a$)
+b$ = InputBoxN("Input Variable", MesTitle$, A$)
 End If
-If b$ = "" Then b$ = a$
+If b$ = "" Then b$ = A$
 If Trim$(b$) < "A" Then b$ = Right$(String$(cLast&, " ") + b$, cLast&) Else b$ = Left$(b$ + String$(cLast&, " "), cLast&)
 gf$ = b$
 If XX& < .mx Then
@@ -2319,14 +2319,14 @@ GoTo GFEND
 Else
 dq.FontTransparent = False
 If STAR Then
-PlainBaSket dq, mybasket, StarSTR(a$), True, , addpixels
+PlainBaSket dq, mybasket, StarSTR(A$), True, , addpixels
 Else
-PlainBaSket dq, mybasket, a$, True, , addpixels
+PlainBaSket dq, mybasket, A$, True, , addpixels
 End If
 End If
 
 '************
-b$ = a$
+b$ = A$
 .currow = y&
 .curpos = c& + x&
 LCTCB dq, mybasket, ins&
@@ -2415,7 +2415,7 @@ SetTextBasketBack dq, mybasket
         Select Case Len(cc$)
         Case 1
         If STAR And cc$ = " " Then cc$ = Chr$(127)
-                Select Case Asc(cc$)
+                Select Case AscW(cc$)
                 Case 8
                         If c& > 1 Then
                         Mid$(b$, c& - 1) = Mid$(b$, c&) & " "
@@ -2471,8 +2471,8 @@ SetTextBasketBack dq, mybasket
                         .curpos = c& + x&
                         LCTCB dq, mybasket, ins&
                         If ins& = 1 Then
-                          If Asc(cc$) = 32 And STAR Then
-                If Asc(Mid$(b$, c& + 1)) > 32 Then
+                          If AscW(cc$) = 32 And STAR Then
+                If AscW(Mid$(b$, c& + 1)) > 32 Then
                  Mid$(b$, c&) = Mid$(b$, c& + 1) & " "
                 End If
                 
@@ -2494,7 +2494,7 @@ SetTextBasketBack dq, mybasket
                                    .curpos = c& + x&
                                    LCTCB dq, mybasket, ins&
                         Else
-                                 If Asc(cc$) = 32 And STAR Then
+                                 If AscW(cc$) = 32 And STAR Then
             
                 
                 
@@ -2517,7 +2517,7 @@ SetTextBasketBack dq, mybasket
                         End If
                 End Select
         Case 2
-                Select Case Asc(Right$(cc$, 1))
+                Select Case AscW(Right$(cc$, 1))
                
                 Case 75 'LEFT
                         If c& > 1 Then
@@ -2532,7 +2532,7 @@ SetTextBasketBack dq, mybasket
                 Case 77 'RIGHT
                         If c& < cLast& Then
                       
-                If Not (Asc(Mid$(b$, c&)) = 32 And STAR) Then
+                If Not (AscW(Mid$(b$, c&)) = 32 And STAR) Then
                 
              
                                     .currow = y&
@@ -2818,7 +2818,7 @@ iText = v$
 End With
 End Function
 Sub ScreenEditDOC(bstack As basetask, aaa As Variant, x&, y&, x1&, y1&, Optional l As Long = 0, Optional usecol As Boolean = False, Optional col As Long)
-Dim ot As Boolean, back As New Document, I As Long, d As Object
+Dim ot As Boolean, back As New Document, i As Long, d As Object
 Dim prive As basket
 Set d = bstack.Owner
 prive = players(GetCode(d))
@@ -2828,11 +2828,11 @@ oldesc = escok
 escok = False
 ' we have a limit here
 If Not aaa.IsEmpty Then
-For I = 1 To aaa.DocParagraphs
-back.AppendParagraph aaa.TextParagraph(I)
-Next I
+For i = 1 To aaa.DocParagraphs
+back.AppendParagraph aaa.TextParagraph(i)
+Next i
 End If
-I = back.LastSelStart
+i = back.LastSelStart
 Dim aaaa As Document, tcol As Long, trans As Boolean
 If usecol Then tcol = mycolor(col) Else tcol = d.BackColor
 
@@ -2988,7 +2988,7 @@ If Not CancelEDIT Then
 
 Else
 Set aaa = back
-back.LastSelStart = I
+back.LastSelStart = i
 End If
 Set Form1.TEXT1.mdoc = New Document
 
@@ -3002,7 +3002,7 @@ escok = oldesc
 Set d = Nothing
 End With
 End Sub
-Sub ScreenEdit(bstack As basetask, a$, x&, y&, x1&, y1&, Optional l As Long = 0, Optional changelinefeeds As Long = 0, Optional maxchar As Long = 0, Optional ExcludeThisLeft As Long = 0)
+Sub ScreenEdit(bstack As basetask, A$, x&, y&, x1&, y1&, Optional l As Long = 0, Optional changelinefeeds As Long = 0, Optional maxchar As Long = 0, Optional ExcludeThisLeft As Long = 0)
 ' allways a$ enter with crlf,but exit with crlf or cr or lf depents from changelinefeeds
 Dim oldesc As Boolean, d As Object
 Set d = bstack.Owner
@@ -3048,11 +3048,11 @@ End If
 .glistN.LeftMarginPixels = 1
 .glistN.maxchar = maxchar
 .nowrap = True
-If Len(a$) > maxchar Then
-a$ = Left$(a$, maxchar)
+If Len(A$) > maxchar Then
+A$ = Left$(A$, maxchar)
 End If
 
-l = Len(a$)
+l = Len(A$)
 
 
 .UsedAsTextBox = True
@@ -3133,9 +3133,9 @@ Else
 .Move x& * prive.Xt + d.Left, y& * prive.Yt + d.top, (x1& - x&) * prive.Xt + prive.Xt, (y1& - y&) * prive.Yt + prive.Yt
 End If
 End If
-If a$ <> "" Then
-If .Text <> a$ Then .LastSelStart = 0
-.Text = a$
+If A$ <> "" Then
+If .Text <> A$ Then .LastSelStart = 0
+.Text = A$
 Else
 .Text = ""
 .LastSelStart = 0
@@ -3165,15 +3165,15 @@ ProcTask2 bstack
 
 If l <> 0 Then
     If l > 0 Then
-        If Len(a$) < l Then l = Len(a$)
+        If Len(A$) < l Then l = Len(A$)
         .SelStart = l
                 Else
         .SelStart = 0
     End If
 Else
-If Len(a$) < .LastSelStart Then
+If Len(A$) < .LastSelStart Then
 .SelStart = 1
-l = Len(a$)
+l = Len(A$)
 Else
     .SelStart = .LastSelStart
 End If
@@ -3220,12 +3220,12 @@ End If
 If Not CancelEDIT Then
 
 If changelinefeeds > 10 Then
-a$ = Form1.TEXT1.TextFormatBreak(vbCr)
+A$ = Form1.TEXT1.TextFormatBreak(vbCr)
 ElseIf changelinefeeds > 9 Then
-a$ = Form1.TEXT1.TextFormatBreak(vbLf)
+A$ = Form1.TEXT1.TextFormatBreak(vbLf)
 Else
 If changelinefeeds = -1 Then changelinefeeds = 0
-a$ = Form1.TEXT1.Text
+A$ = Form1.TEXT1.Text
 End If
 Else
 changelinefeeds = -1
@@ -3242,27 +3242,27 @@ End Sub
 
 Function blockCheck(ByVal s$, ByVal lang As Long, Optional ByVal sbname$ = "") As Boolean
 If s$ = "" Then blockCheck = True: Exit Function
-Dim I As Long, j As Long, c As Long, b$, resp&
+Dim i As Long, j As Long, c As Long, b$, resp&
 lang = Not lang
 Dim a1 As Boolean
 Dim jump As Boolean
 If Trim(s$) = "" Then Exit Function
 c = Len(s$)
 a1 = True
-I = 1
+i = 1
 Do
-Select Case Asc(Mid$(s$, I, 1))
+Select Case AscW(Mid$(s$, i, 1))
 Case 32
 ' nothing
 Case 34
-Do While I < c
-I = I + 1
-If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
+Do While i < c
+i = i + 1
+If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
 Loop
 Case 39, 92
-Do While I < c
-I = I + 1
-If Mid$(s$, I, 2) = vbCrLf Then Exit Do
+Do While i < c
+i = i + 1
+If Mid$(s$, i, 2) = vbCrLf Then Exit Do
 Loop
 Case 61
 jump = True
@@ -3275,19 +3275,19 @@ jump = False
 Dim target As Long
 target = j
     Do
-    Select Case Asc(Mid$(s$, I, 1))
+    Select Case AscW(Mid$(s$, i, 1))
     Case 34
-    Do While I < c
-    I = I + 1
-    If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
+    Do While i < c
+    i = i + 1
+    If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
     Loop
     Case 123
     j = j - 1
     Case 125
     j = j + 1: If j = target Then Exit Do
     End Select
-    I = I + 1
-    Loop Until I > c
+    i = i + 1
+    Loop Until i > c
     If j <> target Then Exit Do
     Else
 j = j - 1
@@ -3300,8 +3300,8 @@ Case Else
 jump = False
 
 End Select
-I = I + 1
-Loop Until I > c
+i = i + 1
+Loop Until i > c
 
 If j = 0 Then
 
@@ -3326,7 +3326,7 @@ End If
 
 End Function
 
-Sub ListChoise(bstack As basetask, a$, x&, y&, x1&, y1&)
+Sub ListChoise(bstack As basetask, A$, x&, y&, x1&, y1&)
 Dim d As Object, oldh As Long
 Dim s$, prive As basket
 If NOEXECUTION Then Exit Sub
@@ -3391,9 +3391,9 @@ End If
 .Visible = True
 .ZOrder 0
 NOEDIT = False
-.Tag = a$
+.Tag = A$
 
-If a$ = "" Then
+If A$ = "" Then
     drop = mouse
     MyDoEvents
     ' Form1.KeyPreview = False
@@ -3444,7 +3444,7 @@ oldh = .HeadlineHeight
      .FloatLimitLeft = Form1.Width - prive.Xt * 2
     MyDoEvents
     End With
-If a$ = "" Then
+If A$ = "" Then
     Do
         If bstack.TaskMain Or TaskMaster.Processing Then
             If TaskMaster.QueueCount > 0 Then
@@ -3474,15 +3474,15 @@ ProcTask2 bstack
 Wend
 MOUT = False: NOEXECUTION = False
     If Form1.List1.listindex >= 0 Then
-    a$ = Form1.List1.List(Form1.List1.listindex)
+    A$ = Form1.List1.List(Form1.List1.listindex)
     Else
-    a$ = ""
+    A$ = ""
     End If
    Form1.List1.Enabled = False
     Else
         Form1.List1.Enabled = True
     
-  If a$ = "" Then
+  If A$ = "" Then
   Form1.List1.SetFocus
   Form1.List1.LeaveonChoose = True
   Else
@@ -3590,7 +3590,7 @@ Targets = ot
 End Sub
 
 Public Sub FrameText(dd As Object, ByVal Size As Single, x As Long, y As Long, cc As Long, Optional myCut As Boolean = False)
-Dim I As Long, mymul As Long
+Dim i As Long, mymul As Long
 
 If dd Is Form1.PrinterDocument1 Then
 ' check this please
@@ -3801,7 +3801,7 @@ dq.refresh
 INK$ = ""
 dq.FontTransparent = False
 
-Dim a$
+Dim A$
 s$ = ""
 oldLCTCB dq, prive, 0
 Do
@@ -3876,9 +3876,9 @@ If clickMe = 38 Then
 
   
 againquery:
- a$ = INKEY$
+ A$ = INKEY$
  
-If a$ = "" Then
+If A$ = "" Then
  
     If TaskMaster.QueueCount > 0 Then
   ProcTask2 bstack
@@ -3931,12 +3931,12 @@ End If
 
 
 dq.FontTransparent = False
-If RealLen(a$) = 1 Or Len(a$) = 1 Or (RealLen(a$) = 0 And Len(a$) = 1 And Len(s$) > 1) Then
+If RealLen(A$) = 1 Or Len(A$) = 1 Or (RealLen(A$) = 0 And Len(A$) = 1 And Len(s$) > 1) Then
    '
    
-   If Len(a$) = 1 Then
-    If InStr(endchars, a$) > 0 Then
-     If a$ = vbCr Then
+   If Len(A$) = 1 Then
+    If InStr(endchars, A$) > 0 Then
+     If A$ = vbCr Then
         
       LCTCB dq, prive, -1: DestroyCaret
  oldLCTCB dq, prive, 0
@@ -3945,10 +3945,10 @@ If RealLen(a$) = 1 Or Len(a$) = 1 Or (RealLen(a$) = 0 And Len(a$) = 1 And Len(s$
 
      End If
      End If
-     ElseIf a$ = vbCr Then
-     a$ = Left$(endchars, 1)
+     ElseIf A$ = vbCr Then
+     A$ = Left$(endchars, 1)
      End If
-    If Asc(a$) = 27 And escok Then
+    If Asc(A$) = 27 And escok Then
         
       LCTCB dq, prive, -1: DestroyCaret
  oldLCTCB dq, prive, 0
@@ -3956,10 +3956,10 @@ If RealLen(a$) = 1 Or Len(a$) = 1 Or (RealLen(a$) = 0 And Len(a$) = 1 And Len(s$
     If ExTarget Then End
 
     Exit Do
-ElseIf Asc(a$) = 27 Then
-a$ = Chr$(0)
+ElseIf Asc(A$) = 27 Then
+A$ = Chr$(0)
 End If
-If a$ = Chr(8) Then
+If A$ = Chr(8) Then
 DE$ = " "
     If Len(s$) > 0 Then
     ExcludeOne s$
@@ -3992,32 +3992,32 @@ DE$ = " "
     End If
 End If
 If safe$ <> "" Then
-        a$ = 65
+        A$ = 65
 End If
-If AscW(a$) > 31 And (RealLen(s$) < m& Or RealLen(a$, True) = 0) Then
-If RealLen(a$, True) = 0 Then
-If Asc(a$) = 63 And s$ <> "" Then
-s$ = s$ & a$: a$ = s$: ExcludeOne s$: a$ = Mid$(a$, Len(s$) + 1)
-s$ = s$ + a$
+If AscW(A$) > 31 And (RealLen(s$) < m& Or RealLen(A$, True) = 0) Then
+If RealLen(A$, True) = 0 Then
+If Asc(A$) = 63 And s$ <> "" Then
+s$ = s$ & A$: A$ = s$: ExcludeOne s$: A$ = Mid$(A$, Len(s$) + 1)
+s$ = s$ + A$
 MKEY$ = ""
 'UINK = ""
-safe$ = a$
+safe$ = A$
 INK = Chr$(8)
 Else
-If s$ = "" Then a$ = " "
+If s$ = "" Then A$ = " "
 GoTo cont12345
 End If
 Else
 cont12345:
-    If InStr(excludechars, a$) > 0 Then
+    If InStr(excludechars, A$) > 0 Then
 
     Else
             If checknumber Then
                     fr1 = 1
-                    If (s$ = "" And a$ = "-") Or IsNumberQuery(s$ + a$, fr1, p, fr2) Then
-                            If fr2 - 1 = RealLen(s$) + 1 Or (s$ = "" And a$ = "-") Then
+                    If (s$ = "" And A$ = "-") Or IsNumberQuery(s$ + A$, fr1, p, fr2) Then
+                            If fr2 - 1 = RealLen(s$) + 1 Or (s$ = "" And A$ = "-") Then
    If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
-                   PlainBaSket dq, prive, a$, , , 0: s$ = s$ & a$
+                   PlainBaSket dq, prive, A$, , , 0: s$ = s$ & A$
                  
               oldLCTCB dq, prive, 0
                   LCTCB dq, prive, 0
@@ -4028,9 +4028,9 @@ GdiFlush
             Else
             If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
                    If safe$ <> "" Then
-        a$ = safe$: safe$ = ""
+        A$ = safe$: safe$ = ""
 End If
-                PlainBaSket dq, prive, a$, , , 0: s$ = s$ & a$
+                PlainBaSket dq, prive, A$, , , 0: s$ = s$ & A$
               If .curpos >= .mx Then
                                 .curpos = 0
                                 .currow = .currow + 1
@@ -4042,14 +4042,14 @@ End If
             End If
     End If
 End If
-If InStr(endchars, a$) > 0 Then
-    If a$ >= " " Then
-                     PlainBaSket dq, prive, a$, , , 0
+If InStr(endchars, A$) > 0 Then
+    If A$ >= " " Then
+                     PlainBaSket dq, prive, A$, , , 0
               
       LCTCB dq, prive, -1: DestroyCaret
                                 GdiFlush
                                 End If
-QUERY = a$
+QUERY = A$
 Exit Do
 End If
  .pageframe = 0
@@ -4288,7 +4288,7 @@ If exWnd = 0 Then Form1.SetFocus
 End Sub
 
 Function FileNameType(extension As String) As String
-Dim I As Long, fs, b
+Dim i As Long, fs, b
  strTemp = String(200, Chr$(0))
     'Get
     GetTempPath 200, strTemp
@@ -4298,96 +4298,96 @@ Dim I As Long, fs, b
      If Right$(strTemp, 1) <> "\" Then strTemp = strTemp & "\"
     End If
     
-    I = FreeFile
-    Open strTemp & "dummy." & extension For Output As I
-    Print #I, "test"
-    Close #I
+    i = FreeFile
+    Open strTemp & "dummy." & extension For Output As i
+    Print #i, "test"
+    Close #i
     Sleep 10
     Set fs = CreateObject("Scripting.FileSystemObject")
   Set b = fs.GetFile(strTemp & "dummy." & extension)
     FileNameType = b.Type
     KillFile strTemp & "dummy." & extension
 End Function
-Function mylcasefILE(ByVal a$) As String
-If a$ = "" Then Exit Function
+Function mylcasefILE(ByVal A$) As String
+If A$ = "" Then Exit Function
 If casesensitive Then
 ' no case change
-mylcasefILE = a$
+mylcasefILE = A$
 Else
- mylcasefILE = LCase(a$)
+ mylcasefILE = LCase(A$)
  End If
 
 End Function
 
-Function myUcase(ByVal a$, Optional Convert As Boolean = False) As String
-Dim I As Long
-If a$ = "" Then Exit Function
- If AscW(a$) > 255 Or Convert Then
- For I = 1 To Len(a$)
- Select Case AscW(Mid$(a$, I, 1))
+Function myUcase(ByVal A$, Optional Convert As Boolean = False) As String
+Dim i As Long
+If A$ = "" Then Exit Function
+ If AscW(A$) > 255 Or Convert Then
+ For i = 1 To Len(A$)
+ Select Case AscW(Mid$(A$, i, 1))
 Case 902
-Mid$(a$, I, 1) = ChrW(913)
+Mid$(A$, i, 1) = ChrW(913)
 Case 904
-Mid$(a$, I, 1) = ChrW(917)
+Mid$(A$, i, 1) = ChrW(917)
 Case 906
-Mid$(a$, I, 1) = ChrW(921)
+Mid$(A$, i, 1) = ChrW(921)
 Case 912
-Mid$(a$, I, 1) = ChrW(921)
+Mid$(A$, i, 1) = ChrW(921)
 Case 905
-Mid$(a$, I, 1) = ChrW(919)
+Mid$(A$, i, 1) = ChrW(919)
 Case 908
-Mid$(a$, I, 1) = ChrW(927)
+Mid$(A$, i, 1) = ChrW(927)
 Case 911
-Mid$(a$, I, 1) = ChrW(937)
+Mid$(A$, i, 1) = ChrW(937)
 Case 910
-Mid$(a$, I, 1) = ChrW(933)
+Mid$(A$, i, 1) = ChrW(933)
 Case 940
-Mid$(a$, I, 1) = ChrW(913)
+Mid$(A$, i, 1) = ChrW(913)
 Case 941
-Mid$(a$, I, 1) = ChrW(917)
+Mid$(A$, i, 1) = ChrW(917)
 Case 943
-Mid$(a$, I, 1) = ChrW(921)
+Mid$(A$, i, 1) = ChrW(921)
 Case 942
-Mid$(a$, I, 1) = ChrW(919)
+Mid$(A$, i, 1) = ChrW(919)
 Case 972
-Mid$(a$, I, 1) = ChrW(927)
+Mid$(A$, i, 1) = ChrW(927)
 Case 974
-Mid$(a$, I, 1) = ChrW(937)
+Mid$(A$, i, 1) = ChrW(937)
 Case 973
-Mid$(a$, I, 1) = ChrW(933)
+Mid$(A$, i, 1) = ChrW(933)
 Case 962
-Mid$(a$, I, 1) = ChrW(931)
+Mid$(A$, i, 1) = ChrW(931)
 End Select
-Next I
+Next i
 End If
-myUcase = UCase(a$)
+myUcase = UCase(A$)
 End Function
 
-Function myLcase(ByVal a$) As String
-If a$ = "" Then Exit Function
-a$ = Trim$(LCase(a$))
-If a$ = "" Then Exit Function
- If AscW(a$) > 255 Then
-a$ = a$ & Chr(0)
+Function myLcase(ByVal A$) As String
+If A$ = "" Then Exit Function
+A$ = Trim$(LCase(A$))
+If A$ = "" Then Exit Function
+ If AscW(A$) > 255 Then
+A$ = A$ & Chr(0)
 ' Here are greek letters for proper case conversion
-a$ = Replace(a$, "σ" & Chr(0), "ς")
-a$ = Replace(a$, Chr(0), "")
-a$ = Replace(a$, "σ ", "ς ")
-a$ = Replace(a$, "σ$", "ς$")
-a$ = Replace(a$, "σ&", "ς&")
-a$ = Replace(a$, "σ.", "ς.")
-a$ = Replace(a$, "σ(", "ς(")
-a$ = Replace(a$, "σ_", "ς_")
-a$ = Replace(a$, "σ/", "ς/")
-a$ = Replace(a$, "σ\", "ς\")
-a$ = Replace(a$, "σ-", "ς-")
-a$ = Replace(a$, "σ+", "ς+")
-a$ = Replace(a$, "σ*", "ς*")
-a$ = Replace(a$, "σ" & vbCr, "ς" & vbCr)
-a$ = Replace(a$, "σ" & vbLf, "ς" & vbLf)
+A$ = Replace(A$, "σ" & Chr(0), "ς")
+A$ = Replace(A$, Chr(0), "")
+A$ = Replace(A$, "σ ", "ς ")
+A$ = Replace(A$, "σ$", "ς$")
+A$ = Replace(A$, "σ&", "ς&")
+A$ = Replace(A$, "σ.", "ς.")
+A$ = Replace(A$, "σ(", "ς(")
+A$ = Replace(A$, "σ_", "ς_")
+A$ = Replace(A$, "σ/", "ς/")
+A$ = Replace(A$, "σ\", "ς\")
+A$ = Replace(A$, "σ-", "ς-")
+A$ = Replace(A$, "σ+", "ς+")
+A$ = Replace(A$, "σ*", "ς*")
+A$ = Replace(A$, "σ" & vbCr, "ς" & vbCr)
+A$ = Replace(A$, "σ" & vbLf, "ς" & vbLf)
 End If
 
-myLcase = a$
+myLcase = A$
 End Function
 Function MesTitle$()
 If ttl Then
@@ -4538,8 +4538,9 @@ s$ = mylcasefILE(s$)
             ElseIf d$ = "DEC" Then
             cc.ValueKey = "DEC"
              cc.ValueType = REG_DWORD
-                    cc.Value = True
-                    NoUseDec = True
+                    cc.Value = CLng(True)
+                    mNoUseDec = True
+                    CheckDec
             ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
@@ -4628,13 +4629,14 @@ If IsLabel(basestack1, s$, d$) > 0 Then
         ElseIf d$ = "PRI" Then
         cc.ValueKey = "PRIORITY-OR"
                 cc.ValueType = REG_DWORD
-                cc.Value = True
+                cc.Value = CLng(True)
             priorityOr = True
         ElseIf d$ = "DEC" Then
             cc.ValueKey = "DEC"
              cc.ValueType = REG_DWORD
-                    cc.Value = False
-                    NoUseDec = False
+                    cc.Value = CLng(0)
+                    mNoUseDec = False
+                    CheckDec
         ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
@@ -4654,29 +4656,29 @@ End If
 
 End Sub
 Function blockStringPOS(s$, pos As Long) As Boolean
-Dim I As Long, j As Long, c As Long
+Dim i As Long, j As Long, c As Long
 Dim a1 As Boolean
 c = Len(s$)
 a1 = True
-I = pos
-If I > Len(s$) Then Exit Function
+i = pos
+If i > Len(s$) Then Exit Function
 Do
-Select Case Asc(Mid$(s$, I, 1))
+Select Case AscW(Mid$(s$, i, 1))
 Case 34
-Do While I < c
-I = I + 1
-If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
+Do While i < c
+i = i + 1
+If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
 Loop
 Case 123
 j = j - 1
 Case 125
 j = j + 1: If j = 1 Then Exit Do
 End Select
-I = I + 1
-Loop Until I > c
+i = i + 1
+Loop Until i > c
 If j = 1 Then
 blockStringPOS = True
-pos = I
+pos = i
 Else
 pos = Len(s$)
 End If
@@ -4684,51 +4686,51 @@ End If
 End Function
 Function BlockParam2(s$, pos As Long) As Boolean
 ' need to be open
-Dim I As Long, j As Long
+Dim i As Long, j As Long
 j = 1
-For I = pos To Len(s$)
-Select Case Asc(Mid$(s$, I, 1))
+For i = pos To Len(s$)
+Select Case AscW(Mid$(s$, i, 1))
 Case 0
 Exit For
 Case 34
-I = InStr(I + 1, s$, """")
-If I = 0 Then Exit Function
+i = InStr(i + 1, s$, """")
+If i = 0 Then Exit Function
 Case 40
 j = j + 1
 Case 41
 j = j - 1
 If j = 0 Then Exit For
 Case 123
-I = I + 1
-If blockStringPOS(s$, I) Then
+i = i + 1
+If blockStringPOS(s$, i) Then
 Else
-I = 0
+i = 0
 '' i = InStr(i + 1, s$, Chr$(125))
 End If
-If I = 0 Then Exit Function
+If i = 0 Then Exit Function
 End Select
-Next I
-If j = 0 Then pos = I: BlockParam2 = True
+Next i
+If j = 0 Then pos = i: BlockParam2 = True
 End Function
-Public Function aheadstatus(a$, Optional srink As Boolean = True, Optional pos As Long = 1) As String
+Public Function aheadstatus(A$, Optional srink As Boolean = True, Optional pos As Long = 1) As String
 Dim b$, part$, w$, pos2 As Long, level&
 
-If a$ = "" Then Exit Function
+If A$ = "" Then Exit Function
 If pos = 0 Then pos = 1
-Do While pos <= Len(a$)
-    w$ = Mid$(a$, pos, 1)
+Do While pos <= Len(A$)
+    w$ = Mid$(A$, pos, 1)
     If part$ = "" And w$ = "0" Then
-        If pos + 2 <= Len(a$) Then
-            If LCase(Mid$(a$, pos, 2)) Like "0[xχ]" Then
+        If pos + 2 <= Len(A$) Then
+            If LCase(Mid$(A$, pos, 2)) Like "0[xχ]" Then
             'hexadecimal literal number....
                 pos = pos + 2
-                Do While pos <= Len(a$)
-                If Not Mid$(a$, pos, 1) Like "[0123456789abcdefABCDEF]" Then Exit Do
+                Do While pos <= Len(A$)
+                If Not Mid$(A$, pos, 1) Like "[0123456789abcdefABCDEF]" Then Exit Do
                 pos = pos + 1
                 Loop
                 b$ = b$ & "N"
-                If pos <= Len(a$) Then
-                    w$ = Mid$(a$, pos, 1)
+                If pos <= Len(A$) Then
+                    w$ = Mid$(A$, pos, 1)
                 Else
                     Exit Do
                 End If
@@ -4742,9 +4744,9 @@ Do While pos <= Len(a$)
         End If
         part$ = "S"
         pos = pos + 1
-        Do While pos <= Len(a$)
-        If Mid$(a$, pos, 1) = """" Then Exit Do
-    If Asc(Mid$(a$, pos, 1)) < 32 Then Exit Do
+        Do While pos <= Len(A$)
+        If Mid$(A$, pos, 1) = """" Then Exit Do
+    If AscW(Mid$(A$, pos, 1)) < 32 Then Exit Do
    
         pos = pos + 1
         Loop
@@ -4755,7 +4757,7 @@ Do While pos <= Len(a$)
         End If
         part$ = "S"
         '  UNPACKLNG(Mid$(a$, pos+1, 8)+10
-        pos = pos + UNPACKLNG(Mid$(a$, pos + 1, 8)) + 8
+        pos = pos + UNPACKLNG(Mid$(A$, pos + 1, 8)) + 8
         w$ = """"
    
     
@@ -4771,9 +4773,9 @@ Do While pos <= Len(a$)
               
         End If
       pos = pos + 1
-        If Not BlockParam2(a$, pos) Then Exit Do
+        If Not BlockParam2(A$, pos) Then Exit Do
         
-       If Mid$(a$, pos + 1, 1) <> "." Then b$ = b$ & part$
+       If Mid$(A$, pos + 1, 1) <> "." Then b$ = b$ & part$
         part$ = ""
         
     ElseIf w$ = "{" Then
@@ -4788,8 +4790,8 @@ Do While pos <= Len(a$)
         part$ = "S"
         
         
-            If pos <= Len(a$) Then
-        If Not blockStringAhead(a$, pos) Then Exit Do
+            If pos <= Len(A$) Then
+        If Not blockStringAhead(A$, pos) Then Exit Do
         End If
       
 
@@ -4951,29 +4953,29 @@ End If
 
 End Function
 Function blockStringAhead(s$, pos1 As Long) As Long
-Dim I As Long, j As Long, c As Long
+Dim i As Long, j As Long, c As Long
 Dim a1 As Boolean
 c = Len(s$)
 a1 = True
-I = pos1
-If I > c Then blockStringAhead = c: Exit Function
+i = pos1
+If i > c Then blockStringAhead = c: Exit Function
 Do
 
-Select Case Asc(Mid$(s$, I, 1))
+Select Case AscW(Mid$(s$, i, 1))
 Case 34
-Do While I < c
-I = I + 1
-If Asc(Mid$(s$, I, 1)) = 34 Then Exit Do
+Do While i < c
+i = i + 1
+If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
 Loop
 Case 123
 j = j - 1
 Case 125
 j = j + 1: If j = 0 Then Exit Do
 End Select
-I = I + 1
-Loop Until I > c
+i = i + 1
+Loop Until i > c
 If j = 0 Then
-pos1 = I
+pos1 = i
 blockStringAhead = True
 Else
 blockStringAhead = False
@@ -4982,20 +4984,20 @@ End If
 
 End Function
 Public Function CleanStr(sStr As String, noValidcharList As String) As String
-Dim a$, I As Long '', ddt As Boolean
+Dim A$, i As Long '', ddt As Boolean
 If noValidcharList <> "" Then
 ''If Len(sStr) > 20000 Then ddt = True
 If Len(sStr) > 0 Then
-For I = 1 To Len(sStr)
+For i = 1 To Len(sStr)
 ''If ddt Then If i Mod 321 = 0 Then Sleep 20
-If InStr(noValidcharList, Mid$(sStr, I, 1)) = 0 Then a$ = a$ & Mid$(sStr, I, 1)
+If InStr(noValidcharList, Mid$(sStr, i, 1)) = 0 Then A$ = A$ & Mid$(sStr, i, 1)
 
-Next I
+Next i
 End If
 Else
-a$ = sStr
+A$ = sStr
 End If
-CleanStr = a$
+CleanStr = A$
 End Function
 Public Sub ResCounter()
 k1 = 0
@@ -5100,7 +5102,7 @@ End Function
 
 
 Function ReadUnicodeOrANSI(FileName As String, Optional ByVal EnsureWinLFs As Boolean, Optional feedback As Long) As String
-Dim I&, FNr&, BLen&, WChars&, BOM As Integer, BTmp As Byte, b() As Byte
+Dim i&, FNr&, BLen&, WChars&, BOM As Integer, BTmp As Byte, b() As Byte
 ' code from Schmidt, member of vbforums
 If FileName = "" Then Exit Function
 On Error GoTo ErrHandler
@@ -5117,8 +5119,8 @@ On Error GoTo ErrHandler
           feedback = 0
           If BOM = &HFFFE Then 'big endian, so lets swap the byte-pairs
           feedback = 1
-            For I = 0 To UBound(b) Step 2
-              BTmp = b(I): b(I) = b(I + 1): b(I + 1) = BTmp
+            For i = 0 To UBound(b) Step 2
+              BTmp = b(i): b(i) = b(i + 1): b(i + 1) = BTmp
             Next
           End If
           ReadUnicodeOrANSI = b
@@ -5165,7 +5167,7 @@ End Function
 Public Function SaveUnicode(ByVal FileName As String, ByVal buf As String, mode2save As Long, Optional Append As Boolean = False) As Boolean
 ' using doc as extension you can read it from word...with automatic conversion to unicode
 ' OVERWRITE ALWAYS
-Dim w As Long, a() As Byte, f$, I As Long, bb As Byte, yesswap As Boolean
+Dim w As Long, A() As Byte, f$, i As Long, bb As Byte, yesswap As Boolean
 On Error GoTo t12345
 If Not Append Then
 If Not NeoUnicodeFile(FileName) Then Exit Function
@@ -5182,12 +5184,12 @@ Open f$ For Binary As w
 If Append Then Seek #w, LOF(w) + 1
 mode2save = mode2save Mod 10
 If mode2save = 0 Then
-a() = ChrW(&HFEFF)
-Put #w, , a()
+A() = ChrW(&HFEFF)
+Put #w, , A()
 
 ElseIf mode2save = 1 Then
-a() = ChrW(&HFFFE) ' big endian...need swap
-If Not Append Then Put #w, , a()
+A() = ChrW(&HFFFE) ' big endian...need swap
+If Not Append Then Put #w, , A()
 yesswap = True
 ElseIf mode2save = 2 Then  'utf8
 If Not Append Then
@@ -5211,16 +5213,16 @@ iPos = 1
 maxmw = 32000 ' check it with maxmw 20 OR 1
 If yesswap Then
 For iPos = 1 To Len(buf) Step maxmw
-a() = Mid$(buf, iPos, maxmw)
-For I = 0 To UBound(a()) - 1 Step 2
-bb = a(I): a(I) = a(I + 1): a(I + 1) = bb
-Next I
-Put #w, 3, a()
+A() = Mid$(buf, iPos, maxmw)
+For i = 0 To UBound(A()) - 1 Step 2
+bb = A(i): A(i) = A(i + 1): A(i + 1) = bb
+Next i
+Put #w, 3, A()
 Next iPos
 Else
 For iPos = 1 To Len(buf) Step maxmw
-a() = Mid$(buf, iPos, maxmw)
-Put #w, , a()
+A() = Mid$(buf, iPos, maxmw)
+Put #w, , A()
 Next iPos
 End If
 Close w
@@ -5228,16 +5230,16 @@ SaveUnicode = True
 t12345:
 End Function
 Public Sub getUniString(f As Long, s As String)
-Dim a() As Byte
-a() = s
-Get #f, , a()
-s = a()
+Dim A() As Byte
+A() = s
+Get #f, , A()
+s = A()
 End Sub
 
 Public Sub putUniString(f As Long, s As String)
-Dim a() As Byte
-a() = s
-Put #f, , a()
+Dim A() As Byte
+A() = s
+Put #f, , A()
 End Sub
 Public Sub putANSIString(f As Long, s As String)
 Put #f, , s
@@ -5245,13 +5247,13 @@ End Sub
 Public Function getUniStringlINE(f As Long, s As String) As Boolean
 ' 2 bytes a time... stop to line end and advance to next line
 
-Dim a() As Byte, s1 As String, ss As Long, lbreak As String
-a = " "
+Dim A() As Byte, s1 As String, ss As Long, lbreak As String
+A = " "
 On Error GoTo a11
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a()
+Get #f, , A()
 
-s1 = a()
+s1 = A()
 If s1 <> vbCr And s1 <> vbLf Then
 s = s + s1
 'If Asc(s1) = 63 And (AscW(a()) <> 63 And AscW(a()) <> -257) Then
@@ -5261,8 +5263,8 @@ Else
 If Not (LOF(f) < Seek(f)) Then
 ss = Seek(f)
 lbreak = s1
-Get #f, , a()
-s1 = a()
+Get #f, , A()
+s1 = A()
 If s1 <> vbCr And s1 <> vbLf Or lbreak = s1 Then
 Seek #f, ss  ' restore it
 End If
@@ -5276,21 +5278,21 @@ End Function
 
 Public Sub getAnsiStringlINE(f As Long, s As String)
 ' 2 bytes a time... stop to line end and advance to next line
-Dim a As Byte, s1 As String, ss As Long, lbreak As String
+Dim A As Byte, s1 As String, ss As Long, lbreak As String
 'a = " "
 On Error GoTo a11
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a
+Get #f, , A
 
-s1 = Chr(a)
+s1 = Chr(A)
 If s1 <> vbCr And s1 <> vbLf Then
 s = s + s1
 Else
 If Not (LOF(f) < Seek(f)) Then
 ss = Seek(f)
-Get #f, , a
+Get #f, , A
 lbreak = s1
-s1 = Chr(a)
+s1 = Chr(A)
 
 If s1 <> vbCr And s1 <> vbLf Or lbreak = s1 Then
 Seek #f, ss  ' restore it
@@ -5306,15 +5308,15 @@ Public Sub getUniStringComma(f As Long, s As String)
 ' sring must be in quotes
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim a() As Byte, s1 As String, ss As Long, inside As Boolean
+Dim A() As Byte, s1 As String, ss As Long, inside As Boolean
 s = ""
 
-a = " "
+A = " "
 On Error GoTo a1115
 
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a()
-s1 = a()
+Get #f, , A()
+s1 = A()
 If s1 <> " " Then
 If s1 = """" Then inside = True: Exit Do
 
@@ -5324,9 +5326,9 @@ Loop
 If s1 <> """" Then Exit Sub
 
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a()
+Get #f, , A()
 
-s1 = a()
+s1 = A()
 If s1 <> vbCr And s1 <> vbLf And s1 <> """" Then
 s = s + s1
 
@@ -5339,8 +5341,8 @@ Else
 If Not (LOF(f) < Seek(f)) Then
 ss = Seek(f)
 
-Get #f, , a()
-If a(0) = 34 Then
+Get #f, , A()
+If A(0) = 34 Then
 s = s + Chr(34)
 GoTo nn1
 Else
@@ -5351,8 +5353,8 @@ End If
 End If
 inside = False
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a()
-s1 = a()
+Get #f, , A()
+s1 = A()
 
 If s1 = vbCr Or s1 = vbLf Or s1 = "," Then Exit Do
 
@@ -5361,8 +5363,8 @@ If s1 = "," Then Exit Do
 End If
 If s1 <> "," And (Not (LOF(f) < Seek(f))) And (Not inside) Then
     ss = Seek(f)
-    Get #f, , a()
-    s1 = a()
+    Get #f, , A()
+    s1 = A()
     If s1 <> vbCr And s1 <> vbLf Then
     Seek #f, ss  ' restore it
     End If
@@ -5378,14 +5380,14 @@ Public Sub getAnsiStringComma(f As Long, s As String)
 ' sring must be in quotes
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim a As Byte, s1 As String, ss As Long, inside As Boolean
+Dim A As Byte, s1 As String, ss As Long, inside As Boolean
 s = ""
 
 On Error GoTo a1111
 
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a
-s1 = Chr$(a)
+Get #f, , A
+s1 = Chr$(A)
 If s1 <> " " Then
 If s1 = """" Then inside = True: Exit Do
 
@@ -5395,9 +5397,9 @@ Loop
 If s1 <> """" Then Exit Sub
 
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a
+Get #f, , A
 
-s1 = Chr$(a)
+s1 = Chr$(A)
 If s1 <> vbCr And s1 <> vbLf And s1 <> """" Then
 s = s + s1
 
@@ -5410,8 +5412,8 @@ Else
 If Not (LOF(f) < Seek(f)) Then
 ss = Seek(f)
 
-Get #f, , a
-If a = 34 Then
+Get #f, , A
+If A = 34 Then
 s = s + Chr(34)
 GoTo nn1
 Else
@@ -5422,8 +5424,8 @@ End If
 End If
 inside = False
 Do While Not (LOF(f) < Seek(f))
-Get #f, , a
-s1 = Chr(a)
+Get #f, , A
+s1 = Chr(A)
 
 If s1 = vbCr Or s1 = vbLf Or s1 = "," Then Exit Do
 
@@ -5432,8 +5434,8 @@ If s1 = "," Then Exit Do
 End If
 If s1 <> "," And (Not (LOF(f) < Seek(f))) And (Not inside) Then
     ss = Seek(f)
-    Get #f, , a
-    s1 = Chr(a)
+    Get #f, , A
+    s1 = Chr(A)
     If s1 <> vbCr And s1 <> vbLf Then
     Seek #f, ss  ' restore it
     End If
@@ -5449,21 +5451,21 @@ End Sub
 Public Sub getUniRealComma(f As Long, r As Double)
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim a() As Byte, s1 As String, ss As Long, s As String
+Dim A() As Byte, s1 As String, ss As Long, s As String
 r = 0
-a = " "
+A = " "
 On Error GoTo a111
 Do While Not LOF(f) < Seek(f)
-Get #f, , a()
+Get #f, , A()
 
-s1 = a()
+s1 = A()
 If s1 <> vbCr And s1 <> vbLf And s1 <> "," Then
 s = s + s1
 Else
 If s1 <> "," And Not (LOF(f) < Seek(f)) Then
     ss = Seek(f)
-    Get #f, , a()
-    s1 = a()
+    Get #f, , A()
+    s1 = A()
     If s1 <> vbCr And s1 <> vbLf Then
     Seek #f, ss  ' restore it
     End If
@@ -5479,21 +5481,21 @@ End Sub
 Public Sub getAnsiRealComma(f As Long, r As Double)
 ' 2 bytes a time... stop to line end and advance to next line
 ' use numbers with . as decimal not ,
-Dim a As Byte, s1 As String, ss As Long, s As String
+Dim A As Byte, s1 As String, ss As Long, s As String
 r = 0
 
 On Error GoTo a112
 Do While Not LOF(f) < Seek(f)
-Get #f, , a
+Get #f, , A
 
-s1 = Chr(a)
+s1 = Chr(A)
 If s1 <> vbCr And s1 <> vbLf And s1 <> "," Then
 s = s + s1
 Else
 If s1 <> "," And Not (LOF(f) < Seek(f)) Then
     ss = Seek(f)
-    Get #f, , a
-    s1 = Chr(a)
+    Get #f, , A
+    s1 = Chr(A)
     If s1 <> vbCr And s1 <> vbLf Then
     Seek #f, ss  ' restore it
     End If
@@ -5507,45 +5509,45 @@ a112:
 
 End Sub
 Public Function RealLenOLD(s$, Optional checkone As Boolean = False) As Long
-Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long, ii As Long
+Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long, ii As Long
 If IsWine Then
 RealLenOLD = Len(s$)
 Else
 ctype = CT_CTYPE3
 ll = Len(s$)
    If ll Then
-      ReDim a(Len(s$) * 2 + 20)
-      If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), a(0)) <> 0 Then
+      ReDim A(Len(s$) * 2 + 20)
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), A(0)) <> 0 Then
       ii = 0
-      For I = 1 To Len(s$) * 2 - 1 Step 2
+      For i = 1 To Len(s$) * 2 - 1 Step 2
       ii = ii + 1
-      If a(I - 1) > 0 Then
-      If a(I) = 0 Then
-      If ii > 1 Then If a(I - 1) < 8 Then ll = ll - 1
+      If A(i - 1) > 0 Then
+      If A(i) = 0 Then
+      If ii > 1 Then If A(i - 1) < 8 Then ll = ll - 1
       End If
-      ElseIf a(I) = 0 Then
+      ElseIf A(i) = 0 Then
       ll = ll - 1
       End If
       
-          Next I
+          Next i
       End If
    End If
 RealLenOLD = ll
 End If
 End Function
 Public Function RealLen(s$, Optional checkone As Boolean = False) As Long
-Dim a() As Byte, a1() As Byte, s1$, I As Long, ll As Long, ii As Long, l$, LLL$
+Dim A() As Byte, a1() As Byte, s1$, i As Long, ll As Long, ii As Long, l$, LLL$
 ll = Len(s$)
    If ll Then
-      ReDim a(Len(s$) * 2 + 20), a1(Len(s$) * 2 + 20)
-         If GetStringTypeExW(&HB, 1, StrPtr(s$), Len(s$), a(0)) <> 0 And GetStringTypeExW(&HB, 4, StrPtr(s$), Len(s$), a1(0)) <> 0 Then
+      ReDim A(Len(s$) * 2 + 20), a1(Len(s$) * 2 + 20)
+         If GetStringTypeExW(&HB, 1, StrPtr(s$), Len(s$), A(0)) <> 0 And GetStringTypeExW(&HB, 4, StrPtr(s$), Len(s$), a1(0)) <> 0 Then
          
 ii = 0
-      For I = 1 To Len(s$) * 2 - 1 Step 2
+      For i = 1 To Len(s$) * 2 - 1 Step 2
 ii = ii + 1
        ' Debug.Print I, a(I - 1), a(I)
-        If a(I - 1) = 0 Then
-        If a(I) = 2 And a1(2) < 8 Then
+        If A(i - 1) = 0 Then
+        If A(i) = 2 And a1(2) < 8 Then
         
                  If ii > 1 Then
                     s1$ = Mid$(s$, ii, 1)
@@ -5571,25 +5573,25 @@ ii = ii + 1
         
         End If
            l$ = Mid$(s$, ii, 1)
-          Next I
+          Next i
       End If
    End If
 RealLen = ll
 End Function
 Public Function PopOne(s$) As String
-Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long, MM As Long
+Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long, MM As Long
 ctype = CT_CTYPE3
 Dim one As Boolean
 ll = Len(s$)
 MM = ll
    If ll Then
-      ReDim a(Len(s$) * 2 + 20)
-      If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), a(0)) <> 0 Then
-      For I = 1 To Len(s$) * 2 - 1 Step 2
-      If a(I - 1) > 0 Then
-            If a(I) = 0 Then
+      ReDim A(Len(s$) * 2 + 20)
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), Len(s$), A(0)) <> 0 Then
+      For i = 1 To Len(s$) * 2 - 1 Step 2
+      If A(i - 1) > 0 Then
+            If A(i) = 0 Then
             
-            If a(I - 1) < 8 Then ll = ll - 1
+            If A(i - 1) < 8 Then ll = ll - 1
             Else
             If Not one Then Exit For
             
@@ -5598,7 +5600,7 @@ MM = ll
             If one Then Exit For
             one = Not one
             End If
-      Next I
+      Next i
       End If
         ll = ll - 1
       MM = MM - ll
@@ -5613,23 +5615,23 @@ End If
 
 End Function
 Public Sub ExcludeOne(s$)
-Dim a() As Byte, ctype As Long, s1$, I As Long, ll As Long
+Dim A() As Byte, ctype As Long, s1$, i As Long, ll As Long
 ll = Len(s$)
 ctype = CT_CTYPE3
    If ll > 1 Then
-      ReDim a(Len(s$) * 2 + 20)
-      If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, a(0)) <> 0 Then
-      For I = ll * 2 - 1 To 1 Step -2
-      If a(I) = 0 Then
-      If a(I - 1) > 0 Then
-      If a(I - 1) < 8 Then ll = ll - 1
+      ReDim A(Len(s$) * 2 + 20)
+      If GetStringTypeExW(&HB, ctype, StrPtr(s$), -1, A(0)) <> 0 Then
+      For i = ll * 2 - 1 To 1 Step -2
+      If A(i) = 0 Then
+      If A(i - 1) > 0 Then
+      If A(i - 1) < 8 Then ll = ll - 1
       Else
       Exit For
       End If
       Else
       Exit For
       End If
-          Next I
+          Next i
       End If
        ll = ll - 1
        If ll <= 0 Then

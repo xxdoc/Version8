@@ -310,11 +310,11 @@ If LastPath <> "" And ff = "" Then
 Else
 LastPath = ff
 
-Static ndx As Long
+Static NDX As Long
 If ff = "" Then
 ClearList
 
-ndx = 0
+NDX = 0
 For i = 1 To NumberofDrives
  'Me.additem DriveName(i) & ":\" & CStr(TotalDiskSpace(DriveName(i)))
  AddAFile Chr$(2) + DriveName(i) & ":", 1 + Abs(TotalDiskSpace(DriveName(i)) < 0) 'use level as not enabled
@@ -334,30 +334,30 @@ Dim s As String
 
 If ff <> "" Then
 If Append Then
-ndx = listcount
+NDX = listcount
 Else
             ClearList ' CHANGE THIS TO APPEND...
-           ndx = 0
+           NDX = 0
     End If
                 abort = False
 ' ff must be a path
 ' so strip \
             If Right$(ff, 1) = "\" Then ff = Left$(ff, Len(ff) - 1)
         
-                If look(1, ff, (ndx), IncludedFolders, Nofiles) > 0 Then
+                If look(1, ff, (NDX), IncludedFolders, Nofiles) > 0 Then
                
-                    Dir2 = List(ndx)
-                    ndx = ndx + 1
+                    Dir2 = List(NDX)
+                    NDX = NDX + 1
      
      
                     End If
            
 Else
-            If listcount > ndx Then
-            Dir2 = List(ndx)
-            ndx = ndx + 1   ' read with auto increment
+            If listcount > NDX Then
+            Dir2 = List(NDX)
+            NDX = NDX + 1   ' read with auto increment
             Else
-            ndx = 0  ' reset
+            NDX = 0  ' reset
                 Dir2 = "" ' this is the end
             End If
 End If
@@ -696,12 +696,12 @@ Wend
 PointPos = j
 End If
 End Function
-Public Function ExtractType(f$, Optional jj As Long = 0) As String
+Public Function ExtractType(f$, Optional JJ As Long = 0) As String
 Dim i As Long, j As Long, d$
 If IsSymbol3(f$, """") Then f$ = GetStrUntil(Chr(34), f$)
 If f$ = "" Then ExtractType = "": Exit Function
-If jj > 0 Then
-j = jj
+If JJ > 0 Then
+j = JJ
 Else
 j = PointPos(f$)
 End If
@@ -780,13 +780,13 @@ End If
 
 End Function
 Public Function isReadOnly(ByVal f$) As Boolean
-Dim V&
+Dim v&
 
 Err.clear
 On Error Resume Next
 If Right$(f$, 1) = "\" Then f$ = Mid$(f$, 1, Len(f$) - 1)
 If f$ <> "" Then
-If FileAttr(f$, V&) Then isReadOnly = (V& And 1) > 0 Else isReadOnly = True
+If FileAttr(f$, v&) Then isReadOnly = (v& And 1) > 0 Else isReadOnly = True
 
 Else
 isReadOnly = True
@@ -797,12 +797,12 @@ Private Function isdirP(wfd As WIN32_FIND_DATA) As Boolean
 isdirP = (wfd.dwFileAttributes And 16) > 0
 End Function
 Public Function isdir(f$) As Boolean
-Dim V&
+Dim v&
 Err.clear
 If f$ = "" Then Exit Function
 On Error Resume Next
-If FileAttr(f$, V&) Then
-isdir = (V& And 16) > 0
+If FileAttr(f$, v&) Then
+isdir = (v& And 16) > 0
 End If
 End Function
 Private Sub Class_Initialize()

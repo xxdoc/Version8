@@ -24,16 +24,16 @@ Public Const DFC_POPUPMENU = 5            'Only Win98/2000 !!
 Public Const DFCS_BUTTON3STATE = &H10
 
 Public Const DC_GRADIENT = &H20          'Only Win98/2000 !!
-Public Declare Function FillRect Lib "user32" (ByVal hdc As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Public Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Public Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Public Declare Function SetTextColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
+Public Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Public Const OPAQUE = 2
-Public Declare Function SetBkMode Lib "gdi32" (ByVal hdc As Long, ByVal nBkMode As Long) As Long
-Public Declare Function DrawFrameControl Lib "user32" (ByVal hdc As Long, lpRect As RECT, ByVal un1 As Long, ByVal un2 As Long) As Long
-Public Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hdc As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
-Public Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal Y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-Public Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal X As Long, ByVal Y As Long) As Long
+Public Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
+Public Declare Function DrawFrameControl Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal un1 As Long, ByVal un2 As Long) As Long
+Public Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Public Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Public Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
 Public Const DT_BOTTOM As Long = &H8&
 Public Const DT_CALCRECT As Long = &H400&
@@ -62,7 +62,7 @@ Public Const DT_WORD_ELLIPSIS As Long = &H40000
 Private Declare Function GetLogicalDriveStrings Lib "kernel32" _
   Alias "GetLogicalDriveStringsA" (ByVal nBufferLength As Long, _
   ByVal lpBuffer As String) As Long
-   Private Declare Function GetComputerName Lib "kernel32" Alias "GetComputerNameW" (ByVal lpBuffer As Long, nSize As Long) As Long
+   Private Declare Function GetComputerName Lib "kernel32" Alias "GetComputerNameW" (ByVal lpBuffer As Long, nsize As Long) As Long
  Private Declare Function GetDiskFreeSpace Lib "kernel32" _
  Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, _
  lpSectorsPerCluster As Long, lpBytesPerSector As Long, _
@@ -75,12 +75,12 @@ Private Declare Function GetLogicalDriveStrings Lib "kernel32" _
     Dim BytesPerSector As Long
     Dim NumberofFreeClusters As Long
     Dim TotalClusters As Long
-    Dim Dletter, X
+    Dim Dletter, x
     Dletter = Left(DriveLetter, 1) & ":\"
-    X = GetDiskFreeSpace(Dletter, SectorsPerCluster, _
+    x = GetDiskFreeSpace(Dletter, SectorsPerCluster, _
       BytesPerSector, NumberofFreeClusters, TotalClusters)
     
-    If X = 0 Then 'Error occurred
+    If x = 0 Then 'Error occurred
         FreeDiskSpace = -99 'Assign an arbitrary error value
         Exit Function
     End If
@@ -143,7 +143,7 @@ Dim oshell, ofile, oFolder
 Set oshell = CreateObject("Shell.Application")
 If Not oshell Is Nothing Then
 Set oFolder = oshell.NameSpace(NET_HOOD)
-For Each ofile In oFolder.ITEMS
+For Each ofile In oFolder.items
 If ofile.name = "" Then
 If all = "" Then
 all = "(" + ofile.GetLink.path + ")"
@@ -180,7 +180,7 @@ Set oshell = CreateObject("Shell.Application")
 If Not oshell Is Nothing Then
 Set oFolder = oshell.NameSpace(NET_HOOD)
 
-For Each ofile In oFolder.ITEMS
+For Each ofile In oFolder.items
 If ofile.name = giveAname Then
 FindNetworkFolderPath = ofile.GetLink.path
 Exit For

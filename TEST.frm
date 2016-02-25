@@ -428,7 +428,7 @@ vH_title$ = ""
 s$ = Label(Index)
 Select Case Left$(LTrim(Label(2)) + " ", 1)
 Case "?", "!", " ", ".", ":", Is >= "A", Chr$(10), """"
-    fHelp MyBaseTask, s$, Asc(s$ + Mid$(" Ó", Abs(pagio$ = "GREEK") + 1)) < 128
+    fHelp MyBaseTask, s$, AscW(s$ + Mid$(" Ó", Abs(pagio$ = "GREEK") + 1)) < 128
 End Select
 ElseIf Index = 2 Then
 TestShowCode = Not TestShowCode

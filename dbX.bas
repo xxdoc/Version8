@@ -69,7 +69,7 @@ End If
 isdir = lookfirst
 End Function
 Public Sub fHelp(bstack As basetask, d$, Optional Eng As Boolean = False)
-Dim sql$, b$, p$, c$, gp$, r As Double, bb As Long, I As Long
+Dim sql$, b$, p$, c$, gp$, r As Double, bb As Long, i As Long
 Dim cd As String, doriginal$
 On Error GoTo E5
 'ON ERROR GoTo 0
@@ -95,8 +95,8 @@ Else
 End If
 vHelp Not Form4.Visible
 Exit Sub
-ElseIf GetSub(d$, I) Or d$ = HERE$ Then
-If d$ = HERE$ Then I = bstack.OriginalCode
+ElseIf GetSub(d$, i) Or d$ = HERE$ Then
+If d$ = HERE$ Then i = bstack.OriginalCode
 If vH_title$ <> "" Then
 b$ = "<| " & vH_title$ & vbCrLf & vbCrLf
 Else
@@ -114,12 +114,12 @@ If Eng Then c$ = "[Module]" Else c$ = "[Function]"
 End If
 
 Dim ss$
-    ss$ = GetNextLine((SBcode(I)))
+    ss$ = GetNextLine((SBcode(i)))
     If Left$(ss$, 10) = "'11001EDIT" Then
     
-    ss$ = Mid$(SBcode(I), Len(ss$) + 3)
+    ss$ = Mid$(SBcode(i), Len(ss$) + 3)
     Else
-     ss$ = SBcode(I)
+     ss$ = SBcode(i)
      End If
         sHelp d$, c$ + "  " & b$ & ss$, (ScrX() - 1) * 3 / 5, (ScrY() - 1) * 4 / 7
     
@@ -141,7 +141,7 @@ AddDirSep cd
 p$ = Chr(34)
 c$ = ","
 d$ = doriginal$
-If Asc(d$) < 128 Then
+If AscW(d$) < 128 Then
 sql$ = "SELECT * FROM [COMMANDS] WHERE ENGLISH >= '" & UCase(d$) & "'"
 Else
 sql$ = "SELECT * FROM [COMMANDS] WHERE DESCRIPTION >= '" & myUcase(d$, True) & "'"
@@ -195,8 +195,8 @@ DBUser = extDBUser
 DBUserPassword = extDBUserPassword
 Err.clear
 End Sub
-Public Function inames(I As Long, lang As Long) As String
-If (I And &H3) <> 1 Then
+Public Function inames(i As Long, lang As Long) As String
+If (i And &H3) <> 1 Then
 Select Case lang
 Case 1
 
@@ -215,8 +215,8 @@ End Select
 End If
 
 End Function
-Public Function fnames(I As Long, lang As Long) As String
-Select Case I
+Public Function fnames(i As Long, lang As Long) As String
+Select Case i
 Case 1
     Select Case lang
     Case 1
@@ -424,7 +424,7 @@ End If
         PushOne base, myBase
     End If
   Dim cat, TBL, rs
-     Dim I As Long, j As Long, k As Long, KB As Boolean
+     Dim i As Long, j As Long, k As Long, KB As Boolean
   
            Set rs = CreateObject("ADODB.Recordset")
         Set TBL = CreateObject("ADOX.TABLE")
@@ -489,8 +489,8 @@ End If
                                             Else
                                             stac1.DataVal CDbl(0)
                                         End If
-                     For I = 0 To rs.FIELDS.Count - 1
-                     With rs.FIELDS(I)
+                     For i = 0 To rs.FIELDS.Count - 1
+                     With rs.FIELDS(i)
                              stac1.DataStr .name
                              If .Type = 203 And .DEFINEDSIZE >= 536870910# Then
                              
@@ -522,7 +522,7 @@ End If
                              
                              End If
                      End With
-                     Next I
+                     Next i
                      rs.Close
                      If vindx Then
                     If TBL.indexes.Count > 0 Then
@@ -564,7 +564,7 @@ g102:
 End Sub
 
 Public Sub append_table(bstackstr As basetask, base As String, r$, ED As Boolean, Optional lang As Long = -1)
-Dim table$, I&, par$, ok As Boolean, t As Double, j&
+Dim table$, i&, par$, ok As Boolean, t As Double, j&
 Dim gindex As Long
 ok = False
 
@@ -659,20 +659,20 @@ End If
 Else
 rec.AddNew
 End If
-I& = 0
+i& = 0
 While FastSymbol(r$, ",")
 If ED Then
     While FastSymbol(r$, ",")
-    I& = I& + 1
+    i& = i& + 1
     Wend
 End If
 If IsStrExp(bstackstr, r$, par$) Then
-    rec.FIELDS(I&) = par$
+    rec.FIELDS(i&) = par$
 ElseIf IsExp(bstackstr, r$, t) Then
-    rec.FIELDS(I&) = CStr(t)   '??? convert to a standard format
+    rec.FIELDS(i&) = CStr(t)   '??? convert to a standard format
 End If
 
-I& = I& + 1
+i& = i& + 1
 Wend
 Err.clear
 rec.UpdateBatch  ' update be an updatebatch
@@ -683,7 +683,7 @@ End If
 End Sub
 Public Sub getrow(bstackstr As basetask, r$, Optional ERL As Boolean = True, Optional search$ = " = ", Optional lang As Long = 0, Optional IamHelpFile As Boolean = False)
 
-Dim base As String, table$, from As Long, first$, Second$, ok As Boolean, fr As Double, stac1$, p As Double, I&
+Dim base As String, table$, from As Long, first$, Second$, ok As Boolean, fr As Double, stac1$, p As Double, i&
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -865,33 +865,33 @@ If from >= 0 Then
   rec.Move from - 1
   End If
 End If
-    For I& = rec.FIELDS.Count - 1 To 0 Step -1
+    For i& = rec.FIELDS.Count - 1 To 0 Step -1
 
-   Select Case rec.FIELDS(I&).Type
+   Select Case rec.FIELDS(i&).Type
 Case 1, 2, 3, 4, 5, 6, 7
 
- If IsNull(rec.FIELDS(I&)) Then
+ If IsNull(rec.FIELDS(i&)) Then
         bstackstr.soros.PushUndefine          '.PushStr "0"
     Else
-        bstackstr.soros.PushVal CDbl(rec.FIELDS(I&))
+        bstackstr.soros.PushVal CDbl(rec.FIELDS(i&))
     
 End If
 
 
 Case 130, 8, 203, 202
-If IsNull(rec.FIELDS(I&)) Then
+If IsNull(rec.FIELDS(i&)) Then
     
      bstackstr.soros.PushStr ""
  Else
   
-   bstackstr.soros.PushStr CStr(rec.FIELDS(I&))
+   bstackstr.soros.PushStr CStr(rec.FIELDS(i&))
   End If
 Case 11, 12 ' this is the binary field so we can save unicode there
    Case Else
 '
    bstackstr.soros.PushStr "?"
  End Select
-   Next I&
+   Next i&
    End If
    
    'stack$(BaseSTACK) = " " & Trim$(Str$(II)) + stack$(BaseSTACK)
@@ -915,7 +915,7 @@ On Error Resume Next
 End Sub
 
 Public Sub getnames(bstackstr As basetask, r$, bv As Object, lang)
-Dim base As String, table$, from As Long, many As Long, ok As Boolean, fr As Double, stac1$, I&
+Dim base As String, table$, from As Long, many As Long, ok As Boolean, fr As Double, stac1$, i&
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -1046,10 +1046,10 @@ If many + from - 1 > ii Then many = ii - from + 1
 bstackstr.soros.PushVal CDbl(ii)
 ''''''''''''''''' stack$(BASESTACK) = " " & Trim$(Str$(II)) + stack$(BASESTACK)
 
-    For I& = 1 To many
+    For i& = 1 To many
     bv.additemFast CStr(rec.FIELDS(0))   ' USING gList
     
-    If I& < many Then rec.MoveNext
+    If i& < many Then rec.MoveNext
     Next
   End If
 rec.Close
@@ -1128,7 +1128,7 @@ End Sub
 
 
 Public Sub MyOrder(bstackstr As basetask, r$)
-Dim base As String, tablename As String, fs As String, I&, o As Double, ok As Boolean
+Dim base As String, tablename As String, fs As String, i&, o As Double, ok As Boolean
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -1261,7 +1261,7 @@ End If
 End Sub
 Public Sub NewTable(bstackstr As basetask, r$)
 'BASE As String, tablename As String, ParamArray flds()
-Dim base As String, tablename As String, fs As String, I&, n As Double, l As Double, ok As Boolean
+Dim base As String, tablename As String, fs As String, i&, n As Double, l As Double, ok As Boolean
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
 If FastSymbol(r$, ",") Then
@@ -1614,19 +1614,19 @@ Dim v As Variant, bb As Boolean
 On Error Resume Next
 If Not Init Then Exit Sub
 If conCollection.Count > 0 Then
-Dim I As Long
+Dim i As Long
 Err.clear
-For I = conCollection.Count To 1 Step -1
+For i = conCollection.Count To 1 Step -1
 On Error Resume Next
-bb = conCollection(I).connectionstring <> ""
+bb = conCollection(i).connectionstring <> ""
 If Err.Number = 0 Then
 
-  If conCollection(I).activeconnection <> "" Then conCollection(I).Close
+  If conCollection(i).activeconnection <> "" Then conCollection(i).Close
      ''   If conCollection(I) <> "" Then conCollection(I).Close
 End If
-conCollection.remove I
+conCollection.remove i
 Err.clear
-Next I
+Next i
 Set conCollection = New Collection
 End If
 Err.clear
@@ -1660,10 +1660,10 @@ If Init Then Exit Sub
 Set conCollection = New Collection
 Init = True
 End Sub
-Function ftype(ByVal a As Long, lang As Long) As String
+Function ftype(ByVal A As Long, lang As Long) As String
 Select Case lang
 Case 0
-Select Case a
+Select Case A
     Case 0
 ftype = "адеио"
     Case 2
@@ -1751,7 +1751,7 @@ ftype = "????"
 End Select
 
 Case Else  ' this is for 1
-Select Case a
+Select Case A
     Case 0
 ftype = "EMPTY"
     Case 2
