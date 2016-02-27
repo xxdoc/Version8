@@ -2703,7 +2703,7 @@ SetNormal d
                 End If
                    wwPlain bstack, players(DisForm), "Λειτουργικό Σύστημα: " & os, d.Width, 0, True
             
-                      wwPlain bstack, players(DisForm), "Όνομα Χρήστη: " & Originalusername, d.Width, 0, True
+                      wwPlain bstack, players(DisForm), "Όνομα Χρήστη: " & Tcase(Originalusername), d.Width, 0, True
                 
             Else
              If Revision = 0 Then
@@ -2714,7 +2714,7 @@ SetNormal d
               
                       wwPlain bstack, players(DisForm), "Operating System: " & os, d.Width, 0, True
                 
-                   wwPlain bstack, players(DisForm), "User Name: " & Originalusername, d.Width, 0, True
+                   wwPlain bstack, players(DisForm), "User Name: " & Tcase(Originalusername), d.Width, 0, True
         
                  End If
                         '    cr bstack
@@ -5646,4 +5646,6 @@ ctype = CT_CTYPE3
       
    End If
 End Sub
-
+Function Tcase(s$) As String
+Tcase = myUcase(Left$(s$, 1), True) + Mid$(myLcase(s$), 2)
+End Function

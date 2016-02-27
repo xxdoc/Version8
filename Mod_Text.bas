@@ -22,7 +22,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 170
+Global Const Revision = 171
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -32602,5 +32602,5 @@ strOutput = Space$(1000)
 result = ExpandEnvironmentStrings(StrPtr(strInput), StrPtr(strOutput), result)
 strOutput = Space$(result)
 result = ExpandEnvironmentStrings(StrPtr(strInput), StrPtr(strOutput), result)
-ExpEnvirStr = StripTerminator(GetLongName(strOutput))
+ExpEnvirStr = StripTerminator(strOutput)
 End Function
