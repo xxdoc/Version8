@@ -5239,6 +5239,7 @@ End Sub
 Public Sub putUniString(f As Long, s As String)
 Dim A() As Byte
 A() = s
+
 Put #f, , A()
 End Sub
 Public Sub putANSIString(f As Long, s As String)

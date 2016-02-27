@@ -10,6 +10,7 @@ Public UseEsc As Boolean
 ' 33 for Back
 Public NowDec$, NowThou$
 Public priorityOr As Boolean, NoUseDec As Boolean, mNoUseDec As Boolean
+Public csvsep$, csvDec$
 Public Const DisForm = 0
 Public Const BackForm = -1
 Public Const PrinterPage = -2
@@ -21,7 +22,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 168
+Global Const Revision = 170
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -50,8 +51,8 @@ Private Const LOCALE_SLANGUAGE& = &H2 '  localized name of language
 Public shortlang As Boolean
 Public LEVCOLMENU As Long
  Declare Function ExpandEnvironmentStrings _
-   Lib "kernel32" Alias "ExpandEnvironmentStringsA" _
-   (ByVal lpSrc As String, ByVal lpDst As String, _
+   Lib "kernel32" Alias "ExpandEnvironmentStringsW" _
+   (ByVal lpSrc As Long, ByVal lpDst As Long, _
    ByVal nsize As Long) As Long
 Private Declare Function GetTempFileNameW Lib "kernel32" _
     (ByVal lpszPath As Long, ByVal lpPrefixString As Long, _
@@ -887,21 +888,26 @@ End If
 If W4 Then pn& = 2 Else pn& = 0
 
 s$ = ""
-If .FTEXT > 3 And .curpos >= .mx And Not W4 Then
-crNew basestack, prive
-W3 = 0
+If par Then
+    If .FTEXT > 3 And .curpos >= .mx And Not W4 Then
+    crNew basestack, prive
+    W3 = 0
 End If
+End If
+If par Then
 If FastSymbol(rest$, ";") Then
+
             If .lastprint Then
             .lastprint = False
             LCTbasketCur scr, prive
             crNew basestack, prive
             End If
+         
 ElseIf .lastprint Then
 If .FTEXT > 3 Then pn& = 7: GoTo newntrance
 
 End If
-
+End If
 
 
 Do
@@ -1154,18 +1160,20 @@ End If
  
         Exit Do
     End If
-If .lastprint And opn& > 4 Then .lastprint = False
+If par Then If .lastprint And opn& > 4 Then .lastprint = False
     If FastSymbol(rest$, ";") Then
 '' LEAVE W3
+If par Then
    If opn& = 0 And (Not work) And (Not .lastprint) Then
 
    LCTbasket scr, prive, .currow, .curpos
+   End If
    End If
    ' IF  WORK THEN opn&=5
    opn& = 5
 newntrance:
 work = True
-.lastprint = True
+If par Then .lastprint = True
         
          Do While FastSymbol(rest$, ";")
          Loop
@@ -2186,17 +2194,11 @@ Else
 ExtractPath = mylcasefILE(Left$(f$, j - 1))
 End If
 End If
-Dim result As Long
-Dim strInput As String, strOutput As String
-'' Two calls required, one to get expansion buffer length first then do expansion
-strOutput = Space$(250)
-result = ExpandEnvironmentStrings(ExtractPath, strOutput, result)
-strOutput = Space$(result)
-result = ExpandEnvironmentStrings(ExtractPath, strOutput, result)
+
 If existonly Then
-ExtractPath = mylcasefILE(StripTerminator(GetLongName(strOutput)))
+ExtractPath = mylcasefILE(StripTerminator(GetLongName(ExpEnvirStr(ExtractPath))))
 Else
-ExtractPath = StripTerminator(strOutput) 'UCase(GetLongName(strOutput))
+ExtractPath = ExpEnvirStr(ExtractPath)
 End If
 Dim ccc() As String, c$
 ccc() = Split(ExtractPath, "\..")
@@ -17208,7 +17210,20 @@ Unload Form3
 End If
 Exit Function
 Case "WRITE", "ÃÑÁØÅ"
-If IsLabelSymbolNew(rest$, "HEX", "ÄÅÊÁÅÎ", lang) Then it = 1
+If IsLabelSymbolNew(rest$, "ÌÅ", "WITH", lang) Then
+If IsStrExp(basestack, rest$, s$) Then
+csvsep$ = Left$(s$, 1)
+ If FastSymbol(rest$, ",") Then
+ If IsStrExp(basestack, rest$, s$) Then
+ csvDec$ = Left$(s$, 1)
+ End If
+ End If
+Identifier = True
+End If
+Exit Function
+End If
+If csvsep$ = "" Then csvsep$ = ","
+If IsLabelSymbolNew(rest$, "ÄÅÊÁÅÎ", "HEX", lang) Then it = 1
 If FastSymbol(rest$, "#") Then
 
     Identifier = False
@@ -17223,9 +17238,9 @@ If FastSymbol(rest$, "#") Then
             If IsExp(basestack, rest$, p) Then
                 If par Then
                         If Uni(i) Then
-                                putUniString i, ","
+                                putUniString i, csvsep$
                         Else
-                                putANSIString i, ","
+                                putANSIString i, csvsep$
                                ' Print #i, ",";
                         End If
                 End If
@@ -17233,19 +17248,28 @@ If FastSymbol(rest$, "#") Then
                 If it Then
                 putUniString i, PACKLNG2$(p)
                 Else
+                    If Len(csvDec$) = 0 Then
                     putUniString i, NLtrim$(Str$(p))
+                    Else
+                    putUniString i, NLtrim$(Replace(Str$(p), ".", csvDec$))
                     End If
+                End If
                 Else
-                    putANSIString i, NLtrim$(Str$(p))
-                    'Print #i, NLtrim$(str$(p));
+                    If Len(csvDec$) = 0 Then
+                        putANSIString i, NLtrim$(Str$(p))
+                    Else
+                    putANSIString i, NLtrim$(Replace(Str$(p), ".", csvDec$))
+                    End If
                 End If
                 If Err.Number > 0 Then Exit Function
                 ElseIf IsStrExp(basestack, rest$, s$) Then
+                If par Then
                         If Uni(i) Then
-                                putUniString i, ","
+                                putUniString i, csvsep$
                         Else
-                                putANSIString i, ","
+                                putANSIString i, csvsep$
                         '       Print #i, ",";
+                        End If
                         End If
                          s$ = Replace$(s$, Chr(34), Chr(34) + Chr(34))
                          If Uni(i) Then
@@ -32570,4 +32594,13 @@ Function AllocSub() As Long
     sb2used = sb2used + 1
     AllocSub = sb2used
 End Function
-
+Public Function ExpEnvirStr(strInput) As String
+Dim result As Long
+Dim strOutput As String
+'' Two calls required, one to get expansion buffer length first then do expansion
+strOutput = Space$(1000)
+result = ExpandEnvironmentStrings(StrPtr(strInput), StrPtr(strOutput), result)
+strOutput = Space$(result)
+result = ExpandEnvironmentStrings(StrPtr(strInput), StrPtr(strOutput), result)
+ExpEnvirStr = StripTerminator(GetLongName(strOutput))
+End Function
