@@ -22,7 +22,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 171
+Global Const Revision = 172
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -238,7 +238,23 @@ If IsStrExp(bstack, rest$, final$) Then
        pat1$ = pat$ + ":"
         pat$ = pat$ + "}"
         If IsStrExp(bstack, rest$, q$) Then
+            
             final$ = Replace$(final$, pat$, q$)
+AGAIN0:
+        pl2 = InStr(pl2, final$, pat1$)
+          If pl2 > 0 Then
+           pl1 = InStr(pl2, final$, "}")
+           pl3 = Val(Mid$(final$, pl2 + Len(pat1$)) + "}")
+           If pl3 <> 0 Then
+        If pl3 > 0 Then
+            pd$ = Left$(q$ + Space$(pl3), pl3)
+            Else
+            pd$ = Right$(Space$(Abs(pl3)) + q$, Abs(pl3))
+            End If
+      End If
+            final$ = Replace$(final$, Mid$(final$, pl2, pl1 - pl2 + 1), pd$)
+            GoTo AGAIN0
+          End If
             If Not FastSymbol(rest$, ",") Then Exit Do
         ElseIf IsExp(bstack, rest$, p) Then
 AGAIN1:
@@ -251,7 +267,7 @@ AGAIN1:
         Else
         P1 = Val("0" + Mid$(final$, pl2 + Len(pat1$)))
         
-        pl3 = Val(Mid$(final$, pl2 + Len(pat1$) + Str$(P1)) + "}")
+        pl3 = Val(Mid$(final$, pl2 + Len(pat1$) + Len(Str$(P1))) + "}")
         If P1 < 0 Then P1 = 22
         If P1 > 22 Then P1 = 22
       p = MyRound(p, P1)
@@ -646,7 +662,7 @@ If x1 <> 0 Then
         If Not WeCanWrite(pa$) Then Exit Function
         
       
-        For i = 0 To subHash.Count - 1
+           For i = subHash.Count - 1 To 0 Step -1
        subHash.ReadVar i, s$, col
                 If Right$(s$, 2) = "()" Then
                 s$ = Left$(s$, Len(s$) - 2)
