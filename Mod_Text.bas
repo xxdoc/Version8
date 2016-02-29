@@ -22,7 +22,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 172
+Global Const Revision = 173
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -7422,7 +7422,7 @@ Case Is >= "A"
                        
                                     A$ = Chr(34) + bstack.UseGroupname & Mid(r$, 6, Len(r$) - 6) + Chr(34) + A$
                                     Else
-                                    RR& = 1
+                                    RR& = 2
                                     End If
                                 ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
                                A$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + A$
@@ -7430,15 +7430,17 @@ Case Is >= "A"
                                 ElseIf varhash.ExistKey(r$) Then
                                     A$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + A$
                                 Else
-                                   RR& = 1
+                                   RR& = 3
                                 End If
-                                 If RR& = 1 Then
+                                 If RR& > 0 Then
+                                 If RR& = 2 Then
                                  If bstack.UseGroupname <> "" Then
                                  r$ = bstack.UseGroupname + Mid$(r$, 6)
-                                 Else
                                  End If
+                                 End If
+                                 RR& = 1
                                  If GetSub(r$ + ")", RR&) Then
-                                                                  r$ = "{" + sbf(RR&).sb + "}" + sbf(RR&).sbgroup
+                            r$ = "{" + sbf(RR&).sb + "}" + sbf(RR&).sbgroup
                                  
                     RR& = 2
      
@@ -7726,21 +7728,22 @@ Case Is >= "A"
                             If varhash.ExistKey(bstack.UseGroupname & Mid(r$, 6)) > 0 Then
                                     A$ = Chr(34) + bstack.UseGroupname & Mid(r$, 6, Len(r$) - 6) + Chr(34) + A$
                                     Else
-                                    RR& = 1
+                                    RR& = 2
                                     End If
                                 ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
-  ''                              ElseIf InStr(arrname$, Chr$(13) + HERE$ & "." & myUcase(Mid$(r$, 1, Len(r$))) + " ") > 0 Then
-                                    A$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + A$
+                                     A$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + A$
                                 ElseIf varhash.ExistKey(r$) Then
                                     A$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + A$
                                 Else
-                                   RR& = 1
+                                   RR& = 3
                                 End If
-                                 If RR& = 1 Then
+                                If RR& > 0 Then
+                                 If RR& = 2 Then
                                  If bstack.UseGroupname <> "" Then
                                  r$ = bstack.UseGroupname + Mid$(r$, 6)
-                                 Else
                                  End If
+                                 End If
+                                 RR& = 1
                                  If GetSub(r$ + ")", RR&) Then
                                                                   r$ = "{" + sbf(RR&).sb + "}" + sbf(RR&).sbgroup
                                  
