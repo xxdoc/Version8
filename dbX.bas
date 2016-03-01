@@ -1428,7 +1428,7 @@ End If
 realtype$ = Trim$(ExtractType(base))
 If realtype$ <> "" Then
     base = ExtractPath(base, True) + ExtractNameOnly(base)
-    If BASE2 = "" Then BASE2 = strTemp & CStr(Timer) & "_0." + realtype$ Else BASE2 = ExtractPath(BASE2) + CStr(Timer) + "_0." + realtype$
+    If BASE2 = "" Then BASE2 = strTemp & LTrim(Str(Timer)) & "_0." + realtype$ Else BASE2 = ExtractPath(BASE2) + LTrim(Str(Timer)) + "_0." + realtype$
     Set conn = CreateObject("JRO.JetEngine")
     base = base & "." + realtype$
 
@@ -1634,7 +1634,17 @@ End Sub
 Public Sub RemoveOneConn(conname)
 On Error Resume Next
 Dim VV
-VV = conCollection(conname)
+Set VV = conCollection(conname)
+If Typename$(VV) = "Empty" Then
+Err.clear
+    VV = conCollection(conname)
+    If Not Err.Number <> 0 Then
+        conCollection.remove conname
+        
+        
+    End If
+    Exit Sub
+End If
 If Not Err.Number <> 0 Then
 Err.clear
 If VV.connectionstring <> "" Then
