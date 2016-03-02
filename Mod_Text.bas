@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 176
+Global Const Revision = 177
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -16931,7 +16931,7 @@ Identifier = True
  If x1 <> 1 Then Identifier = False: Exit Function
 ss$ = HERE$
 HERE$ = ""
- i = GlobalVar(basestack.GroupName & what$, s$, True)
+ i = GlobalVar(basestack.GroupName & what$, s$, , True)
    MakeitObjectEvent var(i)
    HERE$ = ss$
  Identifier = ProcEvent(basestack, rest$, lang, i)
@@ -17828,6 +17828,10 @@ MyEr "Need name for function with parenthesis", "Θέλω όνομα συνάρτησης με παρενθ
 Identifier = False
 Exit Function
 End If
+Case "FUNCTION!"
+par = True
+y1 = True
+GoTo classcont
 Case "FUNCTION", "ΣΥΝΑΡΤΗΣΗ"
         y1 = IsLabelSymbolNew(rest$, "ΓΕΝΙΚΗ", "GLOBAL", lang)
         par = IsLabelSymbolNew(rest$, "ΝΕΑ", "NEW", lang)
@@ -18678,15 +18682,25 @@ If bs.IsString(s$) Then
      HERE$ = ss$
     
     Else
+    'If flag2 Then
+       
+     '   If Not Identifier(basestack, "@FUNCTION!", s$) Then
+        '    MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
+         '   Else
+          '  sbf(basestack.IndexSub).sbgroup = "" ' s$
+        
+           ' End If
+  '  Else
             If Not Identifier(basestack, "@FUNCTION", s$) Then
             MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
             Else
             sbf(basestack.IndexSub).sbgroup = s$
         
             End If
+            End If
             Identifier = True
             End If
-    End If
+   ' End If
     Else
     i = CopyArrayItemsNoFormated(basestack, s$)
     If i > 0 Then
@@ -32908,7 +32922,7 @@ Exit Function
 
 End If
 ''bstack.Look2Parent = False
-Dim j As Long, k As Long
+Dim j As Long, k, s1$, klm As Long
 Set oldbstack = bstack.soros
 For j = 0 To A.Count - 1
 If A.Enabled Then
@@ -32916,15 +32930,23 @@ A.ReadVar j, n$, f$
 If f$ <> "" Then
 Set bb = New mStiva
 Set bstack.Sorosref = bb
-bb.Copy2TopNItems2FromStiva A.Params, oldbstack
-bb.PushStr f$
-n$ = "for this {Read New &A() : call void A()}"
+            bb.Copy2TopNItems2FromStiva A.Params, oldbstack
+            PushStage bstack, False
+            s1$ = Mid$(f$, 2, rinstr(f$, "}") - 2)
+            klm = GlobalSub("A_()", s1$, Trim$(Mid$(f$, Len(s1$) + 3)))
+            
+            If Not ProcModuleEntry(bstack, "A_()", klm, "") Then
+                PopStage bstack
+                bb.Flush
+                GoTo conthere
+            End If
+            PopStage bstack
 
-Execute bstack, n$, False
 bb.Flush
 End If
 End If
 Next j
+conthere:
 Set bstack.Sorosref = oldbstack
 Set oldbstack = Nothing
 Set bb = Nothing
