@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 174
+Global Const Revision = 175
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -11509,6 +11509,7 @@ usethis$ = ""
 End If
 End Function
 
+
 Function IsLabelSymbol3(ByVal code As Double, a$, c$, useth$, Optional mis As Boolean = False, Optional ByVal Bypass As Boolean = False, Optional checkonly As Boolean = False, Optional needspace As Boolean = False) As Boolean
 Dim test$, what$, pass As Long
 If Bypass Then Exit Function
@@ -16039,6 +16040,7 @@ mystack.StaticInUse = basestack.StaticInUse
 Set mystack.StaticCollection = basestack.StaticCollection
 mystack.Look2Parent = True  ' new workaround for passing &this to function
  If Not PushParamGeneralV7(mystack, rest$) Then
+ mystack.Look2Parent = False
  Exit Function
  End If
  
@@ -18755,9 +18757,14 @@ If GetVar(basestack, what$, i, , , flag) Then
              If Typename$(myobject) = "Group" Then
                 
         UnFloatGroup basestack, what$, i, myobject
-        Set myobject = Nothing
+        
+        ElseIf Typename$(myobject) = "mEvent" Then
+    
+       
+        Set var(i) = myobject
+        
     End If
-            
+            Set myobject = Nothing
     End If
     
   
@@ -26580,7 +26587,7 @@ If p$ <> "" Then
     i = i + 1
     j = AscW(st.StackItemType(i))
     If j = 42 Then
-    j = AscW(Typename(st.StackItem(i)))
+    j = AscW(Mid$(Typename(st.StackItem(i)), 2))
     End If
     Select Case AscW(Mid$(p$, i, 1))
     Case 925, 957, 913, 945, 78, 110 '' number  - use spellunicode to make it
@@ -26588,8 +26595,9 @@ If p$ <> "" Then
     Case 915, 947, 83, 115 '' string
          If j <> 83 Then Exit Function
     Case 928, 960, 65, 97  '' array
-         If j <> 109 Then Exit Function
-        ''j = 65
+         If j <> 65 Then Exit Function
+    Case 917, 69
+    If j <> 69 Then Exit Function
     Case 927, 959, 922, 954, 71, 103, 67, 99  '' G or  C
          If j <> 71 Then Exit Function
     Case Else
@@ -26606,10 +26614,13 @@ Do
     If st.Total < i Then Exit Do
     ss$ = st.StackItemType(i)
     If ss$ = "*" Then
-    ss$ = Left$(Typename(st.StackItem(i)), 1)
-    If ss$ = "m" Then ss$ = "A"
+    
+    ss$ = Left$(Typename(st.StackItem(i)), 2)
+    If ss$ = "mA" Then ss$ = "A"
+    If ss$ = "mE" Then ss$ = "E"
+    
     End If
-    r$ = r$ & ss$
+    r$ = r$ & Right$("?" + ss$, 1)
     Loop
     s$ = r$
 End If
@@ -28776,7 +28787,14 @@ With myobject
                                         '   Debug.Print "push", s$ + ")" + Str$(j)
                                          '   ps.DataStr s$ + ")" + Str$(j) '' s$ + " " + ss$ '
                                             ps.DataStr s$ + Str$(j)  '' s$ + " " + ss$ '
-                                            
+                            ElseIf Typename(vvl) = "mEvent" Then
+                            If HERE$ = "" Then
+                                   vvl.Upgrade bstack.GroupName
+                            Else
+                            vvl.Upgrade HERE$ + "." + bstack.GroupName
+                            End If
+                            ''  push this HERE$ + "."
+                            GoTo conthere1
                             Else  ' is not array so...
 
                                                    
@@ -28811,7 +28829,7 @@ With myobject
                                             If Right$(s$, 2) = "()" Then
                                             s$ = Left$(s$, Len(s$) - 1)
                                             End If
-                                    
+conthere1:
                                                  v = GlobalVar(bstack.GroupName & s$, 0)
                                  
                                                         If IsObject(vvl) Then
@@ -28821,8 +28839,8 @@ With myobject
                                                         End If
                                                 ps.DataStr s$ + Str(v) 'ps2push + Str(V)
                                             End If
-                                                         ss$ = String$(16, ".")
-                                                        Mid$(ss$, 1) = Str$(v)
+                                                        ' ss$ = String$(16, ".")
+                                                       ' Mid$(ss$, 1) = Str$(v)
                                                   ''      frm$ = frm$ + ss$
                                                   
                             End If
@@ -32800,6 +32818,8 @@ Else
 End If
 Wend
 End If
+Else
+    ProcEvent = False: Exit Function
 End If
 Wend
 aa.ParamBlock rd$, pm
@@ -32870,6 +32890,7 @@ alfa.BypassInit CLng(a.CurMaxSpace)
 Dim aaa() As GenItem, bbb() As Long, mytop As Long
 aa.CopySpaceUp aaa(), bbb(), mytop
 alfa.CopySpaceDown aaa(), bbb(), mytop
+alfa.ParamBlock aa.ParamsRead, aa.Params
 Set bstack.LastObj = alfa
 Set aa = Nothing
 End Sub
@@ -32878,10 +32899,14 @@ CallEvent = True
 Dim a As mEvent, n$, f$, bb As mStiva, oldbstack As mStiva, nowtotal As Long
 
 Set a = var(i)
-If Not PushParamGeneralV7(bstack, rest$) Then
+''bstack.Look2Parent = True
+If Not PushParamGeneral(bstack, rest$) Then
+
 CallEvent = False
 Exit Function
+
 End If
+''bstack.Look2Parent = False
 Dim j As Long, k As Long
 Set oldbstack = bstack.soros
 For j = 0 To a.Count - 1

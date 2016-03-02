@@ -98,12 +98,12 @@ mstack.Add aa, , 1
 End If
 Inc
 End Sub
-Public Sub Copy2TopNItems2FromStiva(many As Long, source As mStiva)
+Public Sub Copy2TopNItems2FromStiva(many As Long, Source As mStiva)
 'we pick an item and to the top
 Dim aa As VarItem, MM As Object, mn As mArray, work As Object
 On Error Resume Next
 For many = many To 1 Step -1
-Set work = source.ObjRef(many)
+Set work = Source.ObjRef(many)
 Select Case Typename(work)
 Case "Group"
 Set aa = New VarItem
@@ -117,7 +117,7 @@ Set mn = New mArray
 work.CopyArray mn
 Set aa.ObjectRef = mn
 Case Else
-Set aa = source.StackPickRef(many)
+Set aa = Source.StackPickRef(many)
 End Select
 Set work = Nothing
 If mstack.Count = 0 Then

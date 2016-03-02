@@ -276,4 +276,15 @@ Else
 uintnew = a
 End If
 End Function
-
+Public Sub Upgrade(usethis$)
+Dim i As Long, a$
+For i = 0 To toplim
+a$ = PriveSpace(i).NDX
+If a$ <> "" Then
+a$ = Left$(a$, rinstr(a$, "}", 0))
+If a$ <> "" Then
+PriveSpace(i).NDX = a$ + usethis$
+End If
+End If
+Next i
+End Sub
