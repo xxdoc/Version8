@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 178
+Global Const Revision = 179
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -21352,6 +21352,9 @@ If FastSymbol(rest$, ",") Then
 ElseIf FastSymbol(rest$, ";") Then
 .mysplit = 0
 scr.Font.Size = .SZ
+       SetText scr
+        GetXYb scr, players(prive), .curpos, .currow
+
 Set scr = Nothing
 Exit Function
 End If
@@ -23602,6 +23605,9 @@ Case "FONT", "√—¡ÃÃ¡‘œ”≈…—¡"     '**********************************************
     End If
         Form3.StoreFont bstack.Owner.Font.name, players(prive).SZ, bstack.Owner.Font.charset
         players(prive).FontName = bstack.Owner.Font.name
+        SetText bstack.Owner
+        
+        GetXYb bstack.Owner, players(prive), players(prive).curpos, players(prive).currow
     Exit Function
 Case "SCROLL", " ’À…”«"
 If bstack.toprinter Then
