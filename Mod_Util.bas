@@ -1260,7 +1260,7 @@ realR& = 0
        ddd.CurrentX = PX * .Xt
     
     ddd.CurrentY = PY * .Yt + .uMineLineSpace
-r1 = RealLen(what$) - 1
+r1 = Len(what$) - 1
     For r = r To r1
         c$ = Mid$(WHAT1$, r + 1, 1)
         If c$ >= " " Then

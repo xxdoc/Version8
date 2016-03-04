@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 177
+Global Const Revision = 178
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -808,7 +808,7 @@ End Sub
 
 Function RevisionPrint(basestack As basetask, rest$, xa As Long, lang As Long) As Boolean
 Dim scr As Object, oldCol As Long, oldFTEXT As Long, oldFTXT As String, oldpen As Long
-Dim par As Boolean, i As Long, f As Long, p As Double, W4 As Boolean, pn&, s$
+Dim par As Boolean, i As Long, f As Long, p As Double, W4 As Boolean, pn&, s$, Dlen As Long
 Dim o As Long, W3 As Long, x1 As Long, y1 As Long, x As Double, ColOffset As Long
 Dim work As Boolean, work2 As Boolean, skiplast As Boolean
 Set scr = basestack.Owner
@@ -963,11 +963,9 @@ Do
         W3 = -1
     If par Then  ' par is false when we print in files, we can't use color;
    
-                 If IsExp(basestack, rest$, p) Then
-                 TextColor scr, CLng(mycolor(p))
-                 Else
+                 If IsExp(basestack, rest$, p) Then .mypen = CLng(mycolor(p))
                  TextColor scr, .mypen
-                 End If
+                 
                      If FastSymbol(rest$, ",") Then
                      
                                 If W4 Or Not work Then
@@ -1008,7 +1006,7 @@ Do
                 
                                 pn& = 99
                              GoTo pthere   ' background and border and or images
-             
+            
             
                  End If
                          If Not FastSymbol(rest$, ")") Then RevisionPrint = False: Set scr = Nothing: Exit Function
@@ -1233,19 +1231,27 @@ Else
  s$ = Trim$(Str(p))
 End If
       If .FTEXT < 4 Then
-        If InStr(s$, ".") > 0 Then
-         If InStr(s$, ".") <= .Column Then
-        If RealLen(s$) > .Column + 1 Then
-    If .FTEXT > 0 Then s$ = Left$(s$, .Column + 1)
-        End If
-        End If
-        ElseIf .FTEXT > 0 Then
-         If RealLen(s$) > .Column + 1 Then s$ = String$(.Column, "?")
-        End If
+            If InStr(s$, ".") > 0 Then
+                 If InStr(s$, ".") <= .Column Then
+                        If RealLen(s$) > .Column + 1 Then
+                                 If .FTEXT > 0 Then s$ = Left$(s$, .Column + 1)
+                        End If
+                End If
+            ElseIf .FTEXT > 0 Then
+                 If RealLen(s$) > .Column + 1 Then s$ = String$(.Column, "?")
+            End If
           End If
-        End If
+    End If
         Else
         s$ = Format$(p, .FTXT)
+        If Not NoUseDec Then
+            If InStr(s$, NowDec$) > 0 And InStr(.FTXT, ".") > 0 Then
+                s$ = Replace$(s$, NowDec$, Chr(2))
+                s$ = Replace$(s$, NowThou$, ",")
+                s$ = Replace$(s$, Chr(2), ".")
+            
+            End If
+            End If
         End If
      If par Then
         If .Column > 2 Then   ' .Column 3 means 4 chars width
@@ -1426,12 +1432,16 @@ End If
                 Case 1
                            '' GetXY scr, X1, y1
                           ''  If s$ = "" Then s$ = " "
-                            PlainBaSket scr, prive, Left$(s$ & Space$(.Column - (RealLen(s$) - 1) Mod (.Column + 1)), .Column + 1), W4, W4
+                          Dlen = RealLen(s$)
+                          PlainBaSket scr, prive, Left$(s$ & Space$(Len(s$) - Dlen + .Column - (Dlen - 1) Mod (.Column + 1)), .Column + 1 + Len(s$) - Dlen), W4, W4
                 Case 2
-                            If RealLen(s$) > .Column + 1 Then s$ = Left$(s$, .Column + 1)
-                            PlainBaSket scr, prive, Left$(Space$((.Column + 1 - RealLen(s$)) \ 2) + s$ & Space$(.Column), .Column + 1), W4, W4
+                            Dlen = RealLen(s$)
+                            If Dlen > (.Column + 1 + Len(s$) - Dlen) Then s$ = Left$(s$, .Column + 1 + Len(s$) - Dlen):  Dlen = RealLen(s$)
+                            
+                            PlainBaSket scr, prive, Left$(Space$((.Column + 1 + Len(s$) - Dlen - Dlen) \ 2) + s$ & Space$(.Column), .Column + 1 + Len(s$) - Dlen), W4, W4
                 Case 3
-                            PlainBaSket scr, prive, Right$(Space$(.Column - (RealLen(s$) - 1) Mod (.Column + 1)) & s$, .Column + 1), W4, W4
+                            Dlen = RealLen(s$)
+                            PlainBaSket scr, prive, Right$(Space$(.Column + Len(s$) - Dlen - (Dlen - 1) Mod (.Column + 1)) & s$, .Column + 1 + Len(s$) - Dlen), W4, W4
                 Case 0
                            '' If s$ = "" Then s$ = " "
                         
@@ -1520,7 +1530,16 @@ End If
              x1 = .curpos
              y1 = .currow
                         If .FTXT <> "" Then
-                                s$ = Format$(Trim$(Str$(p)), .FTXT)
+                                       s$ = Format$(p, .FTXT)
+            If Not NoUseDec Then
+            If InStr(s$, NowDec$) > 0 And InStr(.FTXT, ".") > 0 Then
+                s$ = Replace$(s$, NowDec$, Chr(2))
+                s$ = Replace$(s$, NowThou$, ",")
+                s$ = Replace$(s$, Chr(2), ".")
+            
+            End If
+            End If
+                               
                                 If .FTEXT > 4 And Not work Then scr.CurrentX = scr.CurrentX + (.Xt - TextWidth(scr, Left$(s$, 1))) \ 2
                                 If scr.CurrentX < .mx * .Xt Then
                             
@@ -1556,7 +1575,17 @@ End If
                                     PlainBaSket scr, prive, Trim$(Str$(p))
                                 End If
                         Else
-                            PlainBaSket scr, prive, Format$(Trim$(Str$(p)), .FTXT)
+                      s$ = Format$(p, .FTXT)
+            If Not NoUseDec Then
+            If InStr(s$, NowDec$) > 0 And InStr(.FTXT, ".") > 0 Then
+                s$ = Replace$(s$, NowDec$, Chr(2))
+                s$ = Replace$(s$, NowThou$, ",")
+                s$ = Replace$(s$, Chr(2), ".")
+            
+            End If
+            End If
+      
+                            PlainBaSket scr, prive, s$
                         End If
                 End If
         Else
@@ -1658,7 +1687,7 @@ If W4 <> 0 Then
         .FTEXT = oldFTEXT
         .FTXT = oldFTXT
         .Column = oldCol
-        If .mypen <> oldpen Then TextColor scr, .mypen
+        If .mypen <> oldpen Then .mypen = oldpen: TextColor scr, oldpen
         Else
         If pn& > 4 And opn& = 0 Then
         
