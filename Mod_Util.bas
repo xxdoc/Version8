@@ -2261,8 +2261,9 @@ dq.Font.charset = .charset
 dq.FontSize = .SZ
 End If
 dq.ForeColor = .mypen
+
 If Not dq.BackColor = .Paper Then
-dq.BackColor = .Paper
+    dq.BackColor = .Paper
 End If
 End With
 End Sub

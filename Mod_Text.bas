@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 179
+Global Const Revision = 180
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -20115,8 +20115,31 @@ MissStackItem
 ifier = False
 Exit Function
     Else
-    bstack.soros.MakeTopItemBack CLng(x)
     
+    
+        If FastSymbol(rest$, ",") Then
+        If IsExp(bstack, rest$, y) Then
+        If y < 0 Then
+        y = Abs(Int(y))
+        x = x - 1
+        
+        For i = y To 2 Step -1
+        
+         bstack.soros.MakeTopItemBack CLng(i + x)
+      
+        Next i
+        If x > 0 Then bstack.soros.MakeTopItemBack CLng(i + x)
+        Else
+        y = Int(y)
+        For i = 1 To y
+        bstack.soros.MakeTopItemBack CLng(x + y - 1)
+        Next i
+     
+        End If
+    End If
+    Else
+    bstack.soros.MakeTopItemBack CLng(x)
+    End If
     End If
     
 Case "SHIFT", "÷≈—≈"  'Ã≈‘¡ …Õ≈… ”‘«Õ  œ—’÷«
@@ -20131,8 +20154,32 @@ MissStackItem
 
 Exit Function
     Else
-    bstack.soros.MakeTopItem CLng(x)
-    
+
+    If FastSymbol(rest$, ",") Then
+        If IsExp(bstack, rest$, y) Then
+        y = Int(y)
+        If y < 0 Then
+        y = Abs(y)
+        x = x - 1
+        For i = x + 1 To x + y
+        
+         bstack.soros.MakeTopItem CLng(i)
+      
+        Next i
+        Else
+           'y = y - 1
+
+        For i = y To 1 Step -1
+        
+         bstack.soros.MakeTopItem CLng(x + y - 1)
+      
+        Next i
+
+        End If
+    End If
+    Else
+        bstack.soros.MakeTopItem CLng(x)
+    End If
     End If
 
 Case "DROP", "–≈‘¡"
@@ -23373,11 +23420,6 @@ End If
 Case "BACK", "BACKGROUND", "–≈—…»Ÿ—…œ"
 ProcBackGround bstack, rest$, lang, ifier
 Exit Function
-Case "BACK", "BACKGROUND", "–≈—…»Ÿ—…œ"
-ProcBackGround bstack, rest$, lang, ifier
-Exit Function
-'**********************************************************************************
-
 Case "STACK", "”Ÿ—œ”"
    If IsLabelSymbolNew(rest$, "Õ≈œ”", "NEW", lang) Then
    If FastSymbol(rest$, "{") Then
@@ -29559,7 +29601,7 @@ If Form1.WindowState = 0 Then
     End If
 ' LETS MOVE
 Form1.Move x, y
-Form1.follow IEX, IEY
+'Form1.follow IEX, IEY
 Form1.Up
 If IsWine Then Sleep 10
 
@@ -32438,7 +32480,8 @@ Else
 If Not IsExp(bstack, rest$, p) Then p = 0   '' no change
 
 If FastSymbol(rest$, "{") Then
-ss$ = "{" & block(rest$) & "}"
+ss$ = block(rest$)
+
 frm$ = rest$
 If FastSymbol(rest$, "}") Then
 '' check players(-2)
@@ -32451,6 +32494,7 @@ SetTextBasketBack Form1, prive
     .currow = 0
     .mysplit = 0
     .osplit = 0
+    .Paper = prive.Paper
     End With
 End If
 If p > 0 Then
@@ -32459,8 +32503,15 @@ End If
 W3 = bstack.tolayer
 bstack.toback = True
 Set bstack.Owner = Form1
- 
+If NLtrim(ss$) = "" Then
+If players(-1).Paper <> Form1.BackColor Then
+Form1.BackColor = players(-1).Paper
+ End If
+it = 1
+Else
+ ss$ = "{" & ss$ & "}"
 Call executeblock(it, bstack, ss$, False, False)
+End If
  MyDoEvents2 bstack.Owner
 
 Set bstack.Owner = scr
@@ -32580,6 +32631,8 @@ With players(GetCode(scr))
                     Form1.Move 0, 0, ScrX(), ScrY()
         
                     FrameText scr, .SZ, CLng(Form1.Width), CLng(Form1.Height), .Paper
+                    players(-1).MAXXGRAPH = .MAXXGRAPH
+                    players(-1).MAXYGRAPH = .MAXYGRAPH
                     Exit Sub
         Else
                     y1 = CLng(x1 * ScrY() / ScrX())
@@ -32608,7 +32661,7 @@ Else
       ''  Form1.Move 0, 0
         Form1.Move (ScrX() - .MAXXGRAPH) / 2, (ScrY() - .MAXYGRAPH) / 2, .MAXXGRAPH, .MAXYGRAPH
 
-        Form1.follow IEX, IEY
+       '''' Form1.follow IEX, IEY
         scr.Move 0, 0
         If ttl Then
         If Form3.WindowState = 0 Then Form1.Show , Form5
@@ -32620,8 +32673,10 @@ Else
 
         FrameText scr, .SZ, x1, y1, .Paper
         Form1.Move 0, 0, .MAXXGRAPH, .MAXYGRAPH
+        players(-1).MAXXGRAPH = .MAXXGRAPH
+        players(-1).MAXYGRAPH = .MAXYGRAPH
         Form1.Up
-        Form1.follow IEX, IEY
+        'Form1.follow IEX, IEY
         scr.Move 0, 0
                 If ttl Then
         If Form3.WindowState = 0 Then Form1.Show , Form5

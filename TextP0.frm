@@ -147,7 +147,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -1531,7 +1531,11 @@ FK$(13) = "”’√√—¡÷≈¡”"
 Me.WindowState = 0
 Sleep 10
 If Me.WindowState = 0 Then
+If IsWine Then
 Me.Move 0, ScrY(), (ScrX() - 1), (ScrY() - 1)
+Else
+Me.Move 0, ScrY(), ScrX(), ScrY()
+End If
 End If
 Sleep 10
 
