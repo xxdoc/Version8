@@ -15,11 +15,12 @@ Dim mLib As String
 Dim mFunction As String
 Dim mConctruct As String
 Dim RetType2Stack As Long   ' 0 is long, 1 is string without zeros
+Dim mCallType As Long
 Dim t() As Long
 Dim paramnum As Long
 
 
-Public Sub CallThis(ByVal vNewValue As String, paramList As String, Lang As Long)
+Public Sub CallThis(ByVal vNewValue As String, paramList As String, lang As Long)
 Dim l As Long, check$, m As Long
 l = InStr(vNewValue, ".")
 If l <> 0 Then
@@ -30,9 +31,17 @@ mLib = vNewValue
 mFunction = "" ' what about that??
 End If
 mConctruct = paramList
+If InStr(vNewValue, ".dll") > 0 Then
+mLib = mLib + ".dll"
+End If
+If mFunction Like "dll.*" Then
+mFunction = Mid(mFunction, 5)
+ElseIf mFunction Like "dll*" Then
+mFunction = Mid(mFunction, 4)
+End If
 Do While paramList <> ""
 If FastSymbol(paramList, "&") Then l = 16 Else l = 0
- If IsLabelSymbolNew(paramList, "Ã¡ —’”", "LONG", Lang) Then
+ If IsLabelSymbolNew(paramList, "Ã¡ —’”", "LONG", lang) Then
  If IsPureLabel(paramList, check$) = 1 Then
  'OK
  m = 2
@@ -42,6 +51,12 @@ If FastSymbol(paramList, "&") Then l = 16 Else l = 0
  End If
  Else
  m = IsPureLabel(paramList, check$)
+ If m = 0 Then
+ If FastSymbol(paramList, "...") Then
+ PushType -100  ' Paramarray
+ Exit Do
+ End If
+ End If
  End If
 PushType m + l   'above 16 is byref
 If IsArrayItem(paramnum) Then
@@ -57,13 +72,18 @@ Public Property Get LIB() As String
 LIB = mLib
 End Property
 
-Public Property Get FUNC() As String
-FUNC = mFunction
+Public Property Get func() As String
+func = mFunction
 End Property
 
 Public Function ReadType(there As Long) As Long
+If t(there) < 0 Then
+ReadType = t(there)
+Else
 ReadType = (t(there) And &HF)
+End If
 End Function
+
 Public Function IsArrayItem(there As Long) As Boolean
 IsArrayItem = (t(there) And &HF) > 4
 End Function
@@ -113,4 +133,12 @@ End Property
 
 Public Property Let RetType(ByVal vNewValue As Long)
 RetType2Stack = vNewValue
+End Property
+
+Public Property Get CallType() As Long
+CallType = mCallType
+End Property
+
+Public Property Let CallType(ByVal vNewValue As Long)
+mCallType = vNewValue
 End Property

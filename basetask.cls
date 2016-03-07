@@ -520,6 +520,9 @@ IsNumber = True
 ElseIf parentSoros.PopType = "N" Then
 r = parentSoros.PopVal
 IsNumber = True
+ElseIf parentSoros.PopType = "L" Then
+r = parentSoros.PopValLong
+IsNumber = True
 End If
 End Function
 Public Function IsObjectRef(r As Object) As Boolean
@@ -567,6 +570,12 @@ r = RetSoros.PopStr
 IsInRetStackString = True
 End If
 
+End Function
+Public Function IsInStackLong(L As Long) As Boolean
+If soros.PopType = "L" Then
+    L = soros.PopValLong
+    IsInStackLong = True
+End If
 End Function
 Public Function IsInStackNumber(r As Double) As Boolean
 If soros.LookNull Then

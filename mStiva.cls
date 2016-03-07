@@ -36,7 +36,7 @@ Set aa = mstack.item(where)
 Select Case aa.Typename
 Case "S"
 StackItem = aa.ItemStr
-Case "N", "?"
+Case "N", "?", "L"
 StackItem = aa.ItemDouble
 Case Else
 Set StackItem = aa.ObjectRef
@@ -279,6 +279,12 @@ dec
 PopVal = mstack.item(1).ItemDouble
 mstack.remove 1
 End Property
+Public Property Get PopValLong() As Long
+On Error Resume Next
+dec
+PopValLong = CLng(mstack.item(1).ItemDouble)
+mstack.remove 1
+End Property
 Public Property Get PopStr() As String
 On Error Resume Next
 dec
@@ -286,7 +292,17 @@ PopStr = mstack.item(1).ItemStr
 mstack.remove 1
 
 End Property
-
+Public Sub DataValLong(A As Double)
+Dim aa As New VarItem
+aa.Typename = "L"
+aa.ItemDouble = A
+If mstack.Count = 0 Then
+mstack.Add aa
+Else
+mstack.Add aa, , , mstack.Count
+End If
+Inc
+End Sub
 Public Sub DataVal(A As Double)
 Dim aa As New VarItem
 aa.Typename = "N"

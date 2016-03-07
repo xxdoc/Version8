@@ -3,7 +3,8 @@ Attribute VB_Name = "Fcall"
 
 
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GetProcByName Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GetProcByOrdinal Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal nOrdinal As Long) As Long
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
@@ -24,43 +25,49 @@ End Enum
 
 Private LibHdls As New Collection, VType(0 To 63) As Integer, VPtr(0 To 63) As Long
 
-Public Function stdCallW(sDll As String, sFunc As String, ByVal RetType As VbVarType, p() As Variant, j As Long)
-Dim V(), HRes As Long
+Public Function stdCallW(sDll As String, sFunc As String, ByVal RetType As Variant, p() As Variant, j As Long)
+Dim v(), HRes As Long
  
-  V = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+  v = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
   For i = 0 To j - 1 ''UBound(V)
-    If VarType(p(i)) = vbString Then V(i) = StrPtr(p(i))
-    VType(i) = VarType(V(i))
-    VPtr(i) = VarPtr(V(i))
+    If VarType(p(i)) = vbString Then v(i) = StrPtr(p(i))
+    VType(i) = VarType(v(i))
+    VPtr(i) = VarPtr(v(i))
   Next i
-  
-  HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_STDCALL, RetType, j, VType(0), VPtr(0), stdCallW)
+  If Left$(func, 1) = "#" Then
+  HRes = DispCallFunc(0, GetFuncPtrOrd(sDll, sFunc), CC_STDCALL, CInt(RetType), j, VType(0), VPtr(0), stdCallW)
+  Else
+  HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_STDCALL, CInt(RetType), j, VType(0), VPtr(0), stdCallW)
+  End If
   If HRes Then Err.Raise HRes
 End Function
 
 
-Public Function cdeclCallW(sDll As String, sFunc As String, ByVal RetType As VbVarType, ParamArray p() As Variant)
-Dim i As Long, pFunc As Long, V(), HRes As Long
+Public Function cdeclCallW(sDll As String, sFunc As String, ByVal RetType As Variant, p() As Variant, j As Long)
+Dim i As Long, pFunc As Long, v(), HRes As Long
  
-  V = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
-  For i = 0 To UBound(V)
-    If VarType(p(i)) = vbString Then V(i) = StrPtr(p(i))
-    VType(i) = VarType(V(i))
-    VPtr(i) = VarPtr(V(i))
+  v = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+  For i = 0 To j - 1
+    If VarType(p(i)) = vbString Then v(i) = StrPtr(p(i))
+    VType(i) = VarType(v(i))
+    VPtr(i) = VarPtr(v(i))
   Next i
-  
-  HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_CDECL, RetType, i, VType(0), VPtr(0), cdeclCallW)
+   If Left$(func, 1) = "#" Then
+     HRes = DispCallFunc(0, GetFuncPtrOrd(sDll, sFunc), CC_CDECL, CInt(RetType), j, VType(0), VPtr(0), cdeclCallW)
+   Else
+  HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_CDECL, CInt(RetType), j, VType(0), VPtr(0), cdeclCallW)
+  End If
   If HRes Then Err.Raise HRes
 End Function
 
-Public Function stdCallA(sDll As String, sFunc As String, ByVal RetType As VbVarType, ParamArray p() As Variant)
-Dim i As Long, pFunc As Long, V(), HRes As Long
+Public Function stdCallA(sDll As String, sFunc As String, ByVal RetType As Variant, ParamArray p() As Variant)
+Dim i As Long, pFunc As Long, v(), HRes As Long
  
-  V = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
-  For i = 0 To UBound(V)
-    If VarType(p(i)) = vbString Then p(i) = StrConv(p(i), vbFromUnicode): V(i) = StrPtr(p(i))
-    VType(i) = VarType(V(i))
-    VPtr(i) = VarPtr(V(i))
+  v = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+  For i = 0 To UBound(v)
+    If VarType(p(i)) = vbString Then p(i) = StrConv(p(i), vbFromUnicode): v(i) = StrPtr(p(i))
+    VType(i) = VarType(v(i))
+    VPtr(i) = VarPtr(v(i))
   Next i
   
   HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_STDCALL, RetType, i, VType(0), VPtr(0), stdCallA)
@@ -72,13 +79,13 @@ Dim i As Long, pFunc As Long, V(), HRes As Long
 End Function
 
 Public Function cdeclCallA(sDll As String, sFunc As String, ByVal RetType As VbVarType, ParamArray p() As Variant)
-Dim i As Long, pFunc As Long, V(), HRes As Long
+Dim i As Long, pFunc As Long, v(), HRes As Long
  
-  V = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
-  For i = 0 To UBound(V)
-    If VarType(p(i)) = vbString Then p(i) = StrConv(p(i), vbFromUnicode): V(i) = StrPtr(p(i))
-    VType(i) = VarType(V(i))
-    VPtr(i) = VarPtr(V(i))
+  v = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+  For i = 0 To UBound(v)
+    If VarType(p(i)) = vbString Then p(i) = StrConv(p(i), vbFromUnicode): v(i) = StrPtr(p(i))
+    VType(i) = VarType(v(i))
+    VPtr(i) = VarPtr(v(i))
   Next i
   
   HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_CDECL, RetType, i, VType(0), VPtr(0), cdeclCallA)
@@ -90,13 +97,13 @@ Dim i As Long, pFunc As Long, V(), HRes As Long
 End Function
 
 Public Function vtblCall(pUnk As Long, ByVal vtblIdx As Long, ParamArray p() As Variant)
-Dim i As Long, V(), HRes As Long
+Dim i As Long, v(), HRes As Long
   If pUnk = 0 Then Exit Function
 
-  V = p 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
-  For i = 0 To UBound(V)
-    VType(i) = VarType(V(i))
-    VPtr(i) = VarPtr(V(i))
+  v = p 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
+  For i = 0 To UBound(v)
+    VType(i) = VarType(v(i))
+    VPtr(i) = VarPtr(v(i))
   Next i
   
   HRes = DispCallFunc(pUnk, vtblIdx * 4, CC_STDCALL, vbLong, i, VType(0), VPtr(0), vtblCall)
@@ -118,10 +125,31 @@ Static hlib As Long, sLib As String
       LibHdls.Add hlib, sLib '<- cache it under the dll-name for the next call
     End If
   End If
-  GetFuncPtr = GetProcAddress(hlib, sFunc)
+  GetFuncPtr = GetProcByName(hlib, sFunc)
   If GetFuncPtr = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
 End Function
+Public Function GetFuncPtrOrd(sDll As String, sFunc As String) As Long
+Static hlib As Long, sLib As String
+Dim lfunc As Long
+On Error Resume Next
+lfunc = Val(Mid$(sFunc, 2))
 
+  If sLib <> sDll Then 'just a bit of caching, to make resolving libHdls faster
+    sLib = sDll
+    On Error Resume Next
+      hlib = 0
+      hlib = LibHdls(sLib)
+    On Error GoTo 0
+    
+    If hlib = 0 Then
+      hlib = LoadLibrary(sLib)
+      If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
+      LibHdls.Add hlib, sLib '<- cache it under the dll-name for the next call
+    End If
+  End If
+  GetFuncPtrOrd = GetProcByOrdinal(hlib, lfunc)
+  If GetFuncPtrOrd = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
+End Function
 Public Function GetBStrFromPtr(lpSrc As Long, Optional ByVal ANSI As Boolean) As String
 Dim SLen As Long
   If lpSrc = 0 Then Exit Function
@@ -146,7 +174,7 @@ Else
 Err.clear
 On Error Resume Next
 hlib = LoadLibrary("ntdll")
-wwb = GetProcAddress(hlib, "wine_get_version") <> 0
+wwb = GetProcByName(hlib, "wine_get_version") <> 0
 If hlib <> 0 Then FreeLibrary hlib
 If Err.Number > 0 Then wwb = False
 www = True
