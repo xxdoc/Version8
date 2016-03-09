@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 183
+Global Const Revision = 184
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -16018,7 +16018,7 @@ LONGERR:
             
             End If
 End Function
-Function GoFunc(mystack As basetask, what$, rest$, vl As Variant, Optional recursive As Long) As Boolean
+Function GoFunc(mystack As basetask, what$, rest$, vl As Variant, Optional recursive As Long, Optional ByVal choosethis As Long = -1) As Boolean
 Dim p As Double, i As Long, s$, it As Long, pa$
 Dim x1 As Long, frm$, par As Boolean, ohere$, w$
 Dim vars As Long, vname As Long, subs As Long, snames As Long
@@ -16050,6 +16050,10 @@ mystack.Look2Parent = True  ' new workaround for passing &this to function
  
  mystack.Look2Parent = False
   mystack.UseGroupname = pa$
+If choosethis >= 0 Then
+x1 = choosethis
+ohere$ = HERE$
+Else
 If InStr(what$, "(") > 0 Then
 If GetSub(what$, x1) Then  'get the reference x1 for function (functions and modules are in an array)
     ' here we change NameSpace
@@ -16074,6 +16078,7 @@ ElseIf GetlocalSub(what$, x1) Then
  ElseIf recursive > 0 Then
   HERE$ = RVAL(HERE$, 1)
   x1 = recursive
+End If
 End If
 End If
 If basestack.StaticCollection.Count > 0 Then
@@ -16113,7 +16118,11 @@ GoTo there1234
 End If
    mystack.OriginalName$ = HERE$
 Do
+If choosethis >= 0 Then
+ mystack.UseGroupname = pa$
+Else
     mystack.UseGroupname = sbf(x1).sbgroup
+    End If
     frm$ = Mid$(sbf(x1).sb, i)
     it = 1
 Call executeblock(it, mystack, frm$, False, ok)
@@ -17101,6 +17110,7 @@ ElseIf IsLabelSymbolNew(rest$, "цецомос", "EVENT", lang) Then
     End If
     Exit Function
 Else
+flag = IsLabelSymbolNew(rest$, "топийа", "LOCAL", lang)
 If IsLabelSymbolNew(rest$, "сумаятгсг", "FUNCTION", lang) Then f = 3
 reenter1:
 i = Abs(IsLabel(basestack, rest$, what$))
@@ -17156,8 +17166,19 @@ ElseIf i = 3 Then
     
     End If
     If IsStrExp(basestack, what$, s$) Then
-        
+        If flag Then
+        If par Then
+        rest$ = ": Call Void Local " & s$ & " " & rest$
+        Else
+        rest$ = ": Call Local " & s$ & " " & rest$
+        End If
+        Else
+        If par Then
+        rest$ = ": Call void " & s$ & " " & rest$
+        Else
         rest$ = ": Call " & s$ & " " & rest$
+        End If
+        End If
     Else
         ' error
         basestack.nokillvars = False
@@ -17187,9 +17208,16 @@ ElseIf i > 3 Then
         If basestack.IamThread Then Set bs.Process = basestack.Process
         If Not TheSame(HERE$, ss$) Then Set bs.Sorosref = basestack.soros
         Set bs.Owner = basestack.Owner
-             bs.UseGroupname = sbf(x1).sbgroup
+            ' bs.UseGroupname = sbf(x1).sbgroup
              bs.OriginalCode = x1
+             If flag Then
+             bs.UseGroupname = basestack.UseGroupname
+             bs.GroupName = basestack.GroupName
+             Call GoFunc(bs, ss$, rest$, vvl, , x1)
+             Else
+             bs.UseGroupname = sbf(x1).sbgroup
         Call GoFunc(bs, ss$, rest$, vvl)
+        End If
         Set bs = Nothing
         If Not par Then
         If InStr(ss$, "$") > 0 Then
