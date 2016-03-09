@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 182
+Global Const Revision = 183
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -205,12 +205,12 @@ Public Declare Function SetTimer Lib "user32" _
 
 Public Declare Sub KillTimer Lib "user32" _
        (ByVal hWnd As Long, ByVal nIDEvent As Long)
-''Public Type tagInitCommonControlsEx
- ''  lngSize As Long
-  '' lngICC As Long
-''End Type
-''Public Declare Function InitCommonControlsEx Lib "comctl32.dll" (iccex As tagInitCommonControlsEx) As Boolean
-''Public Const ICC_USEREX_CLASSES = &H200
+'Public Type tagInitCommonControlsEx
+ ' lngSize As Long
+  ' lngICC As Long
+'End Type
+'Public Declare Function InitCommonControlsEx Lib "comctl32.dll" (iccex As tagInitCommonControlsEx) As Boolean
+'Public Const ICC_USEREX_CLASSES = &H200
 ' APPLICATION TASK MASTER
 Public MasterTimer As Double
 Public TaskMaster As TaskMaster
@@ -2638,12 +2638,12 @@ ReDim sbf(50) As modfun
 var2used = 0
 ReDim var(50) As Variant
    StartingRes
-   ''Dim iccex As tagInitCommonControlsEx
-   ''With iccex
-   ''    .lngSize = LenB(iccex)
-   ''    .lngICC = ICC_USEREX_CLASSES
-   ''End With
-   ''InitCommonControlsEx iccex
+   'Dim iccex As tagInitCommonControlsEx
+   'With iccex
+     ' .lngSize = LenB(iccex)
+    '  .lngICC = ICC_USEREX_CLASSES
+   'End With
+   'InitCommonControlsEx iccex
 
 clickMe2 = -1
 
@@ -7565,8 +7565,8 @@ Case Is >= "A"
  '' a$ = LTrim(a$)
 
 End Function
-Function IsLabel(bstack As basetask, a$, rrr$, Optional NoSpace As Boolean = False) As Long
-Dim RR&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean, r$, cc As Long
+Function IsLabel(bstack As basetask, a$, rrr$, Optional NoSpace As Boolean = False, Optional skipcase As Boolean = False) As Long
+Dim RR&, one As Boolean, c$, dot&, gr As Boolean, r$, cc As Long
 'r$ = ""
 If a$ = "" Then IsLabel = 0: Exit Function
 If Not NoSpace Then a$ = NLtrim$(a$) Else If AscW(a$) = 32 Then Exit Function
@@ -10486,8 +10486,13 @@ If FastSymbol(a$, ",") Then
 If IsStrExp(bstackstr, a$, q1$) Then
 Err.clear
 On Error Resume Next
+        If q1$ = "" Then
+        r$ = Licenses.Add(q$)
+        Else
         r$ = Licenses.Add(q$, q1$)
-        If Err.Number > 0 Then MissLicence: Err.clear
+        End If
+        If Err.Number > 0 And Err.Number <> 732 Then MissLicence
+        Err.clear
        If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
 End If
@@ -10495,7 +10500,8 @@ Else
 Err.clear
 On Error Resume Next
         r$ = Licenses.Add(q$)
-        If Err > 0 Then MissLicence: Err.clear
+        If Err > 0 And Err.Number <> 732 Then MissLicence
+        Err.clear
         
        If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
@@ -13756,16 +13762,16 @@ startwithgroup:
             If Abs(IsLabel(bstack, b$, w$)) = 1 Then
                 If GetlocalVar(w$, v) Then ' exist...
                 LLL = 0
-                    If var(v) = 0 Then var(v) = True: b$ = vbCrLf + ss$ & vbCrLf + w$ & "=false : " & b$
+                    If var(v) = 0 Then var(v) = True: b$ = vbCrLf + ss$ & vbCrLf + "let " + w$ & "=false : " & b$
                 ' we have the name
                 ElseIf GetVar(bstack, w$, v) Then ' exist...
                 LLL = 0
-                    If var(v) = 0 Then var(v) = True: b$ = vbCrLf + ss$ & vbCrLf + w$ & "=false : " & b$
+                    If var(v) = 0 Then var(v) = True: b$ = vbCrLf + ss$ & vbCrLf + "let " + w$ & "=false : " & b$
                 Else
                 v = True
                 GlobalVar w$, v, , VarStat
                 LLL = 0
-                b$ = vbCrLf + ss$ & vbCrLf + w$ & "=false : " & b$
+                b$ = vbCrLf + ss$ & vbCrLf + "let " + w$ & "=false : " & b$
                 End If
                 Execute = 1
                 Else
@@ -17269,7 +17275,7 @@ End If
 Case "TITLE", "‘…‘Àœ”"
 If IsStrExp(basestack, rest$, s$) Then
 If Not ttl Then Load Form3
-Form3.Caption = s$
+Form3.caption = s$
 Form3.Visible = True
 
 If FastSymbol(rest$, ",") Then
@@ -18627,9 +18633,16 @@ contpush12:
 
     End If
     Else
+If bs.IsObjectRef(myobject) Then
+If Not GetVar(basestack, what$, i, , , flag) Then i = GlobalVar(what$, 0)
+CreateFormOtherObject var(i), myobject
+ Identifier = True
+Set myobject = Nothing
+Else
     NoReference
     Identifier = False
     Exit Function
+    End If
     End If
 
 Case 3, 4
@@ -21125,18 +21138,19 @@ Loop Until Not FastSymbol(rest$, ",")
 Case "DECLARE", "œ—…”≈"  'OBJECT
 'ifier = true..changed for ver 8
 y1 = IsLabelSymbolNew(rest$, "√≈Õ… œ", "GLOBAL", lang)
-x1 = Abs(IsLabel(bstack, rest$, what$))
+x1 = Abs(IsLabel(bstack, rest$, what$, , True))
 
-what$ = myUcase$(what$)
+w$ = myUcase$(what$)
     If x1 = 1 Then   '' Or X1 = 3 Then  '' not yet for string
         If x1 = 1 Then
-            If GetVar(bstack, what$, i) Then
+            If GetVar(bstack, w$, i) Then
             ss$ = ""
                If IsLabelSymbolNewExp(rest$, "‘…–œ‘¡", "NOTHING", lang, ss$) Then
                    If Not IsObject(var(i)) Then
                         BadObjectDecl
                         ifier = False
                    Else
+                   If Typename$(var(i)) = "GuiM2000" Then Unload var(i)
                        Set var(i) = Nothing
                    End If
                    Exit Function
@@ -21175,7 +21189,7 @@ what$ = myUcase$(what$)
             
                 Set var(i) = photo
                 
-                s$ = what$
+                s$ = w$
                 
                 If HERE$ = "" Or y1 Then
                     GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
@@ -21196,7 +21210,7 @@ what$ = myUcase$(what$)
                     If x1 = 1 Then
                             If GetVar(bstack, pa$, x1) Then
                                     If IsObject(var(x1)) Then
-                                                i = GlobalVar(what$, s$, , y1 = True)
+                                                i = GlobalVar(w$, s$, , y1 = True)
                                                 If IsStrExp(bstack, rest$, ss$) Then
                                                 Set var(i) = MakeObjectFromString(var(x1), ss$)
                                                 End If
@@ -21208,7 +21222,7 @@ what$ = myUcase$(what$)
                     End If
                     Exit Function
         End If
-        i = GlobalVar(what$, s$, , y1 = True)
+        i = GlobalVar(w$, s$, , y1 = True)
 THEREnew:
 ifier = False
         If IsStrExp(bstack, rest$, s$) Then
@@ -21219,10 +21233,16 @@ ifier = False
                         If IsStrExp(bstack, rest$, w$) Then
                         Err.clear
                         On Error Resume Next
-                        Licenses.Add s$, w$
-                        If Err.Number > 0 Then
-                        MissLicence
+                        If w$ = "" Then
+                            Licenses.Add s$
                         Else
+                            Licenses.Add s$, w$
+                        End If
+                        If Err.Number > 0 And Err.Number <> 732 Then
+                        MissLicence
+                        Err.clear
+                        Else
+                        Err.clear
                         CreateitObject var(i), s$, CStr(pa$)
                         If Err.Number > 0 Then
                         Err.clear
@@ -21251,10 +21271,16 @@ ifier = False
                  If IsStrExp(bstack, rest$, pa$) Then
                     Err.clear
                         On Error Resume Next
-                 Licenses.Add s$, pa$
-                     If Err.Number > 0 Then
-                        MissLicence
+                        If pa$ = "" Then
+                        Licenses.Add s$
                         Else
+                 Licenses.Add s$, pa$
+                 End If
+                     If Err.Number > 0 And Err.Number <> 732 Then
+                        MissLicence
+                        Err.clear
+                        Else
+                        Err.clear
                  CreateitObject var(i), s$
                  If Err.Number > 0 Then
                         Err.clear
@@ -21283,6 +21309,9 @@ ifier = False
                         MissLicence
                         End If
             End If
+        ElseIf DeclareGUI(bstack, what$, rest$, ifier, lang, i) Then
+         
+         
         End If
            Err.clear
                         On Error Resume Next
@@ -23733,7 +23762,7 @@ conteditdoc2:
                                     If sx = 0 Then sx = -1
                                     x1 = sx
                                 End If
-                                   Form1.TEXT1.title = frm$ + " "
+                                   Form1.TEXT1.TITLE = frm$ + " "
                                   ScreenEditDOC bstack, var(i), 0, .mysplit, .mx - 1, .My - 1, x1, DUM, col
                                     var(i).LastSelStart = x1
                                     ifier = True
@@ -23753,7 +23782,7 @@ conteditdoc2:
                                     If sx = 0 Then sx = -1
                                     x1 = sx
                                 End If
-                                    Form1.TEXT1.title = frm$ + " "
+                                    Form1.TEXT1.TITLE = frm$ + " "
                                   ScreenEditDOC bstack, pppp.item(i), 0, .mysplit, .mx - 1, .My - 1, x1, DUM, col
                                     pppp.item(i).LastSelStart = x1
                                     ifier = True
@@ -26008,28 +26037,28 @@ Exit Function
 PathFromApp = ""
 End Function
 Public Function MyShell(ww$, Optional way As VbAppWinStyle = vbNormalFocus) As Long
-Dim frm$, exst As Boolean, pexist As Boolean, PP$, EXE$, PARAM$
+Dim frm$, exst As Boolean, pexist As Boolean, PP$, EXE$, param$
 ' logic
 '
 On Error GoTo 11111
 If ExtractType(ww$) <> "" Then
 
 frm$ = ExtractPath(ww$) + ExtractName(ww$)
-PARAM$ = Mid$(ww$, Len(frm$) + 1)
+param$ = Mid$(ww$, Len(frm$) + 1)
 ww$ = frm$
 ElseIf ExtractPath(ww$) = "" Then
 Dim i As Long, j As Long
 i = InStr(ww$, Chr(34))
 j = InStrRev(ww$, Chr(34))
 If j > i Then
-PARAM$ = Mid$(ww$, i, j - i + 1)
+param$ = Mid$(ww$, i, j - i + 1)
 ww$ = Left$(ww$, i - 1)
 End If
 
 End If
 If ww$ = "" Then
-If PARAM$ <> "" Then
-MyShell = Shell(Trim$(PARAM$), way)
+If param$ <> "" Then
+MyShell = Shell(Trim$(param$), way)
 Exit Function
 End If
 End If
@@ -26041,12 +26070,12 @@ frm$ = CFname(ww$)
 If ExtractName(frm$) <> ExtractName(ww$) Then
 On Error Resume Next
 
-MyShell = Shell(Trim$(ww$ & " " & PARAM$), way)
+MyShell = Shell(Trim$(ww$ & " " & param$), way)
 If Err.Number > 0 Then
 Err.clear
 ww$ = PathFromApp(ww$)
 If ww$ <> "" Then
-ww$ = ReplaceStr(Chr(34), "", ww$) & " " & PARAM$
+ww$ = ReplaceStr(Chr(34), "", ww$) & " " & param$
 MyShell = Shell(Trim$(ww$), way)
 End If
 End If
@@ -26084,7 +26113,7 @@ If frm$ <> "" Then
 MyShell = Shell(frm$, way)
 Exit Function
 Else
-MyShell = Shell(Trim$(EXE$ & " " & ww$ & " " & PARAM$), way)
+MyShell = Shell(Trim$(EXE$ & " " & ww$ & " " & param$), way)
 Exit Function
 End If
 End If
@@ -26110,11 +26139,11 @@ frm$ = PCall(PP$ & EXE$)
 If frm$ <> "" Then
 If AscW(frm$) = 34 Then
 frm$ = frm$ & "@"
-frm$ = ReplaceStr(Chr(34) & "@", PARAM$ & Chr(34), frm$)
+frm$ = ReplaceStr(Chr(34) & "@", param$ & Chr(34), frm$)
 frm$ = ReplaceStr("@", "", frm$)
 Else
 End If
-MyShell = Shell(Trim$(frm$ & " " & ww$ & " " & PARAM$), way)
+MyShell = Shell(Trim$(frm$ & " " & ww$ & " " & param$), way)
 Exit Function
 Else
 End If
@@ -26440,14 +26469,14 @@ With Form1.PrinterDocument1
 .CurrentY = 0
 End With
 oprinter.CopyPicture Form1.PrinterDocument1
-oprinter.ThumbnailPaintPrinter 1, , False, True, True, , , , , , Form3.Caption & " " & Str$(pnum)
+oprinter.ThumbnailPaintPrinter 1, , False, True, True, , , , , , Form3.caption & " " & Str$(pnum)
 Form1.PrinterDocument1.Cls
 End If
 End Sub
 Sub getenddoc()
 pnum = pnum + 1
 oprinter.CopyPicture Form1.PrinterDocument1
-oprinter.ThumbnailPaintPrinter 1, 100, False, True, True, , , , , , Form3.Caption & " " & Str$(pnum)
+oprinter.ThumbnailPaintPrinter 1, 100, False, True, True, , , , , , Form3.caption & " " & Str$(pnum)
 oprinter.ClearUp
 Form1.PrinterDocument1.Picture = LoadPicture("")
 End Sub
@@ -27125,7 +27154,20 @@ Sub MakeitPropReference(var As Variant)
 Dim aa As New PropReference
 Set var = aa
 End Sub
-
+Sub CreateFormObject(var As Variant, Id As Long)
+Dim aa As Object
+Select Case Id
+Case 1
+Set aa = New GuiM2000
+Load aa
+Case 2  '
+Set aa = New GuiButton
+End Select
+Set var = aa
+End Sub
+Sub CreateFormOtherObject(var As Variant, thisObject As Object)
+Set var = thisObject
+End Sub
 Sub CreateitObject(var As Variant, THISOBECT As String, Optional ByVal cc As Variant)
 Dim aa As Object
 If IsMissing(cc) Then
@@ -29271,15 +29313,15 @@ End Function
 Sub MakeMyTitle(s$, lang As Long)
      If InStr(s$, "(") > 0 Then
             If shortlang Then
-            If lang Then Form1.TEXT1.title = "F. " + s$ + " F12 " Else Form1.TEXT1.title = "”. " + s$ + " "
+            If lang Then Form1.TEXT1.TITLE = "F. " + s$ + " F12 " Else Form1.TEXT1.TITLE = "”. " + s$ + " "
             Else
-            If lang Then Form1.TEXT1.title = "Function " + s$ + " F12 " Else Form1.TEXT1.title = "”ıÌ‹ÒÙÁÛÁ " + s$ + " "
+            If lang Then Form1.TEXT1.TITLE = "Function " + s$ + " F12 " Else Form1.TEXT1.TITLE = "”ıÌ‹ÒÙÁÛÁ " + s$ + " "
             End If
             Else
             If shortlang Then
-            If lang Then Form1.TEXT1.title = "M. " + s$ + " F12 " Else Form1.TEXT1.title = "‘. " + s$ + " "
+            If lang Then Form1.TEXT1.TITLE = "M. " + s$ + " F12 " Else Form1.TEXT1.TITLE = "‘. " + s$ + " "
             Else
-            If lang Then Form1.TEXT1.title = "Module " + s$ + " F12 " Else Form1.TEXT1.title = "‘ÏﬁÏ· " + s$ + " "
+            If lang Then Form1.TEXT1.TITLE = "Module " + s$ + " F12 " Else Form1.TEXT1.TITLE = "‘ÏﬁÏ· " + s$ + " "
             End If
             End If
 End Sub
@@ -31119,7 +31161,7 @@ If Left$(s$, 1) = "S" Then
             par = False
             End If
             Form1.EditTextWord = LCase(ExtractType(s$)) <> "gsb"
-                Form1.TEXT1.title = ExtractName(s$) + " "
+                Form1.TEXT1.TITLE = ExtractName(s$) + " "
             If x1 = 0 Then x1 = -1
             Form1.ResetMarks
             If o < 1 Then o = 0
@@ -31231,9 +31273,9 @@ x1 = Abs(IsLabel(basestack, rest$, s$))
         frm$ = Mid$(ReplaceStr(vbCr, vbCrLf, QUERYLIST), 3)
         Form1.ShadowMarks = True
         If UserCodePage = 1253 Then
-        Form1.TEXT1.title = "ÀﬂÛÙ· ÂÌÙÔÎ˛Ì "
+        Form1.TEXT1.TITLE = "ÀﬂÛÙ· ÂÌÙÔÎ˛Ì "
         Else
-        Form1.TEXT1.title = "Command List "
+        Form1.TEXT1.TITLE = "Command List "
         End If
         With players(GetCode(basestack.Owner))
         ScreenEdit basestack, frm$, 0, .mysplit, .mx - 1, .My - 1
@@ -32425,6 +32467,13 @@ End If
 MyDoEvents1 scr
 Set scr = Nothing
 End Sub
+Function GiveForm() As Form
+If Form1.Visible Then
+Set GiveForm = Form1
+Else
+Set GiveForm = Nothing
+End If
+End Function
 Sub newshow(bstack As basetask)
 Dim scr As Object
 Set scr = bstack.Owner
@@ -32892,6 +32941,7 @@ Dim ss$, rd$, ss1$
 If FastSymbol(rest$, "{") Then
 Set aa = var(i)
 aa.BypassInit 10
+aa.VarIndex = i
 aa.Enabled = True
 ss$ = NLtrim$(block(rest$))
 rd$ = ""
@@ -33047,7 +33097,7 @@ alfa.ParamBlock aa.ParamsRead, aa.Params
 Set bstack.LastObj = alfa
 Set aa = Nothing
 End Sub
-Function CallEvent(bstack As basetask, rest$, lang As Long, i As Long) As Boolean
+Function CallEvent(bstack As basetask, rest$, lang As Long, ByVal i As Long) As Boolean
 CallEvent = True
 Dim a As mEvent, n$, f$, bb As mStiva, oldbstack As mStiva, nowtotal As Long
 
@@ -33093,5 +33143,125 @@ Set oldbstack = Nothing
 Set bb = Nothing
 bstack.soros.drop a.Params
 HERE$ = ohere$
+End Function
+Public Function CallEventFromGui(gui As Object, a As mEvent, aString$) As Boolean
+CallEventFromGui = True
+Dim n$, f$, bb As mStiva, oldbstack As mStiva, nowtotal As Long
+Dim bstack As basetask
+Set bstack = basestack1
+Dim i As Long
+If a Is Nothing Then Exit Function
+i = a.VarIndex
+
+bstack.soros.DataStr aString$
+bstack.soros.DataObj gui
+Set oldbstack = bstack.soros
+Dim j As Long, k, s1$, klm As Long
+Dim ohere$
+ohere$ = HERE$
+For j = 0 To a.Count - 1
+HERE$ = "EV" + CStr(i) + "." + CStr(j)
+If a.Enabled Then
+a.ReadVar j, n$, f$
+If f$ <> "" Then
+Set bb = New mStiva
+Set bstack.Sorosref = bb
+            bb.Copy2TopNItems2FromStiva a.Params, oldbstack
+            PushStage bstack, False
+            s1$ = Mid$(f$, 2, rinstr(f$, "}") - 2)
+            klm = GlobalSub("A_()", s1$, Trim$(Mid$(f$, Len(s1$) + 3)))
+            
+            If Not ProcModuleEntry(bstack, "A_()", klm, "") Then
+                PopStage bstack
+                bb.Flush
+                GoTo conthere
+            End If
+            PopStage bstack
+
+bb.Flush
+End If
+End If
+Next j
+conthere:
+Set bstack.Sorosref = oldbstack
+Set oldbstack = Nothing
+Set bb = Nothing
+bstack.soros.drop a.Params
+HERE$ = ohere$
+End Function
+
+Function DeclareGUI(bstack As basetask, what$, rest$, ifier As Boolean, lang As Long, i As Long)
+DeclareGUI = True
+Dim w$, x1 As Long, y1 As Long, s$
+Dim alfa As GuiM2000 ', beta As gList
+
+If IsLabelSymbolNew(rest$, "÷œ—Ã¡", "FORM", lang) Then
+                   
+                
+                    If IsLabelSymbolNew(rest$, "√≈√œÕœ”", "EVENT", lang) Then
+                  
+                             x1 = Abs(IsLabel(bstack, rest$, w$))
+                             If x1 <> 1 Then
+                                     BadObjectDecl
+                             Else
+                                CreateFormObject var(i), 1
+                                       
+                                         If GetlocalVar(bstack.GroupName & w$, y1) Then
+                                        ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
+                           
+                                        
+                                        Else
+                                         y1 = GlobalVar(bstack.GroupName & w$, s$)
+                                        
+                                         MakeitObjectEvent var(y1)
+                                 End If
+                                  ProcEvent bstack, "{Read msg$, &obj}", 1, y1
+                                
+                                  Set alfa = var(i)
+                                  Set alfa.EventObj = var(y1)
+                                  alfa.MyName = what$
+                                  Set alfa = Nothing
+                               
+                             End If
+                     
+                    Else
+                           BadObjectDecl
+                    End If
+         
+ ElseIf IsLabelSymbolNew(rest$, "≈–…Àœ√«", "BUTTON", lang) Then
+        If IsLabelSymbolNew(rest$, "÷œ—Ã¡", "FORM", lang) Then
+            x1 = Abs(IsLabel(bstack, rest$, w$))
+                    If x1 <> 1 Then
+                                     BadObjectDecl
+                    Else
+                            If GetlocalVar(bstack.GroupName & w$, y1) Then
+                            ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
+                            Else
+                                BadObjectDecl
+                                Exit Function
+                            End If
+                         CreateFormObject var(i), 2
+                         Set alfa = var(y1)
+                       ' Dim ab As GuiButton
+                          With var(i)
+                          .Construct alfa, what$
+                            
+                            .Move 0, 2000, 6000, 600
+                            .caption = what$
+                            .SetUp
+                          End With
+                                  Set alfa = Nothing
+          
+     End If
+     End If
+ ElseIf IsLabelSymbolNew(rest$, "√—¡ÃÃ«. ≈…Ã≈Õœ’", "TEXTBOX", lang) Then
+ ElseIf IsLabelSymbolNew(rest$, "–œ”œ‘«‘¡", "VALUEBOX", lang) Then
+ ElseIf IsLabelSymbolNew(rest$, "ƒ…¡ œ–‘«", "CHECKBOX", lang) Then
+ ElseIf IsLabelSymbolNew(rest$, "ƒ…œ—»Ÿ‘«. ≈…Ã≈Õœ’", "EDITBOX", lang) Then
+ ElseIf IsLabelSymbolNew(rest$, "≈–…Àœ√«.Ã≈.”’Ã–À«—Ÿ”«", "COMBOEDIT", lang) Then
+ ElseIf IsLabelSymbolNew(rest$, "≈–…Àœ√«.Ã≈.À…”‘¡", "COMBOBOX", lang) Then
+ ElseIf IsLabelSymbolNew(rest$, " ’À…œÃ≈Õœ", "LISTBOX", lang) Then
+  ElseIf IsLabelSymbolNew(rest$, " ’À…œÃ≈Õœ.–œÀÀ¡–Àœ", "MULTILIST", lang) Then
+        End If
 End Function
 

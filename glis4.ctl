@@ -76,6 +76,7 @@ Width As Long
 Height As Long
 End Type
 Private mynum$
+Public OverrideShow As Boolean
 Public overrideTextHeight As Long
 Public AutoHide As Boolean, NoWheel As Boolean
 Private Shape1 As Myshape, Shape2 As Myshape, Shape3 As Myshape
@@ -300,14 +301,14 @@ Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (By
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
-Private Declare Function PeekMessageW Lib "user32" (lpMsg As Msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessageW Lib "user32" (lpMsg As msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Const WM_KEYFIRST = &H100
  Const WM_KEYLAST = &H108
  Private Type POINTAPI
     x As Long
     y As Long
 End Type
- Private Type Msg
+ Private Type msg
     hWnd As Long
     Message As Long
     wParam As Long
@@ -320,7 +321,7 @@ Dim mlx As Long, mly As Long
 Public SkipForm As Boolean
 Public dropkey As Boolean
 Public Function GetLastKeyPressed() As Long
-Dim Message As Msg
+Dim Message As msg
 If mynum$ <> "" Then
 GetLastKeyPressed = -1
 ElseIf PeekMessageW(Message, 0, WM_KEYFIRST, WM_KEYLAST, 0) Then
@@ -830,6 +831,7 @@ If Not Enabled Then Exit Sub
 If listcount > 0 Then
   ShowMe2
 Else
+
   ShowMe
 End If
 
@@ -2029,6 +2031,18 @@ mytPixels = myt / scrTwips
 myt = mytPixels * scrTwips
 waitforparent = True
 End Sub
+Public Sub Dynamic()
+   If restrictLines > 0 Then
+myt = (UserControl.ScaleHeight - mHeadlineHeightTwips) / restrictLines
+Else
+
+myt = UserControlTextHeight() + addpixels * scrTwips
+End If
+HeadlineHeight = UserControlTextHeight() / scrTwips
+mytPixels = myt / scrTwips
+myt = mytPixels * scrTwips
+waitforparent = True
+End Sub
 
 
 
@@ -2451,7 +2465,7 @@ Private Sub UserControl_Resize()
 CalcAndShowBar
 'End If
 End Sub
-Public Sub additem(A$)
+Public Sub additem(a$)
 Dim i As Long
 
 If itemcount = Buffer Then
@@ -2460,7 +2474,7 @@ ReDim Preserve mlist(0 To Buffer)
 End If
 itemcount = itemcount + 1
 With mlist(itemcount - 1)
-.content = A$
+.content = a$
 .line = False
 .selected = False
 End With
@@ -2481,7 +2495,7 @@ Timer1.Enabled = False
 Timer1.Interval = 100
 Timer1.Enabled = True
 End Sub
-Public Sub additemFast(A$)
+Public Sub additemFast(a$)
 Dim i As Long
 If itemcount = Buffer Then
 Buffer = Buffer * 2
@@ -2489,7 +2503,7 @@ ReDim Preserve mlist(0 To Buffer)
 End If
 itemcount = itemcount + 1
 With mlist(itemcount - 1)
-.content = A$
+.content = a$
 .line = False
 .selected = False
 End With
@@ -3233,16 +3247,16 @@ Timer1.Enabled = True
 LastVScroll = Value
 End If
 End Sub
-Public Function UserControlTextWidthPixels(A$) As Long
+Public Function UserControlTextWidthPixels(a$) As Long
 Dim nr As RECT
-If Len(A$) > 0 Then
-CalcRect UserControl.hDC, A$, nr
+If Len(a$) > 0 Then
+CalcRect UserControl.hDC, a$, nr
 UserControlTextWidthPixels = nr.Right
 End If
 End Function
-Public Function UserControlTextWidth(A$) As Long
+Public Function UserControlTextWidth(a$) As Long
 Dim nr As RECT
-CalcRect UserControl.hDC, A$, nr
+CalcRect UserControl.hDC, a$, nr
 UserControlTextWidth = nr.Right * scrTwips
 End Function
 Private Function UserControlTextHeight() As Long
@@ -3326,14 +3340,14 @@ Else
 
 End Sub
 
-Public Function SpellUnicode(A$)
+Public Function SpellUnicode(a$)
 ' use spellunicode to get numbers
 ' and make a ListenUnicode...with numbers for input text
 Dim b$, i As Long
-For i = 1 To Len(A$) - 1
-b$ = b$ & CStr(AscW(Mid$(A$, i, 1))) & ","
+For i = 1 To Len(a$) - 1
+b$ = b$ & CStr(AscW(Mid$(a$, i, 1))) & ","
 Next i
-SpellUnicode = b$ & CStr(AscW(Right$(A$, 1)))
+SpellUnicode = b$ & CStr(AscW(Right$(a$, 1)))
 End Function
 Public Function ListenUnicode(ParamArray aa() As Variant) As String
 Dim all$, i As Long
@@ -4291,11 +4305,12 @@ scrollme = rhs
 End Property
 
 Public Sub refresh()
-Dim A As Long
+Dim a As Long
 Shape Shape1
 Shape Shape2
 Shape Shape3
-A = GdiFlush()
+a = GdiFlush()
+'If Not OverrideShow Then
 UserControl.refresh
 End Sub
 Public Property Get PreserveNpixelsHeaderRightTwips() As Long
@@ -4364,22 +4379,22 @@ mEditFlag = rhs
 If Not rhs Then If hWnd <> 0 Then DestroyCaret: caretCreated = False
 End Property
 Public Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long, Optional ByVal offsetx As Long = 0)
-Dim A As RECT
-CopyFromLParamToRect A, thatRect
-A.Bottom = A.Bottom - 1
-A.Left = A.Left + offsetx
-FillBack thathDC, A, thatbgcolor
+Dim a As RECT
+CopyFromLParamToRect a, thatRect
+a.Bottom = a.Bottom - 1
+a.Left = a.Left + offsetx
+FillBack thathDC, a, thatbgcolor
 End Sub
 Public Sub WriteThere(thatRect As Long, aa$, ByVal offsetx As Long, ByVal offsety As Long, thiscolor As Long)
-Dim A As RECT, fg As Long
-CopyFromLParamToRect A, thatRect
-If A.Left > Width Then Exit Sub
-A.Right = WidthPixels
-A.Left = A.Left + offsetx
-A.top = A.top + offsety
+Dim a As RECT, fg As Long
+CopyFromLParamToRect a, thatRect
+If a.Left > Width Then Exit Sub
+a.Right = WidthPixels
+a.Left = a.Left + offsetx
+a.top = a.top + offsety
 fg = ForeColor
 ForeColor = thiscolor
-    DrawText UserControl.hDC, StrPtr(aa$), -1, A, DT_NOPREFIX Or DT_NOCLIP
+    DrawText UserControl.hDC, StrPtr(aa$), -1, a, DT_NOPREFIX Or DT_NOCLIP
     ForeColor = fg
 End Sub
 Public Property Get FontBold() As Boolean
@@ -4567,30 +4582,30 @@ Function GetKeY(ascii As Integer) As String
 End Function
 
 Public Function LineTopOffsetPixels()
-Dim nr As RECT, A$
-A$ = "fg"
-CalcRect1 UserControl.hDC, A$, nr
+Dim nr As RECT, a$
+a$ = "fg"
+CalcRect1 UserControl.hDC, a$, nr
 LineTopOffsetPixels = (mytPixels - nr.Bottom) / 2
 End Function
 
 
-Private Sub Shape(A As Myshape, Optional Left As Long = -1, Optional top As Long = -1, Optional Width As Long = -1, Optional Height As Long = -1)
-If Left <> -1 Then A.Left = Left
-If top <> -1 Then A.top = top
-If Width <> -1 Then A.Width = Width
-If Height <> -1 Then A.Height = Height
+Private Sub Shape(a As Myshape, Optional Left As Long = -1, Optional top As Long = -1, Optional Width As Long = -1, Optional Height As Long = -1)
+If Left <> -1 Then a.Left = Left
+If top <> -1 Then a.top = top
+If Width <> -1 Then a.Width = Width
+If Height <> -1 Then a.Height = Height
 Dim th As RECT, my_brush As Long, br2 As Long
-If A.Visible Then
+If a.Visible Then
 With th
-.top = A.top / scrTwips
-.Left = A.Left / scrTwips
-.Bottom = .top + A.Height / scrTwips
-.Right = .Left + A.Width / scrTwips
+.top = a.top / scrTwips
+.Left = a.Left / scrTwips
+.Bottom = .top + a.Height / scrTwips
+.Right = .Left + a.Width / scrTwips
 End With
 
  br2 = CreateSolidBrush(BarHatchColor)
    
-   If A.hatchType = 1 Then
+   If a.hatchType = 1 Then
 
     SetBkColor UserControl.hDC, BarColor
  my_brush = CreateHatchBrush(BarHatch, BarHatchColor)

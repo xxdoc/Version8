@@ -112,7 +112,7 @@ Else
  DISPID = varDISPID(0)
 End If
     If lngRet = 0 Then
-       
+passhere:
         If items > 0 Or fixnamearg > 0 Then
                 ReDim varArr(0 To items - 1 + fixnamearg)
                
@@ -145,6 +145,7 @@ End If
                 .rgPointerToDISPIDNamedArgs = 0
               End If
                 End With
+                If lngRet = -1 Then GoTo jumphere
 Else
 With Params
 .cArgs = 0
@@ -159,11 +160,61 @@ End With
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then
                 Err.Raise Excep.wCode
+           ' ElseIf items = 0 And CallType = VbMethod Then
+           ElseIf Typename$(pobjTarget) = "GuiM2000" Then
+jumphere:
+            On Error GoTo exithere
+            lngRet = 0
+           If UCase(pstrProcName) = "SHOW" Then
+            CallByName pobjTarget, "ShowmeALl", VbMethod
+           If items = 0 Then
+           
+           CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
+           Else
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(0), GiveForm()
+           End If
+           ElseIf items = 0 Then
+           CallByName pobjTarget, pstrProcName, VbMethod
+           Else
+           Select Case items
+           Case 1
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(0)
+           Case 2
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(1), varArr(0)
+           Case 3
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(2), varArr(1), varArr(0)
+           Case 4
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(3), varArr(2), varArr(1), varArr(0)
+           Case 5
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(4), varArr(3), varArr(2), varArr(1), varArr(0)
+           Case 6
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(5), varArr(4), varArr(3), varArr(2), varArr(1), varArr(0)
+           Case 7
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(6), varArr(5), varArr(4), varArr(3), varArr(2), varArr(1), varArr(0)
+           Case 8
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(7), varArr(6), varArr(5), varArr(4), varArr(3), varArr(2), varArr(1), varArr(0)
+           Case 9
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(8), varArr(7), varArr(6), varArr(5), varArr(4), varArr(3), varArr(2), varArr(1), varArr(0)
+           Case 10
+           CallByName pobjTarget, pstrProcName, VbMethod, varArr(9), varArr(8), varArr(7), varArr(6), varArr(5), varArr(4), varArr(3), varArr(2), varArr(1), varArr(0)
+           
+           Case Else
+                Err.Raise -2147352567
+           End Select
+           End If
+    
             Else
                 Err.Raise lngRet
             End If
-        End If
+         End If
     Else
+        If Typename$(pobjTarget) = "GuiM2000" Then
+        If UCase(pstrProcName) = "PRINT" Then
+        pstrProcName = "PRINTME"
+        lngRet = -1
+        GoTo passhere
+        End If
+        End If
         Err.Raise lngRet
     End If
     If items > 0 Then
@@ -182,6 +233,7 @@ End With
 Else
             CallByNameFixParamArray = varRet
 End If
+exithere:
     If Err.Number <> 0 Then CallByNameFixParamArray = varRet
 Err.clear
 End Function
@@ -316,17 +368,17 @@ Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
     Set IDsp = Nothing
     
 End Sub
-Private Sub PushOne(KnownPropName As String, ByVal V As Long)
+Private Sub PushOne(KnownPropName As String, ByVal v As Long)
 On Error Resume Next
-KnownProp.Add V, LCase$(KnownPropName)
+KnownProp.Add v, LCase$(KnownPropName)
 End Sub
 Private Function getone(KnownPropName As String, this As Long) As Boolean
 On Error Resume Next
-Dim V As Long
+Dim v As Long
 InitMe
 Err.clear
-V = KnownProp(LCase$(KnownPropName))
-If Err.Number = 0 Then getone = True: this = V
+v = KnownProp(LCase$(KnownPropName))
+If Err.Number = 0 Then getone = True: this = v
 Err.clear
 End Function
 

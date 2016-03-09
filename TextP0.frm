@@ -147,7 +147,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   ""
+      Location        =   "http:///"
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -203,14 +203,14 @@ Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (By
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
-Private Declare Function PeekMessageW Lib "user32" (lpMsg As Msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessageW Lib "user32" (lpMsg As msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Const WM_KEYFIRST = &H100
  Const WM_KEYLAST = &H108
  Private Type POINTAPI
     x As Long
     y As Long
 End Type
- Private Type Msg
+ Private Type msg
     hWnd As Long
     Message As Long
     wParam As Long
@@ -246,7 +246,7 @@ End Function
 
 
 Public Function GetLastKeyPressed() As Long
-Dim Message As Msg
+Dim Message As msg
     If mynum$ <> "" Then
         GetLastKeyPressed = -1
     ElseIf PeekMessageW(Message, 0, WM_KEYFIRST, WM_KEYLAST, 0) Then
@@ -438,11 +438,11 @@ End If
 End If
 End Sub
 
-Private Sub ffhelp(A$)
-If Left$(A$, 1) < "С" Then
-fHelp basestack1, A$, True
+Private Sub ffhelp(a$)
+If Left$(a$, 1) < "С" Then
+fHelp basestack1, a$, True
 Else
-fHelp basestack1, A$
+fHelp basestack1, a$
 End If
 End Sub
 
@@ -1333,7 +1333,7 @@ Private Sub Form_Load()
 
 Set TEXT1 = New TextViewer
 
-Set TEXT1.Container = gList1
+Set TEXT1.container = gList1
 
 TEXT1.glistN.DragEnabled = False ' only drop - we can change this from popup menu
 TEXT1.glistN.Enabled = False
@@ -1516,7 +1516,7 @@ Set DisStack.Owner = DIS
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
-Dim pn As Long, A As New cDIBSection
+Dim pn As Long, a As New cDIBSection
 AutoRedraw = True
 If OneOnly Then Exit Sub
 OneOnly = True
@@ -1651,6 +1651,11 @@ ResetBreak
 players(DisForm) = mybasket
 If Not interpret(basestack1, qq$) Then
 mybasket = players(DisForm)
+                Dim x As Form
+                    For Each x In Forms
+             
+                    If Typename$(x) = "GuiM2000" Then Unload x
+                    Next
 If NERR Then Exit Do
     basestack1.toprinter = False
     If MOUT Then
@@ -1663,6 +1668,7 @@ If NERR Then Exit Do
         Else
         
         If NOEXECUTION Then
+
                 closeAll
                 mybasket = players(DisForm)
                 PlainBaSket DIS, mybasket, "ESC " & qq$
@@ -1773,7 +1779,7 @@ End Sub
 
 Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, A$, JJ As Long, ii As Long
+Dim aa$, a$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -1979,18 +1985,18 @@ End If
 
 If TEXT1.SelText <> "" Then
 
-    A$ = vbCrLf + TEXT1.SelText & "*"
+    a$ = vbCrLf + TEXT1.SelText & "*"
     If shift <> 0 Then  ' тумых
-        A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf + Space$(6), vbCrLf)
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
          TEXT1.SelStartSilent = ii
-         TEXT1.SelLengthSilent = Len(A$) - 3
+         TEXT1.SelLengthSilent = Len(a$) - 3
          TEXT1.mdoc.WrapAgainColor
     Else
-        A$ = Replace(A$, vbCrLf, vbCrLf + Space$(6))
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf, vbCrLf + Space$(6))
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
         TEXT1.SelStartSilent = where + 6
-        TEXT1.SelLengthSilent = Len(A$) - 3 - (where + 6 - ii)
+        TEXT1.SelLengthSilent = Len(a$) - 3 - (where + 6 - ii)
         TEXT1.mdoc.WrapAgainColor
     End If
   
@@ -2266,7 +2272,7 @@ End If
 End Sub
 
 
-Private Function Parameters(A As String, b As String, c As String) As Boolean
+Private Function Parameters(a As String, b As String, c As String) As Boolean
 Dim i, ch As Boolean, vl As Boolean, chs$, all$, many As Long
 b = ""
 c = ""
@@ -2274,11 +2280,11 @@ c = ""
 'parameters = False
 ch = False
 vl = False
-Do While i < Len(A)
+Do While i < Len(a)
 i = i + 1
-Select Case Mid$(A, i, 1)
+Select Case Mid$(a, i, 1)
 Case "%"
-If Mid$(A, i + 1, 1) = "u" Then
+If Mid$(a, i + 1, 1) = "u" Then
 i = i + 1
 'we have four bytes
 many = 6
@@ -2308,7 +2314,7 @@ Exit Do
 End If
 Case Else
 If ch = True Then
-chs$ = chs$ & Mid$(A, i, 1)
+chs$ = chs$ & Mid$(a, i, 1)
 If Len(chs$) = many Then
 If many = 4 Then
 chs$ = Chr(Int(chs$))
@@ -2323,20 +2329,24 @@ b = b + chs$
 End If
 End If
 ElseIf vl = False Then
-b = b + Mid$(A, i, 1)
+b = b + Mid$(a, i, 1)
 Else
-c = c + Mid$(A, i, 1)
+c = c + Mid$(a, i, 1)
 End If
 End Select
 Loop
 If c <> "" Then Parameters = True
-A = Mid$(A, i + 1)
+a = Mid$(a, i + 1)
 End Function
 
 
 Public Sub myBreak(basestack As basetask)
 ''Dim pagio$
-
+       Dim x As Form
+                    For Each x In Forms
+             
+                    If Typename$(x) = "GuiM2000" Then Unload x
+                    Next
 Dim cc As Object
 Set cc = New cRegistry
 
@@ -2674,11 +2684,11 @@ End Sub
 
 Function Mark$()
 If ShadowMarks Then Mark$ = "": Exit Function
-If TEXT1.title = "" Then  'reset all para
+If TEXT1.TITLE = "" Then  'reset all para
 Para1 = 0: Para2 = 0: Para3 = 0
-ElseIf LastDocTitle$ <> TEXT1.title Then
+ElseIf LastDocTitle$ <> TEXT1.TITLE Then
 Para1 = 0: Para2 = 0: Para3 = 0
-LastDocTitle$ = TEXT1.title
+LastDocTitle$ = TEXT1.TITLE
 End If
 Dim s$
 If Para1 <> 0 Then

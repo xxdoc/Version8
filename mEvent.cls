@@ -20,9 +20,11 @@ Private PriveSpace() As GenItem
 Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
+Dim StartPoint As Long
 Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, RetVal As Integer)
 Private mParamBlock As String, mParams As Long
 Private Hash() As Long
+
 Public Property Get Params() As Long
 Params = mParams
 End Property
@@ -288,3 +290,11 @@ End If
 End If
 Next i
 End Sub
+
+Public Property Get VarIndex() As Variant
+ VarIndex = StartPoint
+End Property
+
+Public Property Let VarIndex(ByVal vNewValue As Variant)
+StartPoint = vNewValue
+End Property
