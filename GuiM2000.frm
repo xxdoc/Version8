@@ -70,6 +70,7 @@ Private GuiControls As New Collection
 Dim onetime As Boolean
 Dim alfa As New GuiButton
 Public MyName$
+Public ModuleName$
 Public Sub AddGuiControl(widget As Object)
 GuiControls.Add widget
 End Sub
@@ -82,7 +83,10 @@ Public Sub Callback(b$)
 CallEventFromGui Me, myEvent, b$
 
 End Sub
+Public Sub CallbackNow(b$, vr())
+CallEventFromGuiNow Me, myEvent, b$, vr()
 
+End Sub
 
 
 Public Sub ShowmeALl()

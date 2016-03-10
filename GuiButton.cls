@@ -29,6 +29,24 @@ Public Sub Construct(there As Form, name$)
  glistN.Dynamic
  there.Controls(name$).TabStop = True
 End Sub
+Public Sub ConstructArray(there As Form, name$, i As Long)
+ Set Callback = there
+ On Error Resume Next
+ If i = 0 Then
+ Set glistN = there.Controls.Add("m2000.glist", name$)
+ Else
+  Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
+
+ End If
+ If Err.Number > 0 Then
+ Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+ End If
+ CtrlName = name$
+ mIndex = i
+ there.AddGuiControl Me
+ glistN.Dynamic
+ there.Controls(name$).TabStop = True
+End Sub
 Public Sub ConstructContainer(there As Form, name$, containerCtrl As Object)
 Set Callback = there
  Set glistN = there.Controls.Add("m2000.glist", name$, containerCtrl)
@@ -72,6 +90,7 @@ End Sub
 
 Private Sub Class_Initialize()
 mCaptext = "Button"
+mIndex = -1
 End Sub
 
 Private Sub Class_Terminate()
@@ -99,10 +118,14 @@ glistN.ShowMe
 End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
-''glistN.BackColor = rgb(100, 200, 160)
-    Callback.Callback CtrlName + ".PanLeftRight(" + CStr(Direction) + ")"
-''glistN.PanPos = 0
-''glistN.ShowMe
+
+ 
+   If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + ")"
+      Callback.Callback CtrlName + ".Click()"
+      End If
+    
+''    Callback.Callback CtrlName + ".PanLeftRight(" + CStr(Direction) + ")"
 End Sub
 
 Private Sub glistN_RegisterGlist(this As gList)
@@ -112,7 +135,11 @@ End Sub
 Private Sub glistN_Selected2(item As Long)
 If item >= 0 Then
    '' If (Not mCallback Is Nothing) Then mCallback.Press Index
+   If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + ")"
+   Else
       Callback.Callback CtrlName + ".Click()"
+      End If
     End If
 End Sub
 '
@@ -133,11 +160,11 @@ Public Property Get caption() As String
 caption = mCaptext
 End Property
 
-Public Property Get Index() As Long
-Index = mIndex
+Public Property Get index() As Long
+index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
+Public Property Let index(ByVal rhs As Long)
 mIndex = rhs
 End Property
 Public Property Get Enabled() As Long
