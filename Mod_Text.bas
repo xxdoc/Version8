@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 185
+Global Const Revision = 186
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -33332,7 +33332,7 @@ DeclareGUI = True
 Dim w$, x1 As Long, y1 As Long, s$
 Dim alfa As GuiM2000 ', beta As gList
 Dim aVar As Variant
-Dim pppp As mArray
+Dim pppp As mArray, mmmm As mEvent
 If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                    
                 
@@ -33362,9 +33362,23 @@ If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                                   Set alfa = Nothing
                                
                              End If
-                     
                     Else
-                           BadObjectDecl
+                    CreateFormObject var(i), 1
+                    Set alfa = var(i)
+                    Set mmmm = New mEvent
+                                  Set alfa.EventObj = mmmm
+                                  With mmmm
+                                    .BypassInit 10
+                                    .VarIndex = -1
+                                    .Enabled = True
+                                    .ParamBlock "Read msg$, &obj", 2
+                                    .GenItemCreator LTrim(Str(i * 456)), "{ Module " + HERE$ + vbCrLf + "call local " + HERE$ + "." + bstack.GroupName + what$ + "() }" + HERE$ + "." + bstack.GroupName
+                                 End With
+                                  alfa.MyName = what$
+                                  alfa.ModuleName = HERE$
+                                  Set mmmm = Nothing
+                                  Set alfa = Nothing
+                    
                     End If
          
  ElseIf IsLabelSymbolNew(rest$, "епикоцг", "BUTTON", lang) Then
