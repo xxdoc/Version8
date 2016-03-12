@@ -70,10 +70,10 @@ InternalLeadingSpace = (tm.tmInternalLeading = 0) Or Not (tm.tmInternalLeading >
 End With
 End Function
 'Private onlyone As Boolean
-Public Function ask(bstack As basetask, A$) As Double
+Public Function ask(bstack As basetask, a$) As Double
 If ASKINUSE Then Exit Function
 DialogSetupLang DialogLang
-AskText$ = A$
+AskText$ = a$
 ask = NeoASK(bstack)
 
 End Function
@@ -153,7 +153,7 @@ NeoASK = Abs(AskCancel$ = "") + 1
 End If
 If NeoASK = 1 Then
 If AskInput Then
-bstack.Soros.PushStr AskStrInput$
+bstack.soros.PushStr AskStrInput$
 End If
 End If
 AskCancel$ = ""
@@ -172,6 +172,7 @@ Private Sub mywait(bstack As basetask, PP As Double)
 Dim p As Boolean, e As Boolean
 
 On Error Resume Next
+If bstack.ThreadsNumber = 0 Then GoTo cont1
 If bstack.Process Is Nothing Then
 ''If extreme Then MyDoEvents
 If PP = 0 Then Exit Sub
@@ -186,6 +187,7 @@ Exit Sub
 End If
 End If
 End If
+cont1:
 PP = PP + CDbl(timeGetTime)
 
 Do

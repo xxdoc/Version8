@@ -32,22 +32,14 @@ Begin VB.Form GuiM2000
       TabStop         =   0   'False
       Top             =   0
       Width           =   9180
-      _ExtentX        =   16193
-      _ExtentY        =   873
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   14.25
-         Charset         =   161
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Backcolor       =   3881787
-      ForeColor       =   16777215
-      CapColor        =   16777215
+      _extentx        =   16193
+      _extenty        =   873
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "GuiM2000.frx":000C
+      backcolor       =   3881787
+      forecolor       =   16777215
+      capcolor        =   16777215
    End
 End
 Attribute VB_Name = "GuiM2000"
@@ -71,6 +63,7 @@ Dim onetime As Boolean
 Dim alfa As New GuiButton
 Public MyName$
 Public ModuleName$
+Private mIndex As Long
 Public Sub AddGuiControl(widget As Object)
 GuiControls.Add widget
 End Sub
@@ -102,8 +95,14 @@ End Sub
 
 Private Sub Form_Click()
 gList2.SetFocus
+If index > -1 Then
+CallEventFromGui Me, myEvent, MyName$ + ".Click(" + CStr(index) + ")"
+Else
 CallEventFromGui Me, myEvent, MyName$ + ".Click()"
+End If
 End Sub
+
+
 
 Private Sub Form_Resize()
 gList2.MoveTwips 0, 0, Me.Width, gList2.HeightTwips
@@ -127,7 +126,16 @@ End If
 End Sub
 Private Sub gList2_ExposeItemMouseMove(Button As Integer, ByVal item As Long, ByVal x As Long, ByVal y As Long)
 If gList2.DoubleClickCheck(Button, item, x, y, 10 * lastfactor, 10 * lastfactor, 8 * lastfactor, -1) Then
-                      Unload Me
+Dim var(1) As Variant
+var(1) = CLng(0)
+If mIndex > -1 Then
+CallEventFromGuiNow Me, myEvent, MyName$ + ".Unload(" + CStr(mIndex) + ")", var()
+Else
+CallEventFromGuiNow Me, myEvent, MyName$ + ".Unload()", var()
+End If
+            If var(0) = 0 Then
+                              Unload Me
+                      End If
 End If
 End Sub
 
@@ -144,7 +152,7 @@ gList2.CapColor = rgb(255, 160, 0)
 gList2.FloatList = True
 gList2.MoveParent = True
 gList2.HeadLine = ""
-gList2.HeadLine = "My Caption"
+gList2.HeadLine = "Form"
 gList2.HeadlineHeight = gList2.HeightPixels
 gList2.SoftEnterFocus
 gList2.TabStop = False
@@ -201,3 +209,15 @@ gList2.HeadLine = ""
 gList2.HeadLine = vNewValue
 gList2.HeadlineHeight = gList2.HeightPixels
 End Property
+Public Property Get index() As Long
+index = mIndex
+End Property
+
+Public Property Let index(ByVal rhs As Long)
+mIndex = rhs
+End Property
+Public Sub CloseNow()
+    Unload Me
+End Sub
+
+

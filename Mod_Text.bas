@@ -29,7 +29,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 186
+Global Const Revision = 187
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -4423,21 +4423,28 @@ Case Else
 LOOKFORVARNUM:
 
 If GetVar(bstack, v$, vr) Then
-If VarType(var(vr)) = 5 Then
+Select Case VarType(var(vr))
+Case vbDouble
         r = SG * var(vr)
-Else
-        Select Case Typename(var(vr))
-        Case "Group"
-        CopyGroup var(vr), bstack
+Case vbLong, vbCurrency
+       r = SG * var(vr)
+Case Else
+    v$ = Typename(var(vr))
+    If v$ Like "Gui*" Then
+        Set bstack.LastObj = var(vr)
         r = 0
-        Case "mEvent"
-        CopyEvent var(vr), bstack
-          r = 0
-        Case Else
+    ElseIf v$ Like "Pro*" Then
         r = SG * var(vr)
-        End Select
-
-End If
+    ElseIf v$ Like "Gr*" Then
+        r = 0
+        CopyGroup var(vr), bstack
+    ElseIf v$ = "mE*" Then
+        CopyEvent var(vr), bstack
+        r = 0
+    Else
+        r = SG * var(vr)
+    End If
+End Select
 a$ = n$
 IsNumber = True
 ElseIf vr = -1 Then
@@ -14055,6 +14062,7 @@ If p > uintnew(timeGetTime) Then
                 
                
              Loop Until MOUT Or bstack.TaskMain Or NOEXECUTION Or TaskMaster.QueueCount < 2
+            
      bstack.TaskMain = False
    If TaskMaster.PlayMusic Then mute = True
          End If
@@ -21173,7 +21181,7 @@ If Not I2 Then Exit Do
 Loop Until Not FastSymbol(rest$, ",")
 Case "DECLARE", "ояисе"  'OBJECT
 'ifier = true..changed for ver 8
-ML = 0
+ML = -1
 y1 = IsLabelSymbolNew(rest$, "цемийо", "GLOBAL", lang)
 x1 = Abs(IsLabel(bstack, rest$, what$, , True))
 
@@ -21183,8 +21191,28 @@ gohere:
         If x1 = 1 Then
             If GetVar(bstack, w$, i) Then
             ss$ = ""
+
                If IsLabelSymbolNewExp(rest$, "типота", "NOTHING", lang, ss$) Then
-                   If Not IsObject(var(i)) Then
+                   If ML >= 0 Then
+goNothing:
+              If neoGetArray(bstack, w$, pppp) Then
+              For i = 0 To pppp.UpperMonoLimit
+                If IsObject(pppp.item(i)) Then
+                    If Typename$(pppp.item(i)) = "GuiM2000" Then
+                    Set photo = pppp.item(i)
+                    Unload photo
+                    End If
+                 Set pppp.item(i) = Nothing
+                Else
+                pppp.item(i) = Empty
+                End If
+              Next i
+              Else
+              ifier = False
+                Exit Function
+              End If
+                   
+                   ElseIf Not IsObject(var(i)) Then
                         BadObjectDecl
                         ifier = False
                    Else
@@ -21260,7 +21288,7 @@ gohere:
                     End If
                     Exit Function
         End If
-        If ML > 0 Then
+        If ML >= 0 Then
          If neoGetArray(bstack, w$, pppp, HERE$ <> "") Then
                 ifier = False
                 Exit Function
@@ -21372,14 +21400,17 @@ ifier = False
         End If
        
     ElseIf x1 = 5 Then
-  
-If IsExp(bstack, rest$, p) Then
+If FastSymbol(rest$, ")") Then
+ 'w$ = Left$(w$, Len(w$) - 1)
+'w$ = w$ + ")"
+ If IsLabelSymbolNewExp(rest$, "типота", "NOTHING", lang, ss$) Then GoTo goNothing
+ BadObjectDecl
+ElseIf IsExp(bstack, rest$, p) Then
 ML = CLng(p)
 If FastSymbol(rest$, ")") Then
 x1 = 1
  w$ = Left$(w$, Len(w$) - 1)
    GoTo gohere
-  
 Else
 BadObjectDecl
 End If
@@ -24182,7 +24213,7 @@ If x1 = 1 Then
      Nosuchvariable s$
     End If
 ElseIf x1 = 5 Then
-  If neoGetArray(bstack, s$, pppp, HERE$ <> "") Then
+  If neoGetArray(bstack, s$, pppp) Then
     If NeoGetArrayItem(pppp, bstack, s$, i, rest$) Then
       Do While FastSymbol(rest$, ",")
                     If IsStrExp(bstack, rest$, ss$) Then
@@ -24231,7 +24262,7 @@ If i = 1 Then
   Nosuchvariable s$
  End If
  ElseIf i = 5 Then
-  If neoGetArray(bstack, s$, pppp, HERE$ <> "") Then
+  If neoGetArray(bstack, s$, pppp) Then
     If NeoGetArrayItem(pppp, bstack, s$, i, rest$) Then
              IsSymbol3 rest$, ","
             If IsStrExp(bstack, rest$, pa$) Then
@@ -33201,9 +33232,12 @@ Set bstack = basestack1
 Dim i As Long
 If a Is Nothing Then Exit Function
 i = a.VarIndex
-
 bstack.soros.DataStr aString$
+If gui.index >= 0 Then
+bstack.soros.DataVal gui.index
+End If
 bstack.soros.DataObj gui
+
 Set oldbstack = bstack.soros
 Dim j As Long, s1$, klm As Long
 Dim ohere$
@@ -33331,7 +33365,7 @@ Function DeclareGUI(bstack As basetask, what$, rest$, ifier As Boolean, lang As 
 DeclareGUI = True
 Dim w$, x1 As Long, y1 As Long, s$
 Dim alfa As GuiM2000 ', beta As gList
-Dim aVar As Variant
+Dim aVar As Variant, p As Double
 Dim pppp As mArray, mmmm As mEvent
 If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                    
@@ -33342,60 +33376,104 @@ If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                              If x1 <> 1 Then
                                      BadObjectDecl
                              Else
+                                If GetlocalVar(bstack.GroupName & w$, y1) Then
+                                ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
+                                Else
+                                y1 = GlobalVar(bstack.GroupName & w$, s$)
+                                End If
+                                MakeitObjectEvent var(y1)
+                             End If
+                              
+                            If ar = 0 Then
+                                ProcEvent bstack, "{Read msg$, &obj}", 1, y1
                                 CreateFormObject var(i), 1
-                                       
-                                         If GetlocalVar(bstack.GroupName & w$, y1) Then
-                                        ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
-                           
-                                        
-                                        Else
-                                         y1 = GlobalVar(bstack.GroupName & w$, s$)
-                                        
-                                         MakeitObjectEvent var(y1)
-                                 End If
-                                  ProcEvent bstack, "{Read msg$, &obj}", 1, y1
-                                
                                   Set alfa = var(i)
                                   Set alfa.EventObj = var(y1)
+                                  alfa.index = -1
                                   alfa.MyName = what$
                                   alfa.ModuleName = HERE$
+                                  alfa.TITLE = what$
                                   Set alfa = Nothing
-                               
-                             End If
+                            Else
+                                ProcEvent bstack, "{Read index msg$, &obj}", 1, y1
+                                Set mmmm = var(y1)
+                                GoTo contEvArray
+                           End If
                     Else
+                    If ar = 0 Then
                     CreateFormObject var(i), 1
                     Set alfa = var(i)
                     Set mmmm = New mEvent
                                   Set alfa.EventObj = mmmm
                                   With mmmm
                                     .BypassInit 10
-                                    .VarIndex = -1
+                                    .VarIndex = i * 1000 + varhash.Count
                                     .Enabled = True
                                     .ParamBlock "Read msg$, &obj", 2
-                                    .GenItemCreator LTrim(Str(i * 456)), "{ Module " + HERE$ + vbCrLf + "call local " + HERE$ + "." + bstack.GroupName + what$ + "() }" + HERE$ + "." + bstack.GroupName
+                                    .GenItemCreator LTrim(Str(i * 456)), "{ Module " + HERE$ + vbCrLf + "try { Call local " + HERE$ + "." + bstack.GroupName + what$ + "() } }" + HERE$ + "." + bstack.GroupName
                                  End With
                                   alfa.MyName = what$
+                                  alfa.index = -1
                                   alfa.ModuleName = HERE$
+                                  alfa.TITLE = what$
                                   Set mmmm = Nothing
                                   Set alfa = Nothing
-                    
+                    Else
+                     Set mmmm = New mEvent
+contEvArray:
+                        If neoGetArray(bstack, oName$ + "(", pppp, , CBool(glob)) Then
+                                what$ = Left$(what$, Len(oName$))
+                               
+                                 With mmmm
+                                    .BypassInit 10
+                                    .VarIndex = i * 1000 + varhash.Count
+                                    .Enabled = True
+                                    .ParamBlock "Read Index, msg$, &obj", 3
+                                    .GenItemCreator LTrim(Str(i * 3456)), "{ Module " + HERE$ + vbCrLf + "try { call local " + HERE$ + "." + bstack.GroupName + what$ + "() } }" + HERE$ + "." + bstack.GroupName
+                                 End With
+                                For i = 0 To ar - 1
+                                CreateFormObject aVar, 1
+                                Set pppp.item(i) = aVar
+                                Dim aaa As GuiM2000
+                                Set aaa = aVar
+                                Set aaa.EventObj = mmmm
+                                Set aaa = Nothing
+                                With aVar
+                                    
+                                 .MyName = what$
+                                 .ModuleName = HERE$
+                                 .TITLE = what$ + "(" + LTrim(Str$(i)) + ")"
+                                 .index = i
+                                End With
+                                Next i
+                         End If
+                         Set mmmm = Nothing
+                    End If
                     End If
          
  ElseIf IsLabelSymbolNew(rest$, "епикоцг", "BUTTON", lang) Then
         If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
-            x1 = Abs(IsLabel(bstack, rest$, w$))
-                    If x1 <> 1 Then
+          ''  x1 = Abs(IsLabel(bstack, rest$, w$))
+            
+                    If Not IsExp(bstack, rest$, p) Then
                                      BadObjectDecl
                     Else
-                            If GetlocalVar(bstack.GroupName & w$, y1) Then
-                            ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
-                            Else
-                                BadObjectDecl
-                                Exit Function
-                            End If
+                
+                If bstack.LastObj Is Nothing Then
+                BadObjectDecl
+                Exit Function
+                End If
+                           ' If GetlocalVar(bstack.GroupName & w$, y1) Then
+                           ' ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
+                           ' Else
+                            'Set bstack.LastObj = Nothing
+                             '   BadObjectDecl
+                              '  Exit Function
+                            'End If
                             If ar = 0 Then
                          CreateFormObject var(i), 2
-                         Set alfa = var(y1)
+                         Set alfa = bstack.LastObj
+                         Set bstack.LastObj = Nothing
                        ' Dim ab As GuiButton
                           With var(i)
                           .Construct alfa, what$
@@ -33408,14 +33486,15 @@ If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                                   Else
                                 If neoGetArray(bstack, oName$ + "(", pppp, , CBool(glob)) Then
                                 what$ = Left$(what$, Len(oName$))
-                                Set alfa = var(y1)
+                                    Set alfa = bstack.LastObj
+                         Set bstack.LastObj = Nothing
                                 For i = 0 To ar - 1
                              CreateFormObject aVar, 2
                                   Set pppp.item(i) = aVar
                                     With aVar
                                     .ConstructArray alfa, what$, i
                                       .Move 0, 2000, 6000, 600
-                                      .caption = what$ + LTrim(Str$(i))
+                                      .caption = what$ + "(" + LTrim(Str$(i)) + ")"
                                       .SetUp
                           End With
                                   Next i
@@ -33461,7 +33540,7 @@ If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                                       .Move 0, 2000, 6000, 600
                                       
                                       .SetUp
-                                      .Text = what$ + LTrim(Str$(i))
+                                      .Text = what$ + "(" + LTrim(Str$(i)) + ")"
                           End With
                                   Next i
                                     Set alfa = Nothing
