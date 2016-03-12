@@ -280,6 +280,7 @@ Private Sub Form_Resize()
  reopen4 = False
  If Form4.Visible Then Form4.Visible = False: reopen4 = True
  If Form3.Visible Then If trace Then Form2.Visible = False: reopen2 = True
+ 
  End If
 'Debug.Print "RESIZE ME"
  Timer1.Enabled = True
@@ -310,8 +311,18 @@ If Not trace Then reopen2 = False
 If vH_title$ = "" Then reopen4 = False
 If reopen4 Then Form4.Show , Form1: Form4.Visible = True
 If reopen2 Then Form2.Show , Form1: Form2.Visible = True
+   For Each X In Forms
+       If Typename$(X) = "GuiM2000" Then
+       If X.Visible Then
+       X.Visible = False
+       X.Show , Form1
+       End If
+       End If
+       Next
+
 Form1.SetFocus
 Form1.ZOrder 0
+
 End If
 Else
 If Not ((exWnd <> 0) Or AVIRUN Or IsSelectorInUse) Then

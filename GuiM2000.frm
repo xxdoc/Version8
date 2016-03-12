@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form GuiM2000 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H003B3B3B&
    BorderStyle     =   0  'None
    Caption         =   "aaa"
@@ -63,7 +64,9 @@ Dim onetime As Boolean
 Dim alfa As New GuiButton
 Public MyName$
 Public ModuleName$
+Public Prive As Long
 Private mIndex As Long
+
 Public Sub AddGuiControl(widget As Object)
 GuiControls.Add widget
 End Sub
@@ -74,11 +77,9 @@ End Property
 
 Public Sub Callback(b$)
 CallEventFromGui Me, myEvent, b$
-
 End Sub
 Public Sub CallbackNow(b$, vr())
 CallEventFromGuiNow Me, myEvent, b$, vr()
-
 End Sub
 
 
@@ -94,7 +95,7 @@ End Sub
 
 
 Private Sub Form_Click()
-gList2.SetFocus
+If gList2.Visible Then gList2.SetFocus
 If index > -1 Then
 CallEventFromGui Me, myEvent, MyName$ + ".Click(" + CStr(index) + ")"
 Else
@@ -102,7 +103,34 @@ CallEventFromGui Me, myEvent, MyName$ + ".Click()"
 End If
 End Sub
 
+Private Sub Form_Activate()
+If ttl Then Form3.caption = gList2.HeadLine
+End Sub
 
+Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
+If index > -1 Then
+CallEventFromGui Me, myEvent, MyName$ + ".MouseDown(" + CStr(index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+Else
+CallEventFromGui Me, myEvent, MyName$ + ".MouseDown(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"")"
+End If
+End Sub
+
+Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
+If index > -1 Then
+CallEventFromGui Me, myEvent, MyName$ + ".MouseMove(" + CStr(index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+Else
+CallEventFromGui Me, myEvent, MyName$ + ".MouseMove(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"")"
+End If
+
+End Sub
+
+Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
+If index > -1 Then
+CallEventFromGui Me, myEvent, MyName$ + ".MouseUp(" + CStr(index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+Else
+CallEventFromGui Me, myEvent, MyName$ + ".MouseUp(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"")"
+End If
+End Sub
 
 Private Sub Form_Resize()
 gList2.MoveTwips 0, 0, Me.Width, gList2.HeightTwips
@@ -160,7 +188,11 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
 Set myEvent = Nothing
-
+If Prive <> 0 Then
+players(Prive).Used = False
+players(Prive).XGRAPH = 0  '' as a flag
+Prive = 0
+End If
 End Sub
 
 Public Sub PrintMe(ParamArray aa() As Variant)
@@ -219,5 +251,10 @@ End Property
 Public Sub CloseNow()
     Unload Me
 End Sub
+Public Function Control(index) As Object
+On Error Resume Next
+Set Control = Controls(index)
+If Err > 0 Then Set Control = Me
 
+End Function
 
