@@ -28,7 +28,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 188
+Global Const Revision = 189
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -33454,7 +33454,7 @@ End If
 End Function
 Function DeclareGUI(bstack As basetask, what$, rest$, ifier As Boolean, lang As Long, i As Long, Optional ar As Long = 0, Optional oName As String = "", Optional glob As Long = 0)
 DeclareGUI = True
-Dim w$, x1 As Long, y1 As Long, s$
+Dim w$, x1 As Long, y1 As Long, s$, useold As Boolean
 Dim alfa As GuiM2000 ', beta As gList
 Dim aVar As Variant, p As Double
 Dim pppp As mArray, mmmm As mEvent
@@ -33468,15 +33468,23 @@ If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                                      BadObjectDecl
                              Else
                                 If GetlocalVar(bstack.GroupName & w$, y1) Then
+                                useold = True
                                 ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
+                                useold = True
                                 Else
                                 y1 = GlobalVar(bstack.GroupName & w$, s$)
-                                End If
                                 MakeitObjectEvent var(y1)
+                                 
+                                End If
+                                If Typename(var(y1)) <> "mEvent" Then
+                                    ifier = False
+                                    DeclareGUI = False: Exit Function
+                                End If
+                                
                              End If
                               
                             If ar = 0 Then
-                                ProcEvent bstack, "{Read msg$, &obj}", 1, y1
+                               If Not useold Then ProcEvent bstack, "{Read msg$, &obj}", 1, y1
                                 CreateFormObject var(i), 1
                                   Set alfa = var(i)
                                   Set alfa.EventObj = var(y1)
