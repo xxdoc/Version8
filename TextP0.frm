@@ -147,7 +147,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -203,14 +203,14 @@ Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (By
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
-Private Declare Function PeekMessageW Lib "user32" (lpMsg As msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessageW Lib "user32" (lpMsg As Msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Const WM_KEYFIRST = &H100
  Const WM_KEYLAST = &H108
  Private Type POINTAPI
     x As Long
     y As Long
 End Type
- Private Type msg
+ Private Type Msg
     hWnd As Long
     Message As Long
     wParam As Long
@@ -246,7 +246,7 @@ End Function
 
 
 Public Function GetLastKeyPressed() As Long
-Dim Message As msg
+Dim Message As Msg
     If mynum$ <> "" Then
         GetLastKeyPressed = -1
     ElseIf PeekMessageW(Message, 0, WM_KEYFIRST, WM_KEYLAST, 0) Then
@@ -269,11 +269,11 @@ TaskMaster.rest
         End If
 End Sub
 
-Private Sub dSprite_GotFocus(Index As Integer)
+Private Sub dSprite_GotFocus(index As Integer)
 If lockme Then TEXT1.SetFocus: Exit Sub
 End Sub
 
-Private Sub dSprite_OLEDragOver(Index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
+Private Sub dSprite_OLEDragOver(index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
@@ -388,7 +388,10 @@ End Sub
 
 Private Sub gList1_KeyDownAfter(KeyCode As Integer, shift As Integer)
 If KeyCode = vbKeyTab Then
+If shift = 2 Then
+choosenext
 KeyCode = 0
+End If
 End If
 End Sub
 
@@ -438,11 +441,11 @@ End If
 End If
 End Sub
 
-Private Sub ffhelp(a$)
-If Left$(a$, 1) < "С" Then
-fHelp basestack1, a$, True
+Private Sub ffhelp(A$)
+If Left$(A$, 1) < "С" Then
+fHelp basestack1, A$, True
 Else
-fHelp basestack1, a$
+fHelp basestack1, A$
 End If
 End Sub
 
@@ -891,7 +894,7 @@ End Sub
 
 
 
-Private Sub dSprite_MouseDown(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseDown(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 Dim p As Long, u2 As Long
 If lockme Then Exit Sub
  MOUB = Button
@@ -901,19 +904,19 @@ If lockme Then Exit Sub
 If Not NoAction Then
 NoAction = True
 Dim sel&
-p = Val("0" & dSprite(Index).Tag)
+p = Val("0" & dSprite(index).Tag)
 With players(p)
     u2 = .uMineLineSpace * 2
 
         If Button > 0 And Targets Then
 
-        sel& = ScanTarget(q(), CLng(x), CLng(y), Index)
+        sel& = ScanTarget(q(), CLng(x), CLng(y), index)
             If sel& >= 0 Then
                 If Button = 1 Then
                 '' If QRY Then LCTC dSprite(Index), oy&, ox&, ins& Else LCT dSprite(Index), oy&, ox&
                 Select Case q(sel&).Id Mod 100
                 Case Is < 10
-                If Not interpret(DisStack, "LAYER " & dSprite(Index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
+                If Not interpret(DisStack, "LAYER " & dSprite(index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
                 Case Else
                 INK$ = q(sel&).Comm
                 End Select
@@ -931,7 +934,7 @@ End If
 
 End Sub
 
-Private Sub dSprite_MouseMove(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseMove(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = Button
 If NOEDIT = True And (exWnd = 0 Or Button) Then
@@ -939,7 +942,7 @@ Me.KeyPreview = True
 End If
 End Sub
 
-Private Sub dSprite_MouseUp(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseUp(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = 0
 End Sub
@@ -1112,6 +1115,11 @@ Case vbKeyTab
     If (shift And 1) = 1 Then
     INK$ = INK$ & Chr$(6)
     KeyCode = 0
+    ElseIf ctrl Then
+    ctrl = False
+        choosenext
+        KeyCode = 0
+        
     End If
 Case vbKeyV
     If ctrl And (shift And &H2) = 2 Then
@@ -1333,7 +1341,7 @@ Private Sub Form_Load()
 
 Set TEXT1 = New TextViewer
 
-Set TEXT1.container = gList1
+Set TEXT1.Container = gList1
 
 TEXT1.glistN.DragEnabled = False ' only drop - we can change this from popup menu
 TEXT1.glistN.Enabled = False
@@ -1516,7 +1524,7 @@ Set DisStack.Owner = DIS
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
-Dim pn As Long, a As New cDIBSection
+Dim pn As Long, A As New cDIBSection
 AutoRedraw = True
 If OneOnly Then Exit Sub
 OneOnly = True
@@ -1779,7 +1787,7 @@ End Sub
 
 Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, a$, JJ As Long, ii As Long
+Dim aa$, A$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -1985,18 +1993,18 @@ End If
 
 If TEXT1.SelText <> "" Then
 
-    a$ = vbCrLf + TEXT1.SelText & "*"
+    A$ = vbCrLf + TEXT1.SelText & "*"
     If shift <> 0 Then  ' тумых
-        a$ = Replace(a$, vbCrLf + Space$(6), vbCrLf)
-        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
+        A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
+        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
          TEXT1.SelStartSilent = ii
-         TEXT1.SelLengthSilent = Len(a$) - 3
+         TEXT1.SelLengthSilent = Len(A$) - 3
          TEXT1.mdoc.WrapAgainColor
     Else
-        a$ = Replace(a$, vbCrLf, vbCrLf + Space$(6))
-        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
+        A$ = Replace(A$, vbCrLf, vbCrLf + Space$(6))
+        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
         TEXT1.SelStartSilent = where + 6
-        TEXT1.SelLengthSilent = Len(a$) - 3 - (where + 6 - ii)
+        TEXT1.SelLengthSilent = Len(A$) - 3 - (where + 6 - ii)
         TEXT1.mdoc.WrapAgainColor
     End If
   
@@ -2272,7 +2280,7 @@ End If
 End Sub
 
 
-Private Function Parameters(a As String, b As String, c As String) As Boolean
+Private Function Parameters(A As String, b As String, c As String) As Boolean
 Dim i, ch As Boolean, vl As Boolean, chs$, all$, many As Long
 b = ""
 c = ""
@@ -2280,11 +2288,11 @@ c = ""
 'parameters = False
 ch = False
 vl = False
-Do While i < Len(a)
+Do While i < Len(A)
 i = i + 1
-Select Case Mid$(a, i, 1)
+Select Case Mid$(A, i, 1)
 Case "%"
-If Mid$(a, i + 1, 1) = "u" Then
+If Mid$(A, i + 1, 1) = "u" Then
 i = i + 1
 'we have four bytes
 many = 6
@@ -2314,7 +2322,7 @@ Exit Do
 End If
 Case Else
 If ch = True Then
-chs$ = chs$ & Mid$(a, i, 1)
+chs$ = chs$ & Mid$(A, i, 1)
 If Len(chs$) = many Then
 If many = 4 Then
 chs$ = Chr(Int(chs$))
@@ -2329,14 +2337,14 @@ b = b + chs$
 End If
 End If
 ElseIf vl = False Then
-b = b + Mid$(a, i, 1)
+b = b + Mid$(A, i, 1)
 Else
-c = c + Mid$(a, i, 1)
+c = c + Mid$(A, i, 1)
 End If
 End Select
 Loop
 If c <> "" Then Parameters = True
-a = Mid$(a, i + 1)
+A = Mid$(A, i + 1)
 End Function
 
 

@@ -375,12 +375,12 @@ End If
 End Sub
 
 
-Public Property Get Label1(ByVal Index As Long) As String
-Label1 = Label(Index)
+Public Property Get Label1(ByVal index As Long) As String
+Label1 = Label(index)
 End Property
 
-Public Property Let Label1(ByVal Index As Long, ByVal rhs As String)
-Label(Index) = rhs
+Public Property Let Label1(ByVal index As Long, ByVal rhs As String)
+Label(index) = rhs
 End Property
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
 Dim A As RECT, b As Long
@@ -418,19 +418,19 @@ Private Sub gList2_LostFocus()
 doubleclick = 0
 End Sub
 
-Private Sub glist3_CheckGotFocus(Index As Integer)
+Private Sub glist3_CheckGotFocus(index As Integer)
 Dim s$
 gList4.SetFocus
-If Index < 2 Then
+If index < 2 Then
 abt = False
 
 vH_title$ = ""
-s$ = Label(Index)
+s$ = Label(index)
 Select Case Left$(LTrim(Label(2)) + " ", 1)
 Case "?", "!", " ", ".", ":", Is >= "A", Chr$(10), """"
     fHelp MyBaseTask, s$, AscW(s$ + Mid$(" Ó", Abs(pagio$ = "GREEK") + 1)) < 128
 End Select
-ElseIf Index = 2 Then
+ElseIf index = 2 Then
 TestShowCode = Not TestShowCode
 If TestShowCode Then
 gList3(2).BackColor = &H606060
@@ -667,5 +667,7 @@ End Function
 Public Sub hookme(this As gList)
 If Not this Is Nothing Then this.NoWheel = True
 End Sub
-
+Sub ByeBye()
+Unload Me
+End Sub
 

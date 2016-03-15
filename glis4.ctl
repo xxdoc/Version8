@@ -101,10 +101,10 @@ Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColo
 Private Declare Function CreateHatchBrush Lib "gdi32" (ByVal nIndex As Long, ByVal crColor As Long) As Long
 Private Declare Function CopyFromLParamToRect Lib "user32" Alias "CopyRect" (lpDestRect As RECT, ByVal lpSourceRect As Long) As Long
 Private Declare Function DestroyCaret Lib "user32" () As Long
-Private Declare Function CreateCaret Lib "user32" (ByVal hWnd As Long, ByVal hBitmap As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function ShowCaret Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function CreateCaret Lib "user32" (ByVal hwnd As Long, ByVal hBitmap As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function ShowCaret Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function SetCaretPos Lib "user32" (ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function HideCaret Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function HideCaret Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
@@ -169,6 +169,7 @@ Dim mlist() As itemlist
 Dim topitem As Long
 Dim itemcount As Long
 Dim Mselecteditem As Long
+Event OnResize()
 Event selected(item As Long)
 Event SelectedMultiAdd(item As Long)
 Event SelectedMultiSub(item As Long)
@@ -301,15 +302,15 @@ Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (By
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
-Private Declare Function PeekMessageW Lib "user32" (lpMsg As msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessageW Lib "user32" (lpMsg As Msg, ByVal hwnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Const WM_KEYFIRST = &H100
  Const WM_KEYLAST = &H108
  Private Type POINTAPI
     x As Long
     y As Long
 End Type
- Private Type msg
-    hWnd As Long
+ Private Type Msg
+    hwnd As Long
     Message As Long
     wParam As Long
     lParam As Long
@@ -321,7 +322,7 @@ Dim mlx As Long, mly As Long
 Public SkipForm As Boolean
 Public dropkey As Boolean
 Public Function GetLastKeyPressed() As Long
-Dim Message As msg
+Dim Message As Msg
 If mynum$ <> "" Then
 GetLastKeyPressed = -1
 ElseIf PeekMessageW(Message, 0, WM_KEYFIRST, WM_KEYLAST, 0) Then
@@ -342,7 +343,15 @@ mHeadlineHeightTwips = 0
 
 End If
 End Property
+Public Property Get HeadlineHeightTwips() As Long
+'' for dynamic controls
+If HeadLine <> "" Then
+HeadlineHeightTwips = mHeadlineHeight * scrTwips
+Else
+HeadlineHeightTwips = myt
 
+End If
+End Property
 Public Property Get HeadlineHeight() As Long
 If HeadLine <> "" Then
 HeadlineHeight = mHeadlineHeight
@@ -404,8 +413,8 @@ Public Property Let sync(ByVal New_sync As String)
     m_sync = New_sync
     PropertyChanged "sync"
 End Property
-Public Property Get hWnd() As Long
-hWnd = UserControl.hWnd
+Public Property Get hwnd() As Long
+hwnd = UserControl.hwnd
 End Property
 Public Property Let Text(ByVal new_text As String)
 clear True
@@ -614,10 +623,11 @@ Public Property Let Enabled(ByVal rhs As Boolean)
  myEnabled = rhs
     PropertyChanged "Enabled"
     On Error Resume Next
+    If Not waitforparent Then Exit Property
     Dim MM$, mo As Control, nm$, cnt$, p As Long
     
 ''new position
-If Not waitforparent Then Exit Property
+
 MM$ = UserControl.Ambient.DisplayName
 
 nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
@@ -991,6 +1001,7 @@ lastlistindex = listindex
 If KeyCode = vbKeyLeft Or KeyCode = vbKeyUp Or KeyCode = vbKeyDown Or KeyCode = vbKeyRight Or KeyCode = vbKeyEnd Or KeyCode = vbKeyHome Or KeyCode = vbKeyPageUp Or KeyCode = vbKeyPageDown Then
 If MarkNext = 0 Then RaiseEvent KeyDownAfter(KeyCode, shift)
 End If
+
 If KeyCode = 93 Then
 ' you have to clear myButton, here keycode
 RaiseEvent OutPopUp(nowx, nowy, KeyCode)
@@ -2032,6 +2043,7 @@ myt = mytPixels * scrTwips
 waitforparent = True
 End Sub
 Public Sub Dynamic()
+overrideTextHeight = 0
    If restrictLines > 0 Then
 myt = (UserControl.ScaleHeight - mHeadlineHeightTwips) / restrictLines
 Else
@@ -2043,8 +2055,6 @@ mytPixels = myt / scrTwips
 myt = mytPixels * scrTwips
 waitforparent = True
 End Sub
-
-
 
 Private Sub UserControl_Show()
 If Not design() Then
@@ -2432,7 +2442,7 @@ Public Sub clear(Optional ByVal interface As Boolean = False)
 SELECTEDITEM = -1
 LastSelected = -2
 itemcount = 0
-If hWnd <> 0 Then HideCaret (hWnd)
+If hwnd <> 0 Then HideCaret (hwnd)
 state = True
 mValue = 0  ' if here you have an error you forget to apply VALUE as default property
 showshapes
@@ -2462,7 +2472,9 @@ End Function
 
 Private Sub UserControl_Resize()
 'If Not design() Then
+RaiseEvent OnResize
 CalcAndShowBar
+
 'End If
 End Sub
 Public Sub additem(a$)
@@ -2798,7 +2810,7 @@ nr.Bottom = nr.top + mytPixels + 1
                                 End If
                 End If
         Else
-        HideCaret (hWnd)
+        HideCaret (hwnd)
         End If
     End If
     
@@ -2819,7 +2831,7 @@ Dim YYT As Long, nr As RECT, j As Long, i As Long, skipme As Boolean, fg As Long
  Dim REALX As Long, REALX2 As Long, myt1
 If listcount = 0 And HeadLine = "" Then
 Repaint
-HideCaret (hWnd)
+HideCaret (hwnd)
 Exit Sub
 End If
 If MultiSelect And LeftMarginPixels < mytPixels Then LeftMarginPixels = mytPixels
@@ -3017,7 +3029,7 @@ If SELECTEDITEM > 0 Then
         End If
         Else
 
-        HideCaret (hWnd)
+        HideCaret (hwnd)
     End If
 Else
 
@@ -3716,6 +3728,24 @@ mpercent = rhs
 PropertyChanged "Percent"
 End Property
 Private Sub UserControl_KeyDown(KeyCode As Integer, shift As Integer)
+If KeyCode = vbKeyTab Then
+If shift = 2 Then
+        choosenext
+    KeyCode = 0
+    Exit Sub
+    End If
+ElseIf KeyCode = vbKeyF4 Then
+If shift = 4 Then
+On Error Resume Next
+If Parent.name = "GuiM2000" Or Parent.name = "Form2" Or Parent.name = "Form4" Then
+With UserControl.Parent
+.ByeBye
+End With
+KeyCode = 0
+Exit Sub
+End If
+End If
+End If
 If dropkey Then shift = 0: KeyCode = 0: Exit Sub
 Dim i&
 If shift = 4 Then
@@ -4070,7 +4100,8 @@ Dim old_brush As Long, old_pen As Long, my_brush As Long
              radius = radius - 2
              If radius = 0 Then radius = 1
         Else
-        radius = 4
+        radius = mytPixels / 5
+        If radius < 4 Then radius = 4
         End If
              
         th.Left = x - radius
@@ -4350,16 +4381,16 @@ End If
 End Property
 Private Sub ShowMyCaretInTwips(x1 As Long, y1 As Long)
 
-If hWnd <> 0 Then
+If hwnd <> 0 Then
  With UserControl
  If Not caretCreated Then
 
- CreateCaret hWnd, 0, .ScaleX(1, 1, 3) + 2, .ScaleY(myt, 1, 3) - 2: caretCreated = True
+ CreateCaret hwnd, 0, .ScaleX(1, 1, 3) + 2, .ScaleY(myt, 1, 3) - 2: caretCreated = True
  End If
 ' we can set caret pos if we don't have the focus
 
 SetCaretPos .ScaleX(x1, 1, 3), .ScaleY(y1, 1, 3)
-ShowCaret (hWnd)
+ShowCaret (hwnd)
 
 
 End With
@@ -4376,7 +4407,7 @@ End Property
 
 Public Property Let EditFlag(ByVal rhs As Boolean)
 mEditFlag = rhs
-If Not rhs Then If hWnd <> 0 Then DestroyCaret: caretCreated = False
+If Not rhs Then If hwnd <> 0 Then DestroyCaret: caretCreated = False
 End Property
 Public Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long, Optional ByVal offsetx As Long = 0)
 Dim a As RECT
@@ -4463,6 +4494,9 @@ End Sub
 
 Public Sub Shutdown()
 waitforparent = False
+Timer1.Enabled = False
+Timer2.Enabled = False
+Timer3.Enabled = False
 Timer1.Interval = 10000
 Timer2.Interval = 10000
 Timer3.Interval = 10000
@@ -4537,19 +4571,19 @@ RaiseEvent MarkOut
 ShowMe2
 End Sub
 Public Sub ShowPan()
-Dim ll As Long
+Dim LL As Long
 If listcount > 0 Then
     If listindex >= 0 Then
             If (listindex - topitem) >= 0 And (listindex - topitem) < lines Then
                     If SelStart = 0 Then
-                    ll = scrollme
+                    LL = scrollme
                     Else
-                    ll = UserControlTextWidthPixels(Left$(List(listindex), SelStart)) + scrollme
+                    LL = UserControlTextWidthPixels(Left$(List(listindex), SelStart)) + scrollme
                     End If
-                    If ll < WidthPixels Then
+                    If LL < WidthPixels Then
                     ShowMe2
                     Exit Sub
-                    ElseIf ll >= 0 Then
+                    ElseIf LL >= 0 Then
                     ShowMe2
                     Exit Sub
                     End If

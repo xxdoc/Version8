@@ -208,13 +208,13 @@ jumphere:
             End If
          End If
     Else
-        If Typename$(pobjTarget) = "GuiM2000" Then
-        If UCase(pstrProcName) = "PRINT" Then
-        pstrProcName = "PRINTME"
-        lngRet = -1
-        GoTo passhere
-        End If
-        End If
+       ' If Typename$(pobjTarget) = "GuiM2000" Then
+        'If UCase(pstrProcName) = "PRINT" Then
+        'pstrProcName = "PRINTME"
+        'lngRet = -1
+        'GoTo passhere
+        'End If
+        'End If
         Err.Raise lngRet
     End If
     If items > 0 Then

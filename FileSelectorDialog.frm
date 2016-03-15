@@ -467,10 +467,10 @@ selectorLastY = top
 Sleep 200
 loadfileiamloaded = False
 End Sub
-Private Sub MakeFolder(ByVal A$)
-A$ = Left$(A$, Len(A$) - 1)
+Private Sub MakeFolder(ByVal a$)
+a$ = Left$(a$, Len(a$) - 1)
 On Error Resume Next
-MkDir A$
+MkDir a$
 Sleep 1
 End Sub
 
@@ -705,7 +705,7 @@ gList3.ShowMe2
 End Sub
 
 Private Sub glist3_PanLeftRight(Direction As Boolean)
-Dim that As New recDir, TT As Integer
+Dim that As New recDir, tt As Integer
 If TEXT1 = "" Then Exit Sub
 
 If Direction Then
@@ -876,49 +876,46 @@ Beep
 End If
 End Sub
 Public Sub FillThereMyVersion2(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = CLng(Rnd * 3) + setupxy / 3
 
-CopyFromLParamToRect A, thatRect
-A.Left = A.Right - setupxy
-A.top = b
-A.Bottom = b + setupxy / 5
-mySelector.FillThere thathDC, VarPtr(A), thatbgcolor
-A.top = b + setupxy / 5 + setupxy / 10
-A.Bottom = b + setupxy \ 2
-mySelector.FillThere thathDC, VarPtr(A), thatbgcolor
-'a.Top = b + setupXY * 4 / 5
-'a.Bottom = b + setupXY - setupXY / 5
-'mySelector.FillThere thathDC, VarPtr(a), thatbgcolor
+CopyFromLParamToRect a, thatRect
+a.Left = a.Right - setupxy
+a.top = b
+a.Bottom = b + setupxy / 5
+mySelector.FillThere thathDC, VarPtr(a), thatbgcolor
+a.top = b + setupxy / 5 + setupxy / 10
+a.Bottom = b + setupxy \ 2
+mySelector.FillThere thathDC, VarPtr(a), thatbgcolor
 
 End Sub
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = 2
-CopyFromLParamToRect A, thatRect
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-mySelector.FillThere thathDC, VarPtr(A), 0
+CopyFromLParamToRect a, thatRect
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+mySelector.FillThere thathDC, VarPtr(a), 0
 b = 5
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-mySelector.FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+mySelector.FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
 
 
 End Sub
 Sub PlaceSettings()
 ' using global var settings
-Dim A() As String, i As Long, j As Long
-A() = Split(Settings, ",")
+Dim a() As String, i As Long, j As Long
+a() = Split(Settings, ",")
 For i = 0 To gList1.listcount - 1
 gList1.ListSelectedNoRadioCare(i) = False
 Next i
-For i = LBound(A()) To UBound(A())
-If gList1.GetMenuId(A(i), j) Then
+For i = LBound(a()) To UBound(a())
+If gList1.GetMenuId(a(i), j) Then
 gList1.ListSelectedNoRadioCare(j) = True
 End If
 Next i
@@ -926,15 +923,15 @@ End Sub
 Function ReadSettings() As Boolean
 ' using global var settings
 ' we have to read at NostateDir=true
-Dim A() As String, i As Long, j As Long
-A() = Split(Settings, ",")
+Dim a() As String, i As Long, j As Long
+a() = Split(Settings, ",")
 ' reset some flags
 gList1.StickBar = False
 mySelector.mselChecked = False
 multifileselection = False
 ExpandWidth = False
-For i = LBound(A()) To UBound(A())
-While gList1.Id(j) <> A(i)
+For i = LBound(a()) To UBound(a())
+While gList1.Id(j) <> a(i)
 j = j + 1
 Wend
 j = j + 1  ' now we are in base 1
@@ -1083,20 +1080,20 @@ Else
 ''Shape1.Visible = False
 End If
 End Sub
-Private Sub ImageMove(A As myImage, neoTop As Long, NeoLeft As Long, NeoWidth As Long, NeoHeight As Long)
-If A.image Is Nothing Then Exit Sub
+Private Sub ImageMove(a As myImage, neoTop As Long, NeoLeft As Long, NeoWidth As Long, NeoHeight As Long)
+If a.image Is Nothing Then Exit Sub
 
 
-If A.image.Width = 0 Then Exit Sub
-If A.image.Type = vbPicTypeIcon Then
+If a.image.Width = 0 Then Exit Sub
+If a.image.Type = vbPicTypeIcon Then
 
 Dim aa As New cDIBSection
 aa.BackColor = BackColor
-aa.CreateFromPicture A.image
+aa.CreateFromPicture a.image
 aa.ResetBitmapTypeToBITMAP
 PaintPicture aa.Picture, neoTop, NeoLeft, NeoWidth, NeoHeight
 Else
-PaintPicture A.image, neoTop, NeoLeft, NeoWidth, NeoHeight
+PaintPicture a.image, neoTop, NeoLeft, NeoWidth, NeoHeight
 End If
 refresh
 End Sub

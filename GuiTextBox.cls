@@ -56,7 +56,7 @@ Private Declare Function GetClipboardData Lib "user32" _
     Private Declare Function SetClipboardData Lib "user32" _
     (ByVal wFormat As Long, ByVal hMem As Long) As Long
     Private Declare Function OpenClipboard Lib "user32" _
-    (ByVal hWnd As Long) As Long
+    (ByVal hwnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" _
     () As Long
     Private Declare Function IsClipboardFormatAvailable Lib "user32" _
@@ -65,7 +65,10 @@ Private Declare Function CloseClipboard Lib "user32" _
     ' for Gui purposes
 Public CtrlName As String
 Dim mIndex As Long
-Dim Callback As Form
+Dim Callback As GuiM2000
+Public Property Get GetCallBack() As Form
+Set GetCallBack = Callback
+End Property
  Public Sub Construct(there As Form, name$)
  mIndex = -1
  Set Callback = there
@@ -163,10 +166,11 @@ glistN.TopTwips = rhs
 End Property
 Public Sub SetUp()
 Dim ff As New StdFont
-With Callback.Controls(0).Font
-ff.name = .name
-ff.charset = .charset
-ff.bold = .bold
+With Callback
+ff.name = .CtrlFontName
+ff.charset = Form1.DIS.Font.charset
+ff.Size = .CtrlFontSize
+ff.bold = .CtrlFontBold
 End With
 
 With glistN
@@ -179,7 +183,6 @@ If .listcount = 0 Then Text = ""
 If Not .CenterText Then .LeftMarginPixels = 8
 .BackColor = rgb(200, 120, 60)
 Set .Font = ff
-.FontSize = 12
 .ForeColor = Callback.Controls(0).ForeColor
 .dcolor = Callback.Controls(0).dcolor
 .ShowMe
@@ -205,7 +208,7 @@ End Property
 Private Sub glistN_RegisterGlist(this As gList)
 If Not glistN.Spinner Then this.NoWheel = True
 On Error Resume Next
-glistN.Parent.hookme this
+'glistN.Parent.hookme this
 If Err.Number > 0 Then this.NoWheel = True
 
 End Sub
@@ -359,11 +362,28 @@ If item >= 0 Then
     End If
 End Sub
 
+Private Sub glistN_Selected2(item As Long)
+If item >= 0 Then
+  If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".Enter(" + CStr(mIndex) + ")"
+   Else
+      Callback.Callback CtrlName + ".Enter()"
+      End If
+End If
+End Sub
+
+
 Private Sub glistN_SyncKeyboard(item As Integer)
 RaiseEvent KeyPress(item)
 End Sub
 Private Sub glistN_SpinnerValue(ThatValue As Long)
-RaiseEvent SpinnerValue(ThatValue)
+''RaiseEvent SpinnerValue(ThatValue)
+   If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".SpinnerValue(" + CStr(mIndex) + "," + LTrim(Str(ThatValue)) + ")"
+   Else
+      Callback.Callback CtrlName + ".SpinnerValue(" + LTrim(Str(ThatValue)) + ")"
+      End If
+     '' vartext = CStr(ThatValue)
 End Sub
 Public Property Get Locked() As Boolean
 Locked = Not glistN.Enabled
@@ -387,6 +407,7 @@ glistN.EnabledBar = True
 glistN.ShowBar = True
 
 End If
+glistN.Vertical = True
 End Sub
 
 
@@ -479,6 +500,7 @@ End Function
 Private Sub glistN_UnregisterGlist()
 If Not glistN.Spinner Then glistN.NoWheel = True
 On Error Resume Next
+If Typename(glistN.Parent) = "GuiM2000" Then glistN.NoWheel = True: Exit Sub
 glistN.Parent.hookme Nothing
 If Err.Number > 0 Then glistN.NoWheel = True
 
@@ -489,7 +511,17 @@ glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
 End Sub
 Public Sub deconstruct()
 glistN.Shutdown
-Set glistN = Nothing
 Set Callback = Nothing
-  Set glistN = Nothing
+Set glistN = Nothing
+End Sub
+Public Sub FontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)
+Dim aa As New StdFont
+If ThisFontName <> "" Then
+
+aa.name = ThisFontName
+
+If ThisMode > 7 Then aa.Size = ThisMode Else aa = 7
+aa.bold = ThisBold
+Set glistN.Font = aa
+End If
 End Sub

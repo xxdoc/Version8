@@ -21,7 +21,7 @@ Event KeyDown(KeyCode As Integer, shift As Integer)
 Event LostFocus()
 Event GotFocus()
 Event KeyPress(KeyAscii As Integer)
-Event MouseMove(Button As Integer, shift As Integer, X As Single, Y As Single)
+Event MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
 Event SpinnerValue(ThisValue As Long)
 Private mprompt As String
 Private mkind As String
@@ -271,8 +271,8 @@ On Error Resume Next
 glistN.SetFocus
 End Sub
 
-Private Sub glistN_MouseMove(Button As Integer, shift As Integer, X As Single, Y As Single)
-RaiseEvent MouseMove(Button, shift, X, Y)
+Private Sub glistN_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
+RaiseEvent MouseMove(Button, shift, x, y)
 End Sub
 
 Private Sub glistN_SyncKeyboard(item As Integer)
@@ -288,7 +288,7 @@ End Property
 Public Property Let Locked(ByVal rhs As Boolean)
 glistN.Enabled = Not rhs
 End Property
-Public Sub Spinner(ShowBar As Boolean, MinValue As Long, MaxValue As Long, LargeValue As Long)
+Public Sub Spinner(ShowBar As Boolean, MinValue As Long, maxvalue As Long, LargeValue As Long)
 If Not ShowBar Then
 glistN.Spinner = False
 glistN.ShowBar = False
@@ -297,7 +297,7 @@ Else
 glistN.Enabled = False
 glistN.restrictLines = 1
 glistN.Spinner = True
-glistN.SetSpin MinValue, MaxValue, LargeValue
+glistN.SetSpin MinValue, maxvalue, LargeValue
 glistN.Enabled = True
 glistN.EnabledBar = True
 glistN.ShowBar = True

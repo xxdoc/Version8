@@ -148,7 +148,7 @@ End If
 End Sub
 Public Sub MoveMe()
 ScaleDialog Helplastfactor, HelpLastWidth
-Hook2 hwnd, gList1
+Hook2 hWnd, gList1
 Label1.glistN.SoftEnterFocus
 End Sub
 
@@ -259,7 +259,7 @@ End Sub
 
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-UnHook2 hwnd
+UnHook2 hWnd
 Set LastGlist2 = Nothing
 End Sub
 
@@ -403,4 +403,7 @@ Public Sub hookme(this As gList)
 
 ''Set LastGlist2 = this
 
+End Sub
+Sub ByeBye()
+Unload Me
 End Sub

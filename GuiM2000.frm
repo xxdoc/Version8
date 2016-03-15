@@ -33,14 +33,22 @@ Begin VB.Form GuiM2000
       TabStop         =   0   'False
       Top             =   0
       Width           =   9180
-      _extentx        =   16193
-      _extenty        =   873
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "GuiM2000.frx":000C
-      backcolor       =   3881787
-      forecolor       =   16777215
-      capcolor        =   16777215
+      _ExtentX        =   16193
+      _ExtentY        =   873
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   161
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Backcolor       =   3881787
+      ForeColor       =   16777215
+      CapColor        =   16777215
    End
 End
 Attribute VB_Name = "GuiM2000"
@@ -64,9 +72,12 @@ Dim onetime As Boolean
 Dim alfa As New GuiButton
 Public MyName$
 Public ModuleName$
-Public Prive As Long
+Public prive As Long
+Private ByPassEvent As Boolean
 Private mIndex As Long
-
+Public Relax As Boolean
+Public MY_BACK As New cDIBSection
+Dim CtrlFont As New StdFont
 Public Sub AddGuiControl(widget As Object)
 GuiControls.Add widget
 End Sub
@@ -76,7 +87,11 @@ Set myEvent = aEvent
 End Property
 
 Public Sub Callback(b$)
+If ByPassEvent Then
+CallEventFromGuiOne Me, myEvent, b$
+Else
 CallEventFromGui Me, myEvent, b$
+End If
 End Sub
 Public Sub CallbackNow(b$, vr())
 CallEventFromGuiNow Me, myEvent, b$, vr()
@@ -91,47 +106,59 @@ If w.Enabled Then w.Visible = True
     
 Next w
 End If
+gList2.PrepareToShow
 End Sub
 
 
 Private Sub Form_Click()
 If gList2.Visible Then gList2.SetFocus
-If index > -1 Then
-CallEventFromGui Me, myEvent, MyName$ + ".Click(" + CStr(index) + ")"
+If Index > -1 Then
+    Callback MyName$ + ".Click(" + CStr(Index) + ")"
 Else
-CallEventFromGui Me, myEvent, MyName$ + ".Click()"
+    Callback MyName$ + ".Click()"
 End If
 End Sub
 
 Private Sub Form_Activate()
-If ttl Then Form3.caption = gList2.HeadLine
+If ttl Then Form3.Caption = gList2.HeadLine
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
-If index > -1 Then
-CallEventFromGui Me, myEvent, MyName$ + ".MouseDown(" + CStr(index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+If Not Relax Then
+Relax = True
+If Index > -1 Then
+    Callback MyName$ + ".MouseDown(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
-CallEventFromGui Me, myEvent, MyName$ + ".MouseDown(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"")"
+    Callback MyName$ + ".MouseDown(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+End If
+Relax = False
 End If
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-If index > -1 Then
-CallEventFromGui Me, myEvent, MyName$ + ".MouseMove(" + CStr(index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+If Not Relax Then
+Relax = True
+If Index > -1 Then
+Callback MyName$ + ".MouseMove(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
-CallEventFromGui Me, myEvent, MyName$ + ".MouseMove(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"")"
+Callback MyName$ + ".MouseMove(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+End If
+Relax = False
 End If
 
 End Sub
 
 Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
-If index > -1 Then
-CallEventFromGui Me, myEvent, MyName$ + ".MouseUp(" + CStr(index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+If Not Relax Then
+Relax = True
+If Index > -1 Then
+Callback MyName$ + ".MouseUp(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
-CallEventFromGui Me, myEvent, MyName$ + ".MouseUp(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"")"
+Callback MyName$ + ".MouseUp(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+End If
+Relax = False
 End If
 End Sub
-
 Private Sub Form_Resize()
 gList2.MoveTwips 0, 0, Me.Width, gList2.HeightTwips
 End Sub
@@ -154,6 +181,10 @@ End If
 End Sub
 Private Sub gList2_ExposeItemMouseMove(Button As Integer, ByVal item As Long, ByVal x As Long, ByVal y As Long)
 If gList2.DoubleClickCheck(Button, item, x, y, 10 * lastfactor, 10 * lastfactor, 8 * lastfactor, -1) Then
+    ByeBye
+End If
+End Sub
+Sub ByeBye()
 Dim var(1) As Variant
 var(1) = CLng(0)
 If mIndex > -1 Then
@@ -164,9 +195,7 @@ End If
             If var(0) = 0 Then
                               Unload Me
                       End If
-End If
 End Sub
-
 
 Private Sub Form_Load()
 If onetime Then Exit Sub
@@ -184,23 +213,23 @@ gList2.HeadLine = "Form"
 gList2.HeadlineHeight = gList2.HeightPixels
 gList2.SoftEnterFocus
 gList2.TabStop = False
+With gList2.Font
+CtrlFont.name = .name
+CtrlFont.Size = .Size
+CtrlFont.bold = .bold
+End With
+gList2.FloatLimitTop = ScrY() - 600
+gList2.FloatLimitLeft = ScrX() - 450
+
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
 Set myEvent = Nothing
-If Prive <> 0 Then
-players(Prive).Used = False
-players(Prive).XGRAPH = 0  '' as a flag
-Prive = 0
+If prive <> 0 Then
+players(prive).Used = False
+players(prive).MAXXGRAPH = 0  '' as a flag
+prive = 0
 End If
-End Sub
-
-Public Sub PrintMe(ParamArray aa() As Variant)
-Dim i As Long
-For i = LBound(aa()) To UBound(aa())
-Print aa(i),
-Next i
-Print
 End Sub
 Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
 ' create brush
@@ -212,19 +241,22 @@ End Sub
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
 Dim a As RECT
 CopyFromLParamToRect a, thatRect
+
 FillBack thathDC, a, thatbgcolor
 End Sub
 
-Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
+Private Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
 Dim a As RECT, b As Long
-b = 2
+b = 2 * lastfactor
+If b < 2 Then b = 2
+If setupxy - b < 0 Then b = setupxy \ 4 + 1
 CopyFromLParamToRect a, thatRect
 a.Left = b
 a.Right = setupxy - b
 a.top = b
 a.Bottom = setupxy - b
 FillThere thathDC, VarPtr(a), 0
-b = 5
+b = 5 * lastfactor
 a.Left = b
 a.Right = setupxy - b
 a.top = b
@@ -241,20 +273,84 @@ gList2.HeadLine = ""
 gList2.HeadLine = vNewValue
 gList2.HeadlineHeight = gList2.HeightPixels
 End Property
-Public Property Get index() As Long
-index = mIndex
+Public Property Get Index() As Long
+Index = mIndex
 End Property
 
-Public Property Let index(ByVal rhs As Long)
+Public Property Let Index(ByVal rhs As Long)
 mIndex = rhs
 End Property
 Public Sub CloseNow()
     Unload Me
 End Sub
-Public Function Control(index) As Object
+Public Function Control(Index) As Object
 On Error Resume Next
-Set Control = Controls(index)
+Set Control = Controls(Index)
 If Err > 0 Then Set Control = Me
-
 End Function
+Public Sub Opacity(mAlpha, Optional mlColor = 0, Optional mTRMODE = 0)
+SetTrans Me, CInt(Abs(mAlpha)) Mod 256, CLng(mycolor(mlColor)), CBool(mTRMODE)
+End Sub
+Public Sub Hold()
+MY_BACK.ClearUp
+If MY_BACK.Create(Form1.Width / DXP, Form1.Height / DYP) Then
+MY_BACK.LoadPictureBlt hDC
+If MY_BACK.bitsPerPixel <> 24 Then Conv24 MY_BACK
+End If
+End Sub
+Public Sub Release()
+MY_BACK.PaintPicture hDC
+End Sub
+
+
+Public Property Get ByPass() As Variant
+ByPass = ByPassEvent
+End Property
+
+Public Property Let ByPass(ByVal vNewValue As Variant)
+ByPassEvent = CBool(vNewValue)
+End Property
+Function TitleHeight() As Variant
+TitleHeight = gList2.Height
+End Function
+Public Sub FontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)
+Dim aa As New StdFont
+If ThisFontName <> "" Then
+
+aa.name = ThisFontName
+
+If ThisMode > 7 Then aa.Size = ThisMode Else aa = 7
+aa.bold = ThisBold
+Set gList2.Font = aa
+gList2.Height = gList2.HeadlineHeightTwips
+lastfactor = gList2.HeadlineHeight / 30
+setupxy = 20 * lastfactor
+ gList2.Dynamic
+
+End If
+End Sub
+Public Sub CtrlFontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)
+
+If ThisFontName <> "" Then
+
+CtrlFont.name = ThisFontName
+
+If ThisMode > 7 Then CtrlFont.Size = ThisMode Else CtrlFont = 7
+CtrlFont.bold = ThisBold
+
+End If
+End Sub
+Public Property Get CtrlFontName()
+    CtrlFontName = CtrlFont.name
+End Property
+Public Property Get CtrlFontSize()
+    CtrlFontSize = CtrlFont.Size
+End Property
+Public Property Get CtrlFontBold()
+    CtrlFontBold = CtrlFont.bold
+End Property
+
+
+
+
 

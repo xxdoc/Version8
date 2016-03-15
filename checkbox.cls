@@ -28,6 +28,7 @@ glistN.VerticalCenterText = True
 glistN.restrictLines = 1
 glistN.MenuItem 1, True, False, mValue
 glistN.listindex = 0
+glistN.LeftMarginPixels = glistN.HeightPixels
 glistN.ShowMe
 glistN.Enabled = True
 End Property
@@ -90,4 +91,8 @@ End Property
 Sub Shutdown()
 glistN.Shutdown
 glistN.Enabled = False
+End Sub
+
+Private Sub glistN_OnResize()
+glistN.LeftMarginPixels = glistN.HeightPixels
 End Sub

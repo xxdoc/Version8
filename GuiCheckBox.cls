@@ -6,20 +6,24 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "GuiButton"
+Attribute VB_Name = "GuiCheckBox"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-Dim WithEvents glistN As gList
+' From Tools make changed property as default
+
+Public WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
+Dim check1focus As Boolean
+Event Changed(state As Boolean)
 Dim mCaptext As String
+Dim mValue As Boolean
+'' FOR EVERY GuiSomething
 Public CtrlName As String
 Dim mIndex As Long
 Dim Callback As GuiM2000
-Public Property Get GetCallBack() As Form
-Set GetCallBack = Callback
-End Property
+'' for every GuiSomething
 Public Sub Construct(there As Form, name$)
  Set Callback = there
  On Error Resume Next
@@ -73,117 +77,88 @@ ff.charset = Form1.DIS.Font.charset
 ff.Size = .CtrlFontSize
 ff.bold = .CtrlFontBold
 End With
-
 With glistN
+glistN.clear
+.additem "  " + mCaptext
 .NoCaretShow = True
 .NoPanRight = False
-.restrictLines = 1
-.CenterText = True
 .VerticalCenterText = True
-.Text = mCaptext
-.BackColor = rgb(200, 120, 60)
+.restrictLines = 1
+.MenuItem 1, True, False, mValue
+.listindex = 0
 Set .Font = ff
 .ForeColor = Callback.Controls(0).ForeColor
 .dcolor = Callback.Controls(0).dcolor
-
-.Enabled = True
+.LeftMarginPixels = .HeightPixels
 .ShowMe
+.Enabled = True
 End With
 End Sub
+Public Property Let Caption(myCap As String)
+'
+mCaptext = myCap
+If Not glistN Is Nothing Then
+glistN.List(0) = "  " + mCaptext
+glistN.ShowMe
+End If
+End Property
+Public Property Let CheckReset(rhs As Boolean)
+' without event
+mValue = rhs
+If Not glistN Is Nothing Then
+glistN.ListSelected(0) = mValue
+glistN.ShowMe
+End If
+End Property
 
-Private Sub Class_Initialize()
-mCaptext = "Button"
-mIndex = -1
-End Sub
+
 
 Private Sub Class_Terminate()
 Set glistN = Nothing
 End Sub
 
 Private Sub glistN_CheckGotFocus()
-''Callback.Callback CtrlName + ".GotFocus()"
-glistN.BackColor = rgb(100, 200, 160)
-glistN.ShowMe
+
+check1focus = True
 End Sub
+
+Private Sub gListN_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
+'
+If check1focus Then
+glistN.FillThere thisHDC, thisrect, rgb(100, 200, 160)
+Else
+glistN.FillThere thisHDC, thisrect, rgb(200, 120, 60)
+End If
+skip = False
+End Sub
+
 
 Private Sub glistN_CheckLostFocus()
-If Me.Enabled Then
-''Callback.Callback CtrlName + ".LostFocus()"
-glistN.BackColor = rgb(200, 120, 60)
-glistN.PanPos = 0
-glistN.ShowMe
-
-End If
-End Sub
-
-Private Sub glistN_ExposeItemMouseMove(Button As Integer, ByVal item As Long, ByVal x As Long, ByVal y As Long)
+check1focus = False
 glistN.ShowMe
 End Sub
-
-Private Sub glistN_PanLeftRight(Direction As Boolean)
-
- 
-   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + ")"
-   Else
-      Callback.Callback CtrlName + ".Click()"
-      End If
-    
-''    Callback.Callback CtrlName + ".PanLeftRight(" + CStr(Direction) + ")"
-End Sub
-
-Private Sub glistN_RegisterGlist(this As gList)
-this.NoWheel = True
-End Sub
-
-Private Sub glistN_Selected2(item As Long)
+Private Sub gListN_MenuChecked(item As Long)
+' always item is 1  so 1-1..0 (base 0)
+RaiseEvent Changed(glistN.ListSelected(0))
 If item >= 0 Then
-   '' If (Not mCallback Is Nothing) Then mCallback.Press Index
-   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + ")"
+  If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".Changed(" + CStr(mIndex) + "," + CStr(glistN.ListSelected(0)) + ")"
    Else
-      Callback.Callback CtrlName + ".Click()"
+      Callback.Callback CtrlName + ".Changed(" + CStr(glistN.ListSelected(0)) + ")"
       End If
-    End If
+End If
 End Sub
-'
-'
-Public Property Let Caption(myCap As String)
-'
-mCaptext = myCap
+Public Property Get Checked() As Boolean
 If Not glistN Is Nothing Then
-If glistN.CenterText Then
-glistN.List(0) = mCaptext
+Checked = glistN.ListSelected(0)
 Else
-glistN.List(0) = "  " + mCaptext
-End If
-glistN.ShowMe
+' error
 End If
 End Property
-Public Property Get Caption() As String
-Caption = mCaptext
-End Property
 
-Public Property Get Index() As Long
-Index = mIndex
-End Property
-
-Public Property Let Index(ByVal rhs As Long)
-mIndex = rhs
-End Property
-Public Property Get Enabled() As Long
-Enabled = glistN.Enabled
-End Property
-
-Public Property Let Enabled(ByVal rhs As Long)
-glistN.Enabled = rhs
-End Property
-
-Public Sub Shutdown()
-On Error Resume Next
+Sub Shutdown()
 glistN.Shutdown
 glistN.Enabled = False
-
 End Sub
 Public Sub FontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)
 Dim aa As New StdFont
@@ -195,4 +170,23 @@ If ThisMode > 7 Then aa.Size = ThisMode Else aa = 7
 aa.bold = ThisBold
 Set glistN.Font = aa
 End If
+End Sub
+Private Sub glistN_OnResize()
+glistN.LeftMarginPixels = glistN.HeightPixels
+End Sub
+
+Private Sub glistN_PanLeftRight(Direction As Boolean)
+  If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + "," + CStr(Checked) + ")"
+   Else
+      Callback.Callback CtrlName + ".Click(" + CStr(Checked) + ")"
+      End If
+End Sub
+
+Private Sub glistN_Selected2(item As Long)
+  If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + "," + CStr(Checked) + ")"
+   Else
+      Callback.Callback CtrlName + ".Click(" + CStr(Checked) + ")"
+      End If
 End Sub

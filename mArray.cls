@@ -20,13 +20,14 @@ Dim actualdata() As Variant
 Dim maxitems As Long
 Dim maxitems1 As Long
 Public IHaveClass As Boolean
+Public IHaveGui As Boolean
 Public GroupRef As Object   ' get a floating Group, maybe with groups inside....as floating group
 Public CodeName As String
 Private oldmaxitems As Long
 Public Sub CopyArray(k As mArray)
 'copy this to k
-Dim V As Variant, i As Long, obj As Object, obj2 As Object
-k.SerialItem V, Me.UpperMonoLimit, 8
+Dim v As Variant, i As Long, obj As Object, obj2 As Object
+k.SerialItem v, Me.UpperMonoLimit, 8
 k.StartResize
 For i = 0 To dnum - 1
 k.PushDim limit(i)
@@ -68,7 +69,8 @@ k.item(i) = Me.item(i)
 End If
 Next i
 End If
-
+k.IHaveGui = Me.IHaveGui
+k.IHaveClass = Me.IHaveClass
 End Sub
 
 Public Function UpperMonoLimit()
@@ -182,7 +184,11 @@ Public Property Get item(curitem As Long) As Variant
 On Error GoTo there1
 If maxitems1 >= curitem Then
 If IsObject(actualdata(curitem)) Then
+If Typename(actualdata(curitem)) = "PropReference" Then
+item = actualdata(curitem)
+Else
 Set item = actualdata(curitem)
+End If
 Else
 item = actualdata(curitem)
 End If
@@ -195,7 +201,11 @@ there1:
 End Property
 Public Property Let item(curitem As Long, item As Variant)
 On Error Resume Next
+If Not IsObject(actualdata(curitem)) Then
 actualdata(curitem) = item
+Else
+actualdata(curitem).Value = item
+End If
 
 End Property
 Public Property Set item(curitem As Long, item As Variant)
@@ -234,7 +244,7 @@ Set var = aa
 End Sub
 Sub CopyGroup(myobject As Object, myobject2 As Object)
 'Special Copy
- Dim ps As New mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, SS$
+ Dim ps As New mStiva, v As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
 Dim subgroup As Object, sub2 As Object
  Set myobject2 = New Group
  
@@ -274,9 +284,9 @@ Private Sub Class_Terminate()
 Erase actualdata()
 End Sub
 Private Function GetAnyName$()
-Dim SS$, j As Long
+Dim ss$, j As Long
 For j = 1 To 4
-SS$ = SS$ & Chr(65 + Int((23 * Rnd) + 1))
+ss$ = ss$ & Chr(65 + Int((23 * Rnd) + 1))
 Next j
-GetAnyName$ = ChrW(&H1FFF) + SS$
+GetAnyName$ = ChrW(&H1FFF) + ss$
 End Function

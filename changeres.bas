@@ -67,9 +67,9 @@ End Type
 Private Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileW" (ByVal lpFileName As Long, lpFindFileData As WIN32_FIND_DATA) As Long
 Private Declare Function FindClose Lib "kernel32.dll" (ByVal hFindFile As Long) As Long
 
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hwnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 '
 Private Const GWL_WNDPROC = (-4)
 Private Const WM_MOUSEWHEEL = &H20A
@@ -79,80 +79,106 @@ Public defWndProc As Long, defWndProc2 As Long
 Public LastGlist As gList, LastGlist2 As gList
 Public defWndProc3 As Long
 Public LastGlist3 As gList
-Public Sub Hook3(hwnd As Long, A As gList)
+Public defWndProc4 As Long
+Public LastGlist4 As gList
+Public Sub Hook4(hWnd As Long, a As gList)
+' work in IDE but for development and a fear...of a crash...
+
+If m_bInIDE Then Exit Sub
+
+   If defWndProc4 = 0 Then
+
+      defWndProc4 = SetWindowLong(hWnd, _
+                                 GWL_WNDPROC, _
+                                 AddressOf WindowProc4)
+                                 MyDoEvents
+         If defWndProc4 = 0 Then Set LastGlist4 = Nothing
+    End If
+           Set LastGlist4 = a
+End Sub
+Public Sub UnHook4(hWnd As Long)
+If m_bInIDE Then Exit Sub
+    If defWndProc4 > 0 Then
+    
+      Call SetWindowLong(hWnd, GWL_WNDPROC, defWndProc3)
+      defWndProc3 = 4
+   End If
+  
+End Sub
+Public Sub Hook3(hWnd As Long, a As gList)
 ' work in IDE but for development and a fear...of a crash...
 
 If m_bInIDE Then Exit Sub
 
    If defWndProc3 = 0 Then
 
-      defWndProc3 = SetWindowLong(hwnd, _
+      defWndProc3 = SetWindowLong(hWnd, _
                                  GWL_WNDPROC, _
                                  AddressOf WindowProc3)
                                  MyDoEvents
          If defWndProc3 = 0 Then Set LastGlist3 = Nothing
     End If
-           Set LastGlist3 = A
+           Set LastGlist3 = a
 End Sub
-Public Sub UnHook3(hwnd As Long)
+Public Sub UnHook3(hWnd As Long)
 If m_bInIDE Then Exit Sub
     If defWndProc3 > 0 Then
     
-      Call SetWindowLong(hwnd, GWL_WNDPROC, defWndProc3)
+      Call SetWindowLong(hWnd, GWL_WNDPROC, defWndProc3)
       defWndProc3 = 0
    End If
   
 End Sub
-Public Sub Hook2(hwnd As Long, A As gList)
+Public Sub Hook2(hWnd As Long, a As gList)
 ' work in IDE but for development and a fear...of a crash...
 
 If m_bInIDE Then Exit Sub
 
    If defWndProc2 = 0 Then
 
-      defWndProc2 = SetWindowLong(hwnd, _
+      defWndProc2 = SetWindowLong(hWnd, _
                                  GWL_WNDPROC, _
                                  AddressOf WindowProc2)
                                  MyDoEvents
          If defWndProc2 = 0 Then Set LastGlist2 = Nothing
     End If
-           Set LastGlist2 = A
+           Set LastGlist2 = a
 End Sub
-Public Sub UnHook2(hwnd As Long)
+Public Sub UnHook2(hWnd As Long)
 If m_bInIDE Then Exit Sub
     If defWndProc2 > 0 Then
     
-      Call SetWindowLong(hwnd, GWL_WNDPROC, defWndProc2)
+      Call SetWindowLong(hWnd, GWL_WNDPROC, defWndProc2)
       defWndProc2 = 0
    End If
   
 End Sub
 
-Public Sub Hook(hwnd As Long, A As gList)
+Public Sub Hook(hWnd As Long, a As gList)
 ' work in IDE but for development and a fear...of a crash...
 
 If m_bInIDE Then Exit Sub
 
    If defWndProc = 0 Then
 
-      defWndProc = SetWindowLong(hwnd, _
+      defWndProc = SetWindowLong(hWnd, _
                                  GWL_WNDPROC, _
                                  AddressOf WindowProc)
                                  MyDoEvents
          If defWndProc = 0 Then Set LastGlist = Nothing
     End If
-           Set LastGlist = A
+           Set LastGlist = a
 End Sub
-Public Sub UnHook(hwnd As Long)
+Public Sub UnHook(hWnd As Long)
 If m_bInIDE Then Exit Sub
     If defWndProc > 0 Then
     
-      Call SetWindowLong(hwnd, GWL_WNDPROC, defWndProc)
+      Call SetWindowLong(hWnd, GWL_WNDPROC, defWndProc)
       defWndProc = 0
    End If
        
 End Sub
-Public Function WindowProc3(ByVal hwnd As Long, _
+Public Function WindowProc3(ByVal hWnd As Long, _
                            ByVal uMsg As Long, _
                            ByVal wParam As Long, _
                            ByVal lParam As Long) As Long
@@ -192,14 +218,61 @@ On Error GoTo there3:
       Case Else
 there3:
          WindowProc3 = CallWindowProc(defWndProc3, _
-                                     hwnd, _
+                                     hWnd, _
                                      uMsg, _
                                      wParam, _
                                      lParam)
    End Select
     
 End Function
-Public Function WindowProc2(ByVal hwnd As Long, _
+Public Function WindowProc4(ByVal hWnd As Long, _
+                           ByVal uMsg As Long, _
+                           ByVal wParam As Long, _
+                           ByVal lParam As Long) As Long
+On Error GoTo there3:
+   Select Case uMsg
+         Case WM_MOUSEWHEEL
+        Select Case Sgn(wParam)
+        Case 1:
+
+        If Not LastGlist3 Is Nothing Then
+        
+        With LastGlist3
+        If .Spinner Then
+        .Value = .Value - .smallchange
+        Else
+        .LargeBar1KeyDown vbKeyPageUp, 0
+        .CalcAndShowBar
+        End If
+
+        End With
+        End If
+        
+        Case -1:
+      
+          If Not LastGlist3 Is Nothing Then
+        With LastGlist3
+        If .Spinner Then
+        .Value = .Value + .smallchange
+        Else
+        .LargeBar1KeyDown vbKeyPageDown, 0
+        .CalcAndShowBar
+        End If
+
+        End With
+        End If
+        End Select
+      Case Else
+there3:
+         WindowProc4 = CallWindowProc(defWndProc4, _
+                                     hWnd, _
+                                     uMsg, _
+                                     wParam, _
+                                     lParam)
+   End Select
+    
+End Function
+Public Function WindowProc2(ByVal hWnd As Long, _
                            ByVal uMsg As Long, _
                            ByVal wParam As Long, _
                            ByVal lParam As Long) As Long
@@ -239,14 +312,14 @@ On Error GoTo there2:
       Case Else
 there2:
          WindowProc2 = CallWindowProc(defWndProc2, _
-                                     hwnd, _
+                                     hWnd, _
                                      uMsg, _
                                      wParam, _
                                      lParam)
    End Select
     
 End Function
-Public Function WindowProc(ByVal hwnd As Long, _
+Public Function WindowProc(ByVal hWnd As Long, _
                            ByVal uMsg As Long, _
                            ByVal wParam As Long, _
                            ByVal lParam As Long) As Long
@@ -286,20 +359,20 @@ Public Function WindowProc(ByVal hwnd As Long, _
       Case Else
       
          WindowProc = CallWindowProc(defWndProc, _
-                                     hwnd, _
+                                     hWnd, _
                                      uMsg, _
                                      wParam, _
                                      lParam)
    End Select
     
 End Function
-Public Function ExistFileT(A$, TIMESTAMP As Double) As Boolean
-Dim WFD As WIN32_FIND_DATA
+Public Function ExistFileT(a$, TIMESTAMP As Double) As Boolean
+Dim wfd As WIN32_FIND_DATA
 On Error GoTo there2
 Dim fhandle As Long
-fhandle = FindFirstFile(StrPtr(A$), WFD)
+fhandle = FindFirstFile(StrPtr(a$), wfd)
 ExistFileT = (fhandle > 0)
-If ExistFileT Then FindClose fhandle: TIMESTAMP = uintnew(WFD.ftLastAccessTime.dwLowDateTime)
+If ExistFileT Then FindClose fhandle: TIMESTAMP = uintnew(wfd.ftLastAccessTime.dwLowDateTime)
 Exit Function
 there2:
 End Function
