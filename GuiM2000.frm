@@ -78,15 +78,38 @@ Private mIndex As Long
 Public Relax As Boolean
 Public MY_BACK As New cDIBSection
 Dim CtrlFont As New StdFont
+Dim novisible As Boolean
+Private mModalId As Variant
 Public Sub AddGuiControl(widget As Object)
 GuiControls.Add widget
 End Sub
+Public Sub TestModal(alfa As Variant)
+If mModalId = alfa Then
+mModalId = 0
+Me.Enabled = True
+End If
+End Sub
+Property Let Modal(rhs As Variant)
+mModalId = rhs
+End Property
+Sub ModalOff()
+Dim x As Form
+For Each x In Forms
+If x.Visible And x.name = "GuiM2000" And Not x Is Me Then x.Enabled = True
+ModalId = 0
+mModalId = 0
+Next x
+End Sub
 
+Property Get NeverShow() As Boolean
+NeverShow = Not novisible
+End Property
 Friend Property Set EventObj(aEvent As Object)
 Set myEvent = aEvent
 End Property
 
 Public Sub Callback(b$)
+
 If ByPassEvent Then
 CallEventFromGuiOne Me, myEvent, b$
 Else
@@ -94,6 +117,7 @@ CallEventFromGui Me, myEvent, b$
 End If
 End Sub
 Public Sub CallbackNow(b$, vr())
+
 CallEventFromGuiNow Me, myEvent, b$, vr()
 End Sub
 
@@ -120,7 +144,22 @@ End If
 End Sub
 
 Private Sub Form_Activate()
+If novisible Then Hide: Unload Me
 If ttl Then Form3.Caption = gList2.HeadLine
+End Sub
+
+
+
+Private Sub Form_Deactivate()
+    If mModalId = ModalId And ModalId <> 0 Then
+    If Visible Then
+    On Error Resume Next
+  Me.SetFocus
+    Else
+    ModalOff
+
+    End If
+    End If
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
@@ -159,17 +198,31 @@ End If
 Relax = False
 End If
 End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+If mModalId = ModalId And ModalId <> 0 Then
+        ModalId = 0
+        If Visible Then Hide
+        ModalOff
+        
+        Cancel = True
+        novisible = False
+End If
+End Sub
+
 Private Sub Form_Resize()
 gList2.MoveTwips 0, 0, Me.Width, gList2.HeightTwips
 End Sub
 
 Private Sub Form_Terminate()
+ModalId = 0
 Dim w As Object
 If GuiControls.Count > 0 Then
 For Each w In GuiControls
     w.deconstruct
 Next w
 End If
+
 End Sub
 
 Private Sub gList2_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
@@ -198,7 +251,10 @@ End If
 End Sub
 
 Private Sub Form_Load()
-If onetime Then Exit Sub
+If onetime Then
+novisible = True
+Exit Sub
+End If
 onetime = True
 scrTwips = Screen.TwipsPerPixelX
 ' clear data...
@@ -225,6 +281,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
 Set myEvent = Nothing
+ModalId = 0
 If prive <> 0 Then
 players(prive).Used = False
 players(prive).MAXXGRAPH = 0  '' as a flag
@@ -281,7 +338,13 @@ Public Property Let Index(ByVal rhs As Long)
 mIndex = rhs
 End Property
 Public Sub CloseNow()
-    Unload Me
+    If mModalId = ModalId And ModalId <> 0 Then
+        ModalId = 0
+      If Visible Then Hide
+      ModalOff
+    Else
+        Unload Me
+    End If
 End Sub
 Public Function Control(Index) As Object
 On Error Resume Next
@@ -354,3 +417,6 @@ End Property
 
 
 
+Private Sub gList2_RefreshDesktop()
+If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
+End Sub

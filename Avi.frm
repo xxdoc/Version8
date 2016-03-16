@@ -195,6 +195,7 @@ MediaPlayer1.stopMovie
 MediaPlayer1.closeMovie
 AVIRUN = False
 MyDoEvents
+If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
 Unload Me
 End Sub
 

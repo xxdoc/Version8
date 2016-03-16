@@ -174,7 +174,6 @@ ff.bold = .CtrlFontBold
 End With
 
 With glistN
-
 .Enabled = True
 Info = ""
 If .listcount = 0 Then Text = ""
@@ -190,6 +189,7 @@ End With
 Locked = False
 Enabled = True
 Retired
+
 End Sub
 
 
@@ -506,8 +506,14 @@ If Err.Number > 0 Then glistN.NoWheel = True
 
 End Sub
 
-Public Sub Move(x, y, w, h)
+Public Sub Move(x, y, Optional w, Optional h)
+If IsMissing(w) Then
+glistN.MoveTwips CLng(x), CLng(y), 0, 0
+ElseIf IsMissing(h) Then
+glistN.MoveTwips CLng(x), CLng(y), CLng(w), 0
+Else
 glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
+End If
 End Sub
 Public Sub deconstruct()
 glistN.Shutdown

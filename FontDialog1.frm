@@ -432,7 +432,7 @@ End Sub
 
 
 Private Sub gList1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
-Dim A As RECT, b As RECT
+Dim a As RECT, b As RECT
 Dim oldforecolor As Long
 oldforecolor = gList1.ForeColor
 If item = -1 Then
@@ -441,9 +441,9 @@ If item = -1 Then
 'skip = True
 Else
 skip = True
-CopyFromLParamToRect A, thisrect
+CopyFromLParamToRect a, thisrect
 CopyFromLParamToRect b, thisrect
-A.top = A.top + 2
+a.top = a.top + 2
 If gList1.listindex = item Then
 b.Left = 0
 FillBack thisHDC, b, 0
@@ -453,7 +453,7 @@ FillBack thisHDC, b, gList1.BackColor
 
 End If
 
-PrintItem thisHDC, Screen.Fonts(item), A
+PrintItem thisHDC, Screen.Fonts(item), a
 gList1.ForeColor = ForeColor
 End If
 End Sub
@@ -546,43 +546,43 @@ Beep
 End If
 End Sub
 Public Sub FillThereMyVersion2(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = CLng(Rnd * 3) + setupxy / 3
 
-CopyFromLParamToRect A, thatRect
-A.Left = A.Right - setupxy
-A.top = b
-A.Bottom = b + setupxy / 5
-FillThere thathDC, VarPtr(A), thatbgcolor
-A.top = b + setupxy / 5 + setupxy / 10
-A.Bottom = b + setupxy \ 2
-FillThere thathDC, VarPtr(A), thatbgcolor
+CopyFromLParamToRect a, thatRect
+a.Left = a.Right - setupxy
+a.top = b
+a.Bottom = b + setupxy / 5
+FillThere thathDC, VarPtr(a), thatbgcolor
+a.top = b + setupxy / 5 + setupxy / 10
+a.Bottom = b + setupxy \ 2
+FillThere thathDC, VarPtr(a), thatbgcolor
 
 
 End Sub
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = 2
-CopyFromLParamToRect A, thatRect
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), 0
+CopyFromLParamToRect a, thatRect
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), 0
 b = 5
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
 
 
 End Sub
 
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT
-CopyFromLParamToRect A, thatRect
-FillBack thathDC, A, thatbgcolor
+Dim a As RECT
+CopyFromLParamToRect a, thatRect
+FillBack thathDC, a, thatbgcolor
 End Sub
 Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
 ' create brush
@@ -783,4 +783,7 @@ Set LastGlist3 = this
 End Sub
 Public Sub hookme(this As gList)
 Set LastGlist3 = this
+End Sub
+Private Sub gList2_RefreshDesktop()
+If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
 End Sub

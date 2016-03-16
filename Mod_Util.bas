@@ -83,11 +83,11 @@ Private Const DT_VCENTER As Long = &H4&
 Private Const DT_WORDBREAK As Long = &H10&
 Private Const DT_WORD_ELLIPSIS As Long = &H40000
 Public Declare Function DestroyCaret Lib "user32" () As Long
-Public Declare Function CreateCaret Lib "user32" (ByVal hWnd As Long, ByVal hBitmap As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Public Declare Function ShowCaret Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function CreateCaret Lib "user32" (ByVal hwnd As Long, ByVal hBitmap As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Public Declare Function ShowCaret Lib "user32" (ByVal hwnd As Long) As Long
 Public Declare Function GetFocus Lib "user32" () As Long
 Public Declare Function SetCaretPos Lib "user32" (ByVal x As Long, ByVal y As Long) As Long
-Public Declare Function HideCaret Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function HideCaret Lib "user32" (ByVal hwnd As Long) As Long
 Const dv = 0.877551020408163
 Public QUERYLIST As String
 Public LASTQUERYLIST As Long
@@ -109,7 +109,7 @@ Public Const SRCCOPY = &HCC0020
 Public Release As Boolean
 Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Declare Function RoundRect Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
-Declare Function UpdateWindow Lib "user32" (ByVal hWnd As Long) As Long
+Declare Function UpdateWindow Lib "user32" (ByVal hwnd As Long) As Long
 Declare Function ScrollDC Lib "user32" (ByVal hDC As Long, ByVal dX As Long, ByVal dy As Long, lprcScroll As RECT, lprcClip As RECT, ByVal hrgnUpdate As Long, lprcUpdate As RECT) As Long
 Public LastErName As String
 Public LastErNameGR As String
@@ -121,7 +121,7 @@ Type POINTAPI
         x As Long
         y As Long
 End Type
-Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
 Declare Function PaintDesktop Lib "user32" (ByVal hDC As Long) As Long
 Declare Function SelectClipPath Lib "gdi32" (ByVal hDC As Long, ByVal iMode As Long) As Long
   Public Const RGN_AND = 1
@@ -159,7 +159,7 @@ Global Const HWND_TOPMOST = -1
 Global Const HWND_NOTOPMOST = -2
 Global Const SWP_NOACTIVATE = &H10
 Global Const SWP_SHOWWINDOW = &H40
-Declare Sub SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long)
+Declare Sub SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long)
 Declare Function ExtFloodFill Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal wFillType As Long) As Long
 Public Const FLOODFILLSURFACE = 1
 Public Const FLOODFILLBORDER = 0
@@ -233,7 +233,7 @@ End Type
 Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
 
 Private Declare Function PathToRegion Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
+Private Declare Function SetWindowRgn Lib "user32" (ByVal hwnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As LOGFONT) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -256,7 +256,7 @@ Const DFC_POPUPMENU = 5            'Only Win98/2000 !!
 Const DFCS_BUTTON3STATE = &H10
 Const DC_GRADIENT = &H20          'Only Win98/2000 !!
 
-Private Declare Function DrawCaption Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, pcRect As RECT, ByVal un As Long) As Long
+Private Declare Function DrawCaption Lib "user32" (ByVal hwnd As Long, ByVal hDC As Long, pcRect As RECT, ByVal un As Long) As Long
 Private Declare Function DrawEdge Lib "user32" (ByVal hDC As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 Private Declare Function DrawFrameControl Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal un1 As Long, ByVal un2 As Long) As Long
@@ -286,7 +286,7 @@ End Function
 Public Function KeyPressedLong(ByVal VirtKeyCode As Long) As Long
 On Error GoTo KEXIT
 If Not Screen.ActiveForm Is Nothing Then
-If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+If GetForegroundWindow = Screen.ActiveForm.hwnd Then
 KeyPressedLong = GetAsyncKeyState(VirtKeyCode)
 End If
 End If
@@ -295,7 +295,7 @@ End Function
 Public Function KeyPressed(ByVal VirtKeyCode As Long) As Boolean
 On Error GoTo KEXIT
 If Not Screen.ActiveForm Is Nothing Then
-If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+If GetForegroundWindow = Screen.ActiveForm.hwnd Then
 KeyPressed = CBool((GetAsyncKeyState(VirtKeyCode) And &H8000&) = &H8000&)
 End If
 End If
@@ -304,7 +304,7 @@ End Function
 Public Function mouse() As Long
 On Error GoTo MEXIT
 If Not Screen.ActiveForm Is Nothing Then
-If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+If GetForegroundWindow = Screen.ActiveForm.hwnd Then
 
 mouse = (UINT(GetAsyncKeyState((1))) And &HFF) + (UINT(GetAsyncKeyState((2))) And &HFF) * 2 + (UINT(GetAsyncKeyState((4))) And &HFF) * 4
 End If
@@ -318,7 +318,7 @@ On Error GoTo MOUSEX
 Dim tP As POINTAPI
 MOUSEX = x
 If Not Screen.ActiveForm Is Nothing Then
-If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+If GetForegroundWindow = Screen.ActiveForm.hwnd Then
    GetCursorPos tP
    x = tP.x * dv15 - offset
   MOUSEX = x
@@ -332,7 +332,7 @@ On Error GoTo MOUSEY
 Dim tP As POINTAPI
 MOUSEY = y
 If Not Screen.ActiveForm Is Nothing Then
-If GetForegroundWindow = Screen.ActiveForm.hWnd Then
+If GetForegroundWindow = Screen.ActiveForm.hwnd Then
    GetCursorPos tP
    y = tP.y * dv15 - offset
    MOUSEY = y
@@ -395,11 +395,10 @@ If Int(25 * factor) > 2 Then
 m.ScaleMode = vbPixels
 
 hRgn = CreateRoundRectRgn(0, 0, m.ScaleX(x1, 1, 3), m.ScaleY(y1, 1, 3), 25 * factor, 25 * factor)
-'hRgn = PathToRegion(m.hdc)
-SetWindowRgn m.hWnd, hRgn, t
+SetWindowRgn m.hwnd, hRgn, t
 DeleteObject hRgn
 m.ScaleMode = vbTwips
-''M.Cls
+
 m.Line (0, 0)-(m.ScaleWidth - dv15, m.ScaleHeight - dv15), m.BackColor, BF
 End If
 End Sub
@@ -419,7 +418,7 @@ Select Case way
 Case 0
 DrawEdge m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
 Case 1
-DrawCaption m.hWnd, m.hDC, r, CLng(par)
+DrawCaption m.hwnd, m.hDC, r, CLng(par)
 Case 2
 DrawEdge m.hDC, r, CLng(par), BF_RECT
 Case 3
@@ -453,7 +452,7 @@ Select Case way
 Case 0
 DrawEdge m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
 Case 1
-DrawCaption m.hWnd, m.hDC, r, CLng(par)
+DrawCaption m.hwnd, m.hDC, r, CLng(par)
 Case 2
 DrawEdge m.hDC, r, CLng(par), BF_RECT
 Case 3
@@ -536,7 +535,7 @@ End Sub
 Public Sub LCTCnew(dqq As Object, mb As basket, y As Long, x As Long)
 DestroyCaret
 With mb
-CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpace * 2) * 0.2, 1, 3)
+CreateCaret dqq.hwnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpace * 2) * 0.2, 1, 3)
 SetCaretPos dqq.ScaleX(x * .Xt, 1, 3), dqq.ScaleY((y + 0.8) * .Yt, 1, 3)
 End With
 End Sub
@@ -548,19 +547,19 @@ If t& = -1 Or Not Form1.ActiveControl Is dqq Then
         Else
         If Form1.ActiveControl Is Nothing Then
         Else
-            CreateCaret Form1.ActiveControl.hWnd, 0, -1, 0
+            CreateCaret Form1.ActiveControl.hwnd, 0, -1, 0
             End If
-            CreateCaret dqq.hWnd, 0, -1, 0
+            CreateCaret dqq.hwnd, 0, -1, 0
         End If
         Exit Sub
 End If
 If t& = 1 Then
-        CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpace * 2), 1, 3)
+        CreateCaret dqq.hwnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpace * 2), 1, 3)
         SetCaretPos dqq.ScaleX(.curpos * .Xt, 1, 3), dqq.ScaleY(.currow * .Yt + .uMineLineSpace, 1, 3)
         On Error Resume Next
         If Not extreme Then If INK$ = "" Then dqq.refresh
 Else
-        CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY(Int((.Yt - .uMineLineSpace * 2) * 0.2), 1, 3)
+        CreateCaret dqq.hwnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY(Int((.Yt - .uMineLineSpace * 2) * 0.2), 1, 3)
         SetCaretPos dqq.ScaleX(.curpos * .Xt, 1, 3), dqq.ScaleY(.currow * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace, 1, 3)
         On Error Resume Next
         If Not extreme Then If INK$ = "" Then dqq.refresh
@@ -2362,33 +2361,33 @@ SetTextBasketBack dq, mybasket
                       nomoveLCTC dq, mybasket, y&, c& + x&, ins&
                       iamactive = False
            Else
-                If Not (GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1") Then
+                If Not (GetForegroundWindow = Screen.ActiveForm.hwnd And Screen.ActiveForm.name = "Form1") Then
                  
                       DestroyCaret
                       nomoveLCTC dq, mybasket, y&, c& + x&, ins&
                       iamactive = False
              Else
-                         If ShowCaret(dq.hWnd) = 0 Then
-                                   HideCaret dq.hWnd
+                         If ShowCaret(dq.hwnd) = 0 Then
+                                   HideCaret dq.hwnd
                                    .currow = y&
                                    .curpos = c& + x&
                                    LCTCB dq, mybasket, ins&
-                                   ShowCaret dq.hWnd
+                                   ShowCaret dq.hwnd
                          End If
                 End If
                 End If
      Else
   If Not Screen.ActiveForm Is Nothing Then
-            If GetForegroundWindow = Screen.ActiveForm.hWnd And Screen.ActiveForm.name = "Form1" Then
+            If GetForegroundWindow = Screen.ActiveForm.hwnd And Screen.ActiveForm.name = "Form1" Then
            
                           nomoveLCTC dq, mybasket, y&, c& + x&, ins&
                              iamactive = True
-                              If ShowCaret(dq.hWnd) = 0 And Screen.ActiveForm.name = "Form1" Then
-                                   HideCaret dq.hWnd
+                              If ShowCaret(dq.hwnd) = 0 And Screen.ActiveForm.name = "Form1" Then
+                                   HideCaret dq.hwnd
                                    .currow = y&
                                    .curpos = c& + x&
                                    LCTCB dq, mybasket, ins&
-                                   ShowCaret dq.hWnd
+                                   ShowCaret dq.hwnd
                          End If
                          End If
             End If
@@ -2857,7 +2856,7 @@ With Form1.TEXT1
 'MyDoEvents
 ProcTask2 bstack
 
-Hook Form1.hWnd, Nothing '.glistN
+Hook Form1.hwnd, Nothing '.glistN
 .AutoNumber = Not Form1.EditTextWord
 
 .UsedAsTextBox = False
@@ -3000,7 +2999,7 @@ Set Form1.TEXT1.mdoc = New Document
 
 Form1.TEXT1.glistN.BackStyle = 0
 Set Form1.Point2Me = Nothing
-UnHook Form1.hWnd
+UnHook Form1.hwnd
 Form1.KeyPreview = True
 
 INK$ = ""
@@ -3031,7 +3030,7 @@ End If
 With Form1.TEXT1
 'MyDoEvents
 ProcTask2 bstack
-Hook Form1.hWnd, Nothing
+Hook Form1.hwnd, Nothing
 '.Filename = ""
 .AutoNumber = Not Form1.EditTextWord
 
@@ -3240,7 +3239,7 @@ End If
 Form1.KeyPreview = True
 If maxchar > 0 Then Form1.TEXT1.glistN.DragEnabled = ot
 
-UnHook Form1.hWnd
+UnHook Form1.hwnd
 INK$ = ""
 escok = oldesc
 Set d = Nothing
@@ -3338,7 +3337,7 @@ Dim s$, prive As basket
 If NOEXECUTION Then Exit Sub
 Set d = bstack.Owner
 prive = players(GetCode(d))
-Hook Form1.hWnd, Form1.List1
+Hook Form1.hwnd, Form1.List1
 Dim ot As Boolean, drop
 With Form1.List1
 .Font.name = d.Font.name
@@ -3497,7 +3496,7 @@ MOUT = False: NOEXECUTION = False
   End If
 NOEDIT = True
 Set d = Nothing
-UnHook Form1.hWnd
+UnHook Form1.hwnd
 Form1.KeyPreview = True
 Targets = ot
 End Sub
@@ -3793,7 +3792,7 @@ End If
 If dq.Visible = False Then dq.Visible = True
 If exWnd = 0 Then Form1.KeyPreview = True
 QRY = True
-If GetForegroundWindow = Form1.hWnd Then
+If GetForegroundWindow = Form1.hwnd Then
 If exWnd = 0 Then dq.SetFocus
 End If
 
@@ -3832,7 +3831,7 @@ LCTbasketCur dq, prive                       ' here
  End If
  End If
  End If
-If Not QRY Then HideCaret dq.hWnd:   Exit Do
+If Not QRY Then HideCaret dq.hwnd:   Exit Do
 
  BLOCKkey = False
  If USELIST Then
@@ -3901,17 +3900,17 @@ LCTbasket dq, prive, .currow, .curpos
   
    End If
       If iamactive Then
- If ShowCaret(dq.hWnd) = 0 Then
+ If ShowCaret(dq.hwnd) = 0 Then
  
    LCTCB dq, prive, 0
   End If
 If Not bstack.IamThread Then MyDoEvents1 Form1  'SleepWait 1
  If Screen.ActiveForm Is Nothing Then
- iamactive = False:  If ShowCaret(dq.hWnd) <> 0 Then HideCaret dq.hWnd
+ iamactive = False:  If ShowCaret(dq.hwnd) <> 0 Then HideCaret dq.hwnd
 Else
  
-    If Not GetForegroundWindow = Screen.ActiveForm.hWnd Then
-    iamactive = False:  If ShowCaret(dq.hWnd) <> 0 Then HideCaret dq.hWnd
+    If Not GetForegroundWindow = Screen.ActiveForm.hwnd Then
+    iamactive = False:  If ShowCaret(dq.hwnd) <> 0 Then HideCaret dq.hwnd
   
     End If
     End If
@@ -3926,7 +3925,7 @@ Else
 If Screen.ActiveForm.name <> "Form1" Then
 iamactive = False
 Else
-iamactive = GetForegroundWindow = Screen.ActiveForm.hWnd
+iamactive = GetForegroundWindow = Screen.ActiveForm.hwnd
 End If
 End If
 If FKey > 0 Then
@@ -4027,7 +4026,7 @@ cont12345:
                     fr1 = 1
                     If (s$ = "" And a$ = "-") Or IsNumberQuery(s$ + a$, fr1, p, fr2) Then
                             If fr2 - 1 = RealLen(s$) + 1 Or (s$ = "" And a$ = "-") Then
-   If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
+   If ShowCaret(dq.hwnd) <> 0 Then DestroyCaret
                    PlainBaSket dq, prive, a$, , , 0: s$ = s$ & a$
                  
               oldLCTCB dq, prive, 0
@@ -4037,7 +4036,7 @@ GdiFlush
                     
                     End If
             Else
-            If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
+            If ShowCaret(dq.hwnd) <> 0 Then DestroyCaret
                    If safe$ <> "" Then
         a$ = safe$: safe$ = ""
 End If
@@ -4402,7 +4401,7 @@ myLcase = a$
 End Function
 Function MesTitle$()
 If ttl Then
-If Form1.caption = "" Then
+If Form1.Caption = "" Then
 If HERE$ = "" Then
 MesTitle$ = "M2000"
 ' IDE
@@ -4414,7 +4413,7 @@ MesTitle$ = "M2000"
 End If
 End If
 Else
-MesTitle$ = Form1.caption
+MesTitle$ = Form1.Caption
 End If
 Else
 If HERE$ = "" Or LASTPROG$ = "" Then
@@ -5036,7 +5035,7 @@ If TaskMaster.Processing Then
                 kForm = False
                  k1 = 0
                 TaskMaster.rest
-                UpdateWindow obj.hWnd
+                UpdateWindow obj.hwnd
                 DoEvents
                 TaskMaster.RestEnd
         Else
@@ -5670,7 +5669,7 @@ If Not Screen.ActiveForm Is Nothing Then
      If x.name = "Form1" Or x.name = "GuiM2000" Or x.name = "Form2" Or x.name = "Form4" Then
          If x.Visible Then
              If catchit Then x.SetFocus: Exit Sub
-             If x.hWnd = GetForegroundWindow Then
+             If x.hwnd = GetForegroundWindow Then
              catchit = True
              End If
          End If

@@ -495,7 +495,7 @@ End If
                              If .Type = 203 And .DEFINEDSIZE >= 536870910# Then
                              
                                          If lang = 1 Then
-                                        stac1.DataStr "лело"
+                                        stac1.DataStr "MEMO"
                                         Else
                                         stac1.DataStr "уполмгла"
                                         End If
@@ -621,18 +621,18 @@ End If
            
            
          '  Set rec = myBase.OpenRecordset(table$, dbOpenDynaset)
-          Dim rec, ll$
+          Dim rec, LL$
           
            Set rec = CreateObject("ADODB.Recordset")
             Err.clear
            rec.Open Id$, myBase, 3, 4 'adOpenStatic, adLockBatchOptimistic
 
  If Err.Number <> 0 Then
-ll$ = myBase ' AS A STRING
+LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = ll$
+ myBase.Open = LL$
  PushOne base, myBase
  Err.clear
 rec.Open Id$, myBase, 3, 4
@@ -825,16 +825,16 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
       
       End If
 
-Dim ll$
+Dim LL$
    Set rec = CreateObject("ADODB.Recordset")
  Err.clear
   rec.Open Id$, myBase, 3, 4
 If Err.Number <> 0 Then
-ll$ = myBase ' AS A STRING
+LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = ll$
+ myBase.Open = LL$
  PushOne base, myBase
  Err.clear
 rec.Open Id$, myBase, 3, 4
@@ -1003,16 +1003,16 @@ On Error GoTo g101
       PushOne base, myBase
       
       End If
- Dim ll$
+ Dim LL$
    Set rec = CreateObject("ADODB.Recordset")
     Err.clear
      rec.Open Id$, myBase, 3, 4
       If Err.Number <> 0 Then
-ll$ = myBase ' AS A STRING
+LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = ll$
+ myBase.Open = LL$
  PushOne base, myBase
  Err.clear
 rec.Open Id$, myBase, 3, 4
@@ -1173,7 +1173,7 @@ End If
                 PushOne base, myBase
             End If
            Err.clear
-           Dim ll$, mcat, pindex, mtable
+           Dim LL$, mcat, pindex, mtable
            Dim okntable As Boolean
           
             Err.clear
@@ -1183,11 +1183,11 @@ End If
             
 
         If Err.Number <> 0 Then
-ll$ = myBase ' AS A STRING
+LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = ll$
+ myBase.Open = LL$
  PushOne base, myBase
  Err.clear
             Set mcat = CreateObject("ADOX.Catalog")
@@ -1309,17 +1309,17 @@ End If
 
     On Error Resume Next
    okntable = True
-Dim cat, mtable, ll$
+Dim cat, mtable, LL$
   Set cat = CreateObject("ADOX.Catalog")
            Set cat.activeconnection = myBase
 
 
 If Err.Number <> 0 Then
-ll$ = myBase ' AS A STRING
+LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
- myBase.Open = ll$
+ myBase.Open = LL$
  PushOne base, myBase
  Err.clear
  Set cat.activeconnection = myBase
@@ -1670,10 +1670,10 @@ If Init Then Exit Sub
 Set conCollection = New Collection
 Init = True
 End Sub
-Function ftype(ByVal A As Long, lang As Long) As String
+Function ftype(ByVal a As Long, lang As Long) As String
 Select Case lang
 Case 0
-Select Case A
+Select Case a
     Case 0
 ftype = "адеио"
     Case 2
@@ -1761,7 +1761,7 @@ ftype = "????"
 End Select
 
 Case Else  ' this is for 1
-Select Case A
+Select Case a
     Case 0
 ftype = "EMPTY"
     Case 2

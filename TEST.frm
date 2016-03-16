@@ -203,7 +203,7 @@ Dim MyBaseTask As New basetask
 Dim setupxy As Single
 Dim Lx As Long, ly As Long, dr As Boolean, drmove As Boolean
 Dim prevx As Long, prevy As Long
-Dim A$
+Dim a$
 Dim bordertop As Long, borderleft As Long
 Dim allheight As Long, allwidth As Long, itemWidth As Long, itemwidth3 As Long, itemwidth2 As Long
 Dim height1 As Long, width1 As Long
@@ -211,6 +211,7 @@ Dim doubleclick As Long
 
 Private Declare Function CopyFromLParamToRect Lib "user32" Alias "CopyRect" (lpDestRect As RECT, ByVal lpSourceRect As Long) As Long
 Dim EXECUTED As Boolean
+Dim stolemodalid As Variant
 Public Property Set Process(mBtask As basetask)
 Set MyBaseTask = mBtask
 End Property
@@ -243,6 +244,24 @@ stackshow MyBaseTask
 End If
 End Sub
 'M2000 [екецвос - CONTROL]
+
+Private Sub Form_Activate()
+'
+If stolemodalid = 0 Then
+If ModalId <> 0 Then
+stolemodalid = ModalId
+ModalId = Rnd * 645677887
+End If
+
+End If
+End Sub
+
+Private Sub Form_Deactivate()
+If stolemodalid <> 0 Then
+ModalId = stolemodalid
+stolemodalid = 0
+End If
+End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, shift As Integer)
 If KeyCode = 27 Then
@@ -375,36 +394,36 @@ End If
 End Sub
 
 
-Public Property Get Label1(ByVal index As Long) As String
-Label1 = Label(index)
+Public Property Get Label1(ByVal Index As Long) As String
+Label1 = Label(Index)
 End Property
 
-Public Property Let Label1(ByVal index As Long, ByVal rhs As String)
-Label(index) = rhs
+Public Property Let Label1(ByVal Index As Long, ByVal rhs As String)
+Label(Index) = rhs
 End Property
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = 2
-CopyFromLParamToRect A, thatRect
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), 0
+CopyFromLParamToRect a, thatRect
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), 0
 b = 5
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
 
 
 End Sub
 
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT
-CopyFromLParamToRect A, thatRect
-FillBack thathDC, A, thatbgcolor
+Dim a As RECT
+CopyFromLParamToRect a, thatRect
+FillBack thathDC, a, thatbgcolor
 End Sub
 Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
 ' create brush
@@ -418,19 +437,19 @@ Private Sub gList2_LostFocus()
 doubleclick = 0
 End Sub
 
-Private Sub glist3_CheckGotFocus(index As Integer)
+Private Sub glist3_CheckGotFocus(Index As Integer)
 Dim s$
 gList4.SetFocus
-If index < 2 Then
+If Index < 2 Then
 abt = False
 
 vH_title$ = ""
-s$ = Label(index)
+s$ = Label(Index)
 Select Case Left$(LTrim(Label(2)) + " ", 1)
 Case "?", "!", " ", ".", ":", Is >= "A", Chr$(10), """"
     fHelp MyBaseTask, s$, AscW(s$ + Mid$(" с", Abs(pagio$ = "GREEK") + 1)) < 128
 End Select
-ElseIf index = 2 Then
+ElseIf Index = 2 Then
 TestShowCode = Not TestShowCode
 If TestShowCode Then
 gList3(2).BackColor = &H606060
@@ -444,11 +463,11 @@ End If
 End Sub
 
 Private Sub gList4_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
-Dim A As RECT, b As RECT
-CopyFromLParamToRect A, thisrect
+Dim a As RECT, b As RECT
+CopyFromLParamToRect a, thisrect
 CopyFromLParamToRect b, thisrect
-A.Left = A.Left + 1 * lastfactor
-A.Right = gList4.WidthPixels
+a.Left = a.Left + 1 * lastfactor
+a.Right = gList4.WidthPixels
 b.Right = gList4.WidthPixels
  If item = gList4.listindex Then
    If EXECUTED Then
@@ -471,12 +490,12 @@ b.Right = gList4.WidthPixels
     FillBack thisHDC, b, 0
     End If
     If item = gList4.listindex Then
-  A.Left = A.Left + 1 * lastfactor + gList4.PanPosPixels
+  a.Left = a.Left + 1 * lastfactor + gList4.PanPosPixels
   gList4.ForeColor = rgb(128, 0, 128)
   End If
    
    
-   PrintItem thisHDC, gList4.List(item), A
+   PrintItem thisHDC, gList4.List(item), a
     skip = True
 End Sub
  

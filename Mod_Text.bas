@@ -1,8 +1,10 @@
 Attribute VB_Name = "Module1"
 Option Explicit
+Public ModalId As Variant
 Private Declare Sub DisableProcessWindowsGhosting Lib "user32" ()
 Public Interrupted As Boolean
 Dim NoOptimum As Boolean
+Dim zero As basket
  Public Type GenItem
  Key As String
  NDX As String
@@ -28,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 190
+Global Const Revision = 191
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -12654,6 +12656,7 @@ End Sub
 Function Execute(bstack As basetask, b$, Once As Boolean, Optional linebyline As Boolean, Optional loopthis As Boolean = False) As Long
 Dim di As Object
 If mybreakkey Then
+        ModalId = 0
                 TaskMaster.Dispose
              NOEXECUTION = False
              MOUT = False
@@ -23032,8 +23035,12 @@ End If
 Exit Function
 Case "CURSOR", "дяолеас" ' CURSOR X,Y
 prive = GetCode(bstack.Owner)
+
 With players(prive)
-If IsExp(bstack, rest$, p) Then
+If FastSymbol(rest$, "!") Then
+ .curpos = .XGRAPH \ .Xt
+  .currow = (.YGRAPH - .uMineLineSpace) \ .Yt
+ElseIf IsExp(bstack, rest$, p) Then
 x1 = CLng(p) Mod 1000 '' Mod (.mx + 1)
 If FastSymbol(rest$, ",") Then
 If IsExp(bstack, rest$, p) Then
@@ -23069,8 +23076,12 @@ End With
 
 Case "MOVE", "хесг"
 With players(GetCode(bstack.Owner))
-If IsExp(bstack, rest$, p) Then .XGRAPH = p
+If FastSymbol(rest$, "!") Then
+ .XGRAPH = .curpos * .Xt
+ .YGRAPH = .currow * .Yt + .uMineLineSpace
+ElseIf IsExp(bstack, rest$, p) Then .XGRAPH = p
 If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then .YGRAPH = p Else ifier = False: MissNumExpr: Exit Function
+End If
 End With
 Case "FILL", "баье"
 prive = GetCode(bstack.Owner)
@@ -27297,9 +27308,11 @@ Function myexit(bstack As basetask) As Boolean
 Static counter As Long
 Dim p As Boolean
 On Error Resume Next
+
 If Not extreme Then
             If escok Then
                         If KeyPressed(&H1B) Then
+                         NOEXECUTION = True
                                     If AVIRUN Then AVI.GETLOST
                                     NOEXECUTION = True
                                     While KeyPressed(&H1B)
@@ -27365,6 +27378,8 @@ Case 3
 Set aa = New GuiTextBox
 Case 4
 Set aa = New GuiCheckBox
+Case 5
+Set aa = New GuiEditBox
 End Select
 Set var = aa
 End Sub
@@ -30272,10 +30287,11 @@ Dim basketcode As Long, mAddTwipsTop As Long
 
 
 If Typename(scr) Like "Gui*" Then
-
+If Typename(scr) Like "GuiM2000" Then GoTo there1
 ElseIf scr.name = "Form1" Then
 
 Else
+there1:
 basketcode = GetCode(scr)
 With players(basketcode)
 mAddTwipsTop = .uMineLineSpace  ' the basic
@@ -32890,7 +32906,10 @@ If Not players(u).Used Then Exit For
 Next u
 If u = 101 Then oxiforforms: GetCode = -1: Set dq = Form1: Exit Function
 dq.prive = u
+
+players(u) = zero
 players(u).Used = True
+
 End If
 
 GetCode = u
@@ -33492,10 +33511,10 @@ If a.Enabled Then
             n$ = Mid$(aString$, Len(f$) + 1)
             n$ = Left$(n$, Len(n$) - 1)
             If n$ <> "" Then
-            If uIndex > 0 Then
+           If uIndex > 0 Then
             n$ = "Data " + n$ + " : ShiftBack Stack.Size" + Str(1 - uIndex) + "," + Str$(uIndex) + vbCrLf
             Else
-            n$ = "Push " + n$ + vbCrLf
+            n$ = "Data " + n$ + " : ShiftBack Stack.Size" + vbCrLf
             End If
             End If
             If F1$ <> "" Then f$ = myUcase(F1$ + "." + f$ + ")", True) Else f$ = myUcase(f$ + ")", True)
@@ -33916,6 +33935,51 @@ contEvArray:
      End If
  
  ElseIf IsLabelSymbolNew(rest$, "диояхытг.йеилемоу", "EDITBOX", lang) Then
+      If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
+            x1 = Abs(IsLabel(bstack, rest$, w$))
+                    If x1 <> 1 Then
+                                     BadObjectDecl
+                    Else
+                            If GetlocalVar(bstack.GroupName & w$, y1) Then
+                            ElseIf GetVar(bstack, bstack.GroupName & w$, y1) Then
+                            Else
+                                BadObjectDecl
+                                Exit Function
+                            End If
+                            If ar = 0 Then
+                         CreateFormObject var(i), 5
+                         Set alfa = var(y1)
+                       With var(i)
+                          .Construct alfa, what$
+                            
+                            .Move 0, 2000, 6000, 600
+                            .SetUp
+                            .Text = what$
+                            
+                          End With
+                                  Set alfa = Nothing
+                                  Else
+                                If neoGetArray(bstack, oName$ + "(", pppp, , CBool(glob)) Then
+                                what$ = Left$(what$, Len(oName$))
+                                Set alfa = var(y1)
+                                For i = 0 To ar - 1
+                             CreateFormObject aVar, 5
+                                  Set pppp.item(i) = aVar
+                                    With aVar
+                                    .ConstructArray alfa, what$, i
+                                      .Move 0, 2000, 6000, 600
+                                      
+                                      .SetUp
+                                      .Text = what$ + "(" + LTrim(Str$(i)) + ")"
+                          End With
+                                  Next i
+                                  pppp.IHaveGui = True
+                                    Set alfa = Nothing
+                                End If
+                                  End If
+          End If
+     End If
+
  ElseIf IsLabelSymbolNew(rest$, "епикоцг.ле.сулпкгяысг", "COMBOEDIT", lang) Then
  ElseIf IsLabelSymbolNew(rest$, "епикоцг.ле.киста", "COMBOBOX", lang) Then
  ElseIf IsLabelSymbolNew(rest$, "йукиолемо", "LISTBOX", lang) Then

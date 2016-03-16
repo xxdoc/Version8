@@ -131,10 +131,22 @@ End If
     NeoMsgBox.Visible = True
     MyDoEvents
     End If
-    
+    Dim mycode As Variant
+mycode = Rnd * 12312314
+
+For Each x In Forms
+If x.Visible And x.name = "GuiM2000" Then
+
+If Not x.Enabled = False Then
+x.Modal = mycode
+x.Enabled = False
+End If
+End If
+Next x
+
 Do
 
-            mywait bstack, 5
+        mywait bstack, 5
       Sleep 1
 Loop Until NOEXECUTION Or Not ASKINUSE
 k1 = 0
@@ -146,6 +158,11 @@ NOEXECUTION = False
 Wend
 BLOCKkey = False
 AskTitle$ = ""
+For Each x In Forms
+If x.Visible And x.name = "GuiM2000" Then
+x.TestModal mycode
+End If
+Next x
 If INFOONLY Then
 NeoASK = 1
 Else
@@ -311,11 +328,11 @@ If Not trace Then reopen2 = False
 If vH_title$ = "" Then reopen4 = False
 If reopen4 Then Form4.Show , Form1: Form4.Visible = True
 If reopen2 Then Form2.Show , Form1: Form2.Visible = True
-   For Each X In Forms
-       If Typename$(X) = "GuiM2000" Then
-       If X.Visible Then
-       X.Visible = False
-       X.Show , Form1
+   For Each x In Forms
+       If Typename$(x) = "GuiM2000" Then
+       If x.Visible Then
+       x.Visible = False
+       x.Show , Form1
        End If
        End If
        Next

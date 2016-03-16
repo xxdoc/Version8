@@ -8,7 +8,7 @@ Begin VB.Form MyPopUp
    ClientTop       =   0
    ClientWidth     =   4305
    BeginProperty Font 
-      Name            =   "FreeSans"
+      Name            =   "Arial"
       Size            =   8.25
       Charset         =   161
       Weight          =   400
@@ -34,7 +34,7 @@ Begin VB.Form MyPopUp
       Max             =   1
       Vertical        =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "FreeSans"
+         Name            =   "Arial"
          Size            =   11.25
          Charset         =   161
          Weight          =   700
@@ -324,7 +324,7 @@ Private Sub gList1_ChangeListItem(item As Long, content As String)
 Dim content1 As Long
 If item = 0 Then
 content1 = Int(Val("0" & Trim$(Mid$(content, Len(part1) + 1))))
-        If content1 > Form1.TEXT1.mDoc.DocLines Or content1 < 0 Then
+        If content1 > Form1.TEXT1.mdoc.DocLines Or content1 < 0 Then
         content = gList1.List(item)
               gList1.SelStart = Len(gList1.List(item)) - 1
         Else
@@ -496,9 +496,9 @@ Case 19
 With Form1.TEXT1
 If .glistN.lines > 1 Then
 If UserCodePage = 1253 Then
-.ReplaceTitle = "Λέξεις στο κείμενο:" + CStr(.mDoc.WordCount)
+.ReplaceTitle = "Λέξεις στο κείμενο:" + CStr(.mdoc.WordCount)
 Else
-.ReplaceTitle = "Words in text:" + CStr(.mDoc.WordCount)
+.ReplaceTitle = "Words in text:" + CStr(.mdoc.WordCount)
 End If
 End If
 End With
@@ -547,4 +547,6 @@ End Sub
 Public Sub hookme(this As gList)
 If Not this Is Nothing Then this.NoWheel = True
 End Sub
-
+Private Sub gList1_RefreshDesktop()
+If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
+End Sub

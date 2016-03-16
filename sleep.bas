@@ -115,7 +115,20 @@ TaskMaster.rest
    TaskMaster.RestEnd
    
 End Sub
+Public Sub MyRefresh(some As Object)
 
+
+    If uintnew(timeGetTime) > k1 Then RRCOUNTER = 0
+            
+            If RRCOUNTER = 0 Then
+            k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
+         If some.Visible Then some.refresh
+
+                  End If
+                  
+
+   
+End Sub
 Public Sub SleepWait3(lNumberOf10ThmiliSeconds As Long)
 
 

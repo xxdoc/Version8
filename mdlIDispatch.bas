@@ -85,7 +85,6 @@ Public Function CallByNameFixParamArray _
     Dim lngLoop     As Long
     Dim lngMax      As Long
 Dim myptr() As Long
-
     ' Get IDispatch from object
     Set IDsp = pobjTarget
 
@@ -167,12 +166,48 @@ jumphere:
             lngRet = 0
            If UCase(pstrProcName) = "SHOW" Then
             CallByName pobjTarget, "ShowmeALl", VbMethod
+            
            If items = 0 Then
-           
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
            Else
-           CallByName pobjTarget, pstrProcName, VbMethod, varArr(0), GiveForm()
+           
+               Dim oldmoldid As Variant, mycodeid As Variant
+               oldmoldid = ModalId
+               mycodeid = Rnd * 1000000
+            
+               pobjTarget.Modal = mycodeid
+               Dim x As Form
+                    For Each x In Forms
+                            If x.Visible And x.name = "GuiM2000" Then
+                            If Not x Is pobjTarget Then
+                           
+                                If Not x.Enabled = False Then
+                                x.Modal = mycodeid
+                                x.Enabled = False
+                                End If
+
+                            End If
+                            End If
+                    Next x
+           If pobjTarget.NeverShow Then
+           ModalId = mycodeid
+           CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
+             
+                Do While ModalId <> 0
+   
+                     mywait basestack1, 1
+                Loop
+                 ModalId = oldmoldid
            End If
+
+           For Each x In Forms
+            If x.Visible And x.name = "GuiM2000" Then
+            x.TestModal mycodeid
+            End If
+            Next x
+          
+           End If
+           
            ElseIf items = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod
            Else
@@ -208,13 +243,7 @@ jumphere:
             End If
          End If
     Else
-       ' If Typename$(pobjTarget) = "GuiM2000" Then
-        'If UCase(pstrProcName) = "PRINT" Then
-        'pstrProcName = "PRINTME"
-        'lngRet = -1
-        'GoTo passhere
-        'End If
-        'End If
+
         Err.Raise lngRet
     End If
     If items > 0 Then

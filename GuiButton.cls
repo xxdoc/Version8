@@ -57,8 +57,14 @@ there.AddGuiControl Me
 CtrlName = nam$
  glistN.Dynamic
 End Sub
-Public Sub Move(x, y, w, h)
+Public Sub Move(x, y, Optional w, Optional h)
+If IsMissing(w) Then
+glistN.MoveTwips CLng(x), CLng(y), 0, 0
+ElseIf IsMissing(h) Then
+glistN.MoveTwips CLng(x), CLng(y), CLng(w), 0
+Else
 glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
+End If
 End Sub
 Public Sub deconstruct()
 Shutdown
@@ -102,6 +108,7 @@ End Sub
 
 Private Sub glistN_CheckGotFocus()
 ''Callback.Callback CtrlName + ".GotFocus()"
+If mModalId <> ModalId And ModalId <> 0 Then Exit Sub
 glistN.BackColor = rgb(100, 200, 160)
 glistN.ShowMe
 End Sub
@@ -195,4 +202,7 @@ If ThisMode > 7 Then aa.Size = ThisMode Else aa = 7
 aa.bold = ThisBold
 Set glistN.Font = aa
 End If
+End Sub
+Public Sub Curve(rhs As Single)
+glistN.Curve False, rhs
 End Sub

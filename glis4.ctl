@@ -77,6 +77,7 @@ Height As Long
 End Type
 Private mynum$
 Public OverrideShow As Boolean
+Public HideCaretOnexit As Boolean
 Public overrideTextHeight As Long
 Public AutoHide As Boolean, NoWheel As Boolean
 Private Shape1 As Myshape, Shape2 As Myshape, Shape3 As Myshape
@@ -96,7 +97,7 @@ Private Type itemlist
 End Type
 Private fast As Boolean
 Private Declare Function GdiFlush Lib "gdi32" () As Long
-
+Private Declare Function SetWindowRgn Lib "user32" (ByVal hwnd As Long, ByVal hRgn As Long, ByVal bRedraw As Long) As Long
 Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function CreateHatchBrush Lib "gdi32" (ByVal nIndex As Long, ByVal crColor As Long) As Long
 Private Declare Function CopyFromLParamToRect Lib "user32" Alias "CopyRect" (lpDestRect As RECT, ByVal lpSourceRect As Long) As Long
@@ -108,6 +109,7 @@ Private Declare Function HideCaret Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
 
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -190,6 +192,7 @@ Event DragPasteData(ThatData As String)
 Event DropOk(ok As Boolean)
 Event DropFront(ok As Boolean)
 Event ScrollMove(item As Long)
+Event RefreshDesktop()
 Event OutPopUp(x As Single, y As Single, myButton As Integer)
 Event SplitLine()
 Event LineUp()
@@ -2166,6 +2169,7 @@ If ((mo.Parent.top + y - preY) > FloatLimitTop) And FloatLimitTop > 0 Then preY 
 
 If ((mo.Parent.Left + x - preX) > FloatLimitLeft) And FloatLimitLeft > 0 Then preX = mo.Parent.Left + x - FloatLimitLeft
 mo.Parent.Move mo.Parent.Left + (x - preX), mo.Parent.top + (y - preY)
+RaiseEvent RefreshDesktop
 Else
 mo.ZOrder
 If (mo.top + (y - preY) < 0) Then preY = y + mo.top
@@ -3624,7 +3628,13 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
+If mWidth < 100 Then
+mo.Move mleft, mtop, mo.Width, mo.Height
+ElseIf mHeight < 100 Then
+mo.Move mleft, mtop, mWidth, mo.Height
+Else
 mo.Move mleft, mtop, mWidth, mHeight
+End If
 End Sub
 Public Sub ZOrder(Optional ByVal rhs As Long = 0)
 Dim MM$, mo As Control, nm$, cnt$, p As Long
@@ -4448,7 +4458,7 @@ CalcNewFont
  PropertyChanged "Font"
 End Property
 Public Sub ExternalCursor(ByVal ExtSelStart, that$)
-
+If HideCaretOnexit Then Exit Sub
  Dim REALX As Long, REALX2 As Long, myt1
  
  myt1 = myt - scrTwips
@@ -4700,4 +4710,11 @@ If UserControl.Parent Is Nothing Then Exit Property
 Set Parent = UserControl.Parent
 there:
 End Property
-
+Public Sub Curve(Optional t As Boolean = False, Optional factor As Single = 1)
+Dim hRgn As Long
+If Int(25 * factor) > 2 Then
+hRgn = CreateRoundRectRgn(0, 0, WidthPixels, HeightPixels, 25 * factor, 25 * factor)
+SetWindowRgn Me.hwnd, hRgn, t
+DeleteObject hRgn
+End If
+End Sub

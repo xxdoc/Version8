@@ -23,11 +23,19 @@ Begin VB.Form TweakForm
       TabStop         =   0   'False
       Top             =   3465
       Width           =   3315
-      _extentx        =   5847
-      _extenty        =   3995
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":000C
+      _ExtentX        =   5847
+      _ExtentY        =   3995
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   161
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin M2000.gList gList11 
       Height          =   1875
@@ -36,14 +44,22 @@ Begin VB.Form TweakForm
       TabStop         =   0   'False
       Top             =   3600
       Width           =   2835
-      _extentx        =   5001
-      _extenty        =   3307
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0038
-      showbar         =   0   'False
-      backcolor       =   3881787
-      forecolor       =   14737632
+      _ExtentX        =   5001
+      _ExtentY        =   3307
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      Backcolor       =   3881787
+      ForeColor       =   14737632
    End
    Begin M2000.gList command1 
       Height          =   525
@@ -52,13 +68,21 @@ Begin VB.Form TweakForm
       TabIndex        =   16
       Top             =   5790
       Width           =   3225
-      _extentx        =   5689
-      _extenty        =   926
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":005C
-      showbar         =   0   'False
-      forecolor       =   16777215
+      _ExtentX        =   5689
+      _ExtentY        =   926
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList1 
       Height          =   315
@@ -66,12 +90,20 @@ Begin VB.Form TweakForm
       TabIndex        =   0
       Top             =   840
       Width           =   6525
-      _extentx        =   11509
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0080
-      showbar         =   0   'False
+      _ExtentX        =   11509
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
    End
    Begin M2000.gList glist3 
       Height          =   1545
@@ -81,12 +113,20 @@ Begin VB.Form TweakForm
       Top             =   2895
       Visible         =   0   'False
       Width           =   4545
-      _extentx        =   8017
-      _extenty        =   2725
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":00A4
-      enabled         =   -1  'True
+      _ExtentX        =   8017
+      _ExtentY        =   2725
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
    End
    Begin M2000.gList gList4 
       Height          =   315
@@ -94,12 +134,20 @@ Begin VB.Form TweakForm
       TabIndex        =   3
       Top             =   1800
       Width           =   2595
-      _extentx        =   4577
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":00C8
-      showbar         =   0   'False
+      _ExtentX        =   4577
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
    End
    Begin M2000.gList gList5 
       Height          =   660
@@ -109,12 +157,20 @@ Begin VB.Form TweakForm
       Top             =   3960
       Visible         =   0   'False
       Width           =   3720
-      _extentx        =   6562
-      _extenty        =   1164
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":00EC
-      enabled         =   -1  'True
+      _ExtentX        =   6562
+      _ExtentY        =   1164
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
    End
    Begin M2000.gList gList6 
       Height          =   315
@@ -122,12 +178,20 @@ Begin VB.Form TweakForm
       TabIndex        =   6
       Top             =   2205
       Width           =   2085
-      _extentx        =   3678
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0110
-      showbar         =   0   'False
+      _ExtentX        =   3678
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
    End
    Begin M2000.gList gList7 
       Height          =   315
@@ -135,12 +199,20 @@ Begin VB.Form TweakForm
       TabIndex        =   7
       Top             =   2205
       Width           =   2100
-      _extentx        =   3704
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0134
-      showbar         =   0   'False
+      _ExtentX        =   3704
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
    End
    Begin M2000.gList gList8 
       Height          =   315
@@ -148,12 +220,20 @@ Begin VB.Form TweakForm
       TabIndex        =   8
       Top             =   2235
       Width           =   2160
-      _extentx        =   3810
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0158
-      showbar         =   0   'False
+      _ExtentX        =   3810
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
    End
    Begin M2000.gList gList9 
       Height          =   315
@@ -161,13 +241,21 @@ Begin VB.Form TweakForm
       TabIndex        =   1
       Top             =   1305
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":017C
-      showbar         =   0   'False
-      forecolor       =   16777215
+      _ExtentX        =   4260
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList10 
       Height          =   315
@@ -175,13 +263,21 @@ Begin VB.Form TweakForm
       TabIndex        =   2
       Top             =   1320
       Width           =   3975
-      _extentx        =   7011
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":01A0
-      showbar         =   0   'False
-      forecolor       =   16777215
+      _ExtentX        =   7011
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList2 
       Height          =   495
@@ -190,15 +286,23 @@ Begin VB.Form TweakForm
       TabStop         =   0   'False
       Top             =   240
       Width           =   6615
-      _extentx        =   11668
-      _extenty        =   873
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":01C4
-      enabled         =   -1  'True
-      backcolor       =   3881787
-      forecolor       =   16777215
-      capcolor        =   16777215
+      _ExtentX        =   11668
+      _ExtentY        =   873
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   161
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
+      Backcolor       =   3881787
+      ForeColor       =   16777215
+      CapColor        =   16777215
    End
    Begin M2000.gList command1 
       Height          =   525
@@ -207,13 +311,21 @@ Begin VB.Form TweakForm
       TabIndex        =   14
       Top             =   5775
       Width           =   3330
-      _extentx        =   5874
-      _extenty        =   926
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":01E8
-      showbar         =   0   'False
-      forecolor       =   16777215
+      _ExtentX        =   5874
+      _ExtentY        =   926
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      ForeColor       =   16777215
    End
    Begin M2000.gList command1 
       Height          =   525
@@ -222,13 +334,21 @@ Begin VB.Form TweakForm
       TabIndex        =   15
       Top             =   5310
       Width           =   3330
-      _extentx        =   5874
-      _extenty        =   926
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":020C
-      showbar         =   0   'False
-      forecolor       =   16777215
+      _ExtentX        =   5874
+      _ExtentY        =   926
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList12 
       Height          =   315
@@ -236,12 +356,20 @@ Begin VB.Form TweakForm
       TabIndex        =   5
       Top             =   1800
       Width           =   2160
-      _extentx        =   3810
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0230
-      showbar         =   0   'False
+      _ExtentX        =   3810
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
    End
    Begin M2000.gList gList13 
       Height          =   315
@@ -249,12 +377,20 @@ Begin VB.Form TweakForm
       TabIndex        =   4
       Top             =   1800
       Width           =   2475
-      _extentx        =   4366
-      _extenty        =   556
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0254
-      showbar         =   0   'False
+      _ExtentX        =   4366
+      _ExtentY        =   556
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
    End
    Begin M2000.gList gList14 
       Height          =   660
@@ -264,12 +400,20 @@ Begin VB.Form TweakForm
       Top             =   0
       Visible         =   0   'False
       Width           =   3720
-      _extentx        =   6562
-      _extenty        =   1164
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "tweakprive.frx":0278
-      enabled         =   -1  'True
+      _ExtentX        =   6562
+      _ExtentY        =   1164
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
    End
 End
 Attribute VB_Name = "TweakForm"
@@ -436,7 +580,7 @@ Else
         LastWidth = Width
       gList2.HeadlineHeight = gList2.HeightPixels
         gList2.PrepareToShow
-      glist3.PrepareToShow
+      gList3.PrepareToShow
       gList5.PrepareToShow
       DIS.PrepareToShow
         ly = ly * lastfactor / factor
@@ -473,7 +617,7 @@ gList2.Move borderleft, bordertop, itemWidth, bordertop * 3
 gList2.FloatLimitTop = ScrY() - bordertop - bordertop * 3
 gList2.FloatLimitLeft = ScrX() - borderleft * 3
 gList1.Move borderleft, bordertop * 6, itemWidth, bordertop * 3
-glist3.Move borderleft + itemWidth * 2 / 5, bordertop * 9, itemWidth * 3 / 5, bordertop * 18
+gList3.Move borderleft + itemWidth * 2 / 5, bordertop * 9, itemWidth * 3 / 5, bordertop * 18
 gList9.Move borderleft, bordertop * 10, itemWidth * 2 / 5 - borderleft, bordertop * 3
 gList10.Move borderleft + itemWidth * 2 / 5, bordertop * 10, itemWidth * 3 / 5, bordertop * 3
 'gList4.Move borderleft, bordertop * 14, itemwidth2, bordertop * 3
@@ -511,7 +655,7 @@ gList2.FontSize = 14.25 * factor
 factor = gList2.FontSize / 14.25
 gList1.FontSize = 11.25 * factor
 factor = gList1.FontSize / 11.25
-glist3.FontSize = gList1.FontSize
+gList3.FontSize = gList1.FontSize
 gList4.FontSize = gList1.FontSize
 gList5.FontSize = gList1.FontSize
 gList6.FontSize = gList1.FontSize
@@ -723,7 +867,7 @@ DIS.NoCaretShow = True
 DIS.LeftMarginPixels = 10
   
 ' Combobox1 SetUp
-glist3.restrictLines = 6
+gList3.restrictLines = 6
 Set textbox2 = New myTextBox
 Set textbox2.Container = gList1
 
@@ -732,7 +876,7 @@ combo1.UseOnlyTheList = True
 
 
 Set combo1.TextBox = textbox2
-Set combo1.Container = glist3
+Set combo1.Container = gList3
 combo1.Locked = False
 combo1.AutoComplete = True
 If TweakLang = 0 Then
@@ -831,9 +975,9 @@ Set checkbox1 = New myCheckBox
 
 With checkbox1
 If TweakLang = 0 Then
-.caption = "Φαρδιά"
+.Caption = "Φαρδιά"
 Else
-.caption = "Bold"
+.Caption = "Bold"
 End If
 .CheckReset = True
 Set .Container = gList9
@@ -842,9 +986,9 @@ End With
 Set checkbox2 = New myCheckBox
 With checkbox2
 If TweakLang = 0 Then
-.caption = "Πεζά/κεφαλαία διαφορετικά σε αρχεία"
+.Caption = "Πεζά/κεφαλαία διαφορετικά σε αρχεία"
 Else
-.caption = "Case Sensitive Filenames"
+.Caption = "Case Sensitive Filenames"
 End If
 
 .CheckReset = False
@@ -906,9 +1050,9 @@ tbLineSpacing.Enabled = True
 Set myCommand = New myButton
 Set myCommand.Container = command1(0)
 If TweakLang = 0 Then
-myCommand.caption = "Εντάξει"
+myCommand.Caption = "Εντάξει"
 Else
-myCommand.caption = "OK"
+myCommand.Caption = "OK"
 End If
   Set myCommand.Callback = Me
   myCommand.Index = 1
@@ -916,9 +1060,9 @@ myCommand.Enabled = True
 Set myUnicode = New myButton
 Set myUnicode.Container = command1(1)
 If TweakLang = 0 Then
-myUnicode.caption = "Προεπισκόπηση Ansi"
+myUnicode.Caption = "Προεπισκόπηση Ansi"
 Else
-myUnicode.caption = "Ansi Preview"
+myUnicode.Caption = "Ansi Preview"
 End If
   Set myUnicode.Callback = Me
 myUnicode.Enabled = True
@@ -926,9 +1070,9 @@ Set myCancel = New myButton
 Set myCancel.Container = command1(2)
 myCancel.Index = 2
 If TweakLang = 0 Then
-myCancel.caption = "ΑΚΥΡΟ"
+myCancel.Caption = "ΑΚΥΡΟ"
 Else
-myCancel.caption = "CANCEL"
+myCancel.Caption = "CANCEL"
 End If
   Set myCancel.Callback = Me
 myCancel.Enabled = True
@@ -1060,7 +1204,7 @@ DIS.Font.name = c$
 End If
 
 DIS.addpixels = (tbLineSpacing.Value * 2 \ dv15)
-If InStr(myUnicode.caption, "Unicode") = 0 Then
+If InStr(myUnicode.Caption, "Unicode") = 0 Then
     DIS = Convert2Ansi("Test " & vbCrLf & "Latin" & vbCrLf + ListenUnicode(917, 955, 955, 951, 957, 953, 954, 940), IIf(DIS.charset = 161, 1032, 1033))
 Else
     DIS = "Test " & vbCrLf & "Latin" & vbCrLf + ListenUnicode(917, 955, 955, 951, 957, 953, 954, 940)
@@ -1077,14 +1221,14 @@ Command111_Click
 ElseIf Index = 2 Then
 ShutMe
 Else
-If myUnicode.caption = "Unicode Preview" Then
-myUnicode.caption = "Ansi Preview"
-ElseIf myUnicode.caption = "Προεπισκόπηση Unicode" Then
-myUnicode.caption = "Προεπισκόπηση Ansi"
-ElseIf myUnicode.caption = "Προεπισκόπηση Ansi" Then
-myUnicode.caption = "Προεπισκόπηση Unicode"
+If myUnicode.Caption = "Unicode Preview" Then
+myUnicode.Caption = "Ansi Preview"
+ElseIf myUnicode.Caption = "Προεπισκόπηση Unicode" Then
+myUnicode.Caption = "Προεπισκόπηση Ansi"
+ElseIf myUnicode.Caption = "Προεπισκόπηση Ansi" Then
+myUnicode.Caption = "Προεπισκόπηση Unicode"
 Else
-myUnicode.caption = "Unicode Preview"
+myUnicode.Caption = "Unicode Preview"
 End If
 playall
 
@@ -1200,10 +1344,12 @@ a = tbSize.Value  ' cut max or min
 
 DIS.FontSize = CLng(a)
 playall
-'tbsize.Info = "This is info box" + vbCrLf + "X = " + CStr(a)
 ThatString = CStr(a)
 If a = 0 Then setpos = 2: tbSize.ResetPan
 End Sub
 Public Sub hookme(this As gList)
 Set LastGlist = this
+End Sub
+Private Sub gList2_RefreshDesktop()
+If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
 End Sub

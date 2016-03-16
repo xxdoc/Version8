@@ -32,21 +32,13 @@ Begin VB.Form Form4
       TabIndex        =   0
       Top             =   300
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   6747
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ShowBar         =   0   'False
-      Backcolor       =   -2147483624
+      _extentx        =   10610
+      _extenty        =   6747
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "help.frx":000C
+      showbar         =   0   'False
+      backcolor       =   -2147483624
    End
 End
 Attribute VB_Name = "Form4"
@@ -148,7 +140,7 @@ End If
 End Sub
 Public Sub MoveMe()
 ScaleDialog Helplastfactor, HelpLastWidth
-Hook2 hWnd, gList1
+Hook2 hwnd, gList1
 Label1.glistN.SoftEnterFocus
 End Sub
 
@@ -259,7 +251,7 @@ End Sub
 
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-UnHook2 hWnd
+UnHook2 hwnd
 Set LastGlist2 = Nothing
 End Sub
 
@@ -267,13 +259,13 @@ Private Sub Form_Terminate()
 ''''Set HelpStack.Owner = Nothing
 End Sub
 
-Private Sub ffhelp(A$)
-If A$ = "цемийа" Then A$ = "ока"
-If A$ = "GENERAL" Then A$ = "ALL"
-If Left$(A$, 1) < "а" Then
-fHelp basestack1, A$, True
+Private Sub ffhelp(a$)
+If a$ = "цемийа" Then a$ = "ока"
+If a$ = "GENERAL" Then a$ = "ALL"
+If Left$(a$, 1) < "а" Then
+fHelp basestack1, a$, True
 Else
-fHelp basestack1, A$
+fHelp basestack1, a$
 End If
 End Sub
 
@@ -314,45 +306,45 @@ ThisWord = ""
 
 End Sub
 Public Sub FillThereMyVersion2(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = setupxy / 3
 
-CopyFromLParamToRect A, thatRect
-A.Right = A.Right - b
-A.Left = A.Right - setupxy - b
-A.top = b
-A.Bottom = b + setupxy / 5
-FillThere thathDC, VarPtr(A), thatbgcolor
-A.top = b + setupxy / 5 + setupxy / 10
-A.Bottom = b + setupxy \ 2
-FillThere thathDC, VarPtr(A), thatbgcolor
-A.top = b + 2 * (setupxy / 5 + setupxy / 10)
-A.Bottom = A.top + setupxy / 5
-FillThere thathDC, VarPtr(A), thatbgcolor
+CopyFromLParamToRect a, thatRect
+a.Right = a.Right - b
+a.Left = a.Right - setupxy - b
+a.top = b
+a.Bottom = b + setupxy / 5
+FillThere thathDC, VarPtr(a), thatbgcolor
+a.top = b + setupxy / 5 + setupxy / 10
+a.Bottom = b + setupxy \ 2
+FillThere thathDC, VarPtr(a), thatbgcolor
+a.top = b + 2 * (setupxy / 5 + setupxy / 10)
+a.Bottom = a.top + setupxy / 5
+FillThere thathDC, VarPtr(a), thatbgcolor
 
 End Sub
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = 2
-CopyFromLParamToRect A, thatRect
-A.Left = A.Right - b
-A.Right = A.Right - setupxy + b
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), gList1.dcolor
+CopyFromLParamToRect a, thatRect
+a.Left = a.Right - b
+a.Right = a.Right - setupxy + b
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), gList1.dcolor
 b = 5
-A.Left = A.Left - 3
-A.Right = A.Right + 3
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), gList1.CapColor
+a.Left = a.Left - 3
+a.Right = a.Right + 3
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), gList1.CapColor
 
 
 End Sub
 Public Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT
-CopyFromLParamToRect A, thatRect
-FillBack thathDC, A, thatbgcolor
+Dim a As RECT
+CopyFromLParamToRect a, thatRect
+FillBack thathDC, a, thatbgcolor
 End Sub
 Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
 ' create brush
@@ -406,4 +398,7 @@ Public Sub hookme(this As gList)
 End Sub
 Sub ByeBye()
 Unload Me
+End Sub
+Private Sub gList1_RefreshDesktop()
+If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
 End Sub
