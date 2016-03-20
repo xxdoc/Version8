@@ -176,7 +176,10 @@ jumphere:
                mycodeid = Rnd * 1000000
             
                pobjTarget.Modal = mycodeid
+               
                Dim x As Form
+               If Not pobjTarget.IamPopUp Then
+               
                     For Each x In Forms
                             If x.Visible And x.name = "GuiM2000" Then
                             If Not x Is pobjTarget Then
@@ -189,6 +192,7 @@ jumphere:
                             End If
                             End If
                     Next x
+                    End If
            If pobjTarget.NeverShow Then
            ModalId = mycodeid
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()

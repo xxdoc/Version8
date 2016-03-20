@@ -16,7 +16,6 @@ Attribute VB_Exposed = False
 Public WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
 Dim check1focus As Boolean
-Event Changed(state As Boolean)
 Dim mCaptext As String
 Dim mValue As Boolean
 '' FOR EVERY GuiSomething
@@ -24,6 +23,13 @@ Public CtrlName As String
 Dim mIndex As Long
 Dim Callback As GuiM2000
 '' for every GuiSomething
+Public Property Get Index() As Long
+Index = mIndex
+End Property
+
+Public Property Let Index(ByVal rhs As Long)
+mIndex = rhs
+End Property
 Public Sub Construct(there As Form, name$)
  Set Callback = there
  On Error Resume Next
@@ -145,7 +151,7 @@ glistN.ShowMe
 End Sub
 Private Sub gListN_MenuChecked(item As Long)
 ' always item is 1  so 1-1..0 (base 0)
-RaiseEvent Changed(glistN.ListSelected(0))
+' RaiseEvent Changed(glistN.ListSelected(0))
 If item >= 0 Then
   If mIndex >= 0 Then
    Callback.Callback CtrlName + ".Changed(" + CStr(mIndex) + "," + CStr(glistN.ListSelected(0)) + ")"
@@ -196,3 +202,16 @@ Private Sub glistN_Selected2(item As Long)
       Callback.Callback CtrlName + ".Click(" + CStr(Checked) + ")"
       End If
 End Sub
+Public Property Get top() As Variant
+top = Callback.Controls(CtrlName).top
+End Property
+Public Property Let top(ByVal rhs As Variant)
+Callback.Controls(CtrlName).top = rhs
+End Property
+Public Property Get Left() As Variant
+Left = Callback.Controls(CtrlName).Left
+End Property
+
+Public Property Let Left(ByVal rhs As Variant)
+Callback.Controls(CtrlName).Left = rhs
+End Property

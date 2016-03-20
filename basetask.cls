@@ -33,7 +33,6 @@ Private mCharSet As Integer  ' todo
 Private mBold As Boolean   ' todo
 Private mSize As Single    ' TODO
 Private mFontname As String 'TODO
-Private mLineSpace As Long
 Private Mchild As Boolean
 Private mtolayer As Long
 Private myRun As Boolean
@@ -275,14 +274,6 @@ a$ = Left$(a$, st& - 1) + dotcollection(i& - st& + 1) + Mid$(a$, i&)
 If Not Err Then GetDot = True
 End Function
 
-Public Property Get LineSpace() As Long  ' in twips
-LineSpace = mLineSpace
-End Property
-
-Public Property Let LineSpace(ByVal rhs As Long)
-mLineSpace = rhs
-End Property
-
 Public Property Let myitalic(ByVal rhs As Boolean)
 mitalic = rhs
 End Property
@@ -412,14 +403,14 @@ Dim aa As New mThreadref
 
 Set aa.thread = Nothing  ' no thread
 aa.Id = Threadid
-aa.varname = threadvar
+aa.VarName = threadvar
 threadsnames.Add aa, CStr(Threadid)
 
 End Sub
 Public Function Exist(Threadid As Long, ThreadName As String) As Boolean
 Dim aa As mThreadref
 On Error Resume Next
-Exist = threadsnames(CStr(Threadid)).varname = ThreadName
+Exist = threadsnames(CStr(Threadid)).VarName = ThreadName
 If Err.Number > 0 Then
 Exist = False
 
@@ -456,14 +447,14 @@ Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 Dim aa As mThreadref, a$
 If threadsnames.Count > 0 Then
 For Each aa In threadsnames
-If Left$(aa.varname, 1) = "_" Then
+If Left$(aa.VarName, 1) = "_" Then
 If lang = 0 Then
 a$ = a$ & "есытеяийо мгла "
 Else
 a$ = a$ & "INTERNAL THREAD "
 End If
 Else
-a$ = a$ & aa.varname + Str$(aa.Id) & " "
+a$ = a$ & aa.VarName + Str$(aa.Id) & " "
 End If
 Next aa
 End If
@@ -482,7 +473,7 @@ Public Function ThreadsNumber() As Long
 Dim aa As mThreadref, KK
 If threadsnames.Count > 0 Then
 For Each aa In threadsnames
-If Left$(aa.varname, 5) <> "_multi" Then KK = KK + 1
+If Left$(aa.VarName, 5) <> "_multi" Then KK = KK + 1
 Next aa
 End If
 

@@ -206,3 +206,16 @@ End Sub
 Public Sub Curve(rhs As Single)
 glistN.Curve False, rhs
 End Sub
+Public Property Get top() As Variant
+top = Callback.Controls(CtrlName).top
+End Property
+Public Property Let top(ByVal rhs As Variant)
+Callback.Controls(CtrlName).top = rhs
+End Property
+Public Property Get Left() As Variant
+Left = Callback.Controls(CtrlName).Left
+End Property
+
+Public Property Let Left(ByVal rhs As Variant)
+Callback.Controls(CtrlName).Left = rhs
+End Property

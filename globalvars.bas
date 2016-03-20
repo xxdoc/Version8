@@ -7,13 +7,6 @@ Public BreakMe As Boolean
 Public CancelDialog As Boolean
 Public SizeDialog As Single, helpSizeDialog As Single
 Public textinformCaption As String
-Public Form1mn1Enabled As Boolean
-Public Form1mn2Enabled As Boolean
-Public Form1mn3Enabled As Boolean
-Public Form1sdnEnabled As Boolean
-Public Form1supEnabled As Boolean
-Public Form1mscatEnabled As Boolean
-Public Form1rthisEnabled As Boolean
 Public FileTypesShow As String
 Public ReturnFile As String
 Public ReturnListOfFiles As String  ' # between
@@ -61,9 +54,9 @@ Public ReturnItalic As Boolean
 Public ReturnCharset As Integer
 Public ReturnSize As Single
 Public DialogLang As Long
-Public Sub DialogSetupLang(LANG As Long)
-DialogLang = LANG
-If LANG = 0 Then
+Public Sub DialogSetupLang(lang As Long)
+DialogLang = lang
+If lang = 0 Then
 AskCancel$ = AskCancelGR
 AskOk$ = AskOkGR
  LoadFileCaption = LoadFileCaptionGR
@@ -88,11 +81,11 @@ End Sub
 Public Function IsSelectorInUse() As Boolean
 IsSelectorInUse = inUse
 End Function
-Public Function OpenColor(bstack As basetask, Thisform As Object, ThisColor As Long) As Boolean
+Public Function OpenColor(bstack As basetask, Thisform As Object, thiscolor As Long) As Boolean
 If inUse Then OpenColor = False: Exit Function
 inUse = True
 ExpandWidth = True
-ReturnColor = ThisColor
+ReturnColor = thiscolor
 If Thisform Is Nothing Then
 ColorDialog.Show
 Else
@@ -105,7 +98,7 @@ If Not ColorDialog.Visible Then
     End If
 WaitDialog bstack
 OpenColor = Not CancelDialog
-ThisColor = ReturnColor
+thiscolor = ReturnColor
 ExpandWidth = False
 inUse = False
 End Function
@@ -331,9 +324,9 @@ Sub ReleaseSelector()
 inUse = False
 End Sub
 Function ConCat(ParamArray aa() As Variant) As String
-Dim all$, I As Long
-For I = 0 To UBound(aa)
-    all$ = all$ & CStr(aa(I))
-Next I
+Dim all$, i As Long
+For i = 0 To UBound(aa)
+    all$ = all$ & CStr(aa(i))
+Next i
 ConCat = all$
 End Function

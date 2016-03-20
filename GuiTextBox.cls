@@ -16,13 +16,13 @@ Option Explicit
 ' don't forget to set default property to vartext (changed from text)
 Public WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
-Event ValidString(ThatString As String, setpos As Long)
-Event KeyDown(KeyCode As Integer, shift As Integer)
-Event LostFocus()
-Event GotFocus()
-Event KeyPress(KeyAscii As Integer)
-Event MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-Event SpinnerValue(ThisValue As Long)
+'Event ValidString(ThatString As String, setpos As Long)
+'Event KeyDown(KeyCode As Integer, shift As Integer)
+'Event LostFocus()
+'Event GotFocus()
+'Event KeyPress(KeyAscii As Integer)
+'Event MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
+'Event SpinnerValue(ThisValue As Long)
 Private mprompt As String
 Private mkind As String
 Public SkipProcAtExitFocus As Boolean
@@ -158,12 +158,21 @@ glistN.ShowMe
 Locked = True
 End Property
 
-Public Property Get top() As Long
-top = glistN.TopTwips
+Public Property Get top() As Variant
+top = Callback.Controls(CtrlName).top
 End Property
-Public Property Let top(rhs As Long)
-glistN.TopTwips = rhs
+Public Property Let top(ByVal rhs As Variant)
+Callback.Controls(CtrlName).top = rhs
 End Property
+Public Property Get Left() As Variant
+Left = Callback.Controls(CtrlName).Left
+End Property
+
+Public Property Let Left(ByVal rhs As Variant)
+Callback.Controls(CtrlName).Left = rhs
+End Property
+
+
 Public Sub SetUp()
 Dim ff As New StdFont
 With Callback
@@ -220,7 +229,7 @@ If Not Enabled Then Exit Sub
 Dim this As String, thispos As Long, vr(2)
 thispos = glistN.SelStart - Len(mprompt)
 this = Mid$(content, 1 + Len(mprompt))
-'RaiseEvent ValidString(this, thispos)
+'' RaiseEvent ValidString(this, thispos)
 vr(0) = this
 vr(1) = thispos
    If mIndex >= 0 Then
@@ -266,7 +275,7 @@ End Property
 Private Sub glistN_CheckGotFocus()
 If Not Locked Then
 If glistN.listindex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
-RaiseEvent GotFocus
+' RaiseEvent GotFocus
 If Enabled Then
 glistN.ForeColor = rgb(0, 0, 0)
 glistN.BackColor = rgb(255, 255, 255)
@@ -297,7 +306,7 @@ Else
 '
 End If
 End If
-RaiseEvent LostFocus
+' RaiseEvent LostFocus
 End Sub
 
 Private Sub glistN_HeaderSelected(Button As Integer)
@@ -305,7 +314,7 @@ Private Sub glistN_HeaderSelected(Button As Integer)
 Text = Text
 End Sub
 
-Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
+Private Sub gListN_KeyDown(KeyCode As Integer, shift As Integer)
 Dim vr(2)
 vr(0) = KeyCode
 vr(1) = shift
@@ -348,7 +357,7 @@ glistN.SetFocus
 End Sub
 
 Private Sub glistN_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-RaiseEvent MouseMove(Button, shift, x, y)
+' RaiseEvent MouseMove(Button, shift, x, y)
 End Sub
 
 Private Sub glistN_Selected(item As Long)
@@ -374,10 +383,10 @@ End Sub
 
 
 Private Sub glistN_SyncKeyboard(item As Integer)
-RaiseEvent KeyPress(item)
+' RaiseEvent KeyPress(item)
 End Sub
 Private Sub glistN_SpinnerValue(ThatValue As Long)
-''RaiseEvent SpinnerValue(ThatValue)
+''' RaiseEvent SpinnerValue(ThatValue)
    If mIndex >= 0 Then
    Callback.Callback CtrlName + ".SpinnerValue(" + CStr(mIndex) + "," + LTrim(Str(ThatValue)) + ")"
    Else
@@ -447,7 +456,7 @@ If (OpenClipboard(0) <> 0) Then
         If (GetBinaryData(lFormatId, bData())) Then
         sr = bData
 
-            GetTextData = Left$(sr, Len(sr1))
+            GetTextData = Mid$(sr, 1, Len(sr1))
           
         End If
 
@@ -531,3 +540,12 @@ aa.bold = ThisBold
 Set glistN.Font = aa
 End If
 End Sub
+Public Property Get Index() As Long
+Index = mIndex
+End Property
+
+Public Property Let Index(ByVal rhs As Long)
+mIndex = rhs
+End Property
+
+

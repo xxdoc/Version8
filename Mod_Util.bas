@@ -2924,11 +2924,11 @@ Set .mdoc = aaa
 .nowrap = False
 
 
-
-Form1mn1Enabled = False
-Form1mn2Enabled = False
-Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-
+With Form1.TEXT1
+.Form1mn1Enabled = False
+.Form1mn2Enabled = False
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+End With
 
 Form1.KeyPreview = False
 NOEDIT = False
@@ -3147,10 +3147,11 @@ Else
 End If
 If Not Form1.EditTextWord Then .mdoc.WrapAgainColor
 '.glistN.NoFreeMoveUpDown = True
-Form1mn1Enabled = False
-Form1mn2Enabled = False
-Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-
+With Form1.TEXT1
+.Form1mn1Enabled = False
+.Form1mn2Enabled = False
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+End With
 
 Form1.KeyPreview = False
 

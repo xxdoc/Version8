@@ -29,24 +29,16 @@ Begin VB.Form MyPopUp
       TabIndex        =   0
       Top             =   0
       Width           =   4155
-      _ExtentX        =   7329
-      _ExtentY        =   9657
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   11.25
-         Charset         =   161
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Enabled         =   -1  'True
+      _extentx        =   7329
+      _extenty        =   9657
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "MyPopUp.frx":0000
+      enabled         =   -1  'True
       dcolor          =   32896
-      Backcolor       =   3881787
-      ForeColor       =   14737632
-      CapColor        =   9797738
+      backcolor       =   3881787
+      forecolor       =   14737632
+      capcolor        =   9797738
    End
 End
 Attribute VB_Name = "MyPopUp"
@@ -59,6 +51,7 @@ Private height1, width1
 Dim Lx As Long, ly As Long, dr As Boolean
 Dim bordertop As Long, borderleft As Long, lastshift As Integer
 Dim allheight As Long, allwidth As Long, itemWidth As Long
+Private myobject As Object
 Public Sub Up(Optional x As Variant, Optional y As Variant)
 If IsMissing(x) Then
 x = CSng(MOUSEX())
@@ -83,10 +76,46 @@ Show
 MyDoEvents
 ''gList1.SetFocus
 End Sub
+Public Sub UpGui(that As Object, x As Variant, y As Variant, thistitle$)
+If thistitle$ <> "" Then
+gList1.HeadLine = ""
+gList1.HeadLine = thistitle$
+gList1.HeadlineHeight = gList1.HeightPixels
+Else
+gList1.HeadLine = ""
+gList1.HeadlineHeight = 0
+End If
+x = x + that.Left
+y = y + that.top
 
 
-Private Sub Form_Load()
-part1 = " " + GetStrUntil("(", (textinformCaption)) + "("
+If x + Width > ScrX() Then
+If y + Height > ScrY() Then
+Move ScrX() - Width, ScrY() - Height
+Else
+Move ScrX() - Width, y
+End If
+ElseIf y + Height > ScrY() Then
+Move x, ScrY() - Height
+Else
+Move x, y
+End If
+If thistilte$ <> "" Then
+
+Else
+
+End If
+Show
+MyDoEvents
+End Sub
+
+
+
+Public Sub feedlabels(that As Object, EditTextWord As Boolean)
+Dim k As Long
+
+Set myobject = that
+
 With gList1
 .NoWheel = True
 .restrictLines = 14
@@ -104,46 +133,57 @@ With gList1
 .StickBar = False
 ''.AddPixels = 4
 .VerticalCenterText = True
+If Typename(myobject) <> "GuiEditBox" Then
+part1 = " " + GetStrUntil("(", (textinformCaption)) + "("
 .additemFast textinformCaption
+Else
+part1 = " " + GetStrUntil("(", (myobject.textinform)) + "("
+.additemFast myobject.textinform
+End If
 .addsep
 .additemFast "Αποκοπή Ctrl+X"
-.menuEnabled(2) = Form1mn1Enabled
+.menuEnabled(2) = that.Form1mn1Enabled
 .additemFast "Αντιγραφή Ctrl+C"
-.menuEnabled(3) = Form1mn2Enabled
+.menuEnabled(3) = that.Form1mn2Enabled
 .additemFast "Επικόλληση Ctrl+V"
-.menuEnabled(4) = Form1mn3Enabled
+.menuEnabled(4) = that.Form1mn3Enabled
+If Typename(myobject) <> "GuiEditBox" Then
 .addsep
 .additemFast "Έξοδος με αλλαγές (ESC)"
 .addsep
 .additemFast "Έξοδος χωρίς αλλαγές shift F12"
+Else
+k = 4
+End If
 .addsep
 .additemFast "Αναζήτησε πάνω F2"
-.menuEnabled(10) = Form1supEnabled
+.menuEnabled(10 - k) = that.Form1supEnabled
 .additemFast "Αναζήτησε κάτω F3"
-.menuEnabled(11) = Form1sdnEnabled
+.menuEnabled(11 - k) = that.Form1sdnEnabled
 .additemFast "Κάνε το ίδιο παντού F4"
-.menuEnabled(12) = Form1mscatEnabled
+.menuEnabled(12 - k) = that.Form1mscatEnabled
 .additemFast "Αλλαγή λέξης F5"
-.menuEnabled(13) = Form1rthisEnabled
+.menuEnabled(13 - k) = that.Form1rthisEnabled
 .addsep
 .additemFast "Αναδίπλωση λέξεων F1"
 
-.MenuItem 16, True, False, Not Form1.TEXT1.nowrap, "warp"
+.MenuItem 16 - k, True, False, Not that.nowrap, "warp"
 .additemFast "Μεταφορά Κειμένου"
-.MenuItem 17, True, False, Form1.TEXT1.glistN.DragEnabled, "drag"
+.MenuItem 17 - k, True, False, that.glistN.DragEnabled, "drag"
 .additemFast "Χρώμα/Σύμπτυξη Γλώσσας F11"
-.MenuItem 18, True, False, shortlang, "short"
+.MenuItem 18 - k, True, False, shortlang, "short"
 .additemFast "Εμφάνιση Παραγράφων F10"
-.MenuItem 19, True, False, Form1.TEXT1.showparagraph, "para"
+.MenuItem 19 - k, True, False, that.showparagraph, "para"
 .additemFast "Μέτρηση λέξεων F9"
 .addsep
 .additemFast "Βοήθεια ctrl+F1"
-If Not Form1.EditTextWord Then
+If Not EditTextWord Then
+If k = 0 Then
 .HeadLine = "Μ2000 Συντάκτης"
 .addsep
 .additemFast "Τμήματα/Συναρτήσεις F12"
-.menuEnabled(23) = SubsExist()
-
+.menuEnabled(23 - k) = SubsExist()
+End If
 End If
 End With
 Else
@@ -152,45 +192,56 @@ With gList1
 .StickBar = False
 ''''.AddPixels = 4
 .VerticalCenterText = True
+If Typename(myobject) <> "GuiEditBox" Then
+part1 = " " + GetStrUntil("(", (textinformCaption)) + "("
 .additemFast textinformCaption
+Else
+part1 = " " + GetStrUntil("(", (myobject.textinform)) + "("
+.additemFast myobject.textinform
+End If
 .addsep
 .additemFast "Cut   Ctrl+X"
-.menuEnabled(2) = Form1mn1Enabled
+.menuEnabled(2) = that.Form1mn1Enabled
 .additemFast "Copy  Ctrl+C"
-.menuEnabled(3) = Form1mn2Enabled
+.menuEnabled(3) = that.Form1mn2Enabled
 .additemFast "Paste Ctrl+V"
-.menuEnabled(4) = Form1mn3Enabled
+.menuEnabled(4) = that.Form1mn3Enabled
 .addsep
+If Typename(myobject) <> "GuiEditBox" Then
 .additemFast "Save and Exit (ESC)"
 .addsep
 .additemFast "Discard Changes shift F12"
 .addsep
+Else
+k = 4
+End If
 .additemFast "Search up F2"
-.menuEnabled(10) = Form1supEnabled
+.menuEnabled(10 - k) = that.Form1supEnabled
 .additemFast "Search down F3"
-.menuEnabled(11) = Form1sdnEnabled
+.menuEnabled(11 - k) = that.Form1sdnEnabled
 .additemFast "Make same all F4"
-.menuEnabled(12) = Form1mscatEnabled
+.menuEnabled(12 - k) = that.Form1mscatEnabled
 .additemFast "Replace word F5"
-.menuEnabled(13) = Form1rthisEnabled
+.menuEnabled(13 - k) = that.Form1rthisEnabled
 .addsep
 .additemFast "Word Wrap F1"
-
-.MenuItem 16, True, False, Not Form1.TEXT1.nowrap, "warp"
+.MenuItem 16 - k, True, False, Not that.nowrap, "warp"
 .additemFast "Drag Enabled"
-.MenuItem 17, True, False, Form1.TEXT1.glistN.DragEnabled, "drag"
+.MenuItem 17 - k, True, False, that.glistN.DragEnabled, "drag"
 .additemFast "Color/Short Language F11"
-.MenuItem 18, True, False, shortlang, "short"
+.MenuItem 18 - k, True, False, shortlang, "short"
 .additemFast "Paragraph Mark F10"
-.MenuItem 19, True, False, Form1.TEXT1.showparagraph, "para"
+.MenuItem 19 - k, True, False, that.showparagraph, "para"
 .additemFast "Word count F9"
 .addsep
 .additemFast "Help ctrl+F1"
-If Not Form1.EditTextWord Then
+If Not EditTextWord Then
+If k = 0 Then
 .HeadLine = "Μ2000 Editor"
 .addsep
 .additemFast "Modules/Functions F12"
-.menuEnabled(23) = SubsExist()
+.menuEnabled(23 - k) = SubsExist()
+End If
 End If
 
 End With
@@ -213,6 +264,7 @@ gList1.ShowBar = True
 gList1.ShowBar = False
 gList1.NoPanLeft = False
 gList1.SoftEnterFocus
+
 End Sub
 Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
 
@@ -318,13 +370,16 @@ If dr Then Me.mousepointer = 0
 dr = False
 End Sub
 
-
+Private Sub Form_Unload(Cancel As Integer)
+Set myobject = Nothing
+End Sub
 
 Private Sub gList1_ChangeListItem(item As Long, content As String)
 Dim content1 As Long
 If item = 0 Then
 content1 = Int(Val("0" & Trim$(Mid$(content, Len(part1) + 1))))
-        If content1 > Form1.TEXT1.mdoc.DocLines Or content1 < 0 Then
+
+        If content1 > myobject.mdoc.DocLines Or content1 < 0 Then
         content = gList1.List(item)
               gList1.SelStart = Len(gList1.List(item)) - 1
         Else
@@ -436,6 +491,8 @@ Private Sub gList1_selected2(item As Long)
 
 End Sub
 Private Sub DoCommand(item As Long)
+Dim k As Long, l As Long
+If Typename(myobject) = "GuiEditBox" Then k = 4: l = 100
 Select Case item - 1
 Case -2
 Exit Sub
@@ -444,7 +501,7 @@ If lastgoodnum > 0 Then
 With gList1
 .menuEnabled(2) = False
 .menuEnabled(3) = False
-Form1.TEXT1.SetRowColumn lastgoodnum, 0
+myobject.SetRowColumn lastgoodnum, 0
 .PromptLineIdent = 0
 lastitem = 0
 .ListindexPrivateUse = -1
@@ -455,45 +512,45 @@ Exit Sub
 End With
 End If
 Case 2
-Form1.mn1sub
+myobject.mn1sub
 Case 3
-Form1.mn2sub
+myobject.mn2sub
 Case 4
-Form1.mn3sub
-Case 6
-Form1.mn4sub
-Case 8
-Form1.mn5sub
-Case 10
-Form1.supsub
-Case 11
-Form1.sdnSub
-Case 12
-Form1.mscatsub
-Case 13
-Form1.rthissub
-Case 15
-gList1.ListSelectedNoRadioCare(17) = Not gList1.ListChecked(17)
-Form1.wordwrapsub
-Case 16
-gList1.ListSelectedNoRadioCare(18) = Not gList1.ListChecked(18)
-Form1.TEXT1.glistN.DragEnabled = Not Form1.TEXT1.glistN.DragEnabled
-Case 21
-Form1.helpmeSub
-Case 23
+myobject.mn3sub
+Case 6 - l
+myobject.mn4sub
+Case 8 - l
+myobject.mn5sub
+Case 10 - k
+myobject.supsub
+Case 11 - k
+myobject.sdnSub
+Case 12 - k
+myobject.mscatsub
+Case 13 - k
+myobject.rthissub
+Case 15 - k
+gList1.ListSelectedNoRadioCare(17 - k) = Not gList1.ListChecked(17 - k)
+myobject.wordwrapsub
+Case 16 - k
+gList1.ListSelectedNoRadioCare(18 - k) = Not gList1.ListChecked(18 - k)
+myobject.glistN.DragEnabled = Not myobject.glistN.DragEnabled
+Case 21 - k
+myobject.helpmeSub
+Case 23 - k
 showmodules
-Case 17
-With Form1.TEXT1
+Case 17 - k
+With myobject
 shortlang = Not shortlang
 .ManualInform
 End With
-Case 18
-With Form1.TEXT1
+Case 18 - k
+With myobject
 .showparagraph = Not .showparagraph
 .Render
 End With
-Case 19
-With Form1.TEXT1
+Case 19 - k
+With myobject
 If .glistN.lines > 1 Then
 If UserCodePage = 1253 Then
 .ReplaceTitle = "Λέξεις στο κείμενο:" + CStr(.mdoc.WordCount)

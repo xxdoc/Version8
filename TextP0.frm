@@ -147,7 +147,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   ""
+      Location        =   "http:///"
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -269,11 +269,11 @@ TaskMaster.rest
         End If
 End Sub
 
-Private Sub dSprite_GotFocus(index As Integer)
+Private Sub dSprite_GotFocus(Index As Integer)
 If lockme Then TEXT1.SetFocus: Exit Sub
 End Sub
 
-Private Sub dSprite_OLEDragOver(index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
+Private Sub dSprite_OLEDragOver(Index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
@@ -335,14 +335,16 @@ Dim i As Long
 
 If nochange Then
 nochange = True
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
-Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > i
-Form1supEnabled = i > 0 And TEXT1.SelStart > i
-Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
-Form1rthisEnabled = Form1mscatEnabled
+With TEXT1
+i = .SelLength
+.Form1mn1Enabled = i > 1
+.Form1mn2Enabled = i > 1
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
+.Form1supEnabled = i > 0 And .SelStart > i
+.Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
+.Form1rthisEnabled = .Form1mscatEnabled
+End With
 nochange = False
 End If
 End Sub
@@ -351,14 +353,16 @@ Private Sub gList1_ChangeSelStart(thisselstart As Long)
 Dim i As Long
 
 If gList1.Enabled Then
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
-Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > i
-Form1supEnabled = i > 0 And TEXT1.SelStart > i
-Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
-Form1rthisEnabled = Form1mscatEnabled
+With TEXT1
+i = .SelLength
+.Form1mn1Enabled = i > 1
+.Form1mn2Enabled = i > 1
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
+.Form1supEnabled = i > 0 And .SelStart > i
+.Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
+.Form1rthisEnabled = .Form1mscatEnabled
+End With
 End If
 End Sub
 
@@ -370,17 +374,18 @@ Private Sub gList1_HeaderSelected(Button As Integer)
 Dim i As Long
 
 If Not gList1.Enabled Then Exit Sub
-
-If TEXT1.UsedAsTextBox Then Exit Sub
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
-Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > TEXT1.SelLength
-Form1supEnabled = i > 0 And TEXT1.SelStart > TEXT1.SelLength
-Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
-Form1rthisEnabled = Form1mscatEnabled
-
+With TEXT1
+If .UsedAsTextBox Then Exit Sub
+i = .SelLength
+.Form1mn1Enabled = i > 1
+.Form1mn2Enabled = i > 1
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > .SelLength
+.Form1supEnabled = i > 0 And .SelStart > .SelLength
+.Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
+.Form1rthisEnabled = .Form1mscatEnabled
+End With
+MyPopUp.feedlabels TEXT1, EditTextWord
 MyPopUp.Up
 
 ''Form1.PopupMenu Form1.aaaa
@@ -400,23 +405,39 @@ Pack1
 End Sub
 Public Sub Pack1()
 Dim i As Long
-
-i = TEXT1.SelLength
-Form1mn1Enabled = i > 1
-Form1mn2Enabled = i > 1
-Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-Form1sdnEnabled = i > 0 And (TEXT1.Length - TEXT1.SelStart) > i
-Form1supEnabled = i > 0 And TEXT1.SelStart > i
-Form1mscatEnabled = Form1sdnEnabled Or Form1supEnabled
-Form1rthisEnabled = Form1mscatEnabled
+With TEXT1
+i = .SelLength
+.Form1mn1Enabled = i > 1
+.Form1mn2Enabled = i > 1
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
+.Form1supEnabled = i > 0 And .SelStart > i
+.Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
+.Form1rthisEnabled = .Form1mscatEnabled
+End With
 End Sub
 
 Private Sub gList1_SyncKeyboard111(KeyAscii As Integer)
 If KeyAscii = 9 Then KeyAscii = 0: Exit Sub
 If KeyAscii = 13 Then KeyAscii = 0: Exit Sub
 End Sub
+
 Private Sub gList1_OutPopUp(x As Single, y As Single, myButton As Integer)
-If TEXT1.UsedAsTextBox Then Exit Sub
+Dim i As Long
+
+If Not gList1.Enabled Then Exit Sub
+With TEXT1
+If .UsedAsTextBox Then Exit Sub
+i = .SelLength
+.Form1mn1Enabled = i > 1
+.Form1mn2Enabled = i > 1
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > .SelLength
+.Form1supEnabled = i > 0 And .SelStart > .SelLength
+.Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
+.Form1rthisEnabled = .Form1mscatEnabled
+End With
+MyPopUp.feedlabels TEXT1, EditTextWord
 MyPopUp.Up x + gList1.Left, y + gList1.top
 
 ''Form1.PopupMenu Form1.aaaa, , X + gList1.Left, Y + gList1.top
@@ -557,7 +578,7 @@ End Sub
 Public Sub mscatsub()
 ''
 Dim l As Long, w As Long, s$, TempLcid As Long, OldLcid As Long
-Dim eL As Long, eW As Long, SAFETY As Long, tt$
+Dim eL As Long, eW As Long, SAFETY As Long, TT$
 
 w = TEXT1.mdoc.MarkParagraphID
 eW = w
@@ -573,9 +594,9 @@ l = eL + 1
 If EditTextWord Then
 Do
 If TEXT1.mdoc.FindWord(s$, True, w, l) Then
-tt$ = TEXT1.mdoc.TextParagraph(w)
-Mid$(tt$, l, Len(s$)) = s$
-TEXT1.mdoc.ReWritePara w, tt$
+TT$ = TEXT1.mdoc.TextParagraph(w)
+Mid$(TT$, l, Len(s$)) = s$
+TEXT1.mdoc.ReWritePara w, TT$
 Else
 w = 1
 l = 0
@@ -586,9 +607,9 @@ Loop Until (w = eW And l = eL) Or SAFETY = 2
 Else
 Do
 If TEXT1.mdoc.FindIdentifier(s$, True, w, l) Then
-tt$ = TEXT1.mdoc.TextParagraph(w)
-Mid$(tt$, l, Len(s$)) = s$
-TEXT1.mdoc.TextParagraph(w) = tt$
+TT$ = TEXT1.mdoc.TextParagraph(w)
+Mid$(TT$, l, Len(s$)) = s$
+TEXT1.mdoc.TextParagraph(w) = TT$
 Else
 w = 1
 l = 0
@@ -606,7 +627,7 @@ End Sub
 
 Public Sub rthissub()
 Dim l As Long, w As Long, s$, TempLcid As Long, OldLcid As Long
-Dim eL As Long, eW As Long, SAFETY As Long, tt$, w1 As Long, i1 As Long
+Dim eL As Long, eW As Long, SAFETY As Long, TT$, w1 As Long, i1 As Long
 Dim neo$, mDoc10 As Document, addthat As Long
 w = TEXT1.mdoc.MarkParagraphID
 eW = w
@@ -894,7 +915,7 @@ End Sub
 
 
 
-Private Sub dSprite_MouseDown(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseDown(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 Dim p As Long, u2 As Long
 If lockme Then Exit Sub
  MOUB = Button
@@ -904,19 +925,19 @@ If lockme Then Exit Sub
 If Not NoAction Then
 NoAction = True
 Dim sel&
-p = Val("0" & dSprite(index).Tag)
+p = Val("0" & dSprite(Index).Tag)
 With players(p)
     u2 = .uMineLineSpace * 2
 
         If Button > 0 And Targets Then
 
-        sel& = ScanTarget(q(), CLng(x), CLng(y), index)
+        sel& = ScanTarget(q(), CLng(x), CLng(y), Index)
             If sel& >= 0 Then
                 If Button = 1 Then
                 '' If QRY Then LCTC dSprite(Index), oy&, ox&, ins& Else LCT dSprite(Index), oy&, ox&
                 Select Case q(sel&).Id Mod 100
                 Case Is < 10
-                If Not interpret(DisStack, "LAYER " & dSprite(index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
+                If Not interpret(DisStack, "LAYER " & dSprite(Index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
                 Case Else
                 INK$ = q(sel&).Comm
                 End Select
@@ -934,7 +955,7 @@ End If
 
 End Sub
 
-Private Sub dSprite_MouseMove(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseMove(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = Button
 If NOEDIT = True And (exWnd = 0 Or Button) Then
@@ -942,7 +963,7 @@ Me.KeyPreview = True
 End If
 End Sub
 
-Private Sub dSprite_MouseUp(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseUp(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = 0
 End Sub
@@ -1371,7 +1392,7 @@ Set MeStack.Owner = Me
 ThereIsAPrinter = IsPrinter
 If ThereIsAPrinter Then
 
-pname = Printer.DeviceName
+pName = Printer.DeviceName
 port = Printer.port
 
 End If
@@ -1858,9 +1879,11 @@ KeyCode = 0
 Exit Sub
 End If
 noentrance = True
-Form1mn1Enabled = TEXT1.SelLength > 1
-Form1mn2Enabled = Form1mn1Enabled
-Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+With TEXT1
+.Form1mn1Enabled = .SelLength > 1
+.Form1mn2Enabled = .Form1mn1Enabled
+.Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
+End With
 Select Case KeyCode
 Case vbKeyReturn
 nochange = True
@@ -2038,19 +2061,6 @@ End Select
 noentrance = False
 End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Private Sub TEXT1_Inform(tLine As Long, tPos As Long)
 If TEXT1.UsedAsTextBox Then
 
@@ -2174,7 +2184,7 @@ If Form1.Visible Then Form1.refresh
 End Sub
 Private Sub PREPARE(basestack As basetask, ByVal Nb As String)
 Dim g As Long, ic As Long
-Dim VP As String, VV As String, CM$, b As String
+Dim VP As String, vv As String, CM$, b As String
 If needset Then
 Nb = StrConv(Nb, vbUnicode)
 For ic = 1 To Len(Nb) Step 2
@@ -2187,8 +2197,8 @@ End If
 g = InStr(b, "?")
 If g > 0 Then b = Mid$(b, g + 1) Else Exit Sub
 If b <> "" Then
-Do While Parameters(b, VP, VV)
-CM$ = VP & "$=" & """" + VV + """"
+Do While Parameters(b, VP, vv)
+CM$ = VP & "$=" & """" + vv + """"
 Execute basestack, CM$, True
 Loop
 MyDoEvents
@@ -2582,9 +2592,6 @@ End If
 
 
 End Sub
-
-
-
 
 Public Sub mn1sub()
 TEXT1.MarkCut

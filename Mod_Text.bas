@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 191
+Global Const Revision = 192
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2498,7 +2498,7 @@ End If
 End Function
 
 
-Function BoxTarget(DSTACK As basetask, ByVal xl&, ByVal yl&, ByVal b As Long, ByVal f As Long, ByVal Tag$, ByVal Id&, ByVal COM$, XXT&, YYT&, LineSpace&) As target
+Function BoxTarget(DSTACK As basetask, ByVal xl&, ByVal yl&, ByVal b As Long, ByVal f As Long, ByVal Tag$, ByVal Id&, ByVal COM$, XXT&, YYT&, Linespace&) As target
 Dim x&, y&, d As Object
 Set d = DSTACK.Owner
 Dim prive As basket
@@ -2709,13 +2709,13 @@ IsExp = IsExpA(basestack, a$, r, par, noand1)
 If LastErNum = -2 Then IsExp = False
 If par > 0 Then IsExp = False
 End Function
-Function IsExpA(bstack As basetask, aa$, RR As Double, parenthesis As Long, Optional ByVal noand As Boolean = True) As Boolean
+Function IsExpA(bstack As basetask, aa$, rr As Double, parenthesis As Long, Optional ByVal noand As Boolean = True) As Boolean
 Dim r As Double, ac As Double, po As Double, MUL As Long, r1 As Double
 Dim logic As Boolean, l As Boolean
 
 IsExpA = False
 If aa$ = "" Then Exit Function
-RR = 0
+rr = 0
 Do While FastSymbol(aa$, "(")
 parenthesis = parenthesis + 1
 Loop
@@ -3007,7 +3007,7 @@ ElseIf FastSymbol(aa$, ")") Then
                 ac = 0
             Else
                 aa$ = ")" & aa$
-                RR = ac + po
+                rr = ac + po
                 Exit Function
             End If
 ElseIf FastSymbol(aa$, "<>") Then
@@ -3244,7 +3244,7 @@ ac = ac + po
 po = 1
 Loop Until logic
 
-RR = ac
+rr = ac
 
 Do While parenthesis > 0
 If FastSymbol(aa$, ")") Then
@@ -7181,7 +7181,7 @@ Else
 End If
 End Function
 Function IsPureLabel(a$, r$) As Long
-Dim RR&, one As Boolean, c$
+Dim rr&, one As Boolean, c$
 r$ = ""
 If a$ = "" Then IsPureLabel = 0: Exit Function
 
@@ -7197,7 +7197,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             Else
             IsPureLabel = 0
             Exit Function
@@ -7208,7 +7208,7 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         Case "0" To "9", "_"
            If one Then
@@ -7216,7 +7216,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
             Exit Do
             End If
@@ -7225,7 +7225,7 @@ a$ = NLtrim$(a$)
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -7235,7 +7235,7 @@ a$ = NLtrim$(a$)
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -7248,13 +7248,13 @@ a$ = NLtrim$(a$)
                                   
                                  a$ = Mid$(a$, 4)
                                Else
-                                       Select Case RR&
+                                       Select Case rr&
                                        Case 1
-                                       RR& = 5 ' float array or function
+                                       rr& = 5 ' float array or function
                                        Case 3
-                                       RR& = 6 'string array or function
+                                       rr& = 6 'string array or function
                                        Case 4
-                                       RR& = 7 ' long array
+                                       rr& = 7 ' long array
                                        Case Else
                                        Exit Do
                                        End Select
@@ -7276,17 +7276,17 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
 
     Loop
-    IsPureLabel = RR&
+    IsPureLabel = rr&
    a$ = NLtrim$(a$)
 
 End Function
 Function IsLabelBig(bstack As basetask, a$, rrr$, Optional nocommand As Boolean, Optional r$) As Long
-Dim RR&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean, cc As Long
+Dim rr&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean, cc As Long
 r$ = ""
 If a$ = "" Then IsLabelBig = 0: Exit Function
 a$ = NLtrim$(a$)
@@ -7331,7 +7331,7 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             End If
             Else
             IsLabelBig = 0
@@ -7351,7 +7351,7 @@ a$ = NLtrim$(a$)
             
                        If r$ <> "" Then
                        r$ = r$ & Left$(a$, 1)
-                      RR& = 1
+                      rr& = 1
                                       
                             Else
                             
@@ -7384,7 +7384,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Or dot& Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
               Exit Do
             End If
@@ -7396,7 +7396,7 @@ a$ = NLtrim$(a$)
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
              nocommand = True
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
             If dot& > 0 Then a$ = "." + a$: dot& = 0
             
@@ -7408,7 +7408,7 @@ Case Is >= "A"
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         Case "&"
         
@@ -7416,16 +7416,16 @@ Case Is >= "A"
             
             If r$ <> "" Then
                 'ERROR
-                RR& = 0
+                rr& = 0
                 '' r$ = ""
                 rrr$ = ""
                 Exit Function
             Else
            nocommand = True
                 a$ = Mid$(a$, 2)
-                RR& = Abs(IsLabelBig(bstack, a$, r$))
+                rr& = Abs(IsLabelBig(bstack, a$, r$))
                 skipcase = True
-                If RR& < 5 Then
+                If rr& < 5 Then
             Dim i As Long
          
                     If GetlocalVar(r$, i) Then
@@ -7451,11 +7451,11 @@ Case Is >= "A"
                    
                    Exit Function
                     Else
-                If GetSub(r$ + ")", RR&) Then
+                If GetSub(r$ + ")", rr&) Then
                 
-                                 r$ = "{" + sbf(RR&).sb + "} " + sbf(RR&).sbgroup
+                                 r$ = "{" + sbf(rr&).sb + "} " + sbf(rr&).sbgroup
                                  
-                    RR& = 2
+                    rr& = 2
                     Exit Do
                     Else
                     MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
@@ -7465,13 +7465,13 @@ Case Is >= "A"
                 Else
                     If FastSymbol(a$, ")") Then
                            '' r$ = myUcase(r$, gr)
-                            RR& = 0
+                            rr& = 0
                             If Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
                             If varhash.ExistKey(bstack.UseGroupname & Mid(r$, 6)) Then
                        
                                     a$ = Chr(34) + bstack.UseGroupname & Mid(r$, 6, Len(r$) - 6) + Chr(34) + a$
                                     Else
-                                    RR& = 2
+                                    rr& = 2
                                     End If
                                 ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
                                a$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
@@ -7479,19 +7479,19 @@ Case Is >= "A"
                                 ElseIf varhash.ExistKey(r$) Then
                                     a$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 Else
-                                   RR& = 3
+                                   rr& = 3
                                 End If
-                                 If RR& > 0 Then
-                                 If RR& = 2 Then
+                                 If rr& > 0 Then
+                                 If rr& = 2 Then
                                  If bstack.UseGroupname <> "" Then
                                  r$ = bstack.UseGroupname + Mid$(r$, 6)
                                  End If
                                  End If
-                                 RR& = 1
-                                 If GetSub(r$ + ")", RR&) Then
-                            r$ = "{" + sbf(RR&).sb + "}" + sbf(RR&).sbgroup
+                                 rr& = 1
+                                 If GetSub(r$ + ")", rr&) Then
+                            r$ = "{" + sbf(rr&).sb + "}" + sbf(rr&).sbgroup
                                  
-                    RR& = 2
+                    rr& = 2
      
                     Exit Do
                     
@@ -7501,14 +7501,14 @@ Case Is >= "A"
                
                                  
                                  End If
-                                 RR& = 0
+                                 rr& = 0
                                  r$ = ""
                                 Exit Do
                             End If
                     End If
                     
                     r$ = ""
-                    RR& = 0
+                    rr& = 0
                     Exit Do
             End If
             
@@ -7516,7 +7516,7 @@ Case Is >= "A"
        If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -7526,7 +7526,7 @@ Case Is >= "A"
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
             nocommand = True
             a$ = Mid$(a$, 2)
@@ -7539,13 +7539,13 @@ Case Is >= "A"
                  r$ = r$ & "()."
               a$ = Mid$(a$, 4)
                 Else
-                Select Case RR&
+                Select Case rr&
                 Case 1
-                RR& = 5 ' float array or function
+                rr& = 5 ' float array or function
                 Case 3
-                RR& = 6 'string array or function
+                rr& = 6 'string array or function
                 Case 4
-                RR& = 7 ' long array
+                rr& = 7 ' long array
                 Case Else
                 Exit Do
                 End Select
@@ -7567,7 +7567,7 @@ Case Is >= "A"
             gr = True
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
     Loop
@@ -7580,23 +7580,23 @@ Case Is >= "A"
    nocommand = True
                            If r$ <> "" Then
      
-                        RR& = bstack.GetDotNew(rrr$, dot&) * RR&
+                        rr& = bstack.GetDotNew(rrr$, dot&) * rr&
 
-                        nocommand = RR&
+                        nocommand = rr&
                            Else
-                          If dot& > 1 Then rrr$ = String$(dot&, ".") + rrr$: If RR& = 0 Then RR& = 1
+                          If dot& > 1 Then rrr$ = String$(dot&, ".") + rrr$: If rr& = 0 Then rr& = 1
                           End If
     
     
    End If
    
-    IsLabelBig = RR&
+    IsLabelBig = rr&
     nocommand = IsLabelBig And (Len(r$) = 1 Or nocommand)
  '' a$ = LTrim(a$)
 
 End Function
 Function IsLabel(bstack As basetask, a$, rrr$, Optional NoSpace As Boolean = False, Optional skipcase As Boolean = False) As Long
-Dim RR&, one As Boolean, c$, dot&, gr As Boolean, r$, cc As Long
+Dim rr&, one As Boolean, c$, dot&, gr As Boolean, r$, cc As Long
 'r$ = ""
 If a$ = "" Then IsLabel = 0: Exit Function
 If Not NoSpace Then a$ = NLtrim$(a$) Else If AscW(a$) = 32 Then Exit Function
@@ -7641,7 +7641,7 @@ If Not NoSpace Then a$ = NLtrim$(a$) Else If AscW(a$) = 32 Then Exit Function
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             End If
             Else
             IsLabel = 0
@@ -7661,7 +7661,7 @@ If Not NoSpace Then a$ = NLtrim$(a$) Else If AscW(a$) = 32 Then Exit Function
             
                        If r$ <> "" Then
                        r$ = r$ & Left$(a$, 1)
-                      RR& = 1
+                      rr& = 1
                                       
                             Else
                             
@@ -7693,7 +7693,7 @@ If Not NoSpace Then a$ = NLtrim$(a$) Else If AscW(a$) = 32 Then Exit Function
             ElseIf r$ <> "" Or dot& Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
               Exit Do
             End If
@@ -7704,7 +7704,7 @@ If Not NoSpace Then a$ = NLtrim$(a$) Else If AscW(a$) = 32 Then Exit Function
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
             If dot& > 0 Then a$ = "." + a$: dot& = 0
             
@@ -7716,7 +7716,7 @@ Case Is >= "A"
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         Case "&"
         
@@ -7724,15 +7724,15 @@ Case Is >= "A"
             
             If r$ <> "" Then
                 'ERROR
-                RR& = 0
+                rr& = 0
                 '' r$ = ""
                 rrr$ = ""
                 Exit Function
             Else
                 a$ = Mid$(a$, 2)
-                RR& = Abs(IsLabel(bstack, a$, r$, True))
+                rr& = Abs(IsLabel(bstack, a$, r$, True))
                 skipcase = True
-                If RR& < 5 Then
+                If rr& < 5 Then
             Dim i As Long
          
                     If GetlocalVar(r$, i) Then
@@ -7758,11 +7758,11 @@ Case Is >= "A"
                    
                    Exit Function
                     Else
-                If GetSub(r$ + ")", RR&) Then
+                If GetSub(r$ + ")", rr&) Then
                 
-                                 r$ = "{" + sbf(RR&).sb + "} " + sbf(RR&).sbgroup
+                                 r$ = "{" + sbf(rr&).sb + "} " + sbf(rr&).sbgroup
                                  
-                    RR& = 2
+                    rr& = 2
                     Exit Do
                     Else
                     MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
@@ -7772,31 +7772,31 @@ Case Is >= "A"
                 Else
                     If FastSymbol(a$, ")") Then
                            '' r$ = myUcase(r$, gr)
-                            RR& = 0
+                            rr& = 0
                             If Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
                             If varhash.ExistKey(bstack.UseGroupname & Mid(r$, 6)) > 0 Then
                                     a$ = Chr(34) + bstack.UseGroupname & Mid(r$, 6, Len(r$) - 6) + Chr(34) + a$
                                     Else
-                                    RR& = 2
+                                    rr& = 2
                                     End If
                                 ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
                                      a$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 ElseIf varhash.ExistKey(r$) Then
                                     a$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 Else
-                                   RR& = 3
+                                   rr& = 3
                                 End If
-                                If RR& > 0 Then
-                                 If RR& = 2 Then
+                                If rr& > 0 Then
+                                 If rr& = 2 Then
                                  If bstack.UseGroupname <> "" Then
                                  r$ = bstack.UseGroupname + Mid$(r$, 6)
                                  End If
                                  End If
-                                 RR& = 1
-                                 If GetSub(r$ + ")", RR&) Then
-                                                                  r$ = "{" + sbf(RR&).sb + "}" + sbf(RR&).sbgroup
+                                 rr& = 1
+                                 If GetSub(r$ + ")", rr&) Then
+                                                                  r$ = "{" + sbf(rr&).sb + "}" + sbf(rr&).sbgroup
                                  
-                    RR& = 2
+                    rr& = 2
      
                     Exit Do
                     
@@ -7806,14 +7806,14 @@ Case Is >= "A"
                
                                  
                                  End If
-                                 RR& = 0
+                                 rr& = 0
                                  r$ = ""
                                 Exit Do
                             End If
                     End If
                     
                     r$ = ""
-                    RR& = 0
+                    rr& = 0
                     Exit Do
             End If
             
@@ -7821,7 +7821,7 @@ Case Is >= "A"
        If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -7831,7 +7831,7 @@ Case Is >= "A"
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -7843,13 +7843,13 @@ Case Is >= "A"
                  r$ = r$ & "()."
               a$ = Mid$(a$, 4)
                 Else
-                Select Case RR&
+                Select Case rr&
                 Case 1
-                RR& = 5 ' float array or function
+                rr& = 5 ' float array or function
                 Case 3
-                RR& = 6 'string array or function
+                rr& = 6 'string array or function
                 Case 4
-                RR& = 7 ' long array
+                rr& = 7 ' long array
                 Case Else
                 Exit Do
                 End Select
@@ -7871,7 +7871,7 @@ Case Is >= "A"
             gr = True
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
     Loop
@@ -7883,22 +7883,22 @@ Case Is >= "A"
    If dot& Then
                            If r$ <> "" Then
      
-                        RR& = bstack.GetDotNew(rrr$, dot&) * RR&
+                        rr& = bstack.GetDotNew(rrr$, dot&) * rr&
                            Else
-                          If dot& > 1 Then rrr$ = String$(dot&, ".") + rrr$: If RR& = 0 Then RR& = 1
+                          If dot& > 1 Then rrr$ = String$(dot&, ".") + rrr$: If rr& = 0 Then rr& = 1
                           End If
     
     
    End If
    
-    IsLabel = RR&
+    IsLabel = rr&
 
  '' a$ = LTrim(a$)
 
 End Function
 
 Function IsLabelDIM(bstack As basetask, a$, r$) As Long
-Dim RR&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean, cc As Long
+Dim rr&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean, cc As Long
 r$ = ""
 If a$ = "" Then IsLabelDIM = 0: Exit Function
 a$ = NLtrim$(a$)
@@ -7942,7 +7942,7 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             End If
             Else
             IsLabelDIM = 0
@@ -7962,7 +7962,7 @@ a$ = NLtrim$(a$)
             
                        If r$ <> "" Then
                        r$ = r$ & Left$(a$, 1)
-                      RR& = 1
+                      rr& = 1
                                       
                             Else
                             
@@ -7995,7 +7995,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Or dot& Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
               Exit Do
             End If
@@ -8006,7 +8006,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-             RR& = 1 'is an identifier or floating point variable
+             rr& = 1 'is an identifier or floating point variable
             Else
             If dot& > 0 Then a$ = "." + a$: dot& = 0
             
@@ -8018,7 +8018,7 @@ Case Is >= "A"
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         Case "&"
         
@@ -8026,15 +8026,15 @@ Case Is >= "A"
             
             If r$ <> "" Then
             
-                RR& = 0
+                rr& = 0
      
               r$ = ""
                 Exit Function
             Else
                 a$ = Mid$(a$, 2)
-                RR& = Abs(IsLabelDIM(bstack, a$, r$))
+                rr& = Abs(IsLabelDIM(bstack, a$, r$))
                 skipcase = True
-                If RR& < 5 Then
+                If rr& < 5 Then
             Dim i As Long
          
                     If GetlocalVar(r$, i) Then
@@ -8060,11 +8060,11 @@ Case Is >= "A"
                    
                    Exit Function
                     Else
-                If GetSub(r$ + ")", RR&) Then
+                If GetSub(r$ + ")", rr&) Then
                 
-                                 r$ = "{" + sbf(RR&).sb + "} " + sbf(RR&).sbgroup
+                                 r$ = "{" + sbf(rr&).sb + "} " + sbf(rr&).sbgroup
                                  
-                    RR& = 2
+                    rr& = 2
                     Exit Do
                     Else
                     MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
@@ -8074,29 +8074,29 @@ Case Is >= "A"
                 Else
                     If FastSymbol(a$, ")") Then
                            '' r$ = myUcase(r$, gr)
-                            RR& = 0
+                            rr& = 0
                             If Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
                             If varhash.ExistKey(bstack.UseGroupname & Mid(r$, 6)) Then
                                     a$ = Chr(34) + bstack.UseGroupname & Mid(r$, 6, Len(r$) - 6) + Chr(34) + a$
                                     Else
-                                    RR& = 1
+                                    rr& = 1
                                     End If
                                 ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
                                      a$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 ElseIf varhash.ExistKey(r$) Then
                                     a$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 Else
-                                   RR& = 1
+                                   rr& = 1
                                 End If
-                                 If RR& = 1 Then
+                                 If rr& = 1 Then
                                  If bstack.UseGroupname <> "" Then
                                  r$ = bstack.UseGroupname + Mid$(r$, 6)
                                  Else
                                  End If
-                                 If GetSub(r$ + ")", RR&) Then
-                                                                  r$ = "{" + sbf(RR&).sb + "}" + sbf(RR&).sbgroup
+                                 If GetSub(r$ + ")", rr&) Then
+                                                                  r$ = "{" + sbf(rr&).sb + "}" + sbf(rr&).sbgroup
                                  
-                    RR& = 2
+                    rr& = 2
      
                     Exit Do
                     
@@ -8106,14 +8106,14 @@ Case Is >= "A"
                
                                  
                                  End If
-                                 RR& = 0
+                                 rr& = 0
                                  r$ = ""
                                 Exit Do
                             End If
                     End If
                     
                     r$ = ""
-                    RR& = 0
+                    rr& = 0
                     Exit Do
             End If
             
@@ -8121,7 +8121,7 @@ Case Is >= "A"
        If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8131,7 +8131,7 @@ Case Is >= "A"
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8143,13 +8143,13 @@ Case Is >= "A"
                  r$ = r$ & "()."
               a$ = Mid$(a$, 4)
                 Else
-                Select Case RR&
+                Select Case rr&
                 Case 1
-                RR& = 5 ' float array or function
+                rr& = 5 ' float array or function
                 Case 3
-                RR& = 6 'string array or function
+                rr& = 6 'string array or function
                 Case 4
-                RR& = 7 ' long array
+                rr& = 7 ' long array
                 Case Else
                 Exit Do
                 End Select
@@ -8171,7 +8171,7 @@ Case Is >= "A"
             gr = True
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
     Loop
@@ -8180,22 +8180,22 @@ Case Is >= "A"
                            If r$ <> "" Then
                            If dot& = 1 Then
                            r$ = "THIS." + r$
-                           RR& = -RR&
+                           rr& = -rr&
                            Else
-                        RR& = bstack.GetDotNew(r$, dot&) * RR&
+                        rr& = bstack.GetDotNew(r$, dot&) * rr&
                         End If
                            Else
-                          If dot& > 1 Then r$ = String$(dot&, ".") + r$: If RR& = 0 Then RR& = 1
+                          If dot& > 1 Then r$ = String$(dot&, ".") + r$: If rr& = 0 Then rr& = 1
                           End If
     
     
    End If
-    IsLabelDIM = RR&
+    IsLabelDIM = rr&
 End Function
 
 Function IsLabelOnly(a$, r$) As Long
 
-Dim RR&, one As Boolean, c$, dot&
+Dim rr&, one As Boolean, c$, dot&
 r$ = ""
 If a$ = "" Then IsLabelOnly = 0: Exit Function
 a$ = NLtrim$(a$)
@@ -8223,7 +8223,7 @@ a$ = NLtrim$(a$)
             
                        If r$ <> "" Then
                        r$ = r$ & Left$(a$, 1)
-                      RR& = 1
+                      rr& = 1
                                       
                             Else
                             
@@ -8256,7 +8256,7 @@ Exit Do
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-               RR& = 1 'is an identifier or floating point variable
+               rr& = 1 'is an identifier or floating point variable
             Else
             If dot& > 0 Then a$ = "." + a$: dot& = 0
             
@@ -8269,16 +8269,16 @@ Case Is >= "A"
             
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
       Case "&"
-            If r$ = "" Then RR& = 2:    a$ = Mid$(a$, 2)
+            If r$ = "" Then rr& = 2:    a$ = Mid$(a$, 2)
             Exit Do
        Case "$"
        If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8288,7 +8288,7 @@ Case Is >= "A"
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
         
             a$ = Mid$(a$, 2)
@@ -8301,13 +8301,13 @@ Case Is >= "A"
                  r$ = r$ & "()."
               a$ = Mid$(a$, 4)
                 Else
-                Select Case RR&
+                Select Case rr&
                 Case 1
-                RR& = 5 ' float array or function
+                rr& = 5 ' float array or function
                 Case 3
-                RR& = 6 'string array or function
+                rr& = 6 'string array or function
                 Case 4
-                RR& = 7 ' long array
+                rr& = 7 ' long array
                 Case Else
                 Exit Do
                 End Select
@@ -8328,15 +8328,15 @@ Case Is >= "A"
             Else
              r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
     Loop
-    IsLabelOnly = RR&
+    IsLabelOnly = rr&
    
 End Function
 Function IsLabelSYMB(a$, r$) As Boolean
-Dim RR&, one As Boolean, c$
+Dim rr&, one As Boolean, c$
 r$ = ""
 If a$ = "" Then IsLabelSYMB = 0: Exit Function
 a$ = NLtrim$(a$)
@@ -8350,7 +8350,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             Else
             IsLabelSYMB = 0
             Exit Function
@@ -8361,7 +8361,7 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         
         Case Else
@@ -8373,19 +8373,19 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         
         End If
     Loop
     
-    IsLabelSYMB = RR&
+    IsLabelSYMB = rr&
    a$ = NLtrim$(a$)
 
 End Function
 Function IsLabelSYMB2(a$, r$) As Boolean
 'without ucase
-Dim RR&, one As Boolean, c$
+Dim rr&, one As Boolean, c$
 r$ = ""
 If a$ = "" Then IsLabelSYMB2 = 0: Exit Function
 a$ = NLtrim$(a$)
@@ -8399,7 +8399,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             Else
             IsLabelSYMB2 = 0
             Exit Function
@@ -8410,7 +8410,7 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         
         Case Else
@@ -8422,12 +8422,12 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         
         End If
     Loop
-    IsLabelSYMB2 = RR&
+    IsLabelSYMB2 = rr&
    a$ = NLtrim$(a$)
 
 End Function
@@ -8440,7 +8440,7 @@ a$ = Mid$(a$, Len(r$) + 1)
 End If
 End Function
 Function IsLabelSYMB3(a$, r$) As Boolean
-Dim RR&, c$, LB As Long, mb As Long, LLB As Long
+Dim rr&, c$, LB As Long, mb As Long, LLB As Long
 a$ = NLtrim$(a$)
 LLB = Len(a$)
 r$ = ""
@@ -8460,33 +8460,33 @@ LB = 1
         End If
         Case "."
          If LB > mb Then
-            RR& = 1
+            rr& = 1
             Else
             IsLabelSYMB3 = 0
             Exit Function
             End If
         Case "A" To "Z", "a" To "z"
      
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
         Case Else
         LB = LB - 1
         Exit Do
         End Select
                 Else
   
-           RR& = 1 'is an identifier or floating point variable
+           rr& = 1 'is an identifier or floating point variable
    
         
         End If
         LB = LB + 1
     Loop
     r$ = Mid$(a$, mb + 1, LB - mb)
-    IsLabelSYMB3 = RR&
+    IsLabelSYMB3 = rr&
   If LB > 0 Then a$ = Mid$(a$, LB + 1)
 
 End Function
 Function IsLabelSYMB33(a$, r$, CHARS As Long) As Boolean
-Dim RR&, c$, LB As Long, mb As Long, LLB As Long
+Dim rr&, c$, LB As Long, mb As Long, LLB As Long
 ''A$ = LTrim(A$)
 LLB = Len(a$)
 r$ = ""
@@ -8506,21 +8506,21 @@ LB = 1
         End If
         Case "."
          If LB > mb Then
-            RR& = 1
+            rr& = 1
             Else
             IsLabelSYMB33 = 0
             Exit Function
             End If
         Case "A" To "Z", "a" To "z"
      
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
         Case Else
         LB = LB - 1
         Exit Do
         End Select
                 Else
   
-           RR& = 1 'is an identifier or floating point variable
+           rr& = 1 'is an identifier or floating point variable
    
         
         End If
@@ -8528,8 +8528,8 @@ LB = 1
      ' If LB - mb >= CHARS Then Exit Do
     Loop
     r$ = Mid$(a$, mb + 1, LB - mb)
-    IsLabelSYMB33 = RR&
-   If RR& <> 0 Then
+    IsLabelSYMB33 = rr&
+   If rr& <> 0 Then
    CHARS = LB + 1
   
  End If
@@ -8538,7 +8538,7 @@ End Function
 Function IsLabelA(where$, a$, r$) As Long
 ' for left side...no &
 
-Dim RR&, one As Boolean, c$, gr As Boolean
+Dim rr&, one As Boolean, c$, gr As Boolean
 r$ = ""
 If a$ = "" Then IsLabelA = 0: Exit Function
 a$ = NLtrim$(a$)
@@ -8572,13 +8572,13 @@ a$ = NLtrim$(a$)
             If Mid$(a$, 2, 2) = ". " Or Mid$(a$, 2, 1) = " " Then Exit Do
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             Else
             IsLabelA = 0
             Exit Function
             End If
       Case "&"
-            If r$ = "" Then RR& = 2:    a$ = Mid$(a$, 2)
+            If r$ = "" Then rr& = 2:    a$ = Mid$(a$, 2)
             Exit Do
     Case "\", "{" To "~", "^"
         Exit Do
@@ -8589,7 +8589,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
             Exit Do
             End If
@@ -8599,13 +8599,13 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         Case "$"
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8615,7 +8615,7 @@ a$ = NLtrim$(a$)
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8628,13 +8628,13 @@ a$ = NLtrim$(a$)
                                   
                                  a$ = Mid$(a$, 4)
                                Else
-                                       Select Case RR&
+                                       Select Case rr&
                                        Case 1
-                                       RR& = 5 ' float array or function
+                                       rr& = 5 ' float array or function
                                        Case 3
-                                       RR& = 6 'string array or function
+                                       rr& = 6 'string array or function
                                        Case 4
-                                       RR& = 7 ' long array
+                                       rr& = 7 ' long array
                                        Case Else
                                        Exit Do
                                        End Select
@@ -8657,14 +8657,14 @@ a$ = NLtrim$(a$)
             gr = True
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
 
     Loop
 r$ = myUcase(r$, gr)
 
-    IsLabelA = RR&
+    IsLabelA = rr&
    'a$ = LTrim(a$)
 
 End Function
@@ -8672,7 +8672,7 @@ End Function
 Function IsLabelDot(where$, a$, r$) As Long
 ' for left side...no &
 
-Dim RR&, one As Boolean, c$, firstdot$, gr As Boolean
+Dim rr&, one As Boolean, c$, firstdot$, gr As Boolean
 r$ = ""
 If a$ = "" Then IsLabelDot = 0: Exit Function
 
@@ -8711,7 +8711,7 @@ a$ = NLtrim$(a$)
             If Mid$(a$, 2, 2) = ". " Or Mid$(a$, 2, 1) = " " Then Exit Do
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             Else
             firstdot$ = firstdot$ + "."
             a$ = Mid$(a$, 2)
@@ -8726,7 +8726,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
             Exit Do
             End If
@@ -8736,13 +8736,13 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         Case "$"
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8752,7 +8752,7 @@ a$ = NLtrim$(a$)
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8765,13 +8765,13 @@ a$ = NLtrim$(a$)
                                   
                                  a$ = Mid$(a$, 4)
                                Else
-                                       Select Case RR&
+                                       Select Case rr&
                                        Case 1
-                                       RR& = 5 ' float array or function
+                                       rr& = 5 ' float array or function
                                        Case 3
-                                       RR& = 6 'string array or function
+                                       rr& = 6 'string array or function
                                        Case 4
-                                       RR& = 7 ' long array
+                                       rr& = 7 ' long array
                                        Case Else
                                        Exit Do
                                        End Select
@@ -8794,20 +8794,20 @@ a$ = NLtrim$(a$)
             gr = True
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
 
     Loop
        r$ = firstdot$ + myUcase(r$, gr)
-    IsLabelDot = RR&
+    IsLabelDot = rr&
    'a$ = LTrim(a$)
 
 End Function
 Function IsLabelDotSubOld(where$, a$, rrr$, r$, lang As Long) As Long
 ' for left side...no &
 
-Dim RR&, one As Boolean, c$, firstdot$, gr As Boolean
+Dim rr&, one As Boolean, c$, firstdot$, gr As Boolean
 
 rrr$ = ""
 r$ = ""
@@ -8852,7 +8852,7 @@ a$ = NLtrim$(a$)
             If Mid$(a$, 2, 2) = ". " Or Mid$(a$, 2, 1) = " " Then Exit Do
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1
+            rr& = 1
             Else
             firstdot$ = firstdot$ + "."
             a$ = Mid$(a$, 2)
@@ -8867,7 +8867,7 @@ a$ = NLtrim$(a$)
             ElseIf r$ <> "" Then
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             Else
             Exit Do
             End If
@@ -8877,13 +8877,13 @@ a$ = NLtrim$(a$)
             Else
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         Case "$"
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 3 ' is string variable
+            rr& = 3 ' is string variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8893,7 +8893,7 @@ a$ = NLtrim$(a$)
             If one Then Exit Do
             If r$ <> "" Then
             one = True
-            RR& = 4 ' is long variable
+            rr& = 4 ' is long variable
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
             Else
@@ -8906,13 +8906,13 @@ a$ = NLtrim$(a$)
                                   
                                  a$ = Mid$(a$, 4)
                                Else
-                                       Select Case RR&
+                                       Select Case rr&
                                        Case 1
-                                       RR& = 5 ' float array or function
+                                       rr& = 5 ' float array or function
                                        Case 3
-                                       RR& = 6 'string array or function
+                                       rr& = 6 'string array or function
                                        Case 4
-                                       RR& = 7 ' long array
+                                       rr& = 7 ' long array
                                        Case Else
                                        Exit Do
                                        End Select
@@ -8935,19 +8935,19 @@ a$ = NLtrim$(a$)
             gr = True
             r$ = r$ & Left$(a$, 1)
             a$ = Mid$(a$, 2)
-            RR& = 1 'is an identifier or floating point variable
+            rr& = 1 'is an identifier or floating point variable
             End If
         End If
 
     Loop
        rrr$ = firstdot$ + myUcase(r$, gr)
        lang = 1 + CLng(gr)
-    IsLabelDotSubOld = RR&
+    IsLabelDotSubOld = rr&
    'a$ = LTrim(a$)
 
 End Function
 
-Function IsStrExp(basestack As basetask, aa$, RR$) As Boolean
+Function IsStrExp(basestack As basetask, aa$, rr$) As Boolean
 If Left$(aheadstatus(aa$, False), 1) <> "S" Then IsStrExp = False: Exit Function
 If LastErNum = -2 Then LastErNum = 0 ': LastErNum1 = 0
 Dim ac$, fault As Boolean
@@ -8955,10 +8955,10 @@ Dim ac$, fault As Boolean
 fault = False
 IsStrExp = False
 '' FastSymbol aa$, "+"   '' maybe but not sure if it is ok.
-Do While IsString(basestack, aa$, RR$)
+Do While IsString(basestack, aa$, rr$)
 fault = False
 IsStrExp = True
-ac$ = ac$ & RR$
+ac$ = ac$ & rr$
 If Not FastSymbol(aa$, "+") Then Exit Do
 fault = True
 Loop
@@ -8969,7 +8969,7 @@ Else
 aa$ = "+" & aa$
 End If
 End If
-RR$ = ac$
+rr$ = ac$
  End Function
 Function GrabFrame() As String
 Dim p As New cDIBSection
@@ -11868,6 +11868,7 @@ Case 1
                                         
                                 GlobalMoveGroup bstack, w$
                                 Else
+                                
                                 SyntaxError
                                 End If
                 Else
@@ -15115,7 +15116,7 @@ If Len(bb$) = 8 Then Execute = 0: Exit Function
                                         
                                 ElseIf Typename(bstack.LastObj) = "mEvent" Then
                                 If NewStat Then
-                                            MyEr "No New statement for groups", "Όχι δήλωση νέου για ομάδες"
+                                            MyEr "No New statement for events", "Όχι δήλωση νέου για γεγονότα"
                                             Exit Function
                                         Else
                                             If Not GetVar(bstack, w$, x1, True) Then x1 = GlobalVar(w$, p, , VarStat)
@@ -15130,7 +15131,6 @@ If Len(bb$) = 8 Then Execute = 0: Exit Function
                                             
                                         End If
                                 Else
-                                
                                 SyntaxError
                                   End If
                              Else
@@ -21341,6 +21341,11 @@ goNothing:
         Exit Function
         End If
         End If
+        '' EXPAND OBJECTS HERE
+        '' ElseIf IsLabelSymbolNewExp(rest$, "GREEK NAME", "ENGLISH NAME", lang, ss$) Then
+        '' i = GlobalVar(w$, s$, , y1 = True)
+        '' Set var(i) = New .....
+
         Else
         i = GlobalVar(w$, s$, , y1 = True)
         End If
@@ -21450,7 +21455,7 @@ If FastSymbol(rest$, ")") Then
     ExpandGui bstack, what$, rest$, ifier, lang, w$
  ElseIf IsLabelSymbolNewExp(rest$, "ΥΠΟ", "UNDER", lang, ss$) Then
     ExpandGui bstack, what$, rest$, ifier, lang, w$
- Else
+Else
 
  
  BadObjectDecl
@@ -23035,11 +23040,10 @@ End If
 Exit Function
 Case "CURSOR", "ΔΡΟΜΕΑΣ" ' CURSOR X,Y
 prive = GetCode(bstack.Owner)
-
 With players(prive)
 If FastSymbol(rest$, "!") Then
  .curpos = .XGRAPH \ .Xt
-  .currow = (.YGRAPH - .uMineLineSpace) \ .Yt
+  .currow = (.YGRAPH) \ .Yt '(.Yt + .uMineLineSpace)
 ElseIf IsExp(bstack, rest$, p) Then
 x1 = CLng(p) Mod 1000 '' Mod (.mx + 1)
 If FastSymbol(rest$, ",") Then
@@ -23078,7 +23082,7 @@ Case "MOVE", "ΘΕΣΗ"
 With players(GetCode(bstack.Owner))
 If FastSymbol(rest$, "!") Then
  .XGRAPH = .curpos * .Xt
- .YGRAPH = .currow * .Yt + .uMineLineSpace
+ .YGRAPH = .currow * .Yt
 ElseIf IsExp(bstack, rest$, p) Then .XGRAPH = p
 If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then .YGRAPH = p Else ifier = False: MissNumExpr: Exit Function
 End If
@@ -28618,28 +28622,28 @@ End Sub
 Public Sub ProcProperty(bstack As basetask, v(), vIndex As Long, FN$, rest$, language As Long, Optional hardlink As Boolean = False)
 Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, many As Long, y1 As Boolean, x1 As Long
 Dim var2() As String
-Dim VV As Object
+Dim vv As Object
 Dim oo As Object, myvar As Variant
-Set VV = v(vIndex)
+Set vv = v(vIndex)
 ReDim var1(0 To 0)
 
 Do
 If FastSymbol(rest$, ",") Then
 If IsExp(bstack, rest$, r) Then
 ''var1(0) = r
-l = FindDISPID(VV, FN$)
-ChangeOneParameter VV, l, (r), FN$
+l = FindDISPID(vv, FN$)
+ChangeOneParameter vv, l, (r), FN$
 ElseIf IsStrExp(bstack, rest$, s$) Then
 var1(0) = s$
 
-CallByNameFixParamArray VV, FN$, VbLet, var1(), var2(), 1
+CallByNameFixParamArray vv, FN$, VbLet, var1(), var2(), 1
 
 End If
 ElseIf IsLabelSymbolNew(rest$, "ΩΣ", "AS", language) Then
 ' WE MAKE A NEW OBJECT
 
-l = FindDISPID(VV, FN$)
-FN$ = Typename(VV) & "." & UCase(FN$)
+l = FindDISPID(vv, FN$)
+FN$ = Typename(vv) & "." & UCase(FN$)
 If l <> -1 Then
 ' we have vv, fn$, l and we are looking for a label to make an object to that
 y1 = IsLabelSymbolNew(rest$, "ΓΕΝΙΚΟ", "GLOBAL", language)
@@ -28723,9 +28727,9 @@ End Sub
 ''ProcMethod bstack, var(i), sS$, rest$,  LANG
 Sub ProcMethod(bstack As basetask, v(), vIndex As Long, FN$, rest$, language As Long)
 Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, glob As Boolean
-Dim VV As Object, mstack As New mStiva, result As Variant, retobject As Object
+Dim vv As Object, mstack As New mStiva, result As Variant, retobject As Object
 Dim namarg As Long
-Set VV = v(vIndex)
+Set vv = v(vIndex)
 ReDim var1(0 To 0)
 Dim var2() As String
 ReDim var2(0 To 0)
@@ -28741,9 +28745,9 @@ If Not FastSymbol(rest$, ")", True) Then Exit Sub
 Else
 RealMeth bstack, rest$, var1(), var2(), items, namarg  ' if we have as result then we get an error...
 End If
- result = CallByNameFixParamArray(VV, FN$, VbMethod, var1(), var2(), items, retobject, namarg)
+ result = CallByNameFixParamArray(vv, FN$, VbMethod, var1(), var2(), items, retobject, namarg)
 Else
- result = CallByNameFixParamArray(VV, FN$, VbMethod, var1(), var2(), 0, retobject, namarg)
+ result = CallByNameFixParamArray(vv, FN$, VbMethod, var1(), var2(), 0, retobject, namarg)
 End If
 If Not retobject Is Nothing Then
      If IsLabelSymbolNew(rest$, "ΩΣ", "AS", language) Then
@@ -28828,7 +28832,12 @@ Case "N"
                        If Not ((trap Mod 2 = 0) And namedargument > 0) Then
                             
                             If IsExp(bstack, rest$, p) Then
+                            If bstack.LastObj Is Nothing Then
                                  var2(items) = p
+                            Else
+                                Set var2(items) = bstack.LastObj
+                                Set bstack.LastObj = Nothing
+                                 End If
                                 If namedargument = 0 Then NoNameditems = NoNameditems + 1
                                   If trap > 0 Then trap = trap + 1
                              Else
@@ -33855,7 +33864,6 @@ contEvArray:
                          Set alfa = var(y1)
                        With var(i)
                           .Construct alfa, what$
-                            
                             .Move 0, 2000, 6000, 600
                             .SetUp
                             .Text = what$
@@ -33872,7 +33880,6 @@ contEvArray:
                                     With aVar
                                     .ConstructArray alfa, what$, i
                                       .Move 0, 2000, 6000, 600
-                                      
                                       .SetUp
                                       .Text = what$ + "(" + LTrim(Str$(i)) + ")"
                           End With
@@ -33952,7 +33959,12 @@ contEvArray:
                        With var(i)
                           .Construct alfa, what$
                             
-                            .Move 0, 2000, 6000, 600
+                            .Move 0, 2000, 6000, 1200
+                            If alfa.prive <> 0 Then
+                            .Linespace = players(alfa.prive).uMineLineSpace
+                            Else
+                            .Linespace = players(0).uMineLineSpace
+                            End If
                             .SetUp
                             .Text = what$
                             
@@ -33967,8 +33979,12 @@ contEvArray:
                                   Set pppp.item(i) = aVar
                                     With aVar
                                     .ConstructArray alfa, what$, i
-                                      .Move 0, 2000, 6000, 600
-                                      
+                                      .Move 0, 2000, 6000, 1200
+                          If alfa.prive <> 0 Then
+                            .Linespace = players(alfa.prive).uMineLineSpace
+                            Else
+                            .Linespace = players(0).uMineLineSpace
+                            End If
                                       .SetUp
                                       .Text = what$ + "(" + LTrim(Str$(i)) + ")"
                           End With

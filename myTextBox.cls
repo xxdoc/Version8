@@ -238,7 +238,7 @@ Private Sub glistN_HeaderSelected(Button As Integer)
 Text = Text
 End Sub
 
-Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
+Private Sub gListN_KeyDown(KeyCode As Integer, shift As Integer)
 RaiseEvent KeyDown(KeyCode, shift)
 If KeyCode = vbKeyUp Then
 ElseIf KeyCode = vbKeyDown Then

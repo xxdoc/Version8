@@ -60,7 +60,7 @@ Option Explicit
 Private Declare Function CopyFromLParamToRect Lib "user32" Alias "CopyRect" (lpDestRect As RECT, ByVal lpSourceRect As Long) As Long
 Private Declare Function DestroyCaret Lib "user32" () As Long
 Dim setupxy As Single
-Dim Lx As Long, ly As Long, dr As Boolean
+Dim Lx As Single, ly As Single, dr As Boolean
 Dim scrTwips As Long
 Dim bordertop As Long, borderleft As Long
 Dim allwidth As Long, itemWidth As Long
@@ -76,10 +76,12 @@ Public prive As Long
 Private ByPassEvent As Boolean
 Private mIndex As Long
 Public Relax As Boolean
+Public Sizable As Boolean
 Public MY_BACK As New cDIBSection
 Dim CtrlFont As New StdFont
 Dim novisible As Boolean
 Private mModalId As Variant
+Public IamPopUp As Boolean
 Public Sub AddGuiControl(widget As Object)
 GuiControls.Add widget
 End Sub
@@ -151,6 +153,14 @@ End Sub
 
 
 Private Sub Form_Deactivate()
+If IamPopUp Then
+If mModalId = ModalId And ModalId <> 0 Then
+        ModalId = 0
+        If Visible Then Hide
+        ModalOff
+            novisible = False
+End If
+Else
     If mModalId = ModalId And ModalId <> 0 Then
     If Visible Then
     On Error Resume Next
@@ -160,23 +170,98 @@ Private Sub Form_Deactivate()
 
     End If
     End If
+    End If
+End Sub
+
+Private Sub Form_LostFocus()
+If Index > -1 Then
+    Callback MyName$ + ".LostFocus(" + CStr(Index) + ")"
+Else
+    Callback MyName$ + ".LostFocus()"
+End If
+
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
 If Not Relax Then
+
+
+If Sizable And Not dr Then
+    
+ 
+    If (y > Height - 150 And y < Height) And (x > Width - 150 And x < Width) Then
+    
+    dr = Button = 1
+    mousepointer = vbSizeNWSE
+    Lx = x
+    ly = y
+    If dr Then Exit Sub
+    
+    End If
+    
+
+
+End If
 Relax = True
 If Index > -1 Then
     Callback MyName$ + ".MouseDown(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
     Callback MyName$ + ".MouseDown(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
 End If
+
+
+
 Relax = False
 End If
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
+Dim addy As Single, addx As Single
 If Not Relax Then
 Relax = True
+If Button = 0 Then If dr Then Me.mousepointer = 0: dr = False: Relax = False: Exit Sub
+
+If dr Then
+     If y < (Height - 150) Or y >= Height Then addy = (y - ly) Else addy = dv15 * 5
+     If x < (Width - 150) Or x >= Width Then addx = (x - Lx) Else addx = dv15 * 5
+     If Width + addx >= 1800 Then
+     If Height + addy >= 1800 Then
+     Lx = x
+     ly = y
+     Move Left, top, Width + addx, Height + addy
+     If Index > -1 Then
+Callback MyName$ + ".Resize(" + CStr(Index) + ")"
+Else
+Callback MyName$ + ".Resize()"
+End If
+
+     
+     End If
+     End If
+     Relax = False
+Exit Sub
+Else
+If Sizable Then
+    
+ 
+    If (y > Height - 150 And y < Height) And (x > Width - 150 And x < Width) Then
+    
+    dr = Button = 1
+    mousepointer = vbSizeNWSE
+    Lx = x
+    ly = y
+    If dr Then Relax = False: Exit Sub
+  
+    Else
+    mousepointer = 0
+    dr = 0
+    End If
+    
+
+
+End If
+End If
+
 If Index > -1 Then
 Callback MyName$ + ".MouseMove(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
@@ -189,7 +274,9 @@ End Sub
 
 Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
 If Not Relax Then
+If dr Then Me.mousepointer = 0: dr = False: Exit Sub
 Relax = True
+
 If Index > -1 Then
 Callback MyName$ + ".MouseUp(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
@@ -296,29 +383,29 @@ FillRect thathDC, there, my_brush
 DeleteObject my_brush
 End Sub
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT
-CopyFromLParamToRect a, thatRect
+Dim A As RECT
+CopyFromLParamToRect A, thatRect
 
-FillBack thathDC, a, thatbgcolor
+FillBack thathDC, A, thatbgcolor
 End Sub
 
 Private Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT, b As Long
+Dim A As RECT, b As Long
 b = 2 * lastfactor
 If b < 2 Then b = 2
 If setupxy - b < 0 Then b = setupxy \ 4 + 1
-CopyFromLParamToRect a, thatRect
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), 0
+CopyFromLParamToRect A, thatRect
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), 0
 b = 5 * lastfactor
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
 End Sub
 
 Public Property Get TITLE() As Variant
@@ -373,9 +460,9 @@ End Property
 Public Property Let ByPass(ByVal vNewValue As Variant)
 ByPassEvent = CBool(vNewValue)
 End Property
-Function TitleHeight() As Variant
+Property Get TitleHeight() As Variant
 TitleHeight = gList2.Height
-End Function
+End Property
 Public Sub FontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)
 Dim aa As New StdFont
 If ThisFontName <> "" Then
@@ -419,4 +506,38 @@ End Property
 
 Private Sub gList2_RefreshDesktop()
 If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
+End Sub
+Public Sub PopUp(vv As Variant, ByVal x As Variant, ByVal y As Variant)
+Dim var1() As Variant, retobject As Object, that As Object
+ReDim var1(0 To 1)
+Dim var2() As String
+ReDim var2(0 To 0)
+
+x = x + Left
+y = y + top
+Set that = vv
+If Me Is that Then Exit Sub
+If that.Visible Then
+If Not that.Enabled Then Exit Sub
+End If
+If x + that.Width > ScrX() Then
+If y + that.Height > ScrY() Then
+that.Move ScrX() - that.Width, ScrY() - that.Height
+Else
+that.Move ScrX() - that.Width, y
+End If
+ElseIf y + that.Height > ScrY() Then
+that.Move x, ScrY() - Height
+Else
+that.Move x, y
+End If
+var1(1) = 1
+Set var1(0) = Me
+that.IamPopUp = True
+CallByNameFixParamArray that, "Show", VbMethod, var1(), var2(), 2
+Set that = Nothing
+Set var1(0) = Nothing
+Show
+MyDoEvents
+
 End Sub
