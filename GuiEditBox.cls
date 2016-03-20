@@ -4404,21 +4404,17 @@ sdupOut:
 mdoc.LCID = OldLcid
 End Sub
 Public Sub helpmeSub()
-If Not EditTextWord Then
-        If Trim(SelText) <> "" Then
-        ffhelp myUcase(Trim(SelText), True)
-        Else
-        vHelp
-        End If
-Else
-If abt Then
-feedback$ = Trim(SelText)
-feednow$ = FeedbackExec$
-CallGlobal feednow$
-Else
-vHelp
-End If
-End If
+    If Not abt Then
+            If mIndex >= 0 Then
+       Callback.Callback CtrlName + ".Help(" + CStr(mIndex) + ",{" + Trim(SelText) + "})"
+       Else
+          Callback.Callback CtrlName + ".Help({" + Trim(SelText) + "})"
+          End If
+    Else
+        feedback$ = Trim(SelText)
+        feednow$ = FeedbackExec$
+        CallGlobal feednow$
+    End If
 End Sub
 Public Sub supsub()
 Dim b$

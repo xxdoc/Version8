@@ -29,16 +29,24 @@ Begin VB.Form MyPopUp
       TabIndex        =   0
       Top             =   0
       Width           =   4155
-      _extentx        =   7329
-      _extenty        =   9657
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "MyPopUp.frx":0000
-      enabled         =   -1  'True
+      _ExtentX        =   7329
+      _ExtentY        =   9657
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   161
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
       dcolor          =   32896
-      backcolor       =   3881787
-      forecolor       =   14737632
-      capcolor        =   9797738
+      Backcolor       =   3881787
+      ForeColor       =   14737632
+      CapColor        =   9797738
    End
 End
 Attribute VB_Name = "MyPopUp"
@@ -292,7 +300,7 @@ If Button = 1 Then
 End If
 End Sub
 Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-Dim addX As Long, addy As Long, factor As Single, Once As Boolean
+Dim addx As Long, addy As Long, factor As Single, Once As Boolean
 If Once Then Exit Sub
 If Button = 0 Then dr = False: drmove = False
 If bordertop < 150 Then
@@ -307,11 +315,11 @@ If dr Then
 If bordertop < 150 Then
 
         If y < (Height - 150) Or y > Height Then addy = (y - ly)
-     If x < (Width - 150) Or x > Width Then addX = (x - Lx)
+     If x < (Width - 150) Or x > Width Then addx = (x - Lx)
      
 Else
     If y < (Height - bordertop) Or y > Height Then addy = (y - ly)
-        If x < (Width - borderleft) Or x > Width Then addX = (x - Lx)
+        If x < (Width - borderleft) Or x > Width Then addx = (x - Lx)
     End If
     
 
@@ -324,19 +332,19 @@ Else
   
         Once = True
         If Height > ScrY() Then addy = -(Height - ScrY()) + addy
-        If Width > ScrX() Then addX = -(Width - ScrX()) + addX
-        If (addy + Height) / height1 > 0.4 And ((Width + addX) / width1) > 0.4 Then
+        If Width > ScrX() Then addx = -(Width - ScrX()) + addx
+        If (addy + Height) / height1 > 0.4 And ((Width + addx) / width1) > 0.4 Then
    
         If addy <> 0 Then helpSizeDialog = ((addy + Height) / height1)
         Pouplastfactor = ScaleDialogFix(helpSizeDialog)
 
 
-        If ((Width * Pouplastfactor / factor + addX) / Height * Pouplastfactor / factor) < (width1 / height1) Then
-        addX = -Width * Pouplastfactor / factor - 1
+        If ((Width * Pouplastfactor / factor + addx) / Height * Pouplastfactor / factor) < (width1 / height1) Then
+        addx = -Width * Pouplastfactor / factor - 1
       
            End If
 
-        If addX = 0 Then
+        If addx = 0 Then
         
         If Pouplastfactor <> factor Then ScaleDialog Pouplastfactor, Width
 
@@ -344,7 +352,7 @@ Else
         
         Else
         Lx = x * Pouplastfactor / factor
-             ScaleDialog Pouplastfactor, (Width + addX) * Pouplastfactor / factor
+             ScaleDialog Pouplastfactor, (Width + addx) * Pouplastfactor / factor
          
    
          End If
@@ -512,32 +520,68 @@ Exit Sub
 End With
 End If
 Case 2
-myobject.mn1sub
+If k = 0 Then
+    Form1.mn1sub
+Else
+    myobject.mn1sub
+End If
 Case 3
-myobject.mn2sub
+If k = 0 Then
+    Form1.mn2sub
+Else
+    myobject.mn2sub
+End If
 Case 4
-myobject.mn3sub
+If k = 0 Then
+    Form1.mn3sub
+Else
+    myobject.mn3sub
+End If
 Case 6 - l
-myobject.mn4sub
+    Form1.mn4sub
 Case 8 - l
-myobject.mn5sub
+    Form1.mn5sub
 Case 10 - k
-myobject.supsub
+If k = 0 Then
+    Form1.supsub
+Else
+    myobject.supsub
+End If
 Case 11 - k
-myobject.sdnSub
+If k = 0 Then
+    Form1.sdnSub
+Else
+    myobject.sdnSub
+End If
 Case 12 - k
-myobject.mscatsub
+If k = 0 Then
+    Form1.mscatsub
+Else
+    myobject.mscatsub
+End If
 Case 13 - k
-myobject.rthissub
+If k = 0 Then
+    Form1.mscatsub
+Else
+    myobject.mscatsub
+End If
 Case 15 - k
 gList1.ListSelectedNoRadioCare(17 - k) = Not gList1.ListChecked(17 - k)
+If k = 0 Then
+Form1.wordwrapsub
+Else
 myobject.wordwrapsub
+End If
 Case 16 - k
 gList1.ListSelectedNoRadioCare(18 - k) = Not gList1.ListChecked(18 - k)
 myobject.glistN.DragEnabled = Not myobject.glistN.DragEnabled
 Case 21 - k
-myobject.helpmeSub
-Case 23 - k
+If k = 0 Then
+    Form1.helpmeSub
+Else
+    myobject.helpmeSub
+End If
+Case 23 - l
 showmodules
 Case 17 - k
 With myobject
