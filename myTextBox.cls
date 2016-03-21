@@ -56,7 +56,7 @@ Private Declare Function GetClipboardData Lib "user32" _
     Private Declare Function SetClipboardData Lib "user32" _
     (ByVal wFormat As Long, ByVal hMem As Long) As Long
     Private Declare Function OpenClipboard Lib "user32" _
-    (ByVal hwnd As Long) As Long
+    (ByVal hWnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" _
     () As Long
     Private Declare Function IsClipboardFormatAvailable Lib "user32" _
@@ -150,8 +150,10 @@ End Property
 Private Sub glistN_RegisterGlist(this As gList)
 If Not glistN.Spinner Then this.NoWheel = True
 On Error Resume Next
-glistN.Parent.hookme this
+Set LastGlist = this
 If Err.Number > 0 Then this.NoWheel = True
+
+
 
 End Sub
 
@@ -238,7 +240,7 @@ Private Sub glistN_HeaderSelected(Button As Integer)
 Text = Text
 End Sub
 
-Private Sub gListN_KeyDown(KeyCode As Integer, shift As Integer)
+Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
 RaiseEvent KeyDown(KeyCode, shift)
 If KeyCode = vbKeyUp Then
 ElseIf KeyCode = vbKeyDown Then
@@ -398,7 +400,7 @@ End Function
 Private Sub glistN_UnregisterGlist()
 If Not glistN.Spinner Then glistN.NoWheel = True
 On Error Resume Next
-glistN.Parent.hookme Nothing
+Set LastGlist = Nothing
 If Err.Number > 0 Then glistN.NoWheel = True
 
 End Sub

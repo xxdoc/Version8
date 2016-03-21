@@ -23,11 +23,14 @@ Public CtrlName As String
 Dim mIndex As Long
 Dim Callback As GuiM2000
 '' for every GuiSomething
-Public Property Get Index() As Long
-Index = mIndex
+Public Property Get GetCallBack() As Form
+Set GetCallBack = Callback
+End Property
+Public Property Get index() As Long
+index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
+Public Property Let index(ByVal rhs As Long)
 mIndex = rhs
 End Property
 Public Sub Construct(there As Form, name$)
@@ -90,27 +93,27 @@ ff.Size = .CtrlFontSize
 ff.bold = .CtrlFontBold
 End With
 With glistN
-glistN.clear
+glistN.Clear
 .additem "  " + mCaptext
 .NoCaretShow = True
 .NoPanRight = False
 .VerticalCenterText = True
 .restrictLines = 1
 .MenuItem 1, True, False, mValue
-.listindex = 0
+.ListIndex = 0
 Set .Font = ff
 .ForeColor = Callback.Controls(0).ForeColor
 .dcolor = Callback.Controls(0).dcolor
 .LeftMarginPixels = .HeightPixels
 .ShowMe
-.Enabled = True
+.enabled = True
 End With
 End Sub
 Public Property Let Caption(myCap As String)
 '
 mCaptext = myCap
 If Not glistN Is Nothing Then
-glistN.List(0) = "  " + mCaptext
+glistN.LIST(0) = "  " + mCaptext
 glistN.ShowMe
 End If
 End Property
@@ -124,6 +127,10 @@ End If
 End Property
 
 
+
+Private Sub Class_Initialize()
+mIndex = -1
+End Sub
 
 Private Sub Class_Terminate()
 Set glistN = Nothing
@@ -149,14 +156,14 @@ Private Sub glistN_CheckLostFocus()
 check1focus = False
 glistN.ShowMe
 End Sub
-Private Sub gListN_MenuChecked(item As Long)
+Private Sub glistN_MenuChecked(item As Long)
 ' always item is 1  so 1-1..0 (base 0)
 ' RaiseEvent Changed(glistN.ListSelected(0))
 If item >= 0 Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Changed(" + CStr(mIndex) + "," + CStr(glistN.ListSelected(0)) + ")"
+   Callback.Callback CtrlName + ".Changed(" + Str(mIndex) + "," + Str(glistN.ListSelected(0)) + ")"
    Else
-      Callback.Callback CtrlName + ".Changed(" + CStr(glistN.ListSelected(0)) + ")"
+      Callback.Callback CtrlName + ".Changed(" + Str(glistN.ListSelected(0)) + ")"
       End If
 End If
 End Sub
@@ -170,7 +177,7 @@ End Property
 
 Sub Shutdown()
 glistN.Shutdown
-glistN.Enabled = False
+glistN.enabled = False
 End Sub
 Public Sub FontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)
 Dim aa As New StdFont
@@ -189,17 +196,17 @@ End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + "," + CStr(Checked) + ")"
+   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
    Else
-      Callback.Callback CtrlName + ".Click(" + CStr(Checked) + ")"
+      Callback.Callback CtrlName + ".Click(" + Str(Checked) + ")"
       End If
 End Sub
 
 Private Sub glistN_Selected2(item As Long)
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + "," + CStr(Checked) + ")"
+   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
    Else
-      Callback.Callback CtrlName + ".Click(" + CStr(Checked) + ")"
+      Callback.Callback CtrlName + ".Click(" + Str(Checked) + ")"
       End If
 End Sub
 Public Property Get top() As Variant

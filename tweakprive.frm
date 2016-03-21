@@ -455,7 +455,7 @@ Dim Mysize As Single
 Dim setupxy As Single
 Dim Lx As Long, ly As Long, dr As Boolean, drmove As Boolean
 Dim prevx As Long, prevy As Long
-Dim a$
+Dim A$
 Dim bordertop As Long, borderleft As Long
 Dim allheight As Long, allwidth As Long, itemWidth As Long, itemwidth3 As Long, itemwidth2 As Long
 Dim height1 As Long, width1 As Long
@@ -484,8 +484,8 @@ End Sub
 
 
 Private Sub Form_Load()
-Hook hwnd, Nothing
-DIS.Enabled = True
+Hook hWnd, Nothing
+DIS.enabled = True
 AutoRedraw = True
 Form_Load1
 'AS A LABEL ONLY
@@ -494,7 +494,7 @@ DIS.TabStop = False
 gList2.TabStop = False
 End Sub
 
-Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
 If Button = 1 Then
     
@@ -520,8 +520,8 @@ If Button = 1 Then
 End If
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-Dim addX As Long, addy As Long, factor As Single, Once As Boolean
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Dim addx As Long, addy As Long, factor As Single, Once As Boolean
 If Once Then Exit Sub
 If Button = 0 Then dr = False: drmove = False
 If bordertop < 150 Then
@@ -536,16 +536,16 @@ If dr Then
 If bordertop < 150 Then
 
         If y < (Height - 150) Or y > Height Then addy = (y - ly)
-     If x < (Width - 150) Or x > Width Then addX = (x - Lx)
+     If x < (Width - 150) Or x > Width Then addx = (x - Lx)
      
 Else
     If y < (Height - bordertop) Or y > Height Then addy = (y - ly)
-        If x < (Width - borderleft) Or x > Width Then addX = (x - Lx)
+        If x < (Width - borderleft) Or x > Width Then addx = (x - Lx)
     End If
     
 
     
-   If Not ExpandWidth Then addX = 0
+   If Not ExpandWidth Then addx = 0
         If lastfactor = 0 Then lastfactor = 1
         factor = lastfactor
 
@@ -553,25 +553,25 @@ Else
   
         Once = True
         If Height > ScrY() Then addy = -(Height - ScrY()) + addy
-        If Width > ScrX() Then addX = -(Width - ScrX()) + addX
-        If (addy + Height) / height1 > 0.4 And ((Width + addX) / width1) > 0.4 Then
+        If Width > ScrX() Then addx = -(Width - ScrX()) + addx
+        If (addy + Height) / height1 > 0.4 And ((Width + addx) / width1) > 0.4 Then
    
         If addy <> 0 Then SizeDialog = ((addy + Height) / height1)
         lastfactor = ScaleDialogFix(SizeDialog)
 
 
-        If ((Width * lastfactor / factor + addX) / Height * lastfactor / factor) < (width1 / height1) Then
-        addX = -Width * lastfactor / factor - 1
+        If ((Width * lastfactor / factor + addx) / Height * lastfactor / factor) < (width1 / height1) Then
+        addx = -Width * lastfactor / factor - 1
       
            End If
 
-        If addX = 0 Then
+        If addx = 0 Then
         If lastfactor <> factor Then ScaleDialog lastfactor, Width
         Lx = x
         
         Else
         Lx = x * lastfactor / factor
-         ScaleDialog lastfactor, (Width + addX) * lastfactor / factor
+         ScaleDialog lastfactor, (Width + addx) * lastfactor / factor
          End If
 
         
@@ -593,7 +593,7 @@ End If
 Once = False
 End Sub
 
-Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
 If dr Then Me.mousepointer = 0
 dr = False
@@ -730,10 +730,10 @@ cc.ClassKey = HKEY_CURRENT_USER
         End If
         MYFONT = cc.Value
     combo1.Text = cc.Value
-Err.clear
+Err.Clear
 DIS.Font.name = MYFONT
 If Err.Number > 0 Then
-Err.clear
+Err.Clear
 MYFONT = "Verdana"
 
 End If
@@ -770,10 +770,10 @@ End If
     cc.ValueKey = "PEN"
         cc.ValueType = REG_DWORD
         Pen = cc.Value
-    tbPen.Enabled = False
+    tbPen.enabled = False
         tbPen = CStr(Pen)
         tbPen.Value = CStr(Pen)
-tbPen.Enabled = True
+tbPen.enabled = True
       DIS.ForeColor = QBColor(tbPen)
     cc.ValueKey = "PAPER"
         cc.ValueType = REG_DWORD
@@ -849,10 +849,10 @@ combo1.Shutdown
 combo2.Shutdown
 combo3.Shutdown
 Sleep 200
-tbPaper.Locked = True
-tbPen.Locked = True
-tbSize.Locked = True
-tbLineSpacing.Locked = True
+tbPaper.locked = True
+tbPen.locked = True
+tbSize.locked = True
+tbLineSpacing.locked = True
 checkbox1.Shutdown
 checkbox2.Shutdown
 
@@ -862,7 +862,7 @@ Private Sub Form_Load1()
 Dim cd As String, DUMMY As Long, q$
 
 
-Dim i, a$
+Dim i, A$
 DIS.NoCaretShow = True
 DIS.LeftMarginPixels = 10
   
@@ -877,7 +877,7 @@ combo1.UseOnlyTheList = True
 
 Set combo1.TextBox = textbox2
 Set combo1.Container = gList3
-combo1.Locked = False
+combo1.locked = False
 combo1.AutoComplete = True
 If TweakLang = 0 Then
 combo1.Label = "Όνομα Γραμματοσειράς"
@@ -886,7 +886,7 @@ combo1.Label = "Font name"
 End If
 'Mode edit but exist in list
 textbox2.Retired
-textbox2.Enabled = True:   combo1.UseOnlyTheList = True
+textbox2.enabled = True:   combo1.UseOnlyTheList = True
 
 ' Combobox2 SetUp
 gList5.restrictLines = 2
@@ -895,10 +895,10 @@ Set textbox3.Container = gList4
 Set combo2 = New dropdownlist
 combo2.UseOnlyTheList = True
 
-textbox3.Enabled = False
+textbox3.enabled = False
 Set combo2.TextBox = textbox3
 Set combo2.Container = gList5
-combo2.Locked = False
+combo2.locked = False
 combo2.AutoComplete = True
 If TweakLang = 0 Then
 combo2.Label = "Τύπος γραμμάτων"
@@ -913,10 +913,10 @@ Set textbox4.Container = gList13
 Set combo3 = New dropdownlist
 combo3.UseOnlyTheList = True
 
-textbox4.Enabled = False
+textbox4.enabled = False
 Set combo3.TextBox = textbox4
 Set combo3.Container = gList14
-combo3.Locked = False
+combo3.locked = False
 combo3.AutoComplete = True
 If TweakLang = 0 Then
 combo3.Label = "Χρώμα Html"
@@ -926,15 +926,16 @@ End If
 textbox4.Retired
 '' continue for others
 
-
+Dim aa As New Document
 
 
     For i = 0 To Screen.FontCount - 1  ' Determine number of fonts.
-        combo1.additemFast Screen.Fonts(i)  ' Put each font into list box.
+        aa.AppendParagraphOneLine Screen.Fonts(i)    ' Put each font into list box.
        If ex Then Exit For
     Next i
-
- gList11.Enabled = True
+    aa.SortDoc 1, 1, aa.DocLines
+gList3.Text = aa.textDoc
+ gList11.enabled = True
 gList11.BackStyle = 1
 gList11.FontSize = 10.25
 gList11.NoCaretShow = True
@@ -953,14 +954,14 @@ Else
 LastWidth = -1
 End If
 FontName = "Arial"
-gList2.Enabled = True
+gList2.enabled = True
 gList2.CapColor = rgb(255, 160, 0)
 gList2.FloatList = True
 gList2.MoveParent = True
 ' I have run in Immediate mode this SpellUnicode("G?????? ?a????")
 ' I get the unicode chars so i can give it to a variable
 Form1.AutoRedraw = True
-a$ = ListenUnicode(915, 953, 974, 961, 947, 959, 962, 32, 922, 945, 961, 961, 940, 962)
+A$ = ListenUnicode(915, 953, 974, 961, 947, 959, 962, 32, 922, 945, 961, 961, 940, 962)
 lastfactor = ScaleDialogFix(SizeDialog)
 ScaleDialog lastfactor, LastWidth
 gList2.HeadLine = ""
@@ -1005,7 +1006,7 @@ End If
 tbPaper.Spinner True, 0, 15, 1
 tbPaper.Value = 0
 tbPaper.Retired
-tbPaper.Enabled = True
+tbPaper.enabled = True
 
 Set tbPen = New myTextBox
 Set tbPen.Container = gList7
@@ -1017,7 +1018,7 @@ End If
 tbPen.Spinner True, 0, 15, 1
 tbPen.Value = 15
 tbPen.Retired
-tbPen.Enabled = True
+tbPen.enabled = True
 
 Set tbSize = New myTextBox
 Set tbSize.Container = gList8
@@ -1031,7 +1032,7 @@ tbSize.ThisKind = "pt"
 tbSize.Spinner True, 8, 28, 1
 tbSize.Value = 15
 tbSize.Retired
-tbSize.Enabled = True
+tbSize.enabled = True
 
 Set tbLineSpacing = New myTextBox
 Set tbLineSpacing.Container = gList12
@@ -1045,7 +1046,7 @@ tbLineSpacing.ThisKind = "twips"
 tbLineSpacing.Spinner True, 0, 60 * dv15, 2 * dv15
 tbLineSpacing.Value = 0
 tbLineSpacing.Retired
-tbLineSpacing.Enabled = True
+tbLineSpacing.enabled = True
 
 Set myCommand = New myButton
 Set myCommand.Container = command1(0)
@@ -1056,7 +1057,7 @@ myCommand.Caption = "OK"
 End If
   Set myCommand.Callback = Me
   myCommand.Index = 1
-myCommand.Enabled = True
+myCommand.enabled = True
 Set myUnicode = New myButton
 Set myUnicode.Container = command1(1)
 If TweakLang = 0 Then
@@ -1065,7 +1066,7 @@ Else
 myUnicode.Caption = "Ansi Preview"
 End If
   Set myUnicode.Callback = Me
-myUnicode.Enabled = True
+myUnicode.enabled = True
 Set myCancel = New myButton
 Set myCancel.Container = command1(2)
 myCancel.Index = 2
@@ -1075,7 +1076,7 @@ Else
 myCancel.Caption = "CANCEL"
 End If
   Set myCancel.Callback = Me
-myCancel.Enabled = True
+myCancel.enabled = True
 MyFill
 
  playall
@@ -1084,20 +1085,20 @@ MyFill
 
 
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT, b As Long
+Dim A As RECT, b As Long
 b = 2
-CopyFromLParamToRect a, thatRect
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), 0
+CopyFromLParamToRect A, thatRect
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), 0
 b = 5
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
 
 
 End Sub
@@ -1109,15 +1110,15 @@ FillRect thathDC, there, my_brush
 DeleteObject my_brush
 End Sub
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT
-CopyFromLParamToRect a, thatRect
-FillBack thathDC, a, thatbgcolor
+Dim A As RECT
+CopyFromLParamToRect A, thatRect
+FillBack thathDC, A, thatbgcolor
 End Sub
 
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 Set LastGlist = Nothing
-UnHook hwnd
+UnHook hWnd
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -1129,7 +1130,7 @@ End Sub
 
 
 
-Private Sub gList1_ChangeListItem(item As Long, content As String)
+Private Sub gList1_ChangeListItem(item As Long, Content As String)
 If combo1.ListText <> "" Then DIS.Font.name = combo1.ListText: playall
 End Sub
 
@@ -1167,8 +1168,8 @@ playall
 End Sub
 
 
-Private Sub gList4_ChangeListItem(item As Long, content As String)
-If gList11.Enabled Then playall
+Private Sub gList4_ChangeListItem(item As Long, Content As String)
+If gList11.enabled Then playall
 End Sub
 Private Sub playall()
 
@@ -1245,25 +1246,25 @@ tbLineSpacing = CStr(ThisValue)
 End Sub
 
 Private Sub TBLineSpacing_ValidString(ThatString As String, setpos As Long)
-Dim a As Long, k As String
+Dim A As Long, k As String
 On Error Resume Next
 k = tbLineSpacing
 If ThatString = "" Then ThatString = "0"
-a = CLng(ThatString)
+A = CLng(ThatString)
 
 If Err.Number > 0 Then
 tbLineSpacing.Value = CLng(tbLineSpacing)
 ThatString = k: setpos = 1: tbLineSpacing.ResetPan
 Exit Sub
 End If
-tbLineSpacing.Value = a
-a = tbLineSpacing.Value  ' cut max or min
+tbLineSpacing.Value = A
+A = tbLineSpacing.Value  ' cut max or min
 
-DIS.addpixels = (a * 2 \ dv15)
+DIS.addpixels = (A * 2 \ dv15)
 DIS.ShowMe2
 'TBLineSpacing.Info = "This is info box" + vbCrLf + "X = " + CStr(a)
-ThatString = CStr(a)
-If a = 0 Then setpos = 2: tbLineSpacing.ResetPan
+ThatString = CStr(A)
+If A = 0 Then setpos = 2: tbLineSpacing.ResetPan
 End Sub
 
 
@@ -1273,26 +1274,26 @@ tbPaper = CStr(ThisValue)
 End Sub
 
 Private Sub tbPaper_ValidString(ThatString As String, setpos As Long)
-Dim a As Long, k As String
+Dim A As Long, k As String
 On Error Resume Next
 k = tbPaper
 If ThatString = "" Then ThatString = "0"
-a = CLng(ThatString)
-If a = CLng(tbPen) Or Err.Number > 0 Then
+A = CLng(ThatString)
+If A = CLng(tbPen) Or Err.Number > 0 Then
 
 ''tbPaper.Value = CLng(tbPaper)
 ThatString = k: setpos = 1: tbPaper.ResetPan
 If Abs(tbPaper.Value - CLng(k)) > 2 Then tbPaper.Value = CLng(k)
 Exit Sub
 End If
-tbPaper.Value = a
-a = tbPaper.Value  ' cut max or min
-tbPaper.Value = a
-DIS.BackColor = mycolor(a)
+tbPaper.Value = A
+A = tbPaper.Value  ' cut max or min
+tbPaper.Value = A
+DIS.BackColor = mycolor(A)
 DIS.ShowMe2
 'tbPaper.Info = "This is info box" + vbCrLf + "X = " + CStr(a)
-ThatString = CStr(a)
-If a = 0 Then setpos = 2: tbPaper.ResetPan
+ThatString = CStr(A)
+If A = 0 Then setpos = 2: tbPaper.ResetPan
 End Sub
 
 Private Sub tbPen_SpinnerValue(ThisValue As Long)
@@ -1300,35 +1301,35 @@ tbPen = CStr(ThisValue)
 End Sub
 
 Private Sub tbpen_ValidString(ThatString As String, setpos As Long)
-Dim a As Long, k As String
+Dim A As Long, k As String
 On Error Resume Next
 k = tbPen
 If ThatString = "" Then ThatString = "0"
-a = CLng(ThatString)
-If a = CLng(tbPaper) Or Err.Number > 0 Then
+A = CLng(ThatString)
+If A = CLng(tbPaper) Or Err.Number > 0 Then
 ThatString = k: setpos = 1: tbPen.ResetPan
 If Abs(tbPen.Value - CLng(k)) > 2 Then tbPen.Value = CLng(k)
 Exit Sub
 End If
-tbPen.Value = a
-a = tbPen.Value  ' cut max or min
-tbPen.Value = a
-DIS.ForeColor = mycolor(a)
+tbPen.Value = A
+A = tbPen.Value  ' cut max or min
+tbPen.Value = A
+DIS.ForeColor = mycolor(A)
 DIS.ShowMe2
 'tbpen.Info = "This is info box" + vbCrLf + "X = " + CStr(a)
-ThatString = CStr(a)
-If a = 0 Then setpos = 2: tbPen.ResetPan
+ThatString = CStr(A)
+If A = 0 Then setpos = 2: tbPen.ResetPan
 End Sub
 Private Sub tbsize_SpinnerValue(ThisValue As Long)
 tbSize = CStr(ThisValue)
 End Sub
 
 Private Sub tbsize_ValidString(ThatString As String, setpos As Long)
-Dim a As Long, k As String
+Dim A As Long, k As String
 On Error Resume Next
 k = tbSize
 If ThatString = "" Then Exit Sub  'special here
-a = CLng(ThatString)
+A = CLng(ThatString)
 
 If Err.Number > 0 Then
 tbSize.Value = CLng(tbSize)
@@ -1336,20 +1337,20 @@ ThatString = k: setpos = 1: tbSize.ResetPan
 Exit Sub
 End If
 
-tbSize.Value = a
-If a <> tbSize.Value And a <= 2 And a > 0 Then
+tbSize.Value = A
+If A <> tbSize.Value And A <= 2 And A > 0 Then
 Exit Sub
 End If
-a = tbSize.Value  ' cut max or min
+A = tbSize.Value  ' cut max or min
 
-DIS.FontSize = CLng(a)
+DIS.FontSize = CLng(A)
 playall
-ThatString = CStr(a)
-If a = 0 Then setpos = 2: tbSize.ResetPan
+ThatString = CStr(A)
+If A = 0 Then setpos = 2: tbSize.ResetPan
 End Sub
 Public Sub hookme(this As gList)
 Set LastGlist = this
 End Sub
 Private Sub gList2_RefreshDesktop()
-If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh
+If Form1.Visible Then Form1.Refresh: If Form1.DIS.Visible Then Form1.DIS.Refresh
 End Sub

@@ -148,6 +148,11 @@ End Sub
 Private Sub Form_Activate()
 If novisible Then Hide: Unload Me
 If ttl Then Form3.Caption = gList2.HeadLine
+If Typename(ActiveControl) = "gList" Then
+Hook hWnd, ActiveControl
+Else
+Hook hWnd, Nothing
+End If
 End Sub
 
 
@@ -162,14 +167,19 @@ If mModalId = ModalId And ModalId <> 0 Then
 End If
 Else
     If mModalId = ModalId And ModalId <> 0 Then
-    If Visible Then
-    On Error Resume Next
-  Me.SetFocus
+        If Visible Then
+            On Error Resume Next
+            Me.SetFocus
+        Else
+            
+            ModalOff
+            UnHook hWnd
+        End If
+    
     Else
-    ModalOff
-
+    UnHook hWnd
     End If
-    End If
+   
     End If
 End Sub
 
@@ -182,7 +192,7 @@ End If
 
 End Sub
 
-Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 If Not Relax Then
 
 
@@ -204,9 +214,9 @@ If Sizable And Not dr Then
 End If
 Relax = True
 If Index > -1 Then
-    Callback MyName$ + ".MouseDown(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+    Callback MyName$ + ".MouseDown(" + CStr(Index) + "," + CStr(Button) + "," + CStr(Shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
-    Callback MyName$ + ".MouseDown(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+    Callback MyName$ + ".MouseDown(" + CStr(Button) + "," + CStr(Shift) + "," + CStr(x) + "," + CStr(y) + ")"
 End If
 
 
@@ -215,7 +225,7 @@ Relax = False
 End If
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 Dim addy As Single, addx As Single
 If Not Relax Then
 Relax = True
@@ -263,24 +273,24 @@ End If
 End If
 
 If Index > -1 Then
-Callback MyName$ + ".MouseMove(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+Callback MyName$ + ".MouseMove(" + CStr(Index) + "," + CStr(Button) + "," + CStr(Shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
-Callback MyName$ + ".MouseMove(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+Callback MyName$ + ".MouseMove(" + CStr(Button) + "," + CStr(Shift) + "," + CStr(x) + "," + CStr(y) + ")"
 End If
 Relax = False
 End If
 
 End Sub
 
-Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 If Not Relax Then
 If dr Then Me.mousepointer = 0: dr = False: Exit Sub
 Relax = True
 
 If Index > -1 Then
-Callback MyName$ + ".MouseUp(" + CStr(Index) + "," + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+Callback MyName$ + ".MouseUp(" + CStr(Index) + "," + CStr(Button) + "," + CStr(Shift) + "," + CStr(x) + "," + CStr(y) + ")"
 Else
-Callback MyName$ + ".MouseUp(" + CStr(Button) + "," + CStr(shift) + "," + CStr(x) + "," + CStr(y) + ")"
+Callback MyName$ + ".MouseUp(" + CStr(Button) + "," + CStr(Shift) + "," + CStr(x) + "," + CStr(y) + ")"
 End If
 Relax = False
 End If
@@ -294,6 +304,9 @@ If mModalId = ModalId And ModalId <> 0 Then
         
         Cancel = True
         novisible = False
+Else
+Set LastGlist = Nothing
+UnHook hWnd
 End If
 End Sub
 
@@ -338,11 +351,14 @@ End If
 End Sub
 
 Private Sub Form_Load()
+
 If onetime Then
 novisible = True
 Exit Sub
 End If
 onetime = True
+' try0001
+Set LastGlist = Nothing
 scrTwips = Screen.TwipsPerPixelX
 ' clear data...
 lastfactor = 1
@@ -540,4 +556,8 @@ Set var1(0) = Nothing
 Show
 MyDoEvents
 
+End Sub
+
+Public Sub hookme(this As gList)
+Set LastGlist = this
 End Sub

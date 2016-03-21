@@ -81,7 +81,7 @@ Public defWndProc3 As Long
 Public LastGlist3 As gList
 Public defWndProc4 As Long
 Public LastGlist4 As gList
-Public Sub Hook4(hWnd As Long, a As gList)
+Public Sub Hook4(hWnd As Long, A As gList)
 ' work in IDE but for development and a fear...of a crash...
 
 If m_bInIDE Then Exit Sub
@@ -94,7 +94,7 @@ If m_bInIDE Then Exit Sub
                                  MyDoEvents
          If defWndProc4 = 0 Then Set LastGlist4 = Nothing
     End If
-           Set LastGlist4 = a
+           Set LastGlist4 = A
 End Sub
 Public Sub UnHook4(hWnd As Long)
 If m_bInIDE Then Exit Sub
@@ -105,7 +105,7 @@ If m_bInIDE Then Exit Sub
    End If
   
 End Sub
-Public Sub Hook3(hWnd As Long, a As gList)
+Public Sub Hook3(hWnd As Long, A As gList)
 ' work in IDE but for development and a fear...of a crash...
 
 If m_bInIDE Then Exit Sub
@@ -118,7 +118,7 @@ If m_bInIDE Then Exit Sub
                                  MyDoEvents
          If defWndProc3 = 0 Then Set LastGlist3 = Nothing
     End If
-           Set LastGlist3 = a
+           Set LastGlist3 = A
 End Sub
 Public Sub UnHook3(hWnd As Long)
 If m_bInIDE Then Exit Sub
@@ -129,7 +129,7 @@ If m_bInIDE Then Exit Sub
    End If
   
 End Sub
-Public Sub Hook2(hWnd As Long, a As gList)
+Public Sub Hook2(hWnd As Long, A As gList)
 ' work in IDE but for development and a fear...of a crash...
 
 If m_bInIDE Then Exit Sub
@@ -142,7 +142,7 @@ If m_bInIDE Then Exit Sub
                                  MyDoEvents
          If defWndProc2 = 0 Then Set LastGlist2 = Nothing
     End If
-           Set LastGlist2 = a
+           Set LastGlist2 = A
 End Sub
 Public Sub UnHook2(hWnd As Long)
 If m_bInIDE Then Exit Sub
@@ -154,7 +154,7 @@ If m_bInIDE Then Exit Sub
   
 End Sub
 
-Public Sub Hook(hWnd As Long, a As gList)
+Public Sub Hook(hWnd As Long, A As gList)
 ' work in IDE but for development and a fear...of a crash...
 
 If m_bInIDE Then Exit Sub
@@ -166,8 +166,9 @@ If m_bInIDE Then Exit Sub
                                  AddressOf WindowProc)
                                  MyDoEvents
          If defWndProc = 0 Then Set LastGlist = Nothing
+         
     End If
-           Set LastGlist = a
+           Set LastGlist = A
 End Sub
 Public Sub UnHook(hWnd As Long)
 If m_bInIDE Then Exit Sub
@@ -176,7 +177,7 @@ If m_bInIDE Then Exit Sub
       Call SetWindowLong(hWnd, GWL_WNDPROC, defWndProc)
       defWndProc = 0
    End If
-       
+    
 End Sub
 Public Function WindowProc3(ByVal hWnd As Long, _
                            ByVal uMsg As Long, _
@@ -366,11 +367,11 @@ Public Function WindowProc(ByVal hWnd As Long, _
    End Select
     
 End Function
-Public Function ExistFileT(a$, TIMESTAMP As Double) As Boolean
+Public Function ExistFileT(A$, TIMESTAMP As Double) As Boolean
 Dim wfd As WIN32_FIND_DATA
 On Error GoTo there2
 Dim fhandle As Long
-fhandle = FindFirstFile(StrPtr(a$), wfd)
+fhandle = FindFirstFile(StrPtr(A$), wfd)
 ExistFileT = (fhandle > 0)
 If ExistFileT Then FindClose fhandle: TIMESTAMP = uintnew(wfd.ftLastAccessTime.dwLowDateTime)
 Exit Function

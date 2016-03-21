@@ -16,13 +16,6 @@ Option Explicit
 ' don't forget to set default property to vartext (changed from text)
 Public WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
-'Event ValidString(ThatString As String, setpos As Long)
-'Event KeyDown(KeyCode As Integer, shift As Integer)
-'Event LostFocus()
-'Event GotFocus()
-'Event KeyPress(KeyAscii As Integer)
-'Event MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-'Event SpinnerValue(ThisValue As Long)
 Private mprompt As String
 Private mkind As String
 Public SkipProcAtExitFocus As Boolean
@@ -56,7 +49,7 @@ Private Declare Function GetClipboardData Lib "user32" _
     Private Declare Function SetClipboardData Lib "user32" _
     (ByVal wFormat As Long, ByVal hMem As Long) As Long
     Private Declare Function OpenClipboard Lib "user32" _
-    (ByVal hwnd As Long) As Long
+    (ByVal hWnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" _
     () As Long
     Private Declare Function IsClipboardFormatAvailable Lib "user32" _
@@ -101,17 +94,17 @@ Public Sub ConstructArray(there As Form, name$, i As Long)
  there.Controls(name$).TabStop = True
 End Sub
 Public Property Get Text() As String
-If glistN.listcount = 0 Then
+If glistN.ListCount = 0 Then
 glistN.additem mprompt
 Else
-Text = glistN.List(0)
+Text = glistN.LIST(0)
 End If
 End Property
 Public Property Get vartext() As String
-If glistN.listcount = 0 Then
+If glistN.ListCount = 0 Then
 glistN.additem ""
 Else
-vartext = Mid$(glistN.List(0), 1 + Len(mprompt))
+vartext = Mid$(glistN.LIST(0), 1 + Len(mprompt))
 End If
 End Property
 Public Property Let vartext(ByVal rhs As String)
@@ -119,10 +112,10 @@ glistN.restrictLines = 1
 glistN.HeadLine = "" ' no info
 glistN.HeadlineHeight = 0
 
-If glistN.listcount = 0 Then
+If glistN.ListCount = 0 Then
 glistN.additem mprompt + rhs
 Else
-glistN.List(0) = mprompt + rhs
+glistN.LIST(0) = mprompt + rhs
 End If
 glistN.SelStart = Len(mprompt + rhs) + 1
 glistN.ShowMe
@@ -133,10 +126,10 @@ Public Property Let Text(ByVal rhs As String)
 glistN.restrictLines = 1
 glistN.HeadLine = "" ' no info
 glistN.HeadlineHeight = 0
-If glistN.listcount = 0 Then
+If glistN.ListCount = 0 Then
 glistN.additem rhs
 Else
-glistN.List(0) = rhs
+glistN.LIST(0) = rhs
 End If
 'glistN.LeftMarginPixels = oldright
 
@@ -149,13 +142,13 @@ Info = glistN.HeadLine
 End Property
 
 Public Property Let Info(ByVal rhs As String)
-Locked = False
+locked = False
 glistN.restrictLines = 0
 glistN.HeadLineHeightMinimum = glistN.HeightPixels
 glistN.HeadLine = rhs
 
 glistN.ShowMe
-Locked = True
+locked = True
 End Property
 
 Public Property Get top() As Variant
@@ -183,9 +176,9 @@ ff.bold = .CtrlFontBold
 End With
 
 With glistN
-.Enabled = True
+.enabled = True
 Info = ""
-If .listcount = 0 Then Text = ""
+If .ListCount = 0 Then Text = ""
 .NoCaretShow = True
 .VerticalCenterText = True
 If Not .CenterText Then .LeftMarginPixels = 8
@@ -195,8 +188,8 @@ Set .Font = ff
 .dcolor = Callback.Controls(0).dcolor
 .ShowMe
 End With
-Locked = False
-Enabled = True
+locked = False
+enabled = True
 Retired
 
 End Sub
@@ -213,34 +206,36 @@ Text = rhs
 End Property
 
 
+Private Sub Class_Terminate()
+Set glistN = Nothing
+End Sub
 
 Private Sub glistN_RegisterGlist(this As gList)
 If Not glistN.Spinner Then this.NoWheel = True
 On Error Resume Next
-'glistN.Parent.hookme this
+Set LastGlist = this
 If Err.Number > 0 Then this.NoWheel = True
-
 End Sub
 
 
 
-Private Sub glistN_ChangeListItem(item As Long, content As String)
-If Not Enabled Then Exit Sub
+Private Sub glistN_ChangeListItem(item As Long, Content As String)
+If Not enabled Then Exit Sub
 Dim this As String, thispos As Long, vr(2)
 thispos = glistN.SelStart - Len(mprompt)
-this = Mid$(content, 1 + Len(mprompt))
+this = Mid$(Content, 1 + Len(mprompt))
 '' RaiseEvent ValidString(this, thispos)
 vr(0) = this
 vr(1) = thispos
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".ValidString(" + CStr(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".ValidString(" + Str(mIndex) + ")", vr()
    Else
       Callback.CallbackNow CtrlName + ".ValidString()", vr()
       End If
       
 thispos = vr(1) + Len(mprompt)
-content = mprompt + vr(0)
-If thispos <> glistN.SelStart And this <> "" Then glistN.SelStart = thispos: glistN.ShowMe
+Content = mprompt + vr(0)
+If thispos <> glistN.SelStart And vr(0) <> "" Then glistN.SelStart = thispos: glistN.ShowMe
 End Sub
 
 Public Sub ResetPan()
@@ -261,11 +256,11 @@ glistN.LastLinePart = " " & rhs
 End Property
 
 
-Public Property Get Enabled() As Boolean
-Enabled = glistN.EditFlag
+Public Property Get enabled() As Boolean
+enabled = glistN.EditFlag
 End Property
 
-Public Property Let Enabled(ByVal rhs As Boolean)
+Public Property Let enabled(ByVal rhs As Boolean)
 glistN.EditFlag = rhs
 glistN.NoCaretShow = Not rhs
 End Property
@@ -273,10 +268,10 @@ End Property
 
 
 Private Sub glistN_CheckGotFocus()
-If Not Locked Then
-If glistN.listindex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
+If Not locked Then
+If glistN.ListIndex < 0 And glistN.ListCount > 0 Then glistN.ListindexPrivateUse = 0
 ' RaiseEvent GotFocus
-If Enabled Then
+If enabled Then
 glistN.ForeColor = rgb(0, 0, 0)
 glistN.BackColor = rgb(255, 255, 255)
 glistN.NoCaretShow = False:
@@ -297,7 +292,7 @@ glistN.NoCaretShow = True: glistN.PanPos = 0: glistN.ShowMe
 End Sub
 
 Private Sub glistN_CheckLostFocus()
-If Not Locked Then
+If Not locked Then
 If Not SkipProcAtExitFocus Then
 glistN.ForeColor = rgb(255, 255, 255)
 glistN.BackColor = rgb(200, 120, 60)
@@ -314,21 +309,21 @@ Private Sub glistN_HeaderSelected(Button As Integer)
 Text = Text
 End Sub
 
-Private Sub gListN_KeyDown(KeyCode As Integer, shift As Integer)
+Private Sub glistN_KeyDown(KeyCode As Integer, Shift As Integer)
 Dim vr(2)
 vr(0) = KeyCode
-vr(1) = shift
+vr(1) = Shift
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".KeyDown(" + CStr(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", vr()
    Else
       Callback.CallbackNow CtrlName + ".KeyDown()", vr()
       End If
 KeyCode = vr(0)
-shift = vr(1)
+Shift = vr(1)
 If KeyCode = vbKeyUp Then
 ElseIf KeyCode = vbKeyDown Then
-ElseIf KeyCode = vbKeyV And (shift And 3) = 2 Then
-If Not Enabled Then Exit Sub
+ElseIf KeyCode = vbKeyV And (Shift And 3) = 2 Then
+If Not enabled Then Exit Sub
 pad$ = GetTextData(13)
 If pad$ = "" Then pad$ = Clipboard.GetText(1)
 If pad$ <> "" Then vartext = pad$
@@ -356,7 +351,7 @@ On Error Resume Next
 glistN.SetFocus
 End Sub
 
-Private Sub glistN_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub glistN_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 ' RaiseEvent MouseMove(Button, shift, x, y)
 End Sub
 
@@ -364,7 +359,7 @@ Private Sub glistN_Selected(item As Long)
 If item >= 0 Then
    '' If (Not mCallback Is Nothing) Then mCallback.Press Index
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + ")"
+   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + ")"
    Else
       Callback.Callback CtrlName + ".Click()"
       End If
@@ -374,7 +369,7 @@ End Sub
 Private Sub glistN_Selected2(item As Long)
 If item >= 0 Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Enter(" + CStr(mIndex) + ")"
+   Callback.Callback CtrlName + ".Enter(" + Str(mIndex) + ")"
    Else
       Callback.Callback CtrlName + ".Enter()"
       End If
@@ -388,18 +383,18 @@ End Sub
 Private Sub glistN_SpinnerValue(ThatValue As Long)
 ''' RaiseEvent SpinnerValue(ThatValue)
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".SpinnerValue(" + CStr(mIndex) + "," + LTrim(Str(ThatValue)) + ")"
+   Callback.Callback CtrlName + ".SpinnerValue(" + Str(mIndex) + "," + LTrim(Str(ThatValue)) + ")"
    Else
       Callback.Callback CtrlName + ".SpinnerValue(" + LTrim(Str(ThatValue)) + ")"
       End If
-     '' vartext = CStr(ThatValue)
+     '' vartext = str(ThatValue)
 End Sub
-Public Property Get Locked() As Boolean
-Locked = Not glistN.Enabled
+Public Property Get locked() As Boolean
+locked = Not glistN.enabled
 End Property
 
-Public Property Let Locked(ByVal rhs As Boolean)
-glistN.Enabled = Not rhs
+Public Property Let locked(ByVal rhs As Boolean)
+glistN.enabled = Not rhs
 End Property
 Public Sub Spinner(ShowBar As Boolean, MinValue As Long, maxvalue As Long, LargeValue As Long)
 If Not ShowBar Then
@@ -407,11 +402,11 @@ glistN.Spinner = False
 glistN.ShowBar = False
 glistN.EnabledBar = False
 Else
-glistN.Enabled = False
+glistN.enabled = False
 glistN.restrictLines = 1
 glistN.Spinner = True
 glistN.SetSpin MinValue, maxvalue, LargeValue
-glistN.Enabled = True
+glistN.enabled = True
 glistN.EnabledBar = True
 glistN.ShowBar = True
 
@@ -509,8 +504,7 @@ End Function
 Private Sub glistN_UnregisterGlist()
 If Not glistN.Spinner Then glistN.NoWheel = True
 On Error Resume Next
-If Typename(glistN.Parent) = "GuiM2000" Then glistN.NoWheel = True: Exit Sub
-glistN.Parent.hookme Nothing
+Set LastGlist = Nothing
 If Err.Number > 0 Then glistN.NoWheel = True
 
 End Sub
@@ -540,11 +534,11 @@ aa.bold = ThisBold
 Set glistN.Font = aa
 End If
 End Sub
-Public Property Get Index() As Long
-Index = mIndex
+Public Property Get index() As Long
+index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
+Public Property Let index(ByVal rhs As Long)
 mIndex = rhs
 End Property
 

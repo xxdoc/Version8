@@ -92,7 +92,7 @@ Set .Font = ff
 .ForeColor = Callback.Controls(0).ForeColor
 .dcolor = Callback.Controls(0).dcolor
 
-.Enabled = True
+.enabled = True
 .ShowMe
 End With
 End Sub
@@ -114,7 +114,7 @@ glistN.ShowMe
 End Sub
 
 Private Sub glistN_CheckLostFocus()
-If Me.Enabled Then
+If Me.enabled Then
 ''Callback.Callback CtrlName + ".LostFocus()"
 glistN.BackColor = rgb(200, 120, 60)
 glistN.PanPos = 0
@@ -131,12 +131,12 @@ Private Sub glistN_PanLeftRight(Direction As Boolean)
 
  
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + ")"
+   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + ")"
    Else
       Callback.Callback CtrlName + ".Click()"
       End If
     
-''    Callback.Callback CtrlName + ".PanLeftRight(" + CStr(Direction) + ")"
+''    Callback.Callback CtrlName + ".PanLeftRight(" + str(Direction) + ")"
 End Sub
 
 Private Sub glistN_RegisterGlist(this As gList)
@@ -147,7 +147,7 @@ Private Sub glistN_Selected2(item As Long)
 If item >= 0 Then
    '' If (Not mCallback Is Nothing) Then mCallback.Press Index
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + CStr(mIndex) + ")"
+   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + ")"
    Else
       Callback.Callback CtrlName + ".Click()"
       End If
@@ -160,9 +160,9 @@ Public Property Let Caption(myCap As String)
 mCaptext = myCap
 If Not glistN Is Nothing Then
 If glistN.CenterText Then
-glistN.List(0) = mCaptext
+glistN.LIST(0) = mCaptext
 Else
-glistN.List(0) = "  " + mCaptext
+glistN.LIST(0) = "  " + mCaptext
 End If
 glistN.ShowMe
 End If
@@ -171,25 +171,25 @@ Public Property Get Caption() As String
 Caption = mCaptext
 End Property
 
-Public Property Get Index() As Long
-Index = mIndex
+Public Property Get index() As Long
+index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
+Public Property Let index(ByVal rhs As Long)
 mIndex = rhs
 End Property
-Public Property Get Enabled() As Long
-Enabled = glistN.Enabled
+Public Property Get enabled() As Long
+enabled = glistN.enabled
 End Property
 
-Public Property Let Enabled(ByVal rhs As Long)
-glistN.Enabled = rhs
+Public Property Let enabled(ByVal rhs As Long)
+glistN.enabled = rhs
 End Property
 
 Public Sub Shutdown()
 On Error Resume Next
 glistN.Shutdown
-glistN.Enabled = False
+glistN.enabled = False
 
 End Sub
 Public Sub FontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)

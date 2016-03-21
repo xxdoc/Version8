@@ -184,9 +184,9 @@ jumphere:
                             If x.Visible And x.name = "GuiM2000" Then
                             If Not x Is pobjTarget Then
                            
-                                If Not x.Enabled = False Then
+                                If Not x.enabled = False Then
                                 x.Modal = mycodeid
-                                x.Enabled = False
+                                x.enabled = False
                                 End If
 
                             End If
@@ -342,6 +342,75 @@ Else
   ''  If Err.Number <> 0 Then ReadOneParameter = varRet
 Err.clear
 End Function
+Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR$, ThisIndex As Variant) As Variant
+    
+    Dim CallType As cbnCallTypes
+    
+    CallType = VbGet
+    Dim IDsp        As IDispatch.IDispatchM2000
+    Dim rIid        As IDispatch.IID
+    Dim Params      As IDispatch.DISPPARAMS
+    Dim Excep       As IDispatch.EXCEPINFO
+    ' Do not remove TLB because those types
+    ' are also defined in stdole
+        Dim lngArgErr   As Long
+    Dim varRet      As Variant
+    Dim varArr()    As Variant
+
+    Dim lngRet      As Long
+    Dim lngLoop     As Long
+    Dim lngMax      As Long
+
+    ' Get IDispatch from object
+    Set IDsp = pobjTarget
+
+    ' WE HAVE DISPIP
+
+       
+                ReDim varArr(0 To 0)
+                varArr(0) = ThisIndex
+                
+                With Params
+                    .cArgs = 1
+                    .rgPointerToVariantArray = VarPtr(varArr(0))
+                                    Dim aa As Long
+        
+               aa = DISPID_VALUE
+               .cNamedArgs = 1
+                .rgPointerToDISPIDNamedArgs = VarPtr(aa)
+               End With
+  
+
+  
+        Err.clear
+        On Error Resume Next
+        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
+If Err > 0 Then
+ERrR$ = Err.Description
+Exit Function
+Else
+        If lngRet <> 0 Then
+            If lngRet = DISP_E_EXCEPTION Then
+             ERrR$ = Str$(Excep.wCode)
+            Else
+              ERrR$ = Str$(lngRet)
+            End If
+            Exit Function
+        End If
+  End If
+    On Error Resume Next
+
+    Set IDsp = Nothing
+    If IsObject(varRet) Then
+
+    Set ReadOneIndexParameter = varRet
+    Else
+    ReadOneIndexParameter = varRet
+    End If
+
+  ''  If Err.Number <> 0 Then ReadOneParameter = varRet
+Err.clear
+End Function
 Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
     
     Dim CallType As cbnCallTypes
@@ -373,6 +442,66 @@ Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
                 varArr(0) = VAL1
                 With Params
                     .cArgs = 1
+                    .rgPointerToVariantArray = VarPtr(varArr(0))
+                                    Dim aa As Long
+        
+                aa = DISPID_PROPERTYPUT
+                .cNamedArgs = 1
+                .rgPointerToDISPIDNamedArgs = VarPtr(aa)
+                End With
+        End If
+
+        ' Invoke method/property
+        
+        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
+
+        If lngRet <> 0 Then
+            If lngRet = DISP_E_EXCEPTION Then
+             ERrR$ = Str$(Excep.wCode)
+            Else
+              ERrR$ = Str$(lngRet)
+            End If
+            Exit Sub
+        End If
+    
+    
+    
+
+    Set IDsp = Nothing
+    
+End Sub
+Public Sub ChangeOneIndexParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$, ThisIndex As Variant)
+    
+    Dim CallType As cbnCallTypes
+    
+    CallType = VbLet
+    Dim IDsp        As IDispatch.IDispatchM2000
+    Dim rIid        As IDispatch.IID
+    Dim Params      As IDispatch.DISPPARAMS
+    Dim Excep       As IDispatch.EXCEPINFO
+    ' Do not remove TLB because those types
+    ' are also defined in stdole
+        Dim lngArgErr   As Long
+    Dim varRet      As Variant
+    Dim varArr()    As Variant
+
+    Dim lngRet      As Long
+    Dim lngLoop     As Long
+    Dim lngMax      As Long
+
+    ' Get IDispatch from object
+    Set IDsp = pobjTarget
+
+    ' WE HAVE DISPIP
+
+    If lngRet = 0 Then
+       
+      
+                ReDim varArr(0 To 1)
+                varArr(1) = ThisIndex
+                varArr(0) = VAL1
+                With Params
+                    .cArgs = 2
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                                     Dim aa As Long
         

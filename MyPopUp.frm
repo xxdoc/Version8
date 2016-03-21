@@ -29,24 +29,16 @@ Begin VB.Form MyPopUp
       TabIndex        =   0
       Top             =   0
       Width           =   4155
-      _ExtentX        =   7329
-      _ExtentY        =   9657
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   11.25
-         Charset         =   161
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Enabled         =   -1  'True
+      _extentx        =   7329
+      _extenty        =   9657
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "MyPopUp.frx":0000
+      enabled         =   -1  'True
       dcolor          =   32896
-      Backcolor       =   3881787
-      ForeColor       =   14737632
-      CapColor        =   9797738
+      backcolor       =   3881787
+      forecolor       =   14737632
+      capcolor        =   9797738
    End
 End
 Attribute VB_Name = "MyPopUp"
@@ -82,7 +74,6 @@ Move x, y
 End If
 Show
 MyDoEvents
-''gList1.SetFocus
 End Sub
 Public Sub UpGui(that As Object, x As Variant, y As Variant, thistitle$)
 If thistitle$ <> "" Then
@@ -121,7 +112,6 @@ End Sub
 
 Public Sub feedlabels(that As Object, EditTextWord As Boolean)
 Dim k As Long
-
 Set myobject = that
 
 With gList1
@@ -274,6 +264,7 @@ gList1.NoPanLeft = False
 gList1.SoftEnterFocus
 
 End Sub
+
 Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
 
 If Button = 1 Then
@@ -377,6 +368,7 @@ Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As 
 If dr Then Me.mousepointer = 0
 dr = False
 End Sub
+
 
 Private Sub Form_Unload(Cancel As Integer)
 Set myobject = Nothing
@@ -641,12 +633,11 @@ gList1.FloatLimitLeft = ScrX() - borderleft * 3
 
 End Sub
 
-
-Private Sub gList1_SpecialColor(rgbcolor As Long)
-rgbcolor = rgb(100, 132, 254)
-End Sub
 Public Sub hookme(this As gList)
 If Not this Is Nothing Then this.NoWheel = True
+End Sub
+Private Sub gList1_SpecialColor(rgbcolor As Long)
+rgbcolor = rgb(100, 132, 254)
 End Sub
 Private Sub gList1_RefreshDesktop()
 If Form1.Visible Then Form1.refresh: If Form1.DIS.Visible Then Form1.DIS.refresh

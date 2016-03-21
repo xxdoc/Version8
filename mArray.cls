@@ -24,6 +24,12 @@ Public IHaveGui As Boolean
 Public GroupRef As Object   ' get a floating Group, maybe with groups inside....as floating group
 Public CodeName As String
 Private oldmaxitems As Long
+Public Arr As Boolean
+Public Sub PushProp(a As Variant)
+Set GroupRef = a
+Arr = False
+End Sub
+
 Public Sub CopyArray(k As mArray)
 'copy this to k
 Dim v As Variant, i As Long, obj As Object, obj2 As Object
@@ -278,9 +284,11 @@ maxitems = 1
 maxitems1 = 0
 ReDim actualdata(0)
 CodeName = GetAnyName$
+Arr = True
 End Sub
 
 Private Sub Class_Terminate()
+Set GroupRef = Nothing
 Erase actualdata()
 End Sub
 Private Function GetAnyName$()
