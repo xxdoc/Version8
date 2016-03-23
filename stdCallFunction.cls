@@ -52,7 +52,7 @@ If FastSymbol(paramList, "&") Then l = 16 Else l = 0
  Else
  m = IsPureLabel(paramList, check$)
  If m = 0 Then
- If FastSymbol(paramList, "...") Then
+ If FastSymbol(paramList, "...", , 3) Then
  PushType -100  ' Paramarray
  Exit Do
  End If
