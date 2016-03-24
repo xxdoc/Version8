@@ -62,13 +62,13 @@ glistN.Shutdown
 Set Callback = Nothing
 Set glistN = Nothing
 End Sub
-Public Sub Move(x, y, Optional w, Optional h)
+Public Sub Move(X, Y, Optional w, Optional h)
 If IsMissing(w) Then
-glistN.MoveTwips CLng(x), CLng(y), 0, 0
+glistN.MoveTwips CLng(X), CLng(Y), 0, 0
 ElseIf IsMissing(h) Then
-glistN.MoveTwips CLng(x), CLng(y), CLng(w), 0
+glistN.MoveTwips CLng(X), CLng(Y), CLng(w), 0
 Else
-glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
+glistN.MoveTwips CLng(X), CLng(Y), CLng(w), CLng(h)
 End If
 End Sub
 
@@ -99,7 +99,7 @@ If thispos <> glistN.SelStart And Content <> "" Then glistN.SelStart = thispos: 
 End Sub
 
 Private Sub glistN_CheckGotFocus()
-If Not locked Then
+If Not Locked Then
 If glistN.ListIndex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
 If Not trans Then
     If enabled Then
@@ -126,7 +126,7 @@ End If
 End Sub
 
 Private Sub glistN_CheckLostFocus()
-If Not locked Then
+If Not Locked Then
 If mStayOpen Then
 If glistN.Visible Then glistN.PanPos = 0: glistN.PrepareToShow
 Exit Sub
@@ -134,7 +134,7 @@ End If
 If Not trans Then
 glistN.ForeColor = white
 glistN.BackColor = dimm2
-glistN.NoCaretShow = True: glistN.PanPos = 0: glistN.PrepareToShow
+glistN.PanPos = 0: glistN.PrepareToShow
 End If
 End If
 
@@ -167,8 +167,8 @@ With glistN
 .BackColor = dimm2
 
 Set .Font = ff
-.ForeColor = Callback.Controls(0).ForeColor
-.dcolor = Callback.Controls(0).dcolor
+.ForeColor = Callback.Controls(1).ForeColor
+.dcolor = Callback.Controls(1).dcolor
 .NoCaretShow = False
 .enabled = True
 .StickBar = True
@@ -194,11 +194,11 @@ End Property
 Public Property Let Index(ByVal rhs As Long)
 mIndex = rhs
 End Property
-Public Property Get locked() As Boolean
-locked = Not glistN.enabled
+Public Property Get Locked() As Boolean
+Locked = Not glistN.enabled
 End Property
 
-Public Property Let locked(ByVal rhs As Boolean)
+Public Property Let Locked(ByVal rhs As Boolean)
 glistN.enabled = Not rhs
 End Property
 
@@ -291,7 +291,7 @@ Private Sub glistN_ScrollMove(item As Long)
       End If
 End Sub
 
-Private Sub glistN_ScrollSelected(item As Long, y As Long)
+Private Sub glistN_ScrollSelected(item As Long, Y As Long)
    If mIndex >= 0 Then
    Callback.Callback CtrlName + ".Scroll(" + Str(mIndex) + "," + Str(item) + ")"
    Else
@@ -401,7 +401,11 @@ End Property
 
 Public Property Let ListIndex(ByVal vNewValue As Variant)
 glistN.ListIndex = CLng(vNewValue)
-glistN.ShowThis CLng(vNewValue) + 1
+'If glistN.EditFlag Then
+glistN.ShowPan
+'Else
+'glistN.ShowThis CLng(vNewValue) + 1
+'End If
 End Property
 Public Property Let ListIndex2(ByVal vNewValue As Variant)
 glistN.ListindexPrivateUse = CLng(vNewValue)
@@ -527,7 +531,7 @@ End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)
 End Property
-Public Property Get Find(ByVal FindThis$) As Long
+Public Property Get Find(ByVal FindThis$) As Variant
     Find = glistN.Find(FindThis)
 End Property
 

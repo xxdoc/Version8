@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 195
+Global Const Revision = 196
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -6953,79 +6953,92 @@ Set bstack.LastObj = pppp
 A$ = n$
 Exit Function
 End If
+If pppp.Arr Then
+
+
 pppp.SerialItem (0), dd, 5
 dd = dd - 1
 p = 0
 PP = 0
     IsNumber = True
     w2 = 0
-Do While dn <= dd
-        pppp.SerialItem W3, dn, 6
-        
-            If IsExp(bstack, n$, p) Then
-            If dn < dd Then
-                If Not FastSymbol(n$, ",") Then A$ = n$: MyErMacro A$, "need index for " & v$ & ")", "χρειάζομαι δείκτη για το πίνακα " & v$ & ")": IsNumber = False: Exit Function
-               
-                Else
-             If FastSymbol(n$, ",") Then
-        A$ = n$: IsNumber = False
-            MyErMacro A$, "too many indexes for array " & v$ & ")", "πολλοί δείκτες για το πίνακα " & v$ & ")"
-            Exit Function
-             
-             End If
-                If Not FastSymbol(n$, ")") Then A$ = n$: MissSymbol A$, ")": IsNumber = False: Exit Function
-                
-             
-            End If
-                On Error Resume Next
-                If p < 0 Then
-                        A$ = n$: IsNumber = False
-                  MyErMacro A$, "negative index in array " & v$ & ")", "αρνητικός δείκτης στο πίνακα " & v$ & ")"
-                Exit Function
-                End If
-                
-            If Not pppp.PushOffset(w2, dn, CLng(p)) Then
-                A$ = n$ ': IsNumber = False
-                    MyErMacro A$, "index too high for array " & v$ & ")", "δείκτης υψηλός για το πίνακα " & v$ & ")"
-                Exit Function
-            Else
-                       
-                End If
-            Else
-             IsNumber = False
-            If LastErNum = -2 Then
-            Else
-            A$ = n$
-            MyErMacro A$, "missing index for array " & v$ & ")", "χάθηκε δείκτης για το πίνακα " & v$ & ")"
-            End If
-            Exit Function
-            End If
-    dn = dn + 1
-    Loop
+                    Do While dn <= dd
+                    pppp.SerialItem W3, dn, 6
+                    
+                        If IsExp(bstack, n$, p) Then
+                        If dn < dd Then
+                            If Not FastSymbol(n$, ",") Then A$ = n$: MyErMacro A$, "need index for " & v$ & ")", "χρειάζομαι δείκτη για το πίνακα " & v$ & ")": IsNumber = False: Exit Function
+                           
+                            Else
+                         If FastSymbol(n$, ",") Then
+                    A$ = n$: IsNumber = False
+                        MyErMacro A$, "too many indexes for array " & v$ & ")", "πολλοί δείκτες για το πίνακα " & v$ & ")"
+                        Exit Function
+                         
+                         End If
+                            If Not FastSymbol(n$, ")") Then A$ = n$: MissSymbol A$, ")": IsNumber = False: Exit Function
+                            
+                         
+                        End If
+                            On Error Resume Next
+                            If p < 0 Then
+                                    A$ = n$: IsNumber = False
+                              MyErMacro A$, "negative index in array " & v$ & ")", "αρνητικός δείκτης στο πίνακα " & v$ & ")"
+                            Exit Function
+                            End If
+                            
+                        If Not pppp.PushOffset(w2, dn, CLng(p)) Then
+                            A$ = n$ ': IsNumber = False
+                                MyErMacro A$, "index too high for array " & v$ & ")", "δείκτης υψηλός για το πίνακα " & v$ & ")"
+                            Exit Function
+                        Else
+                                   
+                            End If
+                        Else
+                         IsNumber = False
+                        If LastErNum = -2 Then
+                        Else
+                        A$ = n$
+                        MyErMacro A$, "missing index for array " & v$ & ")", "χάθηκε δείκτης για το πίνακα " & v$ & ")"
+                        End If
+                        Exit Function
+                        End If
+                    dn = dn + 1
+                    Loop
     If Typename(pppp.item(w2)) = "Group" Then
     
-      If Left$(n$, 1) = "." Then
-                    
+            If Left$(n$, 1) = "." Then
                           
-                        IsNumber = SpeedGroup(bstack, pppp, "VAL", v$, n$, w2) = 1
-                    If Not bstack.LastObj Is Nothing Then
-                    Set bstack.LastObj = Nothing
-                    Form1.Refresh
-                    End If
-                           r = SG * bstack.LastValue
-    
-      Else
-                      bstack.soros.CopyGroup pppp.item(w2), anything
-                       Set bstack.LastObj = anything
-                      
-      End If
-        A$ = n$
-    Exit Function
+                                
+                              IsNumber = SpeedGroup(bstack, pppp, "VAL", v$, n$, w2) = 1
+                          If Not bstack.LastObj Is Nothing Then
+                          Set bstack.LastObj = Nothing
+                          Form1.Refresh
+                          End If
+                                 r = SG * bstack.LastValue
+            
+            Else
+                            bstack.soros.CopyGroup pppp.item(w2), anything
+                             Set bstack.LastObj = anything
+                            
+            End If
+              A$ = n$
+            Exit Function
     ElseIf IsObject(pppp.item(w2)) Then
-    Set bstack.LastObj = pppp.item(w2)
+            Set bstack.LastObj = pppp.item(w2)
     End If
-   r = SG * pppp.item(w2)
-
+    r = SG * pppp.item(w2)
+    Else
+            If IsExp(bstack, n$, r) Then
+                pppp.GroupRef.Index = p
+                ElseIf IsStrExp(bstack, n$, s$) Then
+                pppp.GroupRef.Index = s$
+            End If
+              
+        r = SG * pppp.GroupRef.Value
+        IsNumber = FastSymbol(n$, ")")
+       
+        End If
     A$ = n$
     Exit Function
     Else
@@ -28319,7 +28332,7 @@ End Sub
 
 
 Public Sub ProcProperty(bstack As basetask, v(), vIndex As Long, FN$, rest$, language As Long, Optional hardlink As Boolean = False)
-Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, many As Long, y1 As Boolean, x1 As Long
+Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, many As Long, y1 As Boolean, x1 As Long, y2 As Boolean
 Dim var2() As String, ss$, sp As Double
 Dim vv As Object
 Dim oo As Object, myvar As Variant
@@ -28383,10 +28396,13 @@ FN$ = Typename(vv) & "." & UCase(FN$)
 If l <> -1 Then
 ' we have vv, fn$, l and we are looking for a label to make an object to that
 y1 = IsLabelSymbolNew(rest$, "ΓΕΝΙΚΟ", "GLOBAL", language)
+
+If Not y1 Then y2 = IsLabelSymbolNew(rest$, "ΝΕΟ", "NEW", language) Else y2 = False
+
 x1 = Abs(IsLabel(bstack, rest$, s$))
 
 If x1 < 5 Then
-    If y1 Then GoTo jumpthere
+    If y1 Or y2 Then GoTo jumpthere
     If GetlocalVar(s$, newref) Then
     ' so it is an object now
     If Not IsObject(var(newref)) Then

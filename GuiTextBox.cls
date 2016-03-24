@@ -184,8 +184,8 @@ If .listcount = 0 Then Text = ""
 If Not .CenterText Then .LeftMarginPixels = 8
 .BackColor = rgb(200, 120, 60)
 Set .Font = ff
-.ForeColor = Callback.Controls(0).ForeColor
-.dcolor = Callback.Controls(0).dcolor
+.ForeColor = Callback.Controls(1).ForeColor
+.dcolor = Callback.Controls(1).dcolor
 .ShowMe
 End With
 Locked = False
@@ -315,20 +315,20 @@ Private Sub glistN_HeaderSelected(Button As Integer)
 Text = Text
 End Sub
 
-Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
+Private Sub glistN_KeyDown(KeyCode As Integer, Shift As Integer)
 Dim vr(2)
 vr(0) = KeyCode
-vr(1) = shift
+vr(1) = Shift
    If mIndex >= 0 Then
    Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", vr()
    Else
       Callback.CallbackNow CtrlName + ".KeyDown()", vr()
       End If
 KeyCode = vr(0)
-shift = vr(1)
+Shift = vr(1)
 If KeyCode = vbKeyUp Then
 ElseIf KeyCode = vbKeyDown Then
-ElseIf KeyCode = vbKeyV And (shift And 3) = 2 Then
+ElseIf KeyCode = vbKeyV And (Shift And 3) = 2 Then
 If Not enabled Then Exit Sub
 pad$ = GetTextData(13)
 If pad$ = "" Then pad$ = Clipboard.GetText(1)
@@ -357,7 +357,7 @@ On Error Resume Next
 glistN.SetFocus
 End Sub
 
-Private Sub glistN_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub glistN_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 ' RaiseEvent MouseMove(Button, shift, x, y)
 End Sub
 
@@ -515,13 +515,13 @@ If Err.Number > 0 Then glistN.NoWheel = True
 
 End Sub
 
-Public Sub Move(x, y, Optional w, Optional h)
+Public Sub Move(X, Y, Optional w, Optional h)
 If IsMissing(w) Then
-glistN.MoveTwips CLng(x), CLng(y), 0, 0
+glistN.MoveTwips CLng(X), CLng(Y), 0, 0
 ElseIf IsMissing(h) Then
-glistN.MoveTwips CLng(x), CLng(y), CLng(w), 0
+glistN.MoveTwips CLng(X), CLng(Y), CLng(w), 0
 Else
-glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
+glistN.MoveTwips CLng(X), CLng(Y), CLng(w), CLng(h)
 End If
 End Sub
 Public Sub deconstruct()

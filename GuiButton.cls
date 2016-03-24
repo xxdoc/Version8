@@ -57,13 +57,13 @@ there.AddGuiControl Me
 CtrlName = nam$
  glistN.Dynamic
 End Sub
-Public Sub Move(x, y, Optional w, Optional h)
+Public Sub Move(X, Y, Optional w, Optional h)
 If IsMissing(w) Then
-glistN.MoveTwips CLng(x), CLng(y), 0, 0
+glistN.MoveTwips CLng(X), CLng(Y), 0, 0
 ElseIf IsMissing(h) Then
-glistN.MoveTwips CLng(x), CLng(y), CLng(w), 0
+glistN.MoveTwips CLng(X), CLng(Y), CLng(w), 0
 Else
-glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
+glistN.MoveTwips CLng(X), CLng(Y), CLng(w), CLng(h)
 End If
 End Sub
 Public Sub deconstruct()
@@ -89,8 +89,8 @@ With glistN
 .Text = mCaptext
 .BackColor = rgb(200, 120, 60)
 Set .Font = ff
-.ForeColor = Callback.Controls(0).ForeColor
-.dcolor = Callback.Controls(0).dcolor
+.ForeColor = Callback.Controls(1).ForeColor
+.dcolor = Callback.Controls(1).dcolor
 
 .enabled = True
 .ShowMe
@@ -123,7 +123,7 @@ glistN.ShowMe
 End If
 End Sub
 
-Private Sub glistN_ExposeItemMouseMove(Button As Integer, ByVal item As Long, ByVal x As Long, ByVal y As Long)
+Private Sub glistN_ExposeItemMouseMove(Button As Integer, ByVal item As Long, ByVal X As Long, ByVal Y As Long)
 glistN.ShowMe
 End Sub
 
@@ -160,9 +160,9 @@ Public Property Let Caption(myCap As String)
 mCaptext = myCap
 If Not glistN Is Nothing Then
 If glistN.CenterText Then
-glistN.LIST(0) = mCaptext
+glistN.List(0) = mCaptext
 Else
-glistN.LIST(0) = "  " + mCaptext
+glistN.List(0) = "  " + mCaptext
 End If
 glistN.ShowMe
 End If
@@ -171,11 +171,11 @@ Public Property Get Caption() As String
 Caption = mCaptext
 End Property
 
-Public Property Get index() As Long
-index = mIndex
+Public Property Get Index() As Long
+Index = mIndex
 End Property
 
-Public Property Let index(ByVal rhs As Long)
+Public Property Let Index(ByVal rhs As Long)
 mIndex = rhs
 End Property
 Public Property Get enabled() As Long
