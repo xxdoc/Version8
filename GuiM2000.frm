@@ -279,7 +279,7 @@ gList2.MoveTwips 0, 0, Me.Width, gList2.HeightTwips
 ResizeMark.Move Width - ResizeMark.Width, Height - ResizeMark.Height
 End Sub
 
-Private Sub Form_Terminate()
+Private Sub Form_TerminateOld()
 ModalId = 0
 Dim w As Object
 If GuiControls.Count > 0 Then
@@ -354,6 +354,13 @@ If prive <> 0 Then
 players(prive).Used = False
 players(prive).MAXXGRAPH = 0  '' as a flag
 prive = 0
+End If
+ModalId = 0
+Dim w As Object
+If GuiControls.Count > 0 Then
+For Each w In GuiControls
+    w.deconstruct
+Next w
 End If
 End Sub
 Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)

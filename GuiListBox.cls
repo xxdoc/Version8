@@ -58,17 +58,17 @@ Public Sub ConstructArray(there As Form, name$, i As Long)
 End Sub
 Public Sub deconstruct()
 Set Point2Me = Nothing
-glistN.Shutdown
+If Not glistN Is Nothing Then glistN.Shutdown
 Set Callback = Nothing
 Set glistN = Nothing
 End Sub
-Public Sub Move(X, Y, Optional w, Optional h)
+Public Sub Move(x, y, Optional w, Optional h)
 If IsMissing(w) Then
-glistN.MoveTwips CLng(X), CLng(Y), 0, 0
+glistN.MoveTwips CLng(x), CLng(y), 0, 0
 ElseIf IsMissing(h) Then
-glistN.MoveTwips CLng(X), CLng(Y), CLng(w), 0
+glistN.MoveTwips CLng(x), CLng(y), CLng(w), 0
 Else
-glistN.MoveTwips CLng(X), CLng(Y), CLng(w), CLng(h)
+glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
 End If
 End Sub
 
@@ -222,17 +222,17 @@ Private Sub glistN_GetBackPicture(pic As Object)
 Set pic = Point2Me
 End Sub
 
-Private Sub glistN_KeyDown(KeyCode As Integer, Shift As Integer)
+Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
 Dim vr(2)
 vr(0) = KeyCode
-vr(1) = Shift
+vr(1) = shift
    If mIndex >= 0 Then
    Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", vr()
    Else
       Callback.CallbackNow CtrlName + ".KeyDown()", vr()
       End If
 KeyCode = vr(0)
-Shift = vr(1)
+shift = vr(1)
 End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
@@ -291,7 +291,7 @@ Private Sub glistN_ScrollMove(item As Long)
       End If
 End Sub
 
-Private Sub glistN_ScrollSelected(item As Long, Y As Long)
+Private Sub glistN_ScrollSelected(item As Long, y As Long)
    If mIndex >= 0 Then
    Callback.Callback CtrlName + ".Scroll(" + Str(mIndex) + "," + Str(item) + ")"
    Else

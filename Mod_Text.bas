@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 197
+Global Const Revision = 198
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2935,7 +2935,7 @@ If Fast2Label(aa$, "XOR", 3, "апо", 3, "", 0, 4) Then
         End If
     End If
 
-ElseIf Fast2Label(aa$, "OR", 2, "г", 2, "", 0, 2) Then
+ElseIf Fast2Label(aa$, "OR", 2, "г", 1, "", 0, 2) Then
 '  good
   MUL = 3
 If priorityOr Then
@@ -33609,7 +33609,7 @@ If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                                   alfa.TITLE = what$
                                   Set alfa = Nothing
                             Else
-                                ProcEvent bstack, "{Read index msg$, &obj}", 1, y1
+                                ProcEvent bstack, "{Read index, msg$, &obj}", 1, y1
                                 Set mmmm = var(y1)
                                 GoTo contEvArray
                            End If

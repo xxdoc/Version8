@@ -542,12 +542,12 @@ End If
 Render
 End Sub
 
-Private Sub glistN_OutPopUp(X As Single, Y As Single, myButton As Integer)
+Private Sub glistN_OutPopUp(x As Single, y As Single, myButton As Integer)
 '
 If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".PopUp(" + Str(mIndex) + "," + Str(X + Callback.Controls(CtrlName).Left) + "," + Str(Y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
+   Callback.Callback CtrlName + ".PopUp(" + Str(mIndex) + "," + Str(x + Callback.Controls(CtrlName).Left) + "," + Str(y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
    Else
-      Callback.Callback CtrlName + ".PopUp(" + Str(X + Callback.Controls(CtrlName).Left) + "," + Str(Y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
+      Callback.Callback CtrlName + ".PopUp(" + Str(x + Callback.Controls(CtrlName).Left) + "," + Str(y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
       End If
 End Sub
 
@@ -959,14 +959,14 @@ mdoc.ReWritePara mdoc.MarkParagraphID, mdoc.TextParagraph(mdoc.MarkParagraphID)
 End If
 End Sub
 
-Private Sub glistN_KeyDown(KeyCode As Integer, Shift As Integer)
+Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
 If glistN.HeadLine <> "" Then
 glistN.HeadLine = ""
 onelineheight = 0
 glistN.HeadlineHeight = 0
 End If
 If KeyCode = vbKeyTab Then
-If Shift = 2 Then
+If shift = 2 Then
         choosenext
     KeyCode = 0
     Exit Sub
@@ -978,7 +978,7 @@ Dim l1 As Long, c1 As Long
 If KeyCode = 18 Then
 Exit Sub
 End If
-If KeyCode = 16 And Shift <> 0 Then
+If KeyCode = 16 And shift <> 0 Then
 KeyCode = 0
 If glistN.SelStart = 0 Then
   If mIndex >= 0 Then
@@ -999,14 +999,14 @@ If NoMark Then KeyCode = 0: Exit Sub
 
 If KeyCode = vbKeyLeft Or KeyCode = vbKeyUp Or KeyCode = vbKeyDown Or KeyCode = vbKeyRight Or KeyCode = vbKeyEnd Or KeyCode = vbKeyHome Or KeyCode = vbKeyPageUp Or KeyCode = vbKeyPageDown Then
 '
-ElseIf KeyCode = vbKeyX And (Shift And 3) = 2 Then
+ElseIf KeyCode = vbKeyX And (shift And 3) = 2 Then
 MarkCut
 Show
 KeyCode = 0
-ElseIf KeyCode = vbKeyC And (Shift And 3) = 2 Then
+ElseIf KeyCode = vbKeyC And (shift And 3) = 2 Then
 MarkCopy
 KeyCode = 0
-ElseIf KeyCode = vbKeyV And (Shift And 3) = 2 Then
+ElseIf KeyCode = vbKeyV And (shift And 3) = 2 Then
 pad$ = GetTextData(13)
 If pad$ = "" Then pad$ = Clipboard.GetText(1)
 If ParaSelStart = 2 And glistN.List(glistN.ListIndex) = "" Then
@@ -1023,11 +1023,11 @@ SelText = pad$
 RemoveUndo pad$
 KeyCode = 0
 mdoc.WrapAgainColor
-ElseIf KeyCode = vbKeyA And (Shift And 3) = 2 Then
+ElseIf KeyCode = vbKeyA And (shift And 3) = 2 Then
 glistN.MarkNext = 0
 glistN.MarkALL
 KeyCode = 0
-ElseIf KeyCode = vbKeyY And (Shift And 3) = 2 Then
+ElseIf KeyCode = vbKeyY And (shift And 3) = 2 Then
 ' Redo
 If Redopara <> -1 Then
 
@@ -1094,7 +1094,7 @@ Redomode = 0
 End If
 End If
 KeyCode = 0
-ElseIf KeyCode = vbKeyZ And (Shift And 3) = 2 Then
+ElseIf KeyCode = vbKeyZ And (shift And 3) = 2 Then
 ' 2nd version of undo system
 ' undopos now is selstart
 If undopara <> -1 Then
@@ -1154,7 +1154,7 @@ undotext = ""
 undomode = 0
 End If
 KeyCode = 0
-ElseIf KeyCode = vbKeyA And (Shift And 3) = 3 Then
+ElseIf KeyCode = vbKeyA And (shift And 3) = 3 Then
 glistN.MarkNext = 0
 BlockEndPara = mdoc.MarkParagraphID
 BlockStartPara = BlockEndPara
@@ -1179,28 +1179,28 @@ glistN_MarkDelete False
 KeyCode = 0
 End If
 End If
-If KeyCode <> 0 Or Shift <> 0 Then gListN_KeyDown1 KeyCode, Shift
+If KeyCode <> 0 Or shift <> 0 Then gListN_KeyDown1 KeyCode, shift
 End Sub
 
-Private Sub glistN_KeyDownAfter(KeyCode As Integer, Shift As Integer)
+Private Sub glistN_KeyDownAfter(KeyCode As Integer, shift As Integer)
 If NoMark Then Exit Sub
 If HaveMarkedText Then
-If Shift = 0 Then
+If shift = 0 Then
 glistN.MarkNext = 0
 BlockStartPara = BlockEndPara
 BlockStartPos = BlockEndPos
-ElseIf (Shift And 1) = 1 Then
+ElseIf (shift And 1) = 1 Then
 
 If KeyCode = vbKeyLeft Or KeyCode = vbKeyUp Or KeyCode = vbKeyDown Or KeyCode = vbKeyRight Or KeyCode = vbKeyEnd Or KeyCode = vbKeyHome Or KeyCode = vbKeyPageUp Or KeyCode = vbKeyPageDown Then
 glistN_MarkOut
 End If
 End If
-ElseIf (Shift And 1) = 1 And glistN.MarkNext = 0 Then
+ElseIf (shift And 1) = 1 And glistN.MarkNext = 0 Then
 If KeyCode = vbKeyLeft Or KeyCode = vbKeyUp Or KeyCode = vbKeyDown Or KeyCode = vbKeyRight Or KeyCode = vbKeyEnd Or KeyCode = vbKeyHome Or KeyCode = vbKeyPageUp Or KeyCode = vbKeyPageDown Then
 glistN.MarkNext = 1
 glistN_MarkIn
 End If
-ElseIf (Shift And 1) = 1 And glistN.MarkNext > 0 Then
+ElseIf (shift And 1) = 1 And glistN.MarkNext > 0 Then
 If KeyCode = vbKeyLeft Or KeyCode = vbKeyUp Or KeyCode = vbKeyDown Or KeyCode = vbKeyRight Or KeyCode = vbKeyEnd Or KeyCode = vbKeyHome Or KeyCode = vbKeyPageUp Or KeyCode = vbKeyPageDown Then
 glistN.MarkNext = 2
 glistN_MarkOut
@@ -1708,7 +1708,7 @@ End Sub
 
 'End Sub
 
-Private Sub glistN_ScrollSelected(item As Long, Y As Long)
+Private Sub glistN_ScrollSelected(item As Long, y As Long)
 If NoMark Then Exit Sub
 Dim what$, ThatPara As Long
    mdoc.TextParagraphLine item, what$, ThatPara
@@ -3831,22 +3831,22 @@ End If
 aheadstatus = b$
 End Function
 
-Public Sub Move(X, Y, Optional w, Optional h)
+Public Sub Move(x, y, Optional w, Optional h)
 If IsMissing(w) Then
-glistN.MoveTwips CLng(X), CLng(Y), 0, 0
+glistN.MoveTwips CLng(x), CLng(y), 0, 0
 ElseIf IsMissing(h) Then
 
-glistN.MoveTwips CLng(X), CLng(Y), CLng(w), 0
+glistN.MoveTwips CLng(x), CLng(y), CLng(w), 0
 RelocateMarkedText
 Else
-glistN.MoveTwips CLng(X), CLng(Y), CLng(w), CLng(h)
+glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
 RelocateMarkedText
 End If
 
 
 End Sub
 Public Sub deconstruct()
-glistN.Shutdown
+If Not glistN Is Nothing Then glistN.Shutdown
 Set Callback = Nothing
 Set glistN = Nothing
 Set mdoc = Nothing
@@ -3894,7 +3894,7 @@ Public Property Get LineHeight() As Variant
 ''
 LineHeight = glistN.HeightTwips / glistN.lines
 End Property
-Private Sub gListN_KeyDown1(KeyCode As Integer, Shift As Integer)
+Private Sub gListN_KeyDown1(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
 Dim aa$, A$, JJ As Long, ii As Long
 
@@ -3923,7 +3923,7 @@ Case vbKeyControl
 ctrl = True
 KeyCode = 0
 Case vbKeyF1
-If (Shift And 2) = 2 Then
+If (shift And 2) = 2 Then
 If SelText <> "" Then
 helpmeSub
 Else
@@ -3938,29 +3938,29 @@ End If
 
 KeyCode = 0
 Case vbKeyF2
-If Shift <> 0 Then
+If shift <> 0 Then
 If pagio$ = "GREEK" Then
 s$ = InputBoxN("Αναζήτησε προς τα πάνω:", "Συγγραφή Κειμένου", s$)
 Else
 s$ = InputBoxN("Search to top:", "Text Editor", s$)
 End If
-If s$ <> "" Then Searchup s$, Shift Mod 2 = 1
-Shift = 0
+If s$ <> "" Then Searchup s$, shift Mod 2 = 1
+shift = 0
 ElseIf SelText <> "" Or s$ <> "" Then
 supsub
 End If
 
 KeyCode = 0
 Case vbKeyF3
-If Shift <> 0 Then
+If shift <> 0 Then
 
 If pagio$ = "GREEK" Then
 s$ = InputBoxN("Αναζήτησε προς τα κάτω:", "Συγγραφή Κειμένου", s$)
 Else
 s$ = InputBoxN("Search to down:", "Text Editor", s$)
 End If
-If s$ <> "" Then SearchDown s$, Shift Mod 2 = 1
-Shift = 0
+If s$ <> "" Then SearchDown s$, shift Mod 2 = 1
+shift = 0
 ElseIf SelText <> "" Or s$ <> "" Then
 
 sdnSub
@@ -4026,7 +4026,7 @@ End If
 If SelText <> "" Then
 
     A$ = vbCrLf + SelText & "*"
-    If Shift <> 0 Then  ' βγάλε
+    If shift <> 0 Then  ' βγάλε
         A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
         InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
          SelStartSilent = ii
@@ -4041,7 +4041,7 @@ If SelText <> "" Then
     End If
   
 Else
-If Shift <> 0 Then
+If shift <> 0 Then
 
     If Mid$(CurrentParagraph, 1, 6) = Space$(6) Then
 
@@ -4409,7 +4409,7 @@ Public Property Let MultiLineComment2(ByVal vNewValue As Variant)
 mMultiLineComment2 = vNewValue
 mdoc.final = vNewValue
 End Property
-Public Sub PopUpMenu(poptitle$, X As Variant, Y As Variant)
+Public Sub PopUpMenu(poptitle$, x As Variant, y As Variant)
 Dim oldModalId As Variant, i As Long
 If UsedAsTextBox Then Exit Sub
 i = SelLength
@@ -4425,7 +4425,7 @@ oldModalId = ModalId
 ModalId = Rnd * 113314324
 UnHook Callback.hWnd
 MyPopUp.feedlabels Me, False
-MyPopUp.UpGui Callback, X, Y, poptitle$
+MyPopUp.UpGui Callback, x, y, poptitle$
 MyPopUp.Visible = True
 MyPopUp.ZOrder 0
 
