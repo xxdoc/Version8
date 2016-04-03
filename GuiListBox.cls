@@ -25,15 +25,17 @@ Dim white As Long, black As Long, dimm1 As Long, dimm2 As Long, trans As Boolean
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
 End Property
- Public Sub Construct(there As Form, name$)
+Public Sub Construct(there As Form, name$)
  mIndex = -1
  Set Callback = there
  On Error Resume Next
  Set glistN = there.Controls.Add("m2000.glist", name$)
+  CtrlName = name$
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+  CtrlName = GetTag$
  End If
- CtrlName = name$
+
  there.AddGuiControl Me
  glistN.Dynamic
  there.Controls(name$).TabStop = True
@@ -43,14 +45,15 @@ Public Sub ConstructArray(there As Form, name$, i As Long)
  On Error Resume Next
  If i = 0 Then
  Set glistN = there.Controls.Add("m2000.glist", name$)
+ CtrlName = name$
  Else
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
-
+CtrlName = name$ + "_" + LTrim(Str$(i))
  End If
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+ CtrlName = GetTag$
  End If
- CtrlName = name$
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
@@ -82,19 +85,19 @@ End Sub
 
 Private Sub glistN_ChangeListItem(item As Long, Content As String)
 If Not mEnabled Then Exit Sub
-Dim thispos As Long, vr(3)
+Dim thispos As Long, VR(3)
 thispos = glistN.SelStart
-vr(0) = Content
-vr(1) = thispos
-vr(2) = item
+VR(0) = Content
+VR(1) = thispos
+VR(2) = item
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".ValidList(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".ValidList(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".ValidList()", vr()
+      Callback.CallbackNow CtrlName + ".ValidList()", VR()
       End If
       
-thispos = vr(1)
-Content = vr(0)
+thispos = VR(1)
+Content = VR(0)
 If thispos <> glistN.SelStart And Content <> "" Then glistN.SelStart = thispos: glistN.ShowMe
 End Sub
 
@@ -206,16 +209,16 @@ Private Sub glistN_ExposeListcount(cListCount As Long)
 ' use with readlistitem
 
 If Not mEnabled Then Exit Sub
-Dim vr(1)
+Dim VR(1)
 
-vr(0) = cListCount
+VR(0) = cListCount
 
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".ListCount(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".ListCount(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".ListCount()", vr()
+      Callback.CallbackNow CtrlName + ".ListCount()", VR()
       End If
-cListCount = vr(0)
+cListCount = VR(0)
 End Sub
 
 Private Sub glistN_GetBackPicture(pic As Object)
@@ -223,16 +226,16 @@ Set pic = Point2Me
 End Sub
 
 Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
-Dim vr(2)
-vr(0) = KeyCode
-vr(1) = shift
+Dim VR(2)
+VR(0) = KeyCode
+VR(1) = shift
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".KeyDown()", vr()
+      Callback.CallbackNow CtrlName + ".KeyDown()", VR()
       End If
-KeyCode = vr(0)
-shift = vr(1)
+KeyCode = VR(0)
+shift = VR(1)
 End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
@@ -245,17 +248,17 @@ End Sub
 
 Private Sub glistN_ReadListItem(item As Long, Content As String)
 If Not mEnabled Then Exit Sub
-Dim vr(1)
+Dim VR(1)
 
 
-vr(0) = Content
+VR(0) = Content
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".External(" + Str(mIndex) + "," + Str(item) + ")", vr()
+   Callback.CallbackNow CtrlName + ".External(" + Str(mIndex) + "," + Str(item) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".External(" + Str(item) + ")", vr()
+      Callback.CallbackNow CtrlName + ".External(" + Str(item) + ")", VR()
       End If
     
-Content = vr(0)
+Content = VR(0)
 
 
 End Sub
@@ -268,17 +271,17 @@ End Sub
 
 Private Sub glistN_RemoveOne(that As String)
 '' this is the unicode key
-Dim vr(1)
+Dim VR(1)
 
 
-vr(0) = that
+VR(0) = that
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".Unicode(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".Unicode(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".Unicode()", vr()
+      Callback.CallbackNow CtrlName + ".Unicode()", VR()
       End If
     
-that = vr(0)
+that = VR(0)
 
 End Sub
 
@@ -299,7 +302,7 @@ Private Sub glistN_ScrollSelected(item As Long, y As Long)
       End If
 End Sub
 
-Private Sub glistN_Selected(item As Long)
+Private Sub glistN_selected(item As Long)
 '
 If glistN.PanPos <> 0 Then glistN.PanPos = 0
    If mIndex >= 0 Then
@@ -321,16 +324,16 @@ End Sub
 Private Sub gListN_SpecialColor(rgbcolor As Long)
 
 If Not mEnabled Then Exit Sub
-Dim vr(1)
+Dim VR(1)
 
-vr(0) = -rgbcolor
+VR(0) = -rgbcolor
 
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".Color(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".Color(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".Color(", vr()
+      Callback.CallbackNow CtrlName + ".Color(", VR()
       End If
-rgbcolor = mycolor(vr(0))
+rgbcolor = mycolor(VR(0))
 End Sub
 Function Control() As gList
     Set Control = glistN
@@ -449,7 +452,7 @@ End Property
 Public Property Let DisplayLines(ByVal vNewValue As Variant)
 glistN.restrictLines = CLng(vNewValue)
 End Property
-Sub ClorosReset()
+Sub ColorsReset()
 white = rgb(255, 255, 255)
 black = 0
 dimm1 = rgb(100, 200, 160)
@@ -500,15 +503,15 @@ If Err.Number > 0 Then this.NoWheel = True
 End Sub
 
 Private Sub glistN_SyncKeyboard(item As Integer)
-Dim vr(1)
-vr(0) = item
+Dim VR(1)
+VR(0) = item
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".Ascii(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".Ascii(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".Ascii()", vr()
+      Callback.CallbackNow CtrlName + ".Ascii()", VR()
       End If
     
-item = vr(0)
+item = VR(0)
 End Sub
 
 Private Sub glistN_UnregisterGlist()

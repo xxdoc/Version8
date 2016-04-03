@@ -131,9 +131,9 @@ Else
 CallEventFromGui Me, myEvent, b$
 End If
 End Sub
-Public Sub CallbackNow(b$, vr())
+Public Sub CallbackNow(b$, VR())
 
-CallEventFromGuiNow Me, myEvent, b$, vr()
+CallEventFromGuiNow Me, myEvent, b$, VR()
 End Sub
 
 
@@ -279,17 +279,6 @@ gList2.MoveTwips 0, 0, Me.Width, gList2.HeightTwips
 ResizeMark.Move Width - ResizeMark.Width, Height - ResizeMark.Height
 End Sub
 
-Private Sub Form_TerminateOld()
-ModalId = 0
-Dim w As Object
-If GuiControls.Count > 0 Then
-For Each w In GuiControls
-    w.deconstruct
-Next w
-End If
-
-End Sub
-
 Private Sub gList2_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
 If item = -1 Then
 FillThere thisHDC, thisrect, gList2.CapColor
@@ -351,11 +340,11 @@ Private Sub Form_Unload(Cancel As Integer)
 Set myEvent = Nothing
 If Not IamPopUp Then ModalId = 0
 If prive <> 0 Then
-players(prive).Used = False
+players(prive).used = False
 players(prive).MAXXGRAPH = 0  '' as a flag
 prive = 0
 End If
-ModalId = 0
+'ModalId = 0
 Dim w As Object
 If GuiControls.Count > 0 Then
 For Each w In GuiControls
@@ -371,29 +360,29 @@ FillRect thathDC, there, my_brush
 DeleteObject my_brush
 End Sub
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT
-CopyFromLParamToRect A, thatRect
+Dim a As RECT
+CopyFromLParamToRect a, thatRect
 
-FillBack thathDC, A, thatbgcolor
+FillBack thathDC, a, thatbgcolor
 End Sub
 
 Private Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim A As RECT, b As Long
+Dim a As RECT, b As Long
 b = 2 * lastfactor
 If b < 2 Then b = 2
 If setupxy - b < 0 Then b = setupxy \ 4 + 1
-CopyFromLParamToRect A, thatRect
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), 0
+CopyFromLParamToRect a, thatRect
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), 0
 b = 5 * lastfactor
-A.Left = b
-A.Right = setupxy - b
-A.top = b
-A.Bottom = setupxy - b
-FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
+a.Left = b
+a.Right = setupxy - b
+a.top = b
+a.Bottom = setupxy - b
+FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
 End Sub
 
 Public Property Get TITLE() As Variant
@@ -525,11 +514,35 @@ that.IamPopUp = True
 CallByNameFixParamArray that, "Show", VbMethod, var1(), var2(), 2
 Set that = Nothing
 Set var1(0) = Nothing
-Show
+'Show
 MyDoEvents
 
 End Sub
+Public Sub PopUpPos(vv As Variant, ByVal x As Variant, ByVal y As Variant)
+Dim that As Object
 
+x = x + Left
+y = y + top
+Set that = vv
+If Me Is that Then Exit Sub
+If that.Visible Then
+If Not that.enabled Then Exit Sub
+End If
+If x + that.Width > ScrX() Then
+If y + that.Height > ScrY() Then
+that.Move ScrX() - that.Width, ScrY() - that.Height
+Else
+that.Move ScrX() - that.Width, y
+End If
+ElseIf y + that.Height > ScrY() Then
+that.Move x, ScrY() - Height
+Else
+that.Move x, y
+End If
+that.ShowmeALl
+that.Show , Me
+
+End Sub
 Public Sub hookme(this As gList)
 Set LastGlist = this
 End Sub

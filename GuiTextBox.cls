@@ -54,7 +54,7 @@ Private Declare Function CloseClipboard Lib "user32" _
     () As Long
     Private Declare Function IsClipboardFormatAvailable Lib "user32" _
     (ByVal wFormat As Long) As Long
-    Private pad$
+    Private Pad$
     ' for Gui purposes
 Public CtrlName As String
 Dim mIndex As Long, mStayOpen As Boolean
@@ -62,15 +62,17 @@ Dim Callback As GuiM2000
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
 End Property
- Public Sub Construct(there As Form, name$)
+Public Sub Construct(there As Form, name$)
  mIndex = -1
  Set Callback = there
  On Error Resume Next
  Set glistN = there.Controls.Add("m2000.glist", name$)
+  CtrlName = name$
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+  CtrlName = GetTag$
  End If
- CtrlName = name$
+
  there.AddGuiControl Me
  glistN.Dynamic
  there.Controls(name$).TabStop = True
@@ -80,14 +82,15 @@ Public Sub ConstructArray(there As Form, name$, i As Long)
  On Error Resume Next
  If i = 0 Then
  Set glistN = there.Controls.Add("m2000.glist", name$)
+ CtrlName = name$
  Else
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
-
+CtrlName = name$ + "_" + LTrim(Str$(i))
  End If
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+ CtrlName = GetTag$
  End If
- CtrlName = name$
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
@@ -221,21 +224,21 @@ End Sub
 
 Private Sub glistN_ChangeListItem(item As Long, Content As String)
 If Not enabled Then Exit Sub
-Dim this As String, thispos As Long, vr(2)
+Dim this As String, thispos As Long, VR(2)
 thispos = glistN.SelStart - Len(mprompt)
 this = Mid$(Content, 1 + Len(mprompt))
 '' RaiseEvent ValidString(this, thispos)
-vr(0) = this
-vr(1) = thispos
+VR(0) = this
+VR(1) = thispos
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".ValidString(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".ValidString(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".ValidString()", vr()
+      Callback.CallbackNow CtrlName + ".ValidString()", VR()
       End If
       
-thispos = vr(1) + Len(mprompt)
-Content = mprompt + vr(0)
-If thispos <> glistN.SelStart And vr(0) <> "" Then glistN.SelStart = thispos: glistN.ShowMe
+thispos = VR(1) + Len(mprompt)
+Content = mprompt + VR(0)
+If thispos <> glistN.SelStart And VR(0) <> "" Then glistN.SelStart = thispos: glistN.ShowMe
 End Sub
 
 Public Sub ResetPan()
@@ -316,23 +319,23 @@ Text = Text
 End Sub
 
 Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
-Dim vr(2)
-vr(0) = KeyCode
-vr(1) = shift
+Dim VR(2)
+VR(0) = KeyCode
+VR(1) = shift
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", vr()
+   Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".KeyDown()", vr()
+      Callback.CallbackNow CtrlName + ".KeyDown()", VR()
       End If
-KeyCode = vr(0)
-shift = vr(1)
+KeyCode = VR(0)
+shift = VR(1)
 If KeyCode = vbKeyUp Then
 ElseIf KeyCode = vbKeyDown Then
 ElseIf KeyCode = vbKeyV And (shift And 3) = 2 Then
 If Not enabled Then Exit Sub
-pad$ = GetTextData(13)
-If pad$ = "" Then pad$ = Clipboard.GetText(1)
-If pad$ <> "" Then vartext = pad$
+Pad$ = GetTextData(13)
+If Pad$ = "" Then Pad$ = Clipboard.GetText(1)
+If Pad$ <> "" Then vartext = Pad$
 End If
 
 End Sub
@@ -525,6 +528,7 @@ glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
 End If
 End Sub
 Public Sub deconstruct()
+
 If Not glistN Is Nothing Then glistN.Shutdown
 Set Callback = Nothing
 Set glistN = Nothing

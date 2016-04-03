@@ -61,7 +61,7 @@ Private Declare Function CloseClipboard Lib "user32" _
     () As Long
     Private Declare Function IsClipboardFormatAvailable Lib "user32" _
     (ByVal wFormat As Long) As Long
-    Private pad$
+    Private Pad$
 Public Property Get Text() As String
 If glistN.listcount = 0 Then
 glistN.additem mprompt
@@ -129,7 +129,7 @@ glistN.TopTwips = rhs
 End Property
 Public Property Set Container(glistNN As gList)
 Set glistN = glistNN
-glistNN.Enabled = True
+glistNN.enabled = True
 Info = ""
 If glistNN.listcount = 0 Then Text = ""
 glistN.NoCaretShow = True
@@ -159,14 +159,14 @@ End Sub
 
 
 
-Private Sub glistN_ChangeListItem(item As Long, content As String)
-If Not Enabled Then Exit Sub
+Private Sub glistN_ChangeListItem(item As Long, Content As String)
+If Not enabled Then Exit Sub
 Dim this As String, thispos As Long
 thispos = glistN.SelStart - Len(mprompt)
-this = Mid$(content, 1 + Len(mprompt))
+this = Mid$(Content, 1 + Len(mprompt))
 RaiseEvent ValidString(this, thispos)
 thispos = thispos + Len(mprompt)
-content = mprompt + this
+Content = mprompt + this
 If thispos <> glistN.SelStart And this <> "" Then glistN.SelStart = thispos: glistN.ShowMe
 End Sub
 Public Sub ResetPan()
@@ -187,11 +187,11 @@ glistN.LastLinePart = " " & rhs
 End Property
 
 
-Public Property Get Enabled() As Boolean
-Enabled = glistN.EditFlag
+Public Property Get enabled() As Boolean
+enabled = glistN.EditFlag
 End Property
 
-Public Property Let Enabled(ByVal rhs As Boolean)
+Public Property Let enabled(ByVal rhs As Boolean)
 glistN.EditFlag = rhs
 glistN.NoCaretShow = Not rhs
 End Property
@@ -200,9 +200,9 @@ End Property
 
 Private Sub glistN_CheckGotFocus()
 If Not Locked Then
-If glistN.listindex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
+If glistN.ListIndex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
 RaiseEvent GotFocus
-If Enabled Then
+If enabled Then
 glistN.ForeColor = rgb(0, 0, 0)
 glistN.BackColor = rgb(255, 255, 255)
 glistN.NoCaretShow = False:
@@ -245,10 +245,10 @@ RaiseEvent KeyDown(KeyCode, shift)
 If KeyCode = vbKeyUp Then
 ElseIf KeyCode = vbKeyDown Then
 ElseIf KeyCode = vbKeyV And (shift And 3) = 2 Then
-If Not Enabled Then Exit Sub
-pad$ = GetTextData(13)
-If pad$ = "" Then pad$ = Clipboard.GetText(1)
-If pad$ <> "" Then vartext = pad$
+If Not enabled Then Exit Sub
+Pad$ = GetTextData(13)
+If Pad$ = "" Then Pad$ = Clipboard.GetText(1)
+If Pad$ <> "" Then vartext = Pad$
 End If
 
 End Sub
@@ -284,11 +284,11 @@ Private Sub glistN_SpinnerValue(ThatValue As Long)
 RaiseEvent SpinnerValue(ThatValue)
 End Sub
 Public Property Get Locked() As Boolean
-Locked = Not glistN.Enabled
+Locked = Not glistN.enabled
 End Property
 
 Public Property Let Locked(ByVal rhs As Boolean)
-glistN.Enabled = Not rhs
+glistN.enabled = Not rhs
 End Property
 Public Sub Spinner(ShowBar As Boolean, MinValue As Long, maxvalue As Long, LargeValue As Long)
 If Not ShowBar Then
@@ -296,11 +296,11 @@ glistN.Spinner = False
 glistN.ShowBar = False
 glistN.EnabledBar = False
 Else
-glistN.Enabled = False
+glistN.enabled = False
 glistN.restrictLines = 1
 glistN.Spinner = True
 glistN.SetSpin MinValue, maxvalue, LargeValue
-glistN.Enabled = True
+glistN.enabled = True
 glistN.EnabledBar = True
 glistN.ShowBar = True
 
@@ -404,3 +404,4 @@ Set LastGlist = Nothing
 If Err.Number > 0 Then glistN.NoWheel = True
 
 End Sub
+

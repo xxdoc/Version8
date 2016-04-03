@@ -34,30 +34,35 @@ Public Property Let Index(ByVal rhs As Long)
 mIndex = rhs
 End Property
 Public Sub Construct(there As Form, name$)
+ mIndex = -1
  Set Callback = there
  On Error Resume Next
  Set glistN = there.Controls.Add("m2000.glist", name$)
+  CtrlName = name$
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+  CtrlName = GetTag$
  End If
- CtrlName = name$
+
  there.AddGuiControl Me
  glistN.Dynamic
  there.Controls(name$).TabStop = True
 End Sub
+
 Public Sub ConstructArray(there As Form, name$, i As Long)
  Set Callback = there
  On Error Resume Next
  If i = 0 Then
  Set glistN = there.Controls.Add("m2000.glist", name$)
+ CtrlName = name$
  Else
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
-
+CtrlName = name$ + "_" + LTrim(Str$(i))
  End If
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+ CtrlName = GetTag$
  End If
- CtrlName = name$
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic

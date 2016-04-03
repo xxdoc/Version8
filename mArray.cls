@@ -25,14 +25,14 @@ Public GroupRef As Object   ' get a floating Group, maybe with groups inside....
 Public CodeName As String
 Private oldmaxitems As Long
 Public Arr As Boolean
-Public Sub PushProp(a As Variant)
-Set GroupRef = a
+Public Sub PushProp(A As Variant)
+Set GroupRef = A
 Arr = False
 End Sub
 
 Public Sub CopyArray(k As mArray)
 'copy this to k
-Dim v As Variant, i As Long, obj As Object, obj2 As Object
+Dim v As Variant, i As Long, obj As Object, obj2 As Object, spare As lambda
 k.SerialItem v, Me.UpperMonoLimit, 8
 k.StartResize
 For i = 0 To dnum - 1
@@ -49,6 +49,14 @@ Set obj = Me.item(i)
 CopyGroup obj, obj2
 Set k.item(i) = obj2
 Set obj2 = Nothing
+Case "lambda"
+Dim var()
+With Me.item(i)
+.CopyTo spare, var()
+End With
+Set k.item(i) = spare
+Set spare = Nothing
+
 Case Else
 Set k.item(i) = Me.item(i)
 End Select
@@ -153,8 +161,8 @@ Else
 item = limit(cursor)
 End If
 ElseIf command = 7 Then  'erase all data
-Dim aa As Variant
-Fill aa
+Dim AA As Variant
+Fill AA
 ElseIf command = 8 Then
 If dnum = 1 Then
     ReDim Preserve actualdata(cursor) As Variant
@@ -221,13 +229,13 @@ Set actualdata(curitem) = item
 End Property
 
 Private Sub Fill(item As Variant)
-Dim aa As Object
+Dim AA As Object
 If dnum > 0 Then
 Dim i As Long
 If IHaveClass Then
 For i = 0 To maxitems - 1
-CopyGroup GroupRef, aa
-Set actualdata(i) = aa
+CopyGroup GroupRef, AA
+Set actualdata(i) = AA
 Next i
 
 Else
@@ -244,9 +252,9 @@ End If
 End If
 End Sub
 Sub MakeitObject2(var As Variant)
-Dim aa As Object
-Set aa = New Group
-Set var = aa
+Dim AA As Object
+Set AA = New Group
+Set var = AA
 End Sub
 Sub CopyGroup(myobject As Object, myobject2 As Object)
 'Special Copy

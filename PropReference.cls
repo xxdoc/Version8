@@ -38,14 +38,14 @@ Attribute Value.VB_UserMemId = 0
 If Init Then
 If UseIndex Then
 If useobj Then
- Value = ReadPropIndexObj(hardlink, vtref, mIndex)
+  Value = ReadPropIndexObj(hardlink, vtref, mIndex)
 Else
  Value = ReadPropIndex(ObjectRef, vtref, mIndex)
  End If
 
 Else
 If useobj Then
- Value = ReadPropObj(hardlink, vtref)
+Value = ReadPropObj(hardlink, vtref)
 Else
  Value = ReadProp(ObjectRef, vtref)
  End If

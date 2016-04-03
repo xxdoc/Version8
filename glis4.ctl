@@ -66,7 +66,7 @@ Attribute VB_Exposed = False
 Option Explicit
 Dim waitforparent As Boolean
 Dim havefocus As Boolean, UKEY$
-Dim DUMMY As Long
+Dim dummy As Long
 Private Type Myshape
 Visible As Boolean
 hatchType As Long
@@ -887,7 +887,7 @@ state = True
 If SELECTEDITEM - topitem > 0 And SELECTEDITEM - topitem - 1 <= lines And cX > 0 And cX < UserControl.ScaleWidth Then
  If SELECTEDITEM > 0 Then
          If Not BlockItemcount Then
-             REALCUR List(SELECTEDITEM - 1), cX - scrollme, DUMMY, mSelstart, True
+             REALCUR List(SELECTEDITEM - 1), cX - scrollme, dummy, mSelstart, True
              mSelstart = mSelstart + 1
 RaiseEvent ChangeSelStart(mSelstart)
              End If
@@ -1290,9 +1290,9 @@ i = -1
 If shift <> 4 And mynum$ <> "" Then
 On Error Resume Next
 If Left$(mynum$, 1) = "0" Then
-i = Val(mynum$)
+i = val(mynum$)
 Else
-i = Val(mynum$)
+i = val(mynum$)
 End If
 mynum$ = ""
 Else
@@ -1546,7 +1546,7 @@ If (cX > ScaleWidth / 4 And cX < ScaleWidth * 3 / 4) And scrollme = 0 Then x = l
             SELECTEDITEM = topitem + YYT + 1
             
              If Not BlockItemcount Then
-             REALCUR List(SELECTEDITEM - 1), cX - scrollme, DUMMY, mSelstart, True
+             REALCUR List(SELECTEDITEM - 1), cX - scrollme, dummy, mSelstart, True
       
               mSelstart = mSelstart + 1
               
@@ -1581,7 +1581,7 @@ If (cX > ScaleWidth / 4 And cX < ScaleWidth * 3 / 4) And scrollme = 0 Then x = l
         Else
         If Not Timer1.enabled Then
          If Not BlockItemcount Then
-             REALCUR List(SELECTEDITEM - 1), cX - scrollme, DUMMY, mSelstart, True
+             REALCUR List(SELECTEDITEM - 1), cX - scrollme, dummy, mSelstart, True
               mSelstart = mSelstart + 1
          
       
@@ -1731,7 +1731,7 @@ If (Button And 3) > 0 And myEnabled Then
              ' compute selstart always
              If Not BlockItemcount Then
              
-             REALCUR List(SELECTEDITEM - 1), cX - scrollme, DUMMY, mSelstart, True
+             REALCUR List(SELECTEDITEM - 1), cX - scrollme, dummy, mSelstart, True
               mSelstart = mSelstart + 1
 RaiseEvent ChangeSelStart(mSelstart)
 
@@ -1968,7 +1968,7 @@ data.SetData aa(), vbCFText
 End Sub
 Public Sub MovePos(ByVal x As Single, ByVal y As Single)
 
-Dim DUMMY As Long, YYT As Long, M_CURSOR As Long
+Dim dummy As Long, YYT As Long, M_CURSOR As Long
 dragslow = 0.02
 If mHeadlineHeightTwips = 0 Then
 YYT = y \ myt + 1
@@ -1985,7 +1985,7 @@ Else
 End If
 YYT = YYT - 1
 If topitem + YYT < listcount Then
-REALCUR List(topitem + YYT), x - scrollme, DUMMY, M_CURSOR
+REALCUR List(topitem + YYT), x - scrollme, dummy, M_CURSOR
 ListindexPrivateUse = topitem + YYT
 If ListIndex = -1 Then
         If itemcount = 0 Then
@@ -3533,11 +3533,12 @@ Value = mValue
 End Property
 Public Property Get Visible() As Boolean
 Dim MM$, mo As Control, nm$, cnt$, p As Long
+On Error Resume Next
 MM$ = UserControl.Ambient.DisplayName
 
 nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
 cnt$ = GetStrUntilB(p, ")", MM$, True)
-On Error Resume Next
+'On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
 If cnt$ <> "" Then
@@ -4643,10 +4644,10 @@ Function GetKeY(ascii As Integer) As String
     Buffer = String$(514, 0)
     Dim r&
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
-      r = Val("&H" & Right(Hex(r), 4))
+      r = val("&H" & Right(Hex(r), 4))
     Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
     If Ret > 0 Then
-        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(Val("&h" + Left$(Buffer, Ret - 1))))))
+        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(val("&h" + Left$(Buffer, Ret - 1))))))
     Else
         GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, 1033)))
     End If

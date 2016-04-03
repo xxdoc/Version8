@@ -135,14 +135,17 @@ Dim oldEditDoc As Boolean
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
 End Property
- Public Sub Construct(there As Form, name$)
+Public Sub Construct(there As Form, name$)
+ mIndex = -1
  Set Callback = there
  On Error Resume Next
  Set glistN = there.Controls.Add("m2000.glist", name$)
+  CtrlName = name$
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+  CtrlName = GetTag$
  End If
- CtrlName = name$
+
  there.AddGuiControl Me
  glistN.Dynamic
  there.Controls(name$).TabStop = True
@@ -152,14 +155,15 @@ Public Sub ConstructArray(there As Form, name$, i As Long)
  On Error Resume Next
  If i = 0 Then
  Set glistN = there.Controls.Add("m2000.glist", name$)
+ CtrlName = name$
  Else
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
-
+CtrlName = name$ + "_" + LTrim(Str$(i))
  End If
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+ CtrlName = GetTag$
  End If
- CtrlName = name$
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
@@ -973,7 +977,7 @@ If shift = 2 Then
     End If
 
 End If
-Dim selstart2 As Long, b As Boolean, pad$, cc As Long
+Dim selstart2 As Long, b As Boolean, Pad$, cc As Long
 Dim l1 As Long, c1 As Long
 If KeyCode = 18 Then
 Exit Sub
@@ -1007,20 +1011,20 @@ ElseIf KeyCode = vbKeyC And (shift And 3) = 2 Then
 MarkCopy
 KeyCode = 0
 ElseIf KeyCode = vbKeyV And (shift And 3) = 2 Then
-pad$ = GetTextData(13)
-If pad$ = "" Then pad$ = Clipboard.GetText(1)
+Pad$ = GetTextData(13)
+If Pad$ = "" Then Pad$ = Clipboard.GetText(1)
 If ParaSelStart = 2 And glistN.List(glistN.ListIndex) = "" Then
 SelStart = SelStart - 1
 End If
 AddUndo ""
 If UsedAsTextBox Then
-pad$ = GetNextLine((pad$))
-If Len(Text) + Len(pad$) > glistN.maxchar Then
-pad$ = Myleft$(pad$, glistN.maxchar - Len(Text))
+Pad$ = GetNextLine((Pad$))
+If Len(Text) + Len(Pad$) > glistN.maxchar Then
+Pad$ = Myleft$(Pad$, glistN.maxchar - Len(Text))
 End If
 End If
-SelText = pad$
-RemoveUndo pad$
+SelText = Pad$
+RemoveUndo Pad$
 KeyCode = 0
 mdoc.WrapAgainColor
 ElseIf KeyCode = vbKeyA And (shift And 3) = 2 Then
@@ -1743,15 +1747,15 @@ End Sub
 
 Private Sub glistN_SplitLine()
 '
-Dim b$, DUMMY As Long, A As Long
+Dim b$, dummy As Long, A As Long
 
 If glistN.ListIndex >= 0 Then
     b$ = mdoc.TextParagraph(mdoc.MarkParagraphID)
 If Charpos = 1 And b$ <> "" Then
-    DUMMY = mdoc.InsertBeforeParagraph(mdoc.MarkParagraphID, "")
-        mdoc.ColorThis (DUMMY)
+    dummy = mdoc.InsertBeforeParagraph(mdoc.MarkParagraphID, "")
+        mdoc.ColorThis (dummy)
      all = mdoc.DocLines
-    mdoc.MarkParagraphID = DUMMY
+    mdoc.MarkParagraphID = dummy
     SetRowColumn glistN.ListIndex + 2, 0
 
     
@@ -1771,11 +1775,11 @@ ElseIf ParaSelStart > Len(b$) Then
 
 Else  ' ANYWHERE
 
-DUMMY = ParaSelStart
+dummy = ParaSelStart
 
     mdoc.ReWritePara mdoc.MarkParagraphID, Myleft$(b$, ParaSelStart - 1), False ' write and format
     
-    mdoc.MarkParagraphID = mdoc.InsertAfterParagraph(mdoc.MarkParagraphID, Mid$(b$, DUMMY))
+    mdoc.MarkParagraphID = mdoc.InsertAfterParagraph(mdoc.MarkParagraphID, Mid$(b$, dummy))
     mdoc.ColorThis (mdoc.MarkParagraphID)
     all = mdoc.DocLines
     ParaSelStart = 1
@@ -3096,7 +3100,7 @@ End If
 End If
 End Property
 Public Property Let SelText(ByVal rhs As String)
-Dim KK As Long, pad$
+Dim KK As Long, Pad$
 
 
 KK = SelStart
@@ -3116,13 +3120,13 @@ If Right$(rhs, 1) = vbCr Then rhs = rhs + vbLf
 If rhs <> "" Then
 
 If NumberOnly Then
-pad$ = Space$(Len(rhs) + glistN.List(0))
-Mid$(pad$, 1, Charpos - 1) = Myleft$(glistN.List(0), Charpos - 1)
-Mid$(pad$, Charpos, Len(rhs)) = rhs
-Mid$(pad$, Charpos + Len(rhs)) = Mid$(glistN.List(0), Charpos)
+Pad$ = Space$(Len(rhs) + glistN.List(0))
+Mid$(Pad$, 1, Charpos - 1) = Myleft$(glistN.List(0), Charpos - 1)
+Mid$(Pad$, Charpos, Len(rhs)) = rhs
+Mid$(Pad$, Charpos + Len(rhs)) = Mid$(glistN.List(0), Charpos)
 rhs = glistN.List(0)
-glistN.List(0) = pad$
-If Not glistN.List(0) = pad$ Then glistN.List(0) = rhs
+glistN.List(0) = Pad$
+If Not glistN.List(0) = Pad$ Then glistN.List(0) = rhs
 Else
 mdoc.InsertDoc mdoc.MarkParagraphID, Charpos, rhs
 End If
@@ -3358,11 +3362,11 @@ CurrentParagraph = mdoc.TextParagraph(mdoc.MarkParagraphID)
 'End If
 End Function
 Public Function NextParagraph() As String
-Dim DUMMY As Long
+Dim dummy As Long
 If showparagraphWork And showparagraph Then
-NextParagraph = Replace(Replace(mdoc.NextTextParagraph(mdoc.MarkParagraphID, DUMMY), " ", ChrW(&HB7)), ChrW(&H2007), ChrW(&H2423))
+NextParagraph = Replace(Replace(mdoc.NextTextParagraph(mdoc.MarkParagraphID, dummy), " ", ChrW(&HB7)), ChrW(&H2007), ChrW(&H2423))
 Else
-NextParagraph = mdoc.NextTextParagraph(mdoc.MarkParagraphID, DUMMY)
+NextParagraph = mdoc.NextTextParagraph(mdoc.MarkParagraphID, dummy)
 End If
 End Function
 Public Function AutoIntNewLine() As Boolean
@@ -3375,12 +3379,12 @@ If AutoNumber Then
 If IsNumberLabel(b$, c$) Then
 d$ = NextParagraph: If d$ <> "" Then If IsNumberLabel(d$, e$) Then skip = True
 If Not skip Then c$ = Trim(c$)
-If e$ <> "" Then If Val(e$) > Val(c$) + 10 Then skip = False
-If (Val(c$) Mod 10 = 0) And Not skip Then
+If e$ <> "" Then If val(e$) > val(c$) + 10 Then skip = False
+If (val(c$) Mod 10 = 0) And Not skip Then
 tr$ = String$(Len(Trim$(c$)), "0")
-A$ = Format((Val(c$) + 10), tr$) + Space$(Len(CurrentParagraph) - Len(c$) - Len(NLtrim$(b$)))
+A$ = Format((val(c$) + 10), tr$) + Space$(Len(CurrentParagraph) - Len(c$) - Len(NLtrim$(b$)))
 Else
-If e$ <> "" And Trim$(Str((Val(c$) + 1))) = Trim$(e$) Then
+If e$ <> "" And Trim$(Str((val(c$) + 1))) = Trim$(e$) Then
 maxw = glistN.UserControlTextWidth(c$)
 A$ = Space$(Len(c$))
 While glistN.UserControlTextWidth(A$) < maxw
@@ -3390,7 +3394,7 @@ c$ = ""
 
 Else
 tr$ = String$(Len(Trim$(c$)), "0")
-A$ = Format((Val(c$) + 1), tr$) + Space$(Len(CurrentParagraph) - Len(Trim$(c$)) - Len(NLtrim$(b$)))
+A$ = Format((val(c$) + 1), tr$) + Space$(Len(CurrentParagraph) - Len(Trim$(c$)) - Len(NLtrim$(b$)))
 End If
 End If
 Else
@@ -3417,9 +3421,9 @@ Function GetLCIDFromKeyboard() As Long
     Dim Buffer As String, Ret&, r&
     Buffer = String$(514, 0)
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
-      r = Val("&H" & Right(Hex(r), 4))
+      r = val("&H" & Right(Hex(r), 4))
         Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
-    GetLCIDFromKeyboard = CLng(Val("&h" + Myleft$(Buffer, Ret - 1)))
+    GetLCIDFromKeyboard = CLng(val("&h" + Myleft$(Buffer, Ret - 1)))
 End Function
 Public Property Let ReplaceTitle(A$)  ' at the end
 

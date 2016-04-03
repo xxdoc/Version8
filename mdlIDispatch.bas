@@ -40,7 +40,7 @@ Public Function FindDISPID(pobjTarget As Object, ByVal pstrProcName As Variant) 
 
     Dim lngRet      As Long
     FindDISPID = -1
-    Dim a$(0 To 0), arrdispid(0 To 0) As Long, myptr() As Long
+    Dim A$(0 To 0), arrdispid(0 To 0) As Long, myptr() As Long
     ReDim myptr(0 To 0)
     myptr(0) = StrPtr(pstrProcName)
     
@@ -268,7 +268,7 @@ Else
 End If
 exithere:
     If Err.Number <> 0 Then CallByNameFixParamArray = varRet
-Err.clear
+Err.Clear
 End Function
 
 
@@ -313,7 +313,7 @@ Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$) As
         End If
 
         ' Invoke method/property
-        Err.clear
+        Err.Clear
         On Error Resume Next
         lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
 If Err > 0 Then
@@ -340,7 +340,7 @@ Else
     End If
 
   ''  If Err.Number <> 0 Then ReadOneParameter = varRet
-Err.clear
+Err.Clear
 End Function
 Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR$, ThisIndex As Variant) As Variant
     
@@ -366,7 +366,7 @@ Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR
 
     ' WE HAVE DISPIP
 
-       
+    
                 ReDim varArr(0 To 0)
                 varArr(0) = ThisIndex
                 
@@ -375,14 +375,15 @@ Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                                     Dim aa As Long
         
-               aa = DISPID_VALUE
+              aa = DISPID_VALUE
+              
                .cNamedArgs = 1
                 .rgPointerToDISPIDNamedArgs = VarPtr(aa)
                End With
   
 
   
-        Err.clear
+        Err.Clear
         On Error Resume Next
         lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
 If Err > 0 Then
@@ -409,7 +410,7 @@ Else
     End If
 
   ''  If Err.Number <> 0 Then ReadOneParameter = varRet
-Err.clear
+Err.Clear
 End Function
 Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
     
@@ -538,10 +539,10 @@ Private Function getone(KnownPropName As String, this As Long) As Boolean
 On Error Resume Next
 Dim v As Long
 InitMe
-Err.clear
+Err.Clear
 v = KnownProp(LCase$(KnownPropName))
 If Err.Number = 0 Then getone = True: this = v
-Err.clear
+Err.Clear
 End Function
 
 Private Sub InitMe()
