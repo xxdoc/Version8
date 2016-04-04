@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 200
+Global Const Revision = 201
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -29381,17 +29381,23 @@ With myobject
                                                     subgroup.CopyArray pppp
                                                     Set subgroup = Nothing
                                             End If
-                                           
-                                        '   Debug.Print "push", s$ + ")" + Str$(j)
-                                         '   ps.DataStr s$ + ")" + Str$(j) '' s$ + " " + ss$ '
-                                            ps.DataStr s$ + Str$(j)  '' s$ + " " + ss$ '
+
+                                            ps.DataStr s$ + Str$(j)
+                            ElseIf Typename(vvl) = "lambda" Then
+                            v = GlobalVar(bstack.GroupName & s$, 0)
+                                               If HERE$ = "" Then
+                                                GlobalSub bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
+                                            Else
+                                                GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
+                                            End If
+                            GoTo conthere2
                             ElseIf Typename(vvl) = "mEvent" Then
                             If HERE$ = "" Then
                                    vvl.Upgrade bstack.GroupName
                             Else
                             vvl.Upgrade HERE$ + "." + bstack.GroupName
                             End If
-                            ''  push this HERE$ + "."
+                        
                             GoTo conthere1
                             Else  ' is not array so...
 
@@ -29406,7 +29412,7 @@ With myobject
                                                         UnFloatGroup bstack, Mid$(s$, 2), v, spare
                                                     '    vvl.EndFloat
                                                         Set spare = Nothing
-                                             ps.DataStr s$ + Str(v) ' ps2push + Str(V)
+                                             ps.DataStr s$ + Str(v)
                                              Else
                                              
                                              
@@ -29414,10 +29420,10 @@ With myobject
                                              v = GlobalVar(bstack.GroupName & s$, 0)
                                                  Set spare = vvl
                                                         UnFloatGroup bstack, s$, v, spare
-                                                    '    vvl.EndFloat
+                                                    
                                                         Set spare = Nothing
                                              
-                                              ps.DataStr "*" + s$ + Str(v) ' ps2push + Str(V)
+                                              ps.DataStr "*" + s$ + Str(v)
                                              End If
                                                         
                                                   
@@ -29429,7 +29435,7 @@ With myobject
                                             End If
 conthere1:
                                                  v = GlobalVar(bstack.GroupName & s$, 0)
-                                 
+conthere2:
                                                         If IsObject(vvl) Then
                                                                     Set var(v) = vvl
                                                         Else
@@ -29594,11 +29600,27 @@ End If
                                                     Set subgroup = Nothing
                                             End If
                                             TT = ps.Total
-                                          '  ps.DataStrUn s$ + ")" + Str$(j)
+                                          
                                             ps.DataStrUn s$ + Str$(j)
-                                           ' If Not tt = ps.Total Then frmarr$ = frmarr$ + ff$ + ss$
+                                    
                                             
-                                            
+                            ElseIf Typename(vvl) = "lambda" Then
+                          
+                             If GetVar(bstack, bstack.GroupName & s$, v) And HERE$ = "" Then
+                             ElseIf Not GetVar(bstack, s$, v) Then
+                        
+                             v = GlobalVar(bstack.GroupName & s$, 0)
+                              If HERE$ = "" Then
+                                                GlobalSub bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
+                                            Else
+                                                GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
+                                            End If
+                             End If
+                             Set var(v) = vvl
+                                
+                              TT = ps.Total
+                                 ps.DataStrUn s$ + Str(v)
+                             
                             Else  ' is not array so...
                                   If GetVar(bstack, bstack.GroupName & s$, v) And HERE$ = "" Then
                                   ' this needed for "a<=b"  a copy to a global group
@@ -29621,18 +29643,30 @@ End If
                                                          ps.DataStrUn "*" + s$ + Str(v)  'ps2push + Str(v)
                                             Else
                                                         If IsObject(vvl) Then
+                                                        
+                                                                    
+                                                                    
+                                                                    If Typename(vvl) = "mEvent" Then
+                                                                    
+                                                                    CopyEvent vvl, bstack
+                                                                    Set vvl = bstack.lastobj
+                                                                    Set bstack.lastobj = Nothing
+                                                                    If HERE$ = "" Then
+                                                                           vvl.Upgrade bstack.GroupName
+                                                                    Else
+                                                                    vvl.Upgrade HERE$ + "." + bstack.GroupName
+                                                                    End If
+                                                                    End If
                                                                     Set var(v) = vvl
+                                                                    
                                                         Else
                                                                     var(v) = vvl
                                                         End If
                                                          TT = ps.Total
                                                              ps.DataStrUn s$ + Str(v)  'ps2push + Str(v)
                                             End If
-                                                     If Not TT = ps.Total Then
-                                                       ' ss$ = String$(16, ".")
-                                                        'Mid$(ss$, 1) = Str$(v)
-                                                        'frm$ = frm$ + ff$ + ss$
-                                       End If
+                                    '                 If Not TT = ps.Total Then
+                                     '  End If
 
                             End If
                  Next x1
