@@ -14,10 +14,10 @@ Attribute VB_Exposed = False
 ' lambda functions in M2000
 ' in running state copy nonlocal variables to current list
 Public name$
-Public Code$
+Public code$
 Private Type Vars
     Value As Variant
-    There As Long
+    there As Long
 End Type
 Private Total As Long, fixed As Long, used As Long
 Private myVar() As Vars, myHash As New Hash
@@ -29,35 +29,51 @@ For i = 0 To used - 1
     myHash.ReadVar i, nm$, where
     If IsObject(myVar(where).Value) Then
     dummy = 0
-    myVar(where).There = GlobalVar(nm$, dummy, , glb)
+    myVar(where).there = GlobalVar(nm$, dummy, , glb)
     
     If Typename(myVar(where).Value) = "lambda" Then
          
                         If glb Then
-                        GlobalSub nm$ + "()", "CALL EXTERN " & CStr(myVar(where).There)
+                        GlobalSub nm$ + "()", "CALL EXTERN " & CStr(myVar(where).there)
                     Else
-                        GlobalSub HERE$ & "." & bstack.GroupName & nm$ + "()", "CALL EXTERN " & CStr(myVar(where).There)
+                        GlobalSub HERE$ & "." & bstack.GroupName & nm$ + "()", "CALL EXTERN " & CStr(myVar(where).there)
                 End If
-    
-    
+    Set v(myVar(where).there) = myVar(where).Value
+    ElseIf Typename(myVar(where).Value) = "Group" Then
+    Dim aa As Object
+    Set aa = myVar(where).Value
+     UnFloatGroup bstack, nm$, myVar(where).there, aa
+     Set aa = Nothing
+     Else
+     Set v(myVar(where).there) = myVar(where).Value
     End If
-    Set v(myVar(where).There) = myVar(where).Value
+    
     Else
-    myVar(where).There = GlobalVar(nm$, myVar(where).Value, , glb)
+    myVar(where).there = GlobalVar(nm$, myVar(where).Value, , glb)
     End If
 Next i
 End If
 End Sub
-Sub CopyFromVar(v() As Variant)
-Dim i As Long
+
+Sub CopyFromVar(bstack As basetask, v() As Variant)
+Dim i As Long, aa As Group
 For i = 0 To used - 1
-    If IsObject(v(myVar(i).There)) Then
-        Set myVar(i).Value = v(myVar(i).There)
-        Set v(myVar(i).There) = Nothing
+    If IsObject(v(myVar(i).there)) Then
+        If Typename(myVar(where).Value) = "Group" Then
+       
+             ' using copygroup from module1
+            Set bstack.lastobj = Nothing
+            CopyGroup v(myVar(i).there), bstack
+            Set myVar(where).Value = bstack.lastobj
+        Else
+        Set myVar(i).Value = v(myVar(i).there)
+        Set v(myVar(i).there) = Nothing
+        End If
+        
     Else
-        myVar(i).Value = v(myVar(i).There)
+        myVar(i).Value = v(myVar(i).there)
     End If
-    myVar(i).There = 0
+    myVar(i).there = 0
 Next i
 
 End Sub
@@ -103,32 +119,32 @@ End If
 End Sub
 Public Sub CopyTo(A As lambda, v() As Variant)
 ' only for new
-Dim B As lambda, VR As Variant, where As Long
+Dim b As lambda, VR As Variant, where As Long
 Set A = New lambda
-A.Code$ = Me.Code$
+A.code$ = Me.code$
 Dim i As Long
 If used > 0 Then
 For i = 0 To used - 1
 myHash.ReadVar i, nm$, where
-If myVar(where).There <> 0 Then
-If Typename(v(myVar(where).There)) = "lambda" Then
-    With v(myVar(where).There)
-    .CopyTo B, v()
+If myVar(where).there <> 0 Then
+If Typename(v(myVar(where).there)) = "lambda" Then
+    With v(myVar(where).there)
+    .CopyTo b, v()
     End With
-    Set VR = B
+    Set VR = b
     A.FeedNonLocal nm$, VR
     Set VR = Nothing
-    Set B = Nothing
+    Set b = Nothing
 Else
-    A.FeedNonLocal nm$, v(myVar(where).There)
+    A.FeedNonLocal nm$, v(myVar(where).there)
 End If
 Else
 If Typename(myVar(where).Value) = "lambda" Then
-    myVar(where).Value.CopyTo B, v()
-    Set VR = B
+    myVar(where).Value.CopyTo b, v()
+    Set VR = b
     A.FeedNonLocal nm$, VR
     Set VR = Nothing
-    Set B = Nothing
+    Set b = Nothing
 Else
     A.FeedNonLocal nm$, myVar(where).Value
 End If

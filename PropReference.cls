@@ -18,7 +18,11 @@ Public UseIndex As Boolean
 Dim Init As Boolean
 Dim IamMethod  As Boolean
 Dim hardlink As Object, useobj As Boolean
+Dim lastobj As Object
 Public Arr As Boolean
+Function IsObj()
+    IsObj = useobj
+End Function
 Sub Construct(ref As Long, vtrefnumber As Long)
 If useobj Then Exit Sub
 Init = True
@@ -38,14 +42,14 @@ Attribute Value.VB_UserMemId = 0
 If Init Then
 If UseIndex Then
 If useobj Then
-  Value = ReadPropIndexObj(hardlink, vtref, mIndex)
+ Set Value = ReadPropIndexObj(hardlink, vtref, mIndex)
 Else
  Value = ReadPropIndex(ObjectRef, vtref, mIndex)
  End If
 
 Else
 If useobj Then
-Value = ReadPropObj(hardlink, vtref)
+Set Value = ReadPropObj(hardlink, vtref)
 Else
  Value = ReadProp(ObjectRef, vtref)
  End If
@@ -72,6 +76,7 @@ End If
 End If
 
 End Property
+
 Public Property Get isMethod() As Boolean
 isMethod = IamMethod
 End Property
