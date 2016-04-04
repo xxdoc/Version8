@@ -2203,7 +2203,7 @@ Exit Property
 End If
 If item < 0 Then Exit Property
 If item >= listcount Then
-Err.Raise vbObjectError + 1050
+'Err.Raise vbObjectError + 1050
 Else
 List = mlist(item).Content
 End If

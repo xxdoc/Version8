@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 201
+Global Const Revision = 202
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -18697,10 +18697,18 @@ contpush12:
    what$ = myUcase$(what$)
    
    If Not LinkGroup(what$, var(i)) Then
+   
             If f Then
              If Not ReboundVar(basestack, what$, i) Then GlobalVar what$, i, True
             Else
              GlobalVar what$, i, True
+             If Typename(var(i)) = "lambda" Then
+              If HERE$ = "" Then
+                        GlobalSub what$ + "()", "CALL EXTERN " & CStr(i)
+                    Else
+                        GlobalSub HERE$ & "." & basestack.GroupName & what$ + "()", "CALL EXTERN " & CStr(i)
+                End If
+             End If
             End If
      Else
 
@@ -21202,7 +21210,10 @@ ElseIf y1 < 5 And y1 > 0 Then
       If GetVar(bstack, what$, i) Then
         If IsObject(var(i)) Then
         ' PUT ZERO TO VARIABLES INSIDE GROUP
-       If Typename(var(i)) = "Group" Then
+       If Typename(var(i)) = "lambda" Then
+       Set var(i) = Nothing
+       var(i) = CLng(0)
+       ElseIf Typename(var(i)) = "Group" Then
        var(i) = CLng(0)
        Else
          MissingGroup

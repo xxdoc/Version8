@@ -19,7 +19,8 @@ Public WithEvents Pad As Form
 Attribute Pad.VB_VarHelpID = -1
 Private mEnabled As Boolean
 Dim Iam As Boolean
-'' aytocomplete isn't check yet for GuiDropDown...
+Public UseOnlyTheList As Boolean
+'' autocomplete isn't check yet for GuiDropDown...
 '' next...time...
 Public AutoComplete As Boolean
 Public NoCaseSensitive As Boolean
@@ -146,8 +147,8 @@ End Property
 Public Property Get ListText()
 ListText = glistN.ListValue
 End Property
-Public Property Let Label(a$)
-Textbox.Prompt = a$ + " " + ChrW(&H25BC) & " "
+Public Property Let Label(A$)
+Textbox.Prompt = A$ + " " + ChrW(&H25BC) & " "
 Textbox.glistN.ShowMe
 End Property
 Private Sub glistN_RegisterGlist(this As gList)
@@ -249,8 +250,8 @@ Private Sub textbox_KeyDown(KeyCode As Integer, shift As Integer)
 Dim b$
 Dim gl As Long
 Iam = False
-If KeyCode = vbKeyDown Or KeyCode = vbKeyReturn Then
-If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Exit Sub
+If KeyCode = vbKeyDown Or (KeyCode = vbKeyReturn And UseOnlyTheList) Then
+If Pad.Visible Then If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Exit Sub
     KeyCode = 0
     gl = glistN.listcount
      If gl = 0 Then Exit Sub
@@ -291,11 +292,11 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
   
   End If
     End If
-Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top + Callback.Controls(CtrlName).Height
 
 
 
 End If
+Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top + Callback.Controls(CtrlName).Height
 
 ElseIf KeyCode = vbKeyTab Then
 Textbox.SkipProcAtExitFocus = False
@@ -305,12 +306,18 @@ ElseIf AutoComplete And KeyCode = vbKeyRight And Textbox.SelStart >= Len(Textbox
 b$ = Myleft$(Textbox.glistN.LastLinePart, 1)
 If b$ <> "" Then Textbox.glistN.LastLinePart = Mid$(Textbox.glistN.LastLinePart, 2)
 Textbox.Text = Textbox.Text + b$
+ElseIf KeyCode = vbKeyReturn Then
+  If mIndex >= 0 Then
+   Callback.Callback CtrlName + ".DblClick(" + Str(mIndex) + "," + Str(-1) + ")"
+   Else
+      Callback.Callback CtrlName + ".DblClick(" + Str(-1) + ")"
+      End If
 End If
 
 
 End Sub
-Function Myleft$(a As Variant, pos As Variant)
-Myleft$ = Mid$(a, 1, pos)
+Function Myleft$(A As Variant, pos As Variant)
+Myleft$ = Mid$(A, 1, pos)
 End Function
 
 Private Sub TextBox_KeyPress(KeyAscii As Integer)
@@ -467,9 +474,7 @@ glistN.enabled = True
 glistN.ShowMe
 
 Else
-'If UseOnlyTheList Then
-
-If False Then
+If UseOnlyTheList Then
 l = Textbox.glistN.enabled
 Textbox.glistN.enabled = False
 Textbox.glistN.LastLinePart = Textbox.vartext + Textbox.glistN.LastLinePart
@@ -506,13 +511,13 @@ End If
 End If
 Textbox.Locked = rhs
 End Property
-Public Sub additem(a$)
-glistN.additemFast a$
-Text = a$
+Public Sub additem(A$)
+glistN.additemFast A$
+Text = A$
 End Sub
 
-Public Sub additemFast(a$)
-glistN.additemFast a$
+Public Sub additemFast(A$)
+glistN.additemFast A$
 End Sub
 Public Sub Shutdown()
 'new
@@ -584,6 +589,17 @@ Public Property Let enabled(ByVal rhs As Boolean)
 
 
 Textbox.glistN.enabled = rhs
+End Property
+
+Public Property Get Edit() As Boolean
+Edit = Textbox.glistN.EditFlag
+End Property
+
+Public Property Let Edit(ByVal rhs As Boolean)
+With Textbox
+.glistN.EditFlag = rhs
+.glistN.NoCaretShow = Not rhs
+End With
 End Property
 Public Property Get Left() As Variant
 Left = Callback.Controls(CtrlName).Left

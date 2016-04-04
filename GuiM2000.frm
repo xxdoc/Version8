@@ -45,22 +45,14 @@ Begin VB.Form GuiM2000
       TabStop         =   0   'False
       Top             =   0
       Width           =   9180
-      _ExtentX        =   16193
-      _ExtentY        =   873
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   14.25
-         Charset         =   161
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Backcolor       =   3881787
-      ForeColor       =   16777215
-      CapColor        =   16777215
+      _extentx        =   16193
+      _extenty        =   873
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "GuiM2000.frx":000C
+      backcolor       =   3881787
+      forecolor       =   16777215
+      capcolor        =   16777215
    End
 End
 Attribute VB_Name = "GuiM2000"
@@ -360,29 +352,29 @@ FillRect thathDC, there, my_brush
 DeleteObject my_brush
 End Sub
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT
-CopyFromLParamToRect a, thatRect
+Dim A As RECT
+CopyFromLParamToRect A, thatRect
 
-FillBack thathDC, a, thatbgcolor
+FillBack thathDC, A, thatbgcolor
 End Sub
 
 Private Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT, b As Long
+Dim A As RECT, b As Long
 b = 2 * lastfactor
 If b < 2 Then b = 2
 If setupxy - b < 0 Then b = setupxy \ 4 + 1
-CopyFromLParamToRect a, thatRect
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), 0
+CopyFromLParamToRect A, thatRect
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), 0
 b = 5 * lastfactor
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
 End Sub
 
 Public Property Get TITLE() As Variant
@@ -391,6 +383,7 @@ End Property
 
 Public Property Let TITLE(ByVal vNewValue As Variant)
 gList2.HeadLine = ""
+If Trim(vNewValue) = "" Then vNewValue = " "
 gList2.HeadLine = vNewValue
 gList2.HeadlineHeight = gList2.HeightPixels
 End Property
@@ -628,4 +621,12 @@ If vNewValue \ dv15 > 1 Then
     .Move Width - .Width, Height - .Height
     End With
 End If
+End Property
+
+Public Property Get Header() As Variant
+Header = gList2.Visible
+End Property
+
+Public Property Let Header(ByVal vNewValue As Variant)
+gList2.Visible = vNewValue
 End Property
