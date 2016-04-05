@@ -4514,3 +4514,4 @@ End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)
 End Property
+

@@ -26,7 +26,7 @@ Private PriveSpace() As item
 Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, RetVal As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
 Private lastfind As String
 Private Hash() As Long
 Private Sub Class_Initialize()
@@ -163,20 +163,17 @@ Property Get LastKnown() As String
 LastKnown = lastfind
 End Property
 
-Friend Function find(Key As String, num As Long) As Boolean
+Friend Function Find(Key As String, num As Long) As Boolean
 Dim k As Long
 num = 0
-'If Right$(Key, 2) = "()" Then Stop
 If Len(Key) = 0 Then Exit Function
 k = Hash(HashFunc(Key)) - 1
 
 If k >= 0 Then
 Do
     If PriveSpace(k).Key = Key Then
-    'Debug.Print Key
-    num = PriveSpace(k).NDX: find = True: lastfind = Key: Exit Function
+    num = PriveSpace(k).NDX: Find = True: lastfind = Key: Exit Function
     End If
- '   If k = PriveSpace(k).Pleft - 1 Then Stop: Exit Do
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
@@ -189,7 +186,6 @@ k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then
 Do
     If PriveSpace(k).Key = Key Then ExistKey = True: Exit Function
-  '  If k = PriveSpace(k).Pleft - 1 Then Stop: Exit Do
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
@@ -210,10 +206,8 @@ With PriveSpace(k)
         .KeyType = 1
     End If
     .NDX = newnum
-    ' must be keytype=1
      findRebound = True: Exit Function
     End If
-   ' If k = .Pleft - 1 Then Stop: Exit Do
     End With
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
@@ -222,6 +216,7 @@ End Function
 Friend Sub ItemCreator(Key As String, num As Long, Optional isref As Boolean = False)
 Dim A As Long
 A = Malloc()
+
 With PriveSpace(A)
     .Key = Key
     .NDX = num

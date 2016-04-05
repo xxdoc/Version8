@@ -646,6 +646,12 @@ End Property
 Public Property Get listcount() As Variant
 listcount = glistN.listcount
 End Property
+Public Property Get MaxCharLength() As Long
+MaxCharLength = Textbox.glistN.maxchar
+End Property
 
+Public Property Let MaxCharLength(ByVal rhs As Long)
+Textbox.glistN.maxchar = rhs
+End Property
 
 

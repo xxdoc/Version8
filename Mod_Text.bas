@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 202
+Global Const Revision = 203
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -12005,7 +12005,7 @@ PROCESSCOMMAND:
                     LastErNum = 0 ' LastErNum1 = 0
                     LastErName = ""   ' every command from Query call identifier
                     LastErNameGR = ""  ' interpret is like execute without if for repeat while select structures
-                    If Not Identifier(bstack, w$, b$, , lang) Then
+                    If Not Identifier(bstack, w$, b$, Not comhash.Find(w$, i1), lang) Then
                     If NOEXECUTION Then
                     MyEr "", ""
                     interpret = False
@@ -15070,7 +15070,10 @@ varonly:
                    NoValueForvariable w$
                     Execute = 0
                      Exit Function
+                          ElseIf Once Then
+                MyEr "Need a Number or Object", "Χρειάζομαι έναν αριμθό ή ένα αντικείμενο"
                      End If
+          
                 End If
                
         Else
@@ -19234,7 +19237,9 @@ If (basestack.Process Is Nothing) And (basestack.Parent Is Nothing) Then
 Set basestack.StaticCollection = New Collection
 abt = False
 LASTPROG$ = ""
-
+Randomize Timer
+Set comhash = New sbHash
+allcommands comhash
 If lang = 0 Then
 sHelp "Μ2000 [ΒΟΗΘΕΙΑ]", "Γράψε ΤΕΛΟΣ για να βγείς από το πρόγραμμα" & vbCrLf & "Δες τα ΟΛΑ (κάνε κλικ στο ΟΛΑ)" & vbCrLf & "George Karras 2014", (ScrX() - 1) * 3 / 5, (ScrY() - 1) * 1 / 7
 Else
@@ -25249,14 +25254,19 @@ End If
 End Function
 
 Function GlobalSub(name$, q As String, Optional sbgroupname As String = "") As Long
-Dim j As Long
+Dim j As Long, n$, where As Long
+n$ = myUcase(name$, True)
 j = AllocSub()
 With sbf(j)
     .sb = q
     .sbc = 0
     .sbgroup = sbgroupname
 End With
-subHash.ItemCreator myUcase(name$), j
+If comhash.Find(n$, where) Then
+comhash.RenameKey n$, "_" + n$
+
+End If
+subHash.ItemCreator n$, j
 GlobalSub = j
 End Function
 
@@ -29633,6 +29643,8 @@ End If
                                  ps.DataStrUn s$ + Str(v)
                              
                             Else  ' is not array so...
+                            '' drop *
+                            If Asc(s$) = 42 Then s$ = Mid$(s$, 2)
                                   If GetVar(bstack, bstack.GroupName & s$, v) And HERE$ = "" Then
                                   ' this needed for "a<=b"  a copy to a global group
                                 

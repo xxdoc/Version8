@@ -26,7 +26,7 @@ Private PriveSpace() As item
 Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, RetVal As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
 
 Private Hash() As Long
 Private Sub Class_Initialize()
@@ -110,7 +110,7 @@ End Function
 Property Get Count()
 Count = toplim + 1
 End Property
-Friend Function find(Key As String, num As Long) As Boolean
+Friend Function Find(Key As String, num As Long) As Boolean
 Dim k As Long
 num = 0
 
@@ -120,10 +120,8 @@ k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then
 Do
     If PriveSpace(k).Key = Key Then
-    ' Debug.Print "var ", Key
-    num = PriveSpace(k).NDX: find = True: Exit Function
+    num = PriveSpace(k).NDX: Find = True: Exit Function
     End If
- '   If k = PriveSpace(k).Pleft - 1 Then Stop: Exit Do
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
@@ -137,7 +135,6 @@ k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then
 Do
     If PriveSpace(k).Key = Key Then ExistKey = True: Exit Function
-  '  If k = PriveSpace(k).Pleft - 1 Then Stop: Exit Do
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
@@ -158,20 +155,17 @@ With PriveSpace(k)
         .KeyType = 1
     End If
     .NDX = newnum
-    ' must be keytype=1
      findRebound = True: Exit Function
     End If
-   ' If k = .Pleft - 1 Then Stop: Exit Do
     End With
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
 End Function
 Friend Sub ItemCreator(Key As String, num As Long, Optional isref As Boolean = False)
-Dim a As Long
-a = Malloc()
-If Right$(Key, 2) = "()" Then Stop
-With PriveSpace(a)
+Dim A As Long
+A = Malloc()
+With PriveSpace(A)
     .Key = Key
     .NDX = num
     If isref Then
@@ -181,26 +175,26 @@ With PriveSpace(a)
     End If
     .firsthash = HashFunc0(Key)
 End With
-place HashFunc(Key), a
+place HashFunc(Key), A
 End Sub
 Property Get Percent()
 Percent = Count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal a)
+Private Sub place(ByVal b, ByVal A)
 Dim k As Long
 
     k = Hash(b)
-    Hash(b) = a + 1
-    PriveSpace(a).Pleft = k
-    PriveSpace(a).lastpos = b
+    Hash(b) = A + 1
+    PriveSpace(A).Pleft = k
+    PriveSpace(A).lastpos = b
 End Sub
-Private Sub ab(ByVal a As Long, b As Long)
-b = (b + a + 1024 * a) Xor &H83F3CF
+Private Sub ab(ByVal A As Long, b As Long)
+b = (b + A + 1024 * A) Xor &H83F3CF
 End Sub
-Public Function HashFunc0(a$) As Long
+Public Function HashFunc0(A$) As Long
 Dim i&, p2 As Long, P1 As Integer, p4 As Long, k As Long
-  p4 = Len(a$) * 2 - 2
-  p2 = StrPtr(a$): p4 = p2 + p4
+  p4 = Len(A$) * 2 - 2
+  p2 = StrPtr(A$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, P1
   HashFunc0 = (HashFunc0 + P1 + 1024& * P1) Xor &H83F3CF
@@ -218,19 +212,19 @@ Private Function HashFunc2(where As Long)
 HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFA000 + Len(PriveSpace(where).Key) + hashlen + 1), hashlen)
 End Function
 
-Private Function HashFunc(a$)
-HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFA000 + Len(a$) + hashlen + 1), hashlen)
+Private Function HashFunc(A$)
+HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFA000 + Len(A$) + hashlen + 1), hashlen)
 End Function
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal a As Double) As Double
-If a > CDbl(2147483647) Then a = CDbl(2147483647)
-If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
-If a < 0 Then
-uintnew = CDbl(&H7FFFFFFF) + (CDbl(&H7FFFFFFF) + a) + 2
+Private Function uintnew(ByVal A As Double) As Double
+If A > CDbl(2147483647) Then A = CDbl(2147483647)
+If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
+If A < 0 Then
+uintnew = CDbl(&H7FFFFFFF) + (CDbl(&H7FFFFFFF) + A) + 2
 Else
-uintnew = a
+uintnew = A
 End If
 End Function
 
