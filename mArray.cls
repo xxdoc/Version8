@@ -161,8 +161,8 @@ Else
 item = limit(cursor)
 End If
 ElseIf command = 7 Then  'erase all data
-Dim AA As Variant
-Fill AA
+Dim aa As Variant
+Fill aa
 ElseIf command = 8 Then
 If dnum = 1 Then
     ReDim Preserve actualdata(cursor) As Variant
@@ -229,15 +229,14 @@ Set actualdata(curitem) = item
 End Property
 
 Private Sub Fill(item As Variant)
-Dim AA As Object
+Dim aa As Object
 If dnum > 0 Then
 Dim i As Long
 If IHaveClass Then
 For i = 0 To maxitems - 1
-CopyGroup GroupRef, AA
-Set actualdata(i) = AA
+CopyGroup GroupRef, aa
+Set actualdata(i) = aa
 Next i
-
 Else
 If Typename(item) = "Empty" Then
 ReDim actualdata(maxitems)
@@ -251,10 +250,21 @@ End If
 End If
 End If
 End Sub
+Public Sub FillLambda(bstack As basetask)
+Dim obj As Variant, i As Long
+Set obj = bstack.lastobj
+    Set bstack.lastobj = Nothing
+For i = 0 To maxitems - 1
+ CopyLambda obj, bstack
+Set actualdata(i) = bstack.lastobj
+Set bstack.lastobj = Nothing
+Next i
+Set obj = Nothing
+End Sub
 Sub MakeitObject2(var As Variant)
-Dim AA As Object
-Set AA = New Group
-Set var = AA
+Dim aa As Object
+Set aa = New Group
+Set var = aa
 End Sub
 Sub CopyGroup(myobject As Object, myobject2 As Object)
 'Special Copy

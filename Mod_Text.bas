@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 203
+Global Const Revision = 204
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -4498,7 +4498,11 @@ End Select
 Case 4
 LOOKFORVARNUM4:
 If GetVar(bstack, v$, VR) Then
+If Typename(var(VR)) = "lambda" Then
+CopyLambda var(VR), bstack
+Else
 r = SG * var(VR)
+End If
 A$ = n$
 IsNumber = True
 Else
@@ -7048,7 +7052,10 @@ PP = 0
     If FastSymbol(n$, "(") Then
     If Typename(pppp.item(w2)) = "lambda" Then
     PushStage bstack, False
+    
+
      w1 = GlobalVar("A_" + CStr(w2), 0)
+   
      Set var(w1) = pppp.item(w2)
                 If HERE$ = "" Then
                         GlobalSub "A_" + CStr(w2) + "()", "CALL EXTERN " & CStr(w1)
@@ -7058,7 +7065,11 @@ PP = 0
                 n$ = "A_" + CStr(w2) + "(" + n$
              IsNumber = IsNumber(bstack, n$, p)
              Set var(w1) = Nothing
+             If Right$(pppp.arrname, 2) = "%(" Then
+             r = SG * Int(p)
+             Else
              r = SG * p
+             End If
     PopStage bstack
     A$ = n$
     Exit Function
@@ -15529,16 +15540,37 @@ If MaybeIsSymbol(b$, "=-+*/<~") Then
                          var(v).UseIndex = True
                         End If
                         var(v).Value = Int(p)
+                ElseIf Typename(bstack.lastobj) = "lambda" Then
+                      
+                                Set var(v) = bstack.lastobj
+                                Set bstack.lastobj = Nothing
                         Else
+                        
                  var(v) = Int(p)
                  End If
                 If Err.Number = 6 Then Execute = 0: Exit Do
                 On Error GoTo 0
                 End If
             ElseIf IsExp(bstack, b$, p) Then
+            If Typename(bstack.lastobj) = "lambda" Then
+            v = GlobalVar(w$, p, , VarStat)
+                   If NewStat Then
+                                            MyEr "No New statement for lambda", "Όχι δήλωση νέου για λαμδα"
+                                            Exit Function
+                                        Else
+                                               If HERE$ = "" Or VarStat Then
+                                                GlobalSub w$ + "()", "CALL EXTERN " & CStr(v)
+                                            Else
+                                                GlobalSub HERE$ & "." & bstack.GroupName & w$ + "()", "CALL EXTERN " & CStr(v)
+                                            End If
+                                        End If
+                                Set var(v) = bstack.lastobj
+                                Set bstack.lastobj = Nothing
+                                Else
             p = Int(p)
+            
             GlobalVar w$, p, , VarStat
-
+    End If
           
                 Else
                       If LastErNum <> -2 Then
@@ -19186,6 +19218,9 @@ Do
                                  pppp.IHaveClass = True
                                 Set basestack.lastobj = Nothing
                                 pppp.SerialItem 0, 0, 3
+                                ElseIf Typename(basestack.lastobj) = "lambda" Then
+                                pppp.FillLambda basestack
+                               ' pppp.SerialItem 0, 0, 3
                                 End If
      Else
             pppp.SerialItem x, 0, 3
@@ -19200,7 +19235,13 @@ Do
     If FastSymbol(rest$, "=") Then
     If IsExp(basestack, rest$, x) Then
    If neoGetArray(basestack, w$, pppp) Then ''basestack.GroupName &
+    If Typename(basestack.lastobj) = "lambda" Then
+                                pppp.FillLambda basestack
+                               ' pppp.SerialItem 0, 0, 3
+                             
+   Else
     pppp.SerialItem Int(x), 0, 3
+    End If
     End If
     Else
     it = 0
@@ -19211,7 +19252,13 @@ Do
     If FastSymbol(rest$, "=") Then
     If IsStrExp(basestack, rest$, s$) Then
    If neoGetArray(basestack, w$, pppp) Then '' basestack.GroupName &
+   If Typename(basestack.lastobj) = "lambda" Then
+                                pppp.FillLambda basestack
+                               ' pppp.SerialItem 0, 0, 3
+                             
+   Else
     pppp.SerialItem s$, 0, 3
+       End If
     End If
     Else
     it = 0
