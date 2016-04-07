@@ -16,6 +16,7 @@ Public WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
 Private mEnabled As Boolean
 Public CtrlName As String
+Private mesCtrlName As String
 Dim mListText As String
 Dim mIndex As Long, mStayOpen As Boolean
 Dim Callback As GuiM2000, Point2Me As Object
@@ -38,18 +39,16 @@ Public Sub Construct(there As Form, name$)
 
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 Public Sub ConstructArray(there As Form, name$, i As Long)
  Set Callback = there
  On Error Resume Next
- If i = 0 Then
- Set glistN = there.Controls.Add("m2000.glist", name$)
- CtrlName = name$
- Else
+
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
 CtrlName = name$ + "_" + LTrim(Str$(i))
- End If
+
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
  CtrlName = GetTag$
@@ -57,7 +56,8 @@ CtrlName = name$ + "_" + LTrim(Str$(i))
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 Public Sub deconstruct()
 Set Point2Me = Nothing
@@ -91,9 +91,9 @@ VR(0) = Content
 VR(1) = thispos
 VR(2) = item
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".ValidList(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".ValidList(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".ValidList()", VR()
+      Callback.CallbackNow mesCtrlName + ".ValidList()", VR()
       End If
       
 thispos = VR(1)
@@ -214,9 +214,9 @@ Dim VR(1)
 VR(0) = cListCount
 
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".ListCount(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".ListCount(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".ListCount()", VR()
+      Callback.CallbackNow mesCtrlName + ".ListCount()", VR()
       End If
 cListCount = VR(0)
 End Sub
@@ -230,9 +230,9 @@ Dim VR(2)
 VR(0) = KeyCode
 VR(1) = shift
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".KeyDown(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".KeyDown()", VR()
+      Callback.CallbackNow mesCtrlName + ".KeyDown()", VR()
       End If
 KeyCode = VR(0)
 shift = VR(1)
@@ -240,9 +240,9 @@ End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".DblClick(" + Str(mIndex) + "," + Str(glistN.ListIndex) + ")"
+   Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(glistN.ListIndex) + ")"
    Else
-      Callback.Callback CtrlName + ".DblClick(" + Str(glistN.ListIndex) + ")"
+      Callback.Callback mesCtrlName + ".DblClick(" + Str(glistN.ListIndex) + ")"
       End If
 End Sub
 
@@ -253,9 +253,9 @@ Dim VR(1)
 
 VR(0) = Content
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".External(" + Str(mIndex) + "," + Str(item) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".External(" + Str(item) + "," + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".External(" + Str(item) + ")", VR()
+      Callback.CallbackNow mesCtrlName + ".External(" + Str(item) + ")", VR()
       End If
     
 Content = VR(0)
@@ -276,9 +276,9 @@ Dim VR(1)
 
 VR(0) = that
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".Unicode(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".Unicode(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".Unicode()", VR()
+      Callback.CallbackNow mesCtrlName + ".Unicode()", VR()
       End If
     
 that = VR(0)
@@ -288,36 +288,36 @@ End Sub
 Private Sub glistN_ScrollMove(item As Long)
 '
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Move(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Move(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".Move(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Move(" + Str(item) + ")"
       End If
 End Sub
 
 Private Sub glistN_ScrollSelected(item As Long, y As Long)
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Scroll(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Scroll(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".Scroll(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Scroll(" + Str(item) + ")"
       End If
 End Sub
 
-Private Sub glistN_selected(item As Long)
+Private Sub glistN_Selected(item As Long)
 '
 If glistN.PanPos <> 0 Then glistN.PanPos = 0
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".Click(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Click(" + Str(item) + ")"
       End If
 End Sub
 
 Private Sub glistN_Selected2(item As Long)
 '
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".DblClick(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".DblClick(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".DblClick(" + Str(item) + ")"
       End If
 End Sub
 
@@ -329,9 +329,9 @@ Dim VR(1)
 VR(0) = -rgbcolor
 
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".Color(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".Color(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".Color(", VR()
+      Callback.CallbackNow mesCtrlName + ".Color(", VR()
       End If
 rgbcolor = mycolor(VR(0))
 End Sub
@@ -506,9 +506,9 @@ Private Sub glistN_SyncKeyboard(item As Integer)
 Dim VR(1)
 VR(0) = item
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".Ascii(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".Ascii(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".Ascii()", VR()
+      Callback.CallbackNow mesCtrlName + ".Ascii()", VR()
       End If
     
 item = VR(0)
@@ -533,8 +533,17 @@ End Property
 
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)
+If mStayOpen Then
+glistN.ForeColor = rgb(0, 0, 0)
+glistN.BackColor = rgb(255, 255, 255)
+End If
 End Property
 Public Property Get Find(ByVal FindThis$) As Variant
     Find = glistN.Find(FindThis)
 End Property
+
+Sub GetFocus()
+On Error Resume Next
+Callback.Controls(CtrlName).SetFocus
+End Sub
 

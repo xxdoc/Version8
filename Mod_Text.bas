@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 204
+Global Const Revision = 205
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -3791,7 +3791,6 @@ On Error Resume Next
 Dim sng&, SG As Double, ig$, DE$, sg1 As Boolean, ex$, s$
 Dim r2 As Double, r3 As Double, r4 As Double, par As Boolean
 SG = 1
-
 Set bstack.lastobj = Nothing
 'compute the sign portion
 againfordot:
@@ -4446,12 +4445,12 @@ Case Else
         Set bstack.lastobj = var(VR)
         r = 0
     ElseIf v$ Like "Pro*" Then
-    If var(VR).IsObj() Then
-        Set bstack.lastobj = var(VR)
-        r = 0
-    Else
+   ' If var(VR).IsObj() Then
+    '    Set bstack.lastobj = var(VR)
+     '   r = 0
+    'Else
         r = SG * var(VR)
-        End If
+     '   End If
     ElseIf v$ Like "Gr*" Then
         r = 0
         CopyGroup var(VR), bstack
@@ -7050,34 +7049,39 @@ PP = 0
             Exit Function
     ElseIf IsObject(pppp.item(w2)) Then
     If FastSymbol(n$, "(") Then
-    If Typename(pppp.item(w2)) = "lambda" Then
-    PushStage bstack, False
-    
-
-     w1 = GlobalVar("A_" + CStr(w2), 0)
-   
-     Set var(w1) = pppp.item(w2)
-                If HERE$ = "" Then
-                        GlobalSub "A_" + CStr(w2) + "()", "CALL EXTERN " & CStr(w1)
-                    Else
-                        GlobalSub HERE$ & "." & bstack.GroupName & "A_" + CStr(w2) + "()", "CALL EXTERN " & CStr(w1)
+                If Typename(pppp.item(w2)) = "lambda" Then
+                        PushStage bstack, False
+                        
+                    
+                         w1 = GlobalVar("A_" + CStr(w2), 0)
+                       
+                         Set var(w1) = pppp.item(w2)
+                                    If HERE$ = "" Then
+                                            GlobalSub "A_" + CStr(w2) + "()", "CALL EXTERN " & CStr(w1)
+                                        Else
+                                            GlobalSub HERE$ & "." & bstack.GroupName & "A_" + CStr(w2) + "()", "CALL EXTERN " & CStr(w1)
+                                    End If
+                                    n$ = "A_" + CStr(w2) + "(" + n$
+                                 IsNumber = IsNumber(bstack, n$, p)
+                                 Set var(w1) = Nothing
+                                 If Right$(pppp.arrname, 2) = "%(" Then
+                                 r = SG * Int(p)
+                                 Else
+                                 r = SG * p
+                                 End If
+                        PopStage bstack
+                 
                 End If
-                n$ = "A_" + CStr(w2) + "(" + n$
-             IsNumber = IsNumber(bstack, n$, p)
-             Set var(w1) = Nothing
-             If Right$(pppp.arrname, 2) = "%(" Then
-             r = SG * Int(p)
-             Else
-             r = SG * p
-             End If
-    PopStage bstack
-    A$ = n$
-    Exit Function
-    End If
     Else
             Set bstack.lastobj = pppp.item(w2)
+               r = 0
             End If
+                 A$ = n$
+                        Exit Function
+            
     End If
+    
+    
     r = SG * pppp.item(w2)
     Else
             If IsExp(bstack, n$, r) Then
@@ -34461,6 +34465,7 @@ ElseIf IsLabelSymbolNew(rest$, "≈…”¡√Ÿ√«", "TEXTBOX", lang) Then
                             Set pppp.item(i) = aVar
                             With aVar
                                 .ConstructArray alfa, what$, i
+                               ' .Construct alfa, what$
                                 .Move 0, 2000, 6000, 600
                          '       If alfa.prive <> 0 Then
                           '          .Linespace = players(alfa.prive).uMineLineSpace
@@ -34469,6 +34474,7 @@ ElseIf IsLabelSymbolNew(rest$, "≈…”¡√Ÿ√«", "TEXTBOX", lang) Then
                              '   End If
                               '  .ListText = what$ + "(" + LTrim(Str$(i)) + ")"
                                 .SetUp
+                                
                             End With
                         Next i
                         pppp.IHaveGui = True

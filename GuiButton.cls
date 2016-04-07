@@ -15,6 +15,7 @@ Dim WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
 Dim mCaptext As String
 Public CtrlName As String
+Private mesCtrlName As String
 Dim mIndex As Long
 Dim Callback As GuiM2000
 Public Property Get GetCallBack() As Form
@@ -33,18 +34,15 @@ Public Sub Construct(there As Form, name$)
 
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 Public Sub ConstructArray(there As Form, name$, i As Long)
  Set Callback = there
  On Error Resume Next
- If i = 0 Then
- Set glistN = there.Controls.Add("m2000.glist", name$)
- CtrlName = name$
- Else
+
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
 CtrlName = name$ + "_" + LTrim(Str$(i))
- End If
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
  CtrlName = GetTag$
@@ -52,13 +50,14 @@ CtrlName = name$ + "_" + LTrim(Str$(i))
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+  mesCtrlName = name$
 End Sub
-Public Sub ConstructContainer(there As Form, name$, containerCtrl As Object)
+Public Sub ConstructContainer121(there As Form, name$, containerCtrl As Object)
 Set Callback = there
  Set glistN = there.Controls.Add("m2000.glist", name$, containerCtrl)
 there.AddGuiControl Me
-CtrlName = nam$
+CtrlName = name$
  glistN.Dynamic
 End Sub
 Public Sub Move(x, y, Optional w, Optional h)
@@ -111,7 +110,7 @@ Set glistN = Nothing
 End Sub
 
 Private Sub glistN_CheckGotFocus()
-''Callback.Callback CtrlName + ".GotFocus()"
+''Callback.Callback mesCtrlName + ".GotFocus()"
 If mModalId <> ModalId And ModalId <> 0 Then Exit Sub
 glistN.BackColor = rgb(100, 200, 160)
 glistN.ShowMe
@@ -119,7 +118,7 @@ End Sub
 
 Private Sub glistN_CheckLostFocus()
 If Me.enabled Then
-''Callback.Callback CtrlName + ".LostFocus()"
+''Callback.Callback mesCtrlName + ".LostFocus()"
 glistN.BackColor = rgb(200, 120, 60)
 glistN.PanPos = 0
 glistN.ShowMe
@@ -135,12 +134,11 @@ Private Sub glistN_PanLeftRight(Direction As Boolean)
 
  
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + ")"
    Else
-      Callback.Callback CtrlName + ".Click()"
+      Callback.Callback mesCtrlName + ".Click()"
       End If
     
-''    Callback.Callback CtrlName + ".PanLeftRight(" + str(Direction) + ")"
 End Sub
 
 Private Sub glistN_RegisterGlist(this As gList)
@@ -151,9 +149,9 @@ Private Sub glistN_Selected2(item As Long)
 If item >= 0 Then
    '' If (Not mCallback Is Nothing) Then mCallback.Press Index
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + ")"
    Else
-      Callback.Callback CtrlName + ".Click()"
+      Callback.Callback mesCtrlName + ".Click()"
       End If
     End If
 End Sub
@@ -224,3 +222,8 @@ End Property
 Public Property Let Left(ByVal rhs As Variant)
 Callback.Controls(CtrlName).Left = rhs
 End Property
+Sub GetFocus()
+On Error Resume Next
+Callback.Controls(CtrlName).SetFocus
+End Sub
+

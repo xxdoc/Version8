@@ -61,7 +61,7 @@ Private Declare Function CloseClipboard Lib "user32" _
     () As Long
     Private Declare Function IsClipboardFormatAvailable Lib "user32" _
     (ByVal wFormat As Long) As Long
-    Private Pad$
+    Private Pad$, mStayOpen As Boolean
 Public Property Get Text() As String
 If glistN.listcount = 0 Then
 glistN.additem mprompt
@@ -224,6 +224,12 @@ End Sub
 
 Private Sub glistN_CheckLostFocus()
 If Not Locked Then
+If mStayOpen Then
+glistN.NoCaretShow = True
+
+If glistN.Visible Then glistN.PanPos = 0: glistN.PrepareToShow
+Exit Sub
+End If
 If Not SkipProcAtExitFocus Then
 glistN.ForeColor = rgb(255, 255, 255)
 glistN.BackColor = rgb(200, 120, 60)
@@ -405,3 +411,10 @@ If Err.Number > 0 Then glistN.NoWheel = True
 
 End Sub
 
+Public Property Let ShowAlways(ByVal vNewValue As Variant)
+mStayOpen = CBool(vNewValue)
+If mStayOpen Then
+glistN.ForeColor = rgb(0, 0, 0)
+glistN.BackColor = rgb(255, 255, 255)
+End If
+End Property

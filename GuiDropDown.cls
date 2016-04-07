@@ -26,7 +26,8 @@ Public AutoComplete As Boolean
 Public NoCaseSensitive As Boolean
 ' gui own
 Public CtrlName As String
-Dim mIndex As Long, mStayOpen As Boolean
+Private mesCtrlName As String
+Dim mIndex As Long
 Dim Callback As GuiM2000
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
@@ -57,11 +58,13 @@ End With
  there.AddGuiControl Me
  glistN.Dynamic
  Textbox.glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
-Public Sub ConstructArray(there As Form, name$, i As Long)
+ Public Sub ConstructArray(there As Form, name$, i As Long)
+ mIndex = i
  Set Callback = there
-  Set Pad = New GuiM2000
+ Set Pad = New GuiM2000
 
  On Error Resume Next
  Set glistN = Pad.Controls(1)
@@ -74,24 +77,20 @@ Public Sub ConstructArray(there As Form, name$, i As Long)
 .gList2.HeadlineHeight = .gList2.HeightPixels
 End With
  Set Textbox = New myTextBox
- On Error Resume Next
- If i = 0 Then
- Set glistN = there.Controls.Add("m2000.glist", name$)
- CtrlName = name$
- Else
-  Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
-CtrlName = name$ + "_" + LTrim(Str$(i))
- End If
+ Set Textbox.Container = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
+ CtrlName = name$ + "_" + LTrim(Str$(i))
  If Err.Number > 0 Then
- Set glistN = there.Controls.Add("m2000.glist", GetTag$)
+ Set Textbox.Container = there.Controls.Add("m2000.glist", GetTag$)
  CtrlName = GetTag$
  End If
- 
- mIndex = i
+
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ Textbox.glistN.Dynamic
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
+
 Public Sub Move(x, y, Optional w, Optional h)
 With Textbox
 If IsMissing(w) Then
@@ -197,10 +196,19 @@ End Sub
 Private Sub glistN_KeyDown(KeyCode As Integer, shift As Integer)
 
 If KeyCode = vbKeyLeft Or KeyCode = vbKeyRight Then
-
+If Textbox.glistN.EditFlag Then
 Iam = True
 glistN.BypassLeaveonChoose = True
 Textbox.SetFocus
+Else
+KeyCode = 0
+End If
+ElseIf KeyCode = 9 Then
+KeyCode = 0
+Iam = False
+glistN.BypassLeaveonChoose = True
+Textbox.SetFocus
+Pad.Visible = False
 End If
 End Sub
 
@@ -208,9 +216,9 @@ Private Sub glistN_PanLeftRight(Direction As Boolean)
 If Direction = True Then
 Text = glistN.List(glistN.ListIndex)
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".DblClick(" + Str(mIndex) + "," + Str(glistN.ListIndex) + ")"
+   Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(glistN.ListIndex) + ")"
    Else
-      Callback.Callback CtrlName + ".DblClick(" + Str(glistN.ListIndex) + ")"
+      Callback.Callback mesCtrlName + ".DblClick(" + Str(glistN.ListIndex) + ")"
       End If
    Textbox.SetFocus
 End If
@@ -218,17 +226,17 @@ End Sub
 Private Sub glistN_ScrollMove(item As Long)
 '
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Move(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Move(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".Move(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Move(" + Str(item) + ")"
       End If
 End Sub
 
 Private Sub glistN_ScrollSelected(item As Long, y As Long)
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Scroll(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Scroll(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".Scroll(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Scroll(" + Str(item) + ")"
       End If
 End Sub
 
@@ -240,18 +248,20 @@ End Property
 Private Sub glistN_Selected(item As Long)
 If glistN.PanPos <> 0 Then glistN.PanPos = 0
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".Click(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Click(" + Str(item) + ")"
       End If
 End Sub
 
 Private Sub textbox_KeyDown(KeyCode As Integer, shift As Integer)
 Dim b$
 Dim gl As Long
-Iam = False
+Iam = True
 If KeyCode = vbKeyDown Or (KeyCode = vbKeyReturn And UseOnlyTheList) Then
+Iam = False
 If Pad.Visible Then If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Exit Sub
+
     KeyCode = 0
     gl = glistN.listcount
      If gl = 0 Then Exit Sub
@@ -308,9 +318,9 @@ If b$ <> "" Then Textbox.glistN.LastLinePart = Mid$(Textbox.glistN.LastLinePart,
 Textbox.Text = Textbox.Text + b$
 ElseIf KeyCode = vbKeyReturn Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".DblClick(" + Str(mIndex) + "," + Str(-1) + ")"
+   Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(-1) + ")"
    Else
-      Callback.Callback CtrlName + ".DblClick(" + Str(-1) + ")"
+      Callback.Callback mesCtrlName + ".DblClick(" + Str(-1) + ")"
       End If
 End If
 
@@ -321,16 +331,18 @@ Myleft$ = Mid$(A, 1, pos)
 End Function
 
 Private Sub TextBox_KeyPress(KeyAscii As Integer)
-Iam = False
+Iam = KeyAscii = 9
+If KeyAscii = 9 Then Pad.Visible = False
 End Sub
 
 Private Sub textbox_LostFocus()
-
+'If Pad.Visible Then Exit Sub
 
 Textbox.glistN.NoCaretShow = True
 
 
 Textbox.glistN.ShowMe
+
 glistN.BypassLeaveonChoose = False
 If Iam Then
 Pad.Visible = False
@@ -347,7 +359,7 @@ Private Sub textbox_GotFocus()
  Textbox.glistN.NoCaretShow = Not Textbox.enabled
  Textbox.glistN.ShowMe
 If Pad.Visible Then
-Iam = False
+'Iam = False
 glistN.enabled = False
 glistN.BypassLeaveonChoose = False
 End If
@@ -361,9 +373,9 @@ Textbox.vartext = glistN.List(item): Textbox.SelStart = Len(Textbox.Text) + 1
 Textbox.SetFocus
 
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".DblClick(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(item) + ")"
    Else
-      Callback.Callback CtrlName + ".DblClick(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".DblClick(" + Str(item) + ")"
       End If
 ElseIf item < -1 Then
 'glistN.Visible = False
@@ -374,6 +386,7 @@ End Sub
 
 Private Sub textbox_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
 Dim gl As Long
+
 If Textbox.glistN.DblClick Then
 Iam = False
 
@@ -381,12 +394,16 @@ Iam = False
 
  End If
 
+ If Pad.Visible Then Iam = True: Exit Sub
+
+
+
 If (Button And 1) = 1 And Not Pad.Visible Then
 gl = glistN.listcount
 If gl = 0 Then Exit Sub
 
 Textbox.glistN.dropkey = True
-If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Exit Sub
+If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Textbox.glistN.dropkey = False: Exit Sub
 Pad.Width = CLng(Callback.Controls(CtrlName).Width / 1.618 * dv15) \ dv15
 If gl < 5 Then
 
@@ -399,8 +416,8 @@ glistN.restrictLines = 5
 End If
 glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
     Textbox.SkipProcAtExitFocus = True
-    Textbox.glistN.NoCaretShow = True
-    Textbox.glistN.ShowPan
+'    Textbox.glistN.NoCaretShow = True
+  '  Textbox.glistN.ShowPan
     glistN.LeaveonChoose = True
    ' glistN.SetFocus
   If AutoComplete Then
@@ -408,7 +425,7 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
         If glistN.ListIndex < 0 Then
         glistN.ListIndex = 0
         Else
-        glistN.ShowPan ' glistN.ListIndex + 1
+        glistN.ShowThis glistN.ListIndex + 1
         
          End If
   Else
@@ -419,7 +436,7 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
                 If glistN.ListIndex < 0 Then
                 glistN.ListIndex = 0
                 Else
-                glistN.ShowPan ' glistN.ListIndex + 1
+                glistN.ShowThis glistN.ListIndex + 1
                 
                 End If
     End If
@@ -429,8 +446,10 @@ Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top
 
 Button = 0
 Textbox.glistN.dropkey = False
-'Iam = False
+Iam = Not Pad.Visible
+
 End If
+
 End Sub
 Private Sub glistN_SyncKeyboard(item As Integer)
 Static f As Long
@@ -438,9 +457,9 @@ f = glistN.FindItemStartWidth(Chr$(item), Not NoCaseSensitive, f + 1)
 If f >= 0 Then
 glistN.ScrollTo f - glistN.lines / 2, f + 1
     If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".PickOther(" + Str(mIndex) + ",{" + glistN.ListValue + "})"
+   Callback.Callback mesCtrlName + ".PickOther(" + Str(mIndex) + ",{" + glistN.ListValue + "})"
    Else
-      Callback.Callback CtrlName + ".PickOther({" + glistN.ListValue + "})"
+      Callback.Callback mesCtrlName + ".PickOther({" + glistN.ListValue + "})"
       End If
 Else
 f = -1
@@ -463,9 +482,9 @@ If Not NoCaseSensitive Then ThatString = Myleft$(glistN.List(f), Len(ThatString)
 Textbox.glistN.LastLinePart = Mid$(glistN.List(f), Len(ThatString) + 1)
 'RaiseEvent AutoCompleteDone(glistN.List(f))
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".AutoCompleteDone(" + Str(mIndex) + ",{" + glistN.List(f) + "})"
+   Callback.Callback mesCtrlName + ".AutoCompleteDone(" + Str(mIndex) + ",{" + glistN.List(f) + "})"
    Else
-      Callback.Callback CtrlName + ".AutoCompleteDone({" + glistN.List(f) + "})"
+      Callback.Callback mesCtrlName + ".AutoCompleteDone({" + glistN.List(f) + "})"
       End If
 
 glistN.enabled = False
@@ -653,5 +672,12 @@ End Property
 Public Property Let MaxCharLength(ByVal rhs As Long)
 Textbox.glistN.maxchar = rhs
 End Property
+Public Property Let ShowAlways(ByVal vNewValue As Variant)
+Textbox.ShowAlways = CBool(vNewValue)
+End Property
 
+Sub GetFocus()
+On Error Resume Next
+Callback.Controls(CtrlName).SetFocus
+End Sub
 

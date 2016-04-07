@@ -48,7 +48,7 @@ Begin VB.Form GuiM2000
       _extentx        =   16193
       _extenty        =   873
       max             =   1
-      vertical        =   -1  'True
+      vertical        =   -1
       font            =   "GuiM2000.frx":000C
       backcolor       =   3881787
       forecolor       =   16777215
@@ -623,10 +623,15 @@ If vNewValue \ dv15 > 1 Then
 End If
 End Property
 
-Public Property Get Header() As Variant
-Header = gList2.Visible
+Public Property Get header() As Variant
+header = gList2.Visible
 End Property
 
-Public Property Let Header(ByVal vNewValue As Variant)
+Public Property Let header(ByVal vNewValue As Variant)
 gList2.Visible = vNewValue
 End Property
+Sub GetFocus()
+On Error Resume Next
+Me.SetFocus
+End Sub
+

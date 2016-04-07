@@ -314,7 +314,7 @@ Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$) As
 
         ' Invoke method/property
         Err.Clear
-        On Error Resume Next
+       On Error Resume Next
         lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
 If Err > 0 Then
 ERrR$ = Err.Description

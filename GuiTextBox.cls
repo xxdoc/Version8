@@ -57,6 +57,7 @@ Private Declare Function CloseClipboard Lib "user32" _
     Private Pad$
     ' for Gui purposes
 Public CtrlName As String
+Private mesCtrlName As String
 Dim mIndex As Long, mStayOpen As Boolean
 Dim Callback As GuiM2000
 Public Property Get GetCallBack() As Form
@@ -75,18 +76,16 @@ Public Sub Construct(there As Form, name$)
 
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 Public Sub ConstructArray(there As Form, name$, i As Long)
  Set Callback = there
  On Error Resume Next
- If i = 0 Then
- Set glistN = there.Controls.Add("m2000.glist", name$)
- CtrlName = name$
- Else
+
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
 CtrlName = name$ + "_" + LTrim(Str$(i))
- End If
+
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
  CtrlName = GetTag$
@@ -94,7 +93,8 @@ CtrlName = name$ + "_" + LTrim(Str$(i))
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 Public Property Get Text() As String
 If glistN.listcount = 0 Then
@@ -231,9 +231,9 @@ this = Mid$(Content, 1 + Len(mprompt))
 VR(0) = this
 VR(1) = thispos
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".ValidString(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".ValidString(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".ValidString()", VR()
+      Callback.CallbackNow mesCtrlName + ".ValidString()", VR()
       End If
       
 thispos = VR(1) + Len(mprompt)
@@ -289,9 +289,16 @@ End If
 
 End Sub
 Public Sub Retired()
+If mStayOpen Then
+glistN.ForeColor = rgb(0, 0, 0)
+glistN.BackColor = rgb(255, 255, 255)
+glistN.NoCaretShow = False
+Else
 glistN.ForeColor = rgb(255, 255, 255)
 glistN.BackColor = rgb(200, 120, 60)
-glistN.NoCaretShow = True: glistN.PanPos = 0: glistN.ShowMe
+glistN.NoCaretShow = True
+End If
+ glistN.PanPos = 0: glistN.ShowMe
 End Sub
 
 Private Sub glistN_CheckLostFocus()
@@ -323,9 +330,9 @@ Dim VR(2)
 VR(0) = KeyCode
 VR(1) = shift
    If mIndex >= 0 Then
-   Callback.CallbackNow CtrlName + ".KeyDown(" + Str(mIndex) + ")", VR()
+   Callback.CallbackNow mesCtrlName + ".KeyDown(" + Str(mIndex) + ")", VR()
    Else
-      Callback.CallbackNow CtrlName + ".KeyDown()", VR()
+      Callback.CallbackNow mesCtrlName + ".KeyDown()", VR()
       End If
 KeyCode = VR(0)
 shift = VR(1)
@@ -368,9 +375,9 @@ Private Sub glistN_Selected(item As Long)
 If item >= 0 Then
    '' If (Not mCallback Is Nothing) Then mCallback.Press Index
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + ")"
    Else
-      Callback.Callback CtrlName + ".Click()"
+      Callback.Callback mesCtrlName + ".Click()"
       End If
     End If
 End Sub
@@ -378,9 +385,9 @@ End Sub
 Private Sub glistN_Selected2(item As Long)
 If item >= 0 Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Enter(" + Str(mIndex) + ")"
+   Callback.Callback mesCtrlName + ".Enter(" + Str(mIndex) + ")"
    Else
-      Callback.Callback CtrlName + ".Enter()"
+      Callback.Callback mesCtrlName + ".Enter()"
       End If
 End If
 End Sub
@@ -392,9 +399,9 @@ End Sub
 Private Sub glistN_SpinnerValue(ThatValue As Long)
 ''' RaiseEvent SpinnerValue(ThatValue)
    If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".SpinnerValue(" + Str(mIndex) + "," + LTrim(Str(ThatValue)) + ")"
+   Callback.Callback mesCtrlName + ".SpinnerValue(" + Str(mIndex) + "," + LTrim(Str(ThatValue)) + ")"
    Else
-      Callback.Callback CtrlName + ".SpinnerValue(" + LTrim(Str(ThatValue)) + ")"
+      Callback.Callback mesCtrlName + ".SpinnerValue(" + LTrim(Str(ThatValue)) + ")"
       End If
      '' vartext = str(ThatValue)
 End Sub
@@ -553,5 +560,12 @@ mIndex = rhs
 End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)
+If mStayOpen Then
+glistN.ForeColor = rgb(0, 0, 0)
+glistN.BackColor = rgb(255, 255, 255)
+End If
 End Property
-
+Sub GetFocus()
+On Error Resume Next
+Callback.Controls(CtrlName).SetFocus
+End Sub

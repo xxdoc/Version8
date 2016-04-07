@@ -129,6 +129,7 @@ Const LOCALE_ILANGUAGE = 1
     ' for Gui purposes
 Private s$
 Public CtrlName As String
+Private mesCtrlName As String
 Dim mIndex As Long, mStayOpen As Boolean
 Dim Callback As GuiM2000
 Dim oldEditDoc As Boolean
@@ -148,18 +149,16 @@ Public Sub Construct(there As Form, name$)
 
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 Public Sub ConstructArray(there As Form, name$, i As Long)
  Set Callback = there
  On Error Resume Next
- If i = 0 Then
- Set glistN = there.Controls.Add("m2000.glist", name$)
- CtrlName = name$
- Else
+
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
 CtrlName = name$ + "_" + LTrim(Str$(i))
- End If
+
  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
  CtrlName = GetTag$
@@ -167,7 +166,8 @@ CtrlName = name$ + "_" + LTrim(Str$(i))
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 
 Public Sub SetUp()
@@ -466,15 +466,15 @@ Public Sub ManualInform()
 If Not glistN.enabled Then Exit Sub
 If glistN.SelStart = 0 Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
       End If
 Else
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
       End If
 End If
 End Sub
@@ -532,15 +532,15 @@ Private Sub glistN_Maybelanguage()
 If Not glistN.enabled Then Exit Sub
 If glistN.SelStart = 0 Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
       End If
 Else
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
       End If
 End If
 Render
@@ -549,9 +549,9 @@ End Sub
 Private Sub glistN_OutPopUp(x As Single, y As Single, myButton As Integer)
 '
 If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".PopUp(" + Str(mIndex) + "," + Str(x + Callback.Controls(CtrlName).Left) + "," + Str(y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
+   Callback.Callback mesCtrlName + ".PopUp(" + Str(mIndex) + "," + Str(x + Callback.Controls(CtrlName).Left) + "," + Str(y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
    Else
-      Callback.Callback CtrlName + ".PopUp(" + Str(x + Callback.Controls(CtrlName).Left) + "," + Str(y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
+      Callback.Callback mesCtrlName + ".PopUp(" + Str(x + Callback.Controls(CtrlName).Left) + "," + Str(y + Callback.Controls(CtrlName).top) + "," + Str(myButton) + "," + Str(glistN.ListIndex + 1) + ")"
       End If
 End Sub
 
@@ -687,16 +687,16 @@ If Not glistN.enabled Then Exit Sub
 If glistN.SelStart = 0 Then
 inform glistN.ListIndex + 1, 1
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
       End If
 Else
  inform glistN.ListIndex + 1, (glistN.SelStart)
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
       End If
 End If
 
@@ -986,15 +986,15 @@ If KeyCode = 16 And shift <> 0 Then
 KeyCode = 0
 If glistN.SelStart = 0 Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", 1)"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", 1)"
       End If
 Else
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+   Callback.Callback mesCtrlName + ".Inform(" + Str(mIndex) + "," + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
    Else
-      Callback.Callback CtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
+      Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
       End If
 End If
 Exit Sub
@@ -1694,9 +1694,9 @@ Else
 End If
 '
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".MarkOut(" + Str(mIndex) + ")"
+   Callback.Callback mesCtrlName + ".MarkOut(" + Str(mIndex) + ")"
    Else
-      Callback.Callback CtrlName + ".MarkOut(" + ")"
+      Callback.Callback mesCtrlName + ".MarkOut(" + ")"
       End If
 End Sub
 
@@ -1807,9 +1807,9 @@ End Sub
 
 Private Sub glistN_WordMarked(ThisWord As String)
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Word(" + Str(mIndex) + ",{" + ThisWord + "})"
+   Callback.Callback mesCtrlName + ".Word(" + Str(mIndex) + ",{" + ThisWord + "})"
    Else
-      Callback.Callback CtrlName + ".Word({" + ThisWord + "})"
+      Callback.Callback mesCtrlName + ".Word({" + ThisWord + "})"
       End If
 End Sub
 
@@ -4129,9 +4129,9 @@ End Sub
 Public Sub helpmeSub()
     If Not abt Then
             If mIndex >= 0 Then
-       Callback.Callback CtrlName + ".Help(" + Str(mIndex) + ",{" + Trim(SelText) + "})"
+       Callback.Callback mesCtrlName + ".Help(" + Str(mIndex) + ",{" + Trim(SelText) + "})"
        Else
-          Callback.Callback CtrlName + ".Help({" + Trim(SelText) + "})"
+          Callback.Callback mesCtrlName + ".Help({" + Trim(SelText) + "})"
           End If
     Else
         feedback$ = Trim(SelText)
@@ -4513,5 +4513,13 @@ mNoColor1 = vNewValue
 End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)
+If mStayOpen Then
+glistN.ForeColor = rgb(0, 0, 0)
+glistN.BackColor = rgb(255, 255, 255)
+End If
 End Property
 
+Sub GetFocus()
+On Error Resume Next
+Callback.Controls(CtrlName).SetFocus
+End Sub

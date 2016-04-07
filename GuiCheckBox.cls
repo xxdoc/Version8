@@ -20,7 +20,8 @@ Dim mCaptext As String
 Dim mValue As Boolean
 '' FOR EVERY GuiSomething
 Public CtrlName As String
-Dim mIndex As Long
+Private mesCtrlName As String
+Dim mIndex As Long, mStayOpen As Boolean
 Dim Callback As GuiM2000
 '' for every GuiSomething
 Public Property Get GetCallBack() As Form
@@ -46,29 +47,27 @@ Public Sub Construct(there As Form, name$)
 
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
 
 Public Sub ConstructArray(there As Form, name$, i As Long)
  Set Callback = there
  On Error Resume Next
- If i = 0 Then
- Set glistN = there.Controls.Add("m2000.glist", name$)
- CtrlName = name$
- Else
+
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
 CtrlName = name$ + "_" + LTrim(Str$(i))
- End If
- If Err.Number > 0 Then
+  If Err.Number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
  CtrlName = GetTag$
  End If
  mIndex = i
  there.AddGuiControl Me
  glistN.Dynamic
- there.Controls(name$).TabStop = True
+ there.Controls(CtrlName).TabStop = True
+ mesCtrlName = name$
 End Sub
-Public Sub ConstructContainer(there As Form, name$, containerCtrl As Object)
+Public Sub ConstructContainer1212(there As Form, name$, containerCtrl As Object)
 Set Callback = there
  Set glistN = there.Controls.Add("m2000.glist", name$, containerCtrl)
 there.AddGuiControl Me
@@ -151,7 +150,11 @@ Private Sub gListN_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal 
 If check1focus Then
 glistN.FillThere thisHDC, thisrect, rgb(100, 200, 160)
 Else
+If mStayOpen Then
+glistN.FillThere thisHDC, thisrect, rgb(255, 255, 255)
+Else
 glistN.FillThere thisHDC, thisrect, rgb(200, 120, 60)
+End If
 End If
 skip = False
 End Sub
@@ -166,9 +169,9 @@ Private Sub glistN_MenuChecked(item As Long)
 ' RaiseEvent Changed(glistN.ListSelected(0))
 If item >= 0 Then
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Changed(" + Str(mIndex) + "," + Str(glistN.ListSelected(0)) + ")"
+   Callback.Callback mesCtrlName + ".Changed(" + Str(mIndex) + "," + Str(glistN.ListSelected(0)) + ")"
    Else
-      Callback.Callback CtrlName + ".Changed(" + Str(glistN.ListSelected(0)) + ")"
+      Callback.Callback mesCtrlName + ".Changed(" + Str(glistN.ListSelected(0)) + ")"
       End If
 End If
 End Sub
@@ -203,17 +206,17 @@ End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
    Else
-      Callback.Callback CtrlName + ".Click(" + Str(Checked) + ")"
+      Callback.Callback mesCtrlName + ".Click(" + Str(Checked) + ")"
       End If
 End Sub
 
 Private Sub glistN_Selected2(item As Long)
   If mIndex >= 0 Then
-   Callback.Callback CtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
    Else
-      Callback.Callback CtrlName + ".Click(" + Str(Checked) + ")"
+      Callback.Callback mesCtrlName + ".Click(" + Str(Checked) + ")"
       End If
 End Sub
 Public Property Get top() As Variant
@@ -229,3 +232,15 @@ End Property
 Public Property Let Left(ByVal rhs As Variant)
 Callback.Controls(CtrlName).Left = rhs
 End Property
+Public Property Let ShowAlways(ByVal vNewValue As Variant)
+mStayOpen = CBool(vNewValue)
+If mStayOpen Then
+glistN.ForeColor = rgb(0, 0, 0)
+glistN.BackColor = rgb(255, 255, 255)
+End If
+End Property
+Sub GetFocus()
+On Error Resume Next
+Callback.Controls(CtrlName).SetFocus
+End Sub
+
