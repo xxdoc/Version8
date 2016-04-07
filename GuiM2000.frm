@@ -45,14 +45,22 @@ Begin VB.Form GuiM2000
       TabStop         =   0   'False
       Top             =   0
       Width           =   9180
-      _extentx        =   16193
-      _extenty        =   873
-      max             =   1
-      vertical        =   -1
-      font            =   "GuiM2000.frx":000C
-      backcolor       =   3881787
-      forecolor       =   16777215
-      capcolor        =   16777215
+      _ExtentX        =   16193
+      _ExtentY        =   873
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   161
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Backcolor       =   3881787
+      ForeColor       =   16777215
+      CapColor        =   16777215
    End
 End
 Attribute VB_Name = "GuiM2000"
@@ -567,8 +575,8 @@ If Not Relax Then
     If dr Then
          If y < (Height - 150) Or y >= Height Then addy = (y - ly) Else addy = dv15 * 5
          If x < (Width - 150) Or x >= Width Then addx = (x - Lx) Else addx = dv15 * 5
-         If Width + addx >= 1800 Then
-             If Height + addy >= 1800 Then
+         If Width + addx >= 1800 And Width + addx < ScrX() Then
+             If Height + addy >= 1800 And Height + addy < ScrY() Then
                 Lx = x
                 ly = y
                 Move Left, top, Width + addx, Height + addy
