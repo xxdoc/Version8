@@ -43,6 +43,7 @@ Public Property Let Label(A$)
 Textbox.Prompt = A$ + " " + ChrW(&H25BC) & " "
 Textbox.glistN.ShowMe
 End Property
+
 Private Sub glistN_RegisterGlist(this As gList)
 Dim mo As Object
 Set mo = glistN.Parent
@@ -292,3 +293,4 @@ glistN.enabled = False
 Textbox.Locked = True
 
 End Sub
+

@@ -31,24 +31,16 @@ Begin VB.Form LoadFile
       TabIndex        =   0
       Top             =   720
       Width           =   3420
-      _ExtentX        =   6033
-      _ExtentY        =   6350
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   11.25
-         Charset         =   161
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Enabled         =   -1  'True
+      _extentx        =   6033
+      _extenty        =   6350
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "FileSelectorDialog.frx":000C
+      enabled         =   -1  'True
       dcolor          =   65535
-      Backcolor       =   3881787
-      ForeColor       =   14737632
-      CapColor        =   9797738
+      backcolor       =   3881787
+      forecolor       =   14737632
+      capcolor        =   9797738
    End
    Begin M2000.gList gList2 
       Height          =   495
@@ -57,23 +49,15 @@ Begin VB.Form LoadFile
       TabStop         =   0   'False
       Top             =   180
       Width           =   3420
-      _ExtentX        =   6033
-      _ExtentY        =   873
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   14.25
-         Charset         =   161
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Enabled         =   -1  'True
-      Backcolor       =   3881787
-      ForeColor       =   16777215
-      CapColor        =   16777215
+      _extentx        =   6033
+      _extenty        =   873
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "FileSelectorDialog.frx":0030
+      enabled         =   -1  'True
+      backcolor       =   3881787
+      forecolor       =   16777215
+      capcolor        =   16777215
    End
    Begin M2000.gList glist3 
       Height          =   375
@@ -81,23 +65,15 @@ Begin VB.Form LoadFile
       TabIndex        =   2
       Top             =   7635
       Width           =   3420
-      _ExtentX        =   6033
-      _ExtentY        =   661
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   11.25
-         Charset         =   161
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Enabled         =   -1  'True
-      Backcolor       =   8421504
-      ForeColor       =   14737632
-      CapColor        =   49344
+      _extentx        =   6033
+      _extenty        =   661
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "FileSelectorDialog.frx":0054
+      enabled         =   -1  'True
+      backcolor       =   8421504
+      forecolor       =   14737632
+      capcolor        =   49344
    End
 End
 Attribute VB_Name = "LoadFile"
@@ -185,7 +161,7 @@ With gList1
 .MenuItem 2, False, True, False, "time"
 .MenuItem 3, False, True, False, "name"
 .MenuItem 4, False, True, False, "type"
-.addsep
+.AddSep
 .additemFast "Παρουσίαση"
 .menuEnabled(5) = False
 .additemFast "  Ένα φάκελο"
@@ -194,7 +170,7 @@ With gList1
 .MenuItem 7, True, True, False, "normal"
 .MenuItem 8, True, True, False, "3levels"
 .MenuItem 9, True, True, False, "recur"
-.addsep
+.AddSep
 .additemFast "Συμπεριφορά"
 .menuEnabled(10) = False
 .additemFast "  Σπρώξε τη λίστα"
@@ -203,10 +179,10 @@ With gList1
 .MenuItem 12, True, False, False, "push"
 .MenuItem 13, True, False, False, "multi"
 .MenuItem 14, True, False, False, "expand"
-.addsep
+.AddSep
 .additemFast "Πέτα τις Αλλαγές"
 .additemFast "Σταμάτα και κλείσε"
-.addsep
+.AddSep
 .additemFast "Πληροφορίες"
 .menuEnabled(18) = False
 .additemFast "κύλισε δεξιά το κάτω"
@@ -215,7 +191,7 @@ With gList1
 .menuEnabled(20) = False
 .additemFast "με διπλό κλικ στη λίστα"
 .menuEnabled(21) = False
-.addsep
+.AddSep
 .additemFast "Γιώργος Καρράς 2014"
 .menuEnabled(23) = False
 
@@ -236,7 +212,7 @@ With gList1
 .MenuItem 2, False, True, False, "time"
 .MenuItem 3, False, True, False, "name"
 .MenuItem 4, False, True, False, "type"
-.addsep
+.AddSep
 .additemFast "Performance"
 .menuEnabled(5) = False
 .additemFast "  Normal"
@@ -245,7 +221,7 @@ With gList1
 .MenuItem 7, True, True, False, "normal"
 .MenuItem 8, True, True, False, "3levels"
 .MenuItem 9, True, True, False, "recur"
-.addsep
+.AddSep
 .additemFast "Behavior"
 .menuEnabled(10) = False
 .additemFast "  Push to Scroll"
@@ -254,10 +230,10 @@ With gList1
 .MenuItem 12, True, False, False, "push"
 .MenuItem 13, True, False, False, "multi"
 .MenuItem 14, True, False, False, "expand"
-.addsep
+.AddSep
 .additemFast "Undo Changes"
 .additemFast "Abord and Exit"
-.addsep
+.AddSep
 .additemFast "Information"
 .menuEnabled(18) = False
 .additemFast "slide right in the textbox"
@@ -266,7 +242,7 @@ With gList1
 .menuEnabled(20) = False
 .additemFast "or double click the file list"
 .menuEnabled(21) = False
-.addsep
+.AddSep
 .additemFast "George Karras 2014"
 .menuEnabled(23) = False
 
@@ -320,11 +296,11 @@ Move selectorLastX, selectorLastY
 End If
 'If TEXT1 <> "" Then
 TEXT1.Locked = False
-gList3.listindex = 0
+gList3.ListIndex = 0
 gList3.SoftEnterFocus
-If gList1.Value <> gList1.listindex Then
+If gList1.Value <> gList1.ListIndex Then
 gList1.Spinner = True
-gList1.Value = gList1.listindex
+gList1.Value = gList1.ListIndex
 gList1.Spinner = False
 End If
 End Sub
@@ -357,7 +333,7 @@ End If
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-Dim addX As Long, addy As Long, factor As Single, Once As Boolean
+Dim addx As Long, addy As Long, factor As Single, Once As Boolean
 If Once Then Exit Sub
 If Button = 0 Then dr = False
 If bordertop < 150 Then
@@ -367,9 +343,9 @@ If (y > Height - 150 And y < Height) And (x > Width - 150 And x < Width) Then mo
 End If
 If dr Then
     If y < (Height - bordertop) Or y > Height Then addy = (y - ly)
-    If x < (Width - borderleft) Or x > Width Then addX = (x - Lx)
+    If x < (Width - borderleft) Or x > Width Then addx = (x - Lx)
     
-   If Not ExpandWidth Then addX = 0
+   If Not ExpandWidth Then addx = 0
         If lastfactor = 0 Then lastfactor = 1
         factor = lastfactor
 
@@ -377,12 +353,12 @@ If dr Then
   
         Once = True
         If Height > ScrY() Then addy = -(Height - ScrY()) + addy
-        If Width > ScrX() Then addX = -(Width - ScrX()) + addX
-        If (addy + Height) / height1 > 0.4 And ((Width + addX) / width1) > 0.4 Then
+        If Width > ScrX() Then addx = -(Width - ScrX()) + addx
+        If (addy + Height) / height1 > 0.4 And ((Width + addx) / width1) > 0.4 Then
 
         If addy <> 0 Then
          If ((addy + Height) / height1) > ScrY() Then
-      addX = 0
+      addx = 0
       addy = 0
          Else
         SizeDialog = ((addy + Height) / height1)
@@ -391,18 +367,18 @@ If dr Then
         lastfactor = ScaleDialogFix(SizeDialog)
 
 
-        If ((Width * lastfactor / factor + addX) / Height * lastfactor / factor) < (width1 / height1) Then
-        addX = -Width * lastfactor / factor - 1
+        If ((Width * lastfactor / factor + addx) / Height * lastfactor / factor) < (width1 / height1) Then
+        addx = -Width * lastfactor / factor - 1
       
            End If
 
-        If addX = 0 Then
+        If addx = 0 Then
         If lastfactor <> factor Then ScaleDialog lastfactor, DialogPreview, Width
         Lx = x
         
         Else
         Lx = x * lastfactor / factor
-         ScaleDialog lastfactor, DialogPreview, (Width + addX) * lastfactor / factor
+         ScaleDialog lastfactor, DialogPreview, (Width + addx) * lastfactor / factor
          End If
 
         
@@ -496,7 +472,7 @@ End Sub
 Private Sub FlipList()
         If Not gList1.HeadLine = SetUp Then
                 dirlisttop = gList1.ScrollFrom
-                dirlistindex = gList1.listindex
+                dirlistindex = gList1.ListIndex
                 mySelector.NostateDir = True
                 gList1.LeftMarginPixels = oldLeftMarginPixels
                 gList1.HeadLine = "" ' reset
@@ -532,14 +508,14 @@ End Sub
 
 
 Private Sub gList1_GotFocus()
-If gList1.listindex = -1 Then gList1.listindex = gList1.ScrollFrom
+If gList1.ListIndex = -1 Then gList1.ListIndex = gList1.ScrollFrom
 End Sub
 
 Private Sub gList1_HeaderSelected(Button As Integer)
 If Button = 1 And Not mySelector.NostateDir Then
 gList1.CapColor = rgb(0, 160, 0)
 gList1.ShowMe2
-gList1.refresh
+gList1.Refresh
 mySelector.reload
 gList1.CapColor = rgb(106, 128, 149)
 gList1.ShowMe2
@@ -645,10 +621,10 @@ If Not gList3.EditFlag Then
 
 If NewFolder Then
 
-If Not (gList1.listindex = -1) Then
-gList1.listindex = -1
+If Not (gList1.ListIndex = -1) Then
+gList1.ListIndex = -1
 gList1.ShowMe2
-gList3.clear
+gList3.Clear
 gList3.SelStart = 1
 TEXT1 = "NewFolder"
 End If
@@ -660,10 +636,10 @@ gList3.NoCaretShow = False
 gList3.BackColor = &H0
 gList3.ForeColor = &HFFFFFF
 ElseIf Not FileExist Then
-If Not (gList1.listindex = -1) Then
-gList1.listindex = -1
+If Not (gList1.ListIndex = -1) Then
+gList1.ListIndex = -1
 gList1.ShowMe2
-gList3.clear
+gList3.Clear
 gList3.SelStart = 1
 If UserFileName <> "" Then
 TEXT1 = UserFileName
@@ -689,7 +665,7 @@ HERE:
 DestroyCaret
 If TEXT1 <> "" Then
 gList3.EditFlag = False
-gList3.Enabled = False
+gList3.enabled = False
 glist3_PanLeftRight True
 End If
 KeyCode = 0
@@ -705,7 +681,7 @@ gList3.ShowMe2
 End Sub
 
 Private Sub glist3_PanLeftRight(Direction As Boolean)
-Dim that As New recDir, tt As Integer
+Dim that As New recDir, TT As Integer
 If TEXT1 = "" Then Exit Sub
 
 If Direction Then
@@ -726,8 +702,8 @@ TEXT1 = mySelector.Mydir.CleanName(TEXT1.Text)
             ReturnFile = mySelector.GetPath
         ElseIf TEXT1.glistN.EditFlag Then
             ReturnFile = mySelector.GetPath + TEXT1 & "\"
-        ElseIf mySelector.glistN.listindex >= 0 Then
-            ReturnFile = Mid$(mySelector.Mydir.List(mySelector.glistN.listindex), 2) & "\"
+        ElseIf mySelector.glistN.ListIndex >= 0 Then
+            ReturnFile = Mid$(mySelector.Mydir.List(mySelector.glistN.ListIndex), 2) & "\"
         Else
          ReturnFile = mySelector.GetPath + TEXT1 & "\"
     End If
@@ -738,9 +714,9 @@ TEXT1 = mySelector.Mydir.CleanName(TEXT1.Text)
     End If
 
 mySelector.AbordAll
-gList1.Enabled = False
-gList2.Enabled = False
-TEXT1.Enabled = False
+gList1.enabled = False
+gList2.enabled = False
+TEXT1.enabled = False
 Unload Me
 Else
 Beep
@@ -765,8 +741,8 @@ gList3.NoCaretShow = True
 
 ElseIf Not mySelector.Mydir.isReadOnly(mySelector.Mydir.path) Then
 If NewFolder Then
-If Not (gList1.listindex = -1) Then
-gList1.listindex = -1
+If Not (gList1.ListIndex = -1) Then
+gList1.ListIndex = -1
 gList1.ShowMe2
 TEXT1 = "NewFolder"
 End If
@@ -778,8 +754,8 @@ gList3.NoCaretShow = False
 gList3.BackColor = &H0
 gList3.ForeColor = &HFFFFFF
 ElseIf Not FileExist Then
-If Not (gList1.listindex = -1) Then
-gList1.listindex = -1
+If Not (gList1.ListIndex = -1) Then
+gList1.ListIndex = -1
 gList1.ShowMe2
 If UserFileName <> "" Then
 TEXT1 = UserFileName
@@ -839,19 +815,19 @@ Image1.Width = aImage.Width
 End Property
 Private Sub mySelector_TraceFile(file As String)
 If Not DialogPreview Then
-TEXT1 = mySelector.Mydir.List(mySelector.glistN.listindex)
-refresh
+TEXT1 = mySelector.Mydir.List(mySelector.glistN.ListIndex)
+Refresh
 Else
 Dim aImage As StdPicture, sc As Single
 Static ihave As Boolean
 If ihave Then Exit Sub
-mySelector.glistN.Enabled = False
+mySelector.glistN.enabled = False
 ' read ratio
  Line (0, 0)-(ScaleWidth - dv15, ScaleHeight - dv15), Me.BackColor, BF
 
 Set LoadApicture = LoadPicture("")
 On Error Resume Next
-Err.clear
+Err.Clear
 'If FileLen(file) > 1500000 Then Image1.refresh
 Set aImage = LoadPicture(GetDosPath(file))
 If file = "" Or Err.Number > 0 Then Exit Sub
@@ -859,9 +835,9 @@ ihave = True
  Line (0, 0)-(ScaleWidth - dv15, ScaleHeight - dv15), Me.BackColor, BF
 
 Set LoadApicture = LoadPicture(GetDosPath(file))
-refresh
-TEXT1 = mySelector.Mydir.List(mySelector.glistN.listindex)
-mySelector.glistN.Enabled = True
+Refresh
+TEXT1 = mySelector.Mydir.List(mySelector.glistN.ListIndex)
+mySelector.glistN.enabled = True
 
 ihave = False
 End If
@@ -1095,7 +1071,7 @@ PaintPicture aa.Picture, neoTop, NeoLeft, NeoWidth, NeoHeight
 Else
 PaintPicture a.image, neoTop, NeoLeft, NeoWidth, NeoHeight
 End If
-refresh
+Refresh
 End Sub
 Private Sub gList1_RegisterGlist(this As gList)
 Set LastGlist3 = this

@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 205
+Global Const Revision = 206
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -7084,7 +7084,7 @@ PP = 0
     
     r = SG * pppp.item(w2)
     Else
-            If IsExp(bstack, n$, r) Then
+            If IsExp(bstack, n$, p) Then
                 pppp.GroupRef.Index = p
                 ElseIf IsStrExp(bstack, n$, s$) Then
                 pppp.GroupRef.Index = s$
@@ -15819,7 +15819,12 @@ End If
      Set pppp.item(v).LinkRef = myobject
      Set bstack.lastobj = Nothing
      Else
+     If pppp.Arr Then
      pppp.item(v) = p
+     ElseIf Typename(pppp.GroupRef) Like "Pro*" Then
+    
+     pppp.GroupRef.Value = p
+     End If
     End If
 Do While FastSymbol(b$, ",")
 If pppp.UpperMonoLimit > v Then
@@ -17887,7 +17892,7 @@ Exit Function
 Case "REMOVE", "ΔΙΑΓΡΑΦΗ"
 If IsLabelSymbolNew(rest$, "ΑΔΕΙΑΣ", "LICENCE", lang) Then
 If IsStrExp(basestack, rest$, ss$) Then
-Licenses.remove ss$
+Licenses.Remove ss$
 Else
 MissStringExpr
 End If
@@ -19450,7 +19455,7 @@ Private Sub MissCdib()
   MyEr "Missing IMAGE", "Λείπει εικόνα"
 End Sub
 Private Sub BadObjectDecl()
-  MyEr "Bad object declaration", "Λάθος όρισμα αντικειμένου"
+  MyEr "Bad object declaration - use Clear Command for Gui Elements", "Λάθος όρισμα αντικειμένου - χρησιμοποίησε Καθαρό για να καθαρίσεις τυχόν στοιχεία του γραφικού περιβάλλοντος"
 End Sub
 Private Sub MissCdibStr()
   MyEr "Missing IMAGE in string", "Λείπει εικόνα στο αλφαριθμητικό"
@@ -21505,7 +21510,7 @@ ifier = False
                         MissLicence
                         End If
                         End If
-                        Licenses.remove s$
+                        Licenses.Remove s$
                         Else
                         MissStringExpr
                         End If
@@ -21543,7 +21548,7 @@ ifier = False
                         MissLicence
                         End If
                         End If
-                 Licenses.remove s$
+                 Licenses.Remove s$
                  Else
                     MissStringExpr
                  End If

@@ -27,7 +27,7 @@ Public NoCaseSensitive As Boolean
 ' gui own
 Public CtrlName As String
 Private mesCtrlName As String
-Dim mIndex As Long
+Dim mIndex As Long, mStayOpen As Boolean, mMenuStyle As Boolean, mMenuWidth As Long
 Dim Callback As GuiM2000
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
@@ -150,6 +150,32 @@ Public Property Let Label(A$)
 Textbox.Prompt = A$ + " " + ChrW(&H25BC) & " "
 Textbox.glistN.ShowMe
 End Property
+
+Private Sub glistN_MenuChecked(Item As Long)
+'
+  If mIndex >= 0 Then
+   Callback.Callback mesCtrlName + ".MenuChecked(" + Str(mIndex) + "," + Str(glistN.ListIndex) + ")"
+   Else
+      Callback.Callback mesCtrlName + ".MenuChecked(" + Str(glistN.ListIndex) + ")"
+      End If
+End Sub
+Property Let menuEnabled(Item As Long, ByVal rhs As Boolean)
+glistN.menuEnabled(Item) = rhs
+End Property
+
+Property Get menuEnabled(Item As Long) As Boolean
+menuEnabled = Not glistN.ListSep(Item)
+End Property
+Public Function GetMenuId(Id$, pos As Long) As Boolean
+'
+GetMenuId = glistN.GetMenuId(Id$, pos)
+End Function
+Property Get Id(Item As Long) As String
+'
+Id = glistN.Id(Item)
+End Property
+
+
 Private Sub glistN_RegisterGlist(this As gList)
 Dim mo As Object
 Set mo = glistN.Parent
@@ -201,7 +227,11 @@ Iam = True
 glistN.BypassLeaveonChoose = True
 Textbox.SetFocus
 Else
-KeyCode = 0
+KeyCode = 9
+Iam = False
+glistN.BypassLeaveonChoose = True
+Textbox.SetFocus
+Pad.Visible = False
 End If
 ElseIf KeyCode = 9 Then
 KeyCode = 0
@@ -214,7 +244,7 @@ End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
 If Direction = True Then
-Text = glistN.List(glistN.ListIndex)
+If Not mMenuStyle Then Text = glistN.List(glistN.ListIndex)
    If mIndex >= 0 Then
    Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(glistN.ListIndex) + ")"
    Else
@@ -223,20 +253,20 @@ Text = glistN.List(glistN.ListIndex)
    Textbox.SetFocus
 End If
 End Sub
-Private Sub glistN_ScrollMove(item As Long)
+Private Sub glistN_ScrollMove(Item As Long)
 '
    If mIndex >= 0 Then
-   Callback.Callback mesCtrlName + ".Move(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Move(" + Str(mIndex) + "," + Str(Item) + ")"
    Else
-      Callback.Callback mesCtrlName + ".Move(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Move(" + Str(Item) + ")"
       End If
 End Sub
 
-Private Sub glistN_ScrollSelected(item As Long, y As Long)
+Private Sub glistN_ScrollSelected(Item As Long, y As Long)
    If mIndex >= 0 Then
-   Callback.Callback mesCtrlName + ".Scroll(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Scroll(" + Str(mIndex) + "," + Str(Item) + ")"
    Else
-      Callback.Callback mesCtrlName + ".Scroll(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Scroll(" + Str(Item) + ")"
       End If
 End Sub
 
@@ -245,12 +275,17 @@ Public Property Get List(Index) As Variant
 On Error Resume Next
 List = glistN.List(CLng(Index))
 End Property
-Private Sub glistN_Selected(item As Long)
+Public Property Let List(Index, rhs As Variant)
+On Error Resume Next
+glistN.List(CLng(Index)) = CStr(rhs)
+End Property
+
+Private Sub glistN_Selected(Item As Long)
 If glistN.PanPos <> 0 Then glistN.PanPos = 0
    If mIndex >= 0 Then
-   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(Item) + ")"
    Else
-      Callback.Callback mesCtrlName + ".Click(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".Click(" + Str(Item) + ")"
       End If
 End Sub
 
@@ -265,16 +300,24 @@ If Pad.Visible Then If glistN.Visible Then glistN.enabled = True: Textbox.SkipPr
     KeyCode = 0
     gl = glistN.listcount
      If gl = 0 Then Exit Sub
-     
+     If mMenuStyle Then
+     If mMenuWidth > 1000 Then
+     Pad.Width = mMenuWidth
+     Else
+     Pad.Width = Callback.Controls(CtrlName).Width
+     End If
+     Else
 Pad.Width = CLng(Callback.Controls(CtrlName).Width / 1.618 * dv15) \ dv15
-If gl < 5 Then
+End If
+If Callback.Controls(CtrlName).Height * gl < ScrY() * 2 / 3 Then
 
 Pad.Height = Callback.Controls(CtrlName).Height * gl
 glistN.restrictLines = gl
 
 Else
-Pad.Height = Callback.Controls(CtrlName).Height * 5
-glistN.restrictLines = 5
+glistN.restrictLines = (ScrY() * 2 / 3) \ Callback.Controls(CtrlName).Height
+Pad.Height = Callback.Controls(CtrlName).Height * glistN.restrictLines
+
 End If
 glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
     Textbox.SkipProcAtExitFocus = True
@@ -306,7 +349,11 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
 
 
 End If
+    If mMenuWidth <> 0 Then
+    Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
+    Else
 Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top + Callback.Controls(CtrlName).Height
+End If
 
 ElseIf KeyCode = vbKeyTab Then
 Textbox.SkipProcAtExitFocus = False
@@ -317,11 +364,13 @@ b$ = Myleft$(Textbox.glistN.LastLinePart, 1)
 If b$ <> "" Then Textbox.glistN.LastLinePart = Mid$(Textbox.glistN.LastLinePart, 2)
 Textbox.Text = Textbox.Text + b$
 ElseIf KeyCode = vbKeyReturn Then
+If Edit Then
   If mIndex >= 0 Then
    Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(-1) + ")"
    Else
       Callback.Callback mesCtrlName + ".DblClick(" + Str(-1) + ")"
       End If
+   End If
 End If
 
 
@@ -336,7 +385,7 @@ If KeyAscii = 9 Then Pad.Visible = False
 End Sub
 
 Private Sub textbox_LostFocus()
-'If Pad.Visible Then Exit Sub
+
 
 Textbox.glistN.NoCaretShow = True
 
@@ -365,19 +414,28 @@ glistN.BypassLeaveonChoose = False
 End If
 Dim dummy As Long
 End Sub
-Private Sub glistN_Selected2(item As Long)
-If glistN.ListSep(item) Then Exit Sub
-If item >= 0 Then
-Textbox.vartext = glistN.List(item): Textbox.SelStart = Len(Textbox.Text) + 1
+Private Sub glistN_Selected2(Item As Long)
+If glistN.ListSep(Item) Then Exit Sub
+If Item >= 0 Then
+If mMenuStyle Then
+If glistN.ListSep(Item) Then Exit Sub
+If glistN.ListRadio(Item) Then
+    glistN.ListSelected(Item) = True
+    
+End If
+Else
+Textbox.vartext = glistN.List(Item): Textbox.SelStart = Len(Textbox.Text) + 1
+End If
+
 
 Textbox.SetFocus
 
    If mIndex >= 0 Then
-   Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(item) + ")"
+   Callback.Callback mesCtrlName + ".DblClick(" + Str(mIndex) + "," + Str(Item) + ")"
    Else
-      Callback.Callback mesCtrlName + ".DblClick(" + Str(item) + ")"
+      Callback.Callback mesCtrlName + ".DblClick(" + Str(Item) + ")"
       End If
-ElseIf item < -1 Then
+Else 'If item < -1 Then
 'glistN.Visible = False
 Pad.Visible = False
 End If
@@ -404,15 +462,25 @@ If gl = 0 Then Exit Sub
 
 Textbox.glistN.dropkey = True
 If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Textbox.glistN.dropkey = False: Exit Sub
+If mMenuStyle Then
+     If mMenuWidth > 1000 Then
+     Pad.Width = mMenuWidth
+     Else
+     Pad.Width = Callback.Controls(CtrlName).Width
+     End If
+     Else
 Pad.Width = CLng(Callback.Controls(CtrlName).Width / 1.618 * dv15) \ dv15
-If gl < 5 Then
+End If
+
+If Callback.Controls(CtrlName).Height * gl < ScrY() * 2 / 3 Then
 
 Pad.Height = Callback.Controls(CtrlName).Height * gl
 glistN.restrictLines = gl
 
 Else
-Pad.Height = Callback.Controls(CtrlName).Height * 5
-glistN.restrictLines = 5
+glistN.restrictLines = (ScrY() * 2 / 3) \ Callback.Controls(CtrlName).Height
+Pad.Height = Callback.Controls(CtrlName).Height * glistN.restrictLines
+
 End If
 glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
     Textbox.SkipProcAtExitFocus = True
@@ -441,7 +509,11 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
                 End If
     End If
     End If
+    If mMenuWidth <> 0 Then
+    Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
+    Else
 Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top + Callback.Controls(CtrlName).Height
+End If
 
 
 Button = 0
@@ -451,9 +523,9 @@ Iam = Not Pad.Visible
 End If
 
 End Sub
-Private Sub glistN_SyncKeyboard(item As Integer)
+Private Sub glistN_SyncKeyboard(Item As Integer)
 Static f As Long
-f = glistN.FindItemStartWidth(Chr$(item), Not NoCaseSensitive, f + 1)
+f = glistN.FindItemStartWidth(Chr$(Item), Not NoCaseSensitive, f + 1)
 If f >= 0 Then
 glistN.ScrollTo f - glistN.lines / 2, f + 1
     If mIndex >= 0 Then
@@ -538,6 +610,78 @@ End Sub
 Public Sub additemFast(A$)
 glistN.additemFast A$
 End Sub
+Public Sub MenuItem(A$, Optional enabledthis As Boolean = True, Optional checked As Boolean = False, Optional radiobutton As Boolean = False, Optional firstate As Boolean = False, Optional IdD)
+Dim Item
+mMenuStyle = True
+If Not A$ = "" Then
+glistN.additemFast A$
+End If
+Item = glistN.listcount
+If A$ = "" Then
+glistN.AddSep
+Else
+If IsMissing(IdD) Then
+glistN.MenuItem Item, checked, radiobutton, firstate
+
+Else
+glistN.MenuItem Item, checked, radiobutton, firstate, CStr(IdD)
+End If
+glistN.menuEnabled(CLng(Item - 1)) = enabledthis
+End If
+End Sub
+Public Sub MenuRadio(A$, Optional enabledthis As Boolean = True, Optional firstate As Boolean = False, Optional IdD)
+Dim Item, checked As Boolean
+checked = False
+mMenuStyle = True
+If Not A$ = "" Then
+glistN.additemFast A$
+End If
+Item = glistN.listcount
+If A$ = "" Then
+glistN.AddSep
+Else
+If IsMissing(IdD) Then
+glistN.MenuItem Item, True, True, False
+
+Else
+glistN.MenuItem Item, True, True, False, CStr(IdD)
+End If
+If firstate Then glistN.ListSelectedNoRadioCare(CLng(Item - 1)) = True
+glistN.menuEnabled(CLng(Item - 1)) = enabledthis
+End If
+End Sub
+
+Property Let ListRadioPrivate(Item As Long, rhs As Boolean)
+glistN.ListSelectedNoRadioCare(Item) = rhs
+End Property
+Property Get ListSelected(Item As Long) As Boolean
+ListSelected = glistN.ListSelected(Item)
+End Property
+Property Let ListSelected(Item As Long, rhs As Boolean)
+glistN.ListSelected(Item) = rhs
+End Property
+Property Get ListChecked(Item As Long) As Boolean
+ListChecked = glistN.ListChecked(Item)
+End Property
+Property Let ListChecked(Item As Long, rhs As Boolean)
+LglistN.ListChecked(Item) = rhs
+End Property
+Property Get ListMenu(Item As Long) As Boolean
+ListMenu = glistN.ListMenu(Item)
+End Property
+
+Property Get ListRadio(Item As Long) As Boolean
+ListRadio = glistN.ListRadio(Item)
+End Property
+Property Let ListRadio(Item As Long, rhs As Boolean)
+glistN.ListRadio(Item) = rhs
+End Property
+Property Get ListSep(Item As Long) As Boolean
+ListSep = glistN.ListSep(Item)
+End Property
+Property Let ListSep(Item As Long, rhs As Boolean)
+glistN.ListSep(Item) = rhs
+End Property
 Public Sub Shutdown()
 'new
 glistN.Shutdown
@@ -575,11 +719,13 @@ With glistN
 .VerticalCenterText = True
 .Text = mListText
 .BackColor = dimm2
+
 .MoveTwips 0, 0, Pad.Width, Pad.Height
 
 Set .Font = ff
 .ForeColor = Callback.Controls(1).ForeColor
-.dcolor = Callback.Controls(1).dcolor
+
+.dcolor = rgb(127, 127, 127)
 .NoCaretShow = False
 .enabled = True
 .StickBar = True
@@ -673,6 +819,7 @@ Public Property Let MaxCharLength(ByVal rhs As Long)
 Textbox.glistN.maxchar = rhs
 End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
+mStayOpen = CBool(vNewValue)
 Textbox.ShowAlways = CBool(vNewValue)
 End Property
 
@@ -681,3 +828,57 @@ On Error Resume Next
 Callback.Controls(CtrlName).SetFocus
 End Sub
 
+
+Public Property Get MenuStyle() As Variant
+MenuStyle = mMenuStyle
+End Property
+
+Public Property Let MenuStyle(ByVal vNewValue As Variant)
+mMenuStyle = vNewValue
+If mMenuStyle Then
+Textbox.vartext = ""
+End If
+End Property
+
+Public Property Get MenuWidth() As Variant
+MenuWidth = mMenuWidth
+End Property
+
+Public Property Let MenuWidth(ByVal vNewValue As Variant)
+mMenuWidth = vNewValue
+End Property
+Public Sub Clear()
+On Error Resume Next
+Iam = False
+Pad.Visible = False
+glistN.Clear
+Textbox.SetFocus
+End Sub
+Public Property Let Mark(Item)
+glistN.dcolor = mycolor(Item)
+End Property
+Public Sub Remove(Item)
+On Error Resume Next
+If Item < 0 Then Exit Sub
+glistN.Removeitem Item
+End Sub
+Public Sub Insert(Item, A$)
+On Error Resume Next
+glistN.ListindexPrivateUse = Item
+If glistN.ListIndex > -1 Then
+glistN.additemAtListIndex A$
+End If
+End Sub
+Public Sub MenuItemAtListIndex(Optional enabledthis As Boolean = True, Optional checked As Boolean = False, Optional radiobutton As Boolean = False, Optional firstate As Boolean = False, Optional IdD)
+Dim Item
+mMenuStyle = True
+Item = glistN.ListIndex
+If Item < 0 Then Exit Sub
+If IsMissing(IdD) Then
+glistN.MenuItem Item, checked, radiobutton, firstate
+
+Else
+glistN.MenuItem Item, checked, radiobutton, firstate, CStr(IdD)
+End If
+glistN.menuEnabled(CLng(Item - 1)) = enabledthis
+End Sub

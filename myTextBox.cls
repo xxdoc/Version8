@@ -228,6 +228,7 @@ If mStayOpen Then
 glistN.NoCaretShow = True
 
 If glistN.Visible Then glistN.PanPos = 0: glistN.PrepareToShow
+RaiseEvent LostFocus
 Exit Sub
 End If
 If Not SkipProcAtExitFocus Then
