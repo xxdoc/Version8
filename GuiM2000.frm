@@ -33,7 +33,7 @@ Begin VB.Form GuiM2000
       ForeColor       =   &H80000008&
       Height          =   150
       Left            =   8475
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   4080
       Visible         =   0   'False
       Width           =   135
@@ -41,7 +41,7 @@ Begin VB.Form GuiM2000
    Begin M2000.gList gList2 
       Height          =   495
       Left            =   0
-      TabIndex        =   0
+      TabIndex        =   1
       TabStop         =   0   'False
       Top             =   0
       Width           =   9180
@@ -80,7 +80,7 @@ Private ExpandWidth As Boolean, lastfactor As Single
 Private myEvent As mEvent
 Private GuiControls As New Collection
 'Dim gList1 As gList
-Dim onetime As Boolean
+Dim onetime As Boolean, PopupOn As Boolean
 Dim alfa As New GuiButton
 Public MyName$
 Public ModuleName$
@@ -159,6 +159,7 @@ End If
 End Sub
 
 Private Sub Form_Activate()
+If PopupOn Then PopupOn = False
 If novisible Then Hide: Unload Me
 If ttl Then Form3.Caption = gList2.HeadLine
 MarkSize = 4
@@ -180,6 +181,10 @@ End Sub
 
 
 Private Sub Form_Deactivate()
+If PopupOn Then
+            UnHook hWnd
+Exit Sub
+End If
 If IamPopUp Then
 If mModalId = ModalId And ModalId <> 0 Then
         ModalId = 0
@@ -521,7 +526,6 @@ MyDoEvents
 End Sub
 Public Sub PopUpPos(vv As Variant, ByVal x As Variant, ByVal y As Variant)
 Dim that As Object
-
 x = x + Left
 y = y + top
 Set that = vv
@@ -541,6 +545,8 @@ Else
 that.Move x, y
 End If
 that.ShowmeALl
+If ModalId <> 0 Then PopupOn = True
+
 that.Show , Me
 
 End Sub

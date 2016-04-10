@@ -1401,7 +1401,8 @@ blockKeyboard = True
 MyDoEvents
 blockKeyboard = False
  On Error Resume Next
-mywait basestack1, 10
+ ProcTask2 basestack1
+'mywait basestack1, 10
 
 If Not mNoColor Then SimpleHtmlData pp2
  SetTextData 13, pp1
@@ -2339,7 +2340,7 @@ Case Is >= "A"
     IsLabelOnly = rr& + Extra&
    
 End Function
-Function MaybeIsSymbol(A$, c$, Optional tail$ = "", Optional remove As Boolean = False) As Boolean
+Function MaybeIsSymbol(A$, c$, Optional tail$ = "", Optional Remove As Boolean = False) As Boolean
 Dim i As Long, ok As Boolean
 If A$ = "" Or c$ = "" Then Exit Function
 i = 1
@@ -2351,10 +2352,10 @@ ok = InStr(c$, Mid$(A$, i, 1)) > 0
 If tail$ <> "" And ok Then
 ok = Mid$(A$, i + 1, Len(tail$)) Like tail$
 End If
-If remove Then If ok Then A$ = Mid$(A$, i + 1 + Len(tail$))
+If Remove Then If ok Then A$ = Mid$(A$, i + 1 + Len(tail$))
 MaybeIsSymbol = ok
 End Function
-Function MaybeIsSymbol2(A$, c$, Optional tail$ = "", Optional remove As Boolean = False) As Boolean
+Function MaybeIsSymbol2(A$, c$, Optional tail$ = "", Optional Remove As Boolean = False) As Boolean
 Dim i As Long, ok As Boolean
 If A$ = "" Or c$ = "" Then Exit Function
 i = 1
@@ -2366,16 +2367,16 @@ ok = InStr(Mid$(A$, i, Len(c$)), c$) > 0
 If tail$ <> "" And ok Then
 ok = Mid$(A$, i + Len(c$), Len(tail$)) Like tail$
 End If
-If remove Then If ok Then A$ = Mid$(A$, i + Len(c$) + Len(tail$))
+If Remove Then If ok Then A$ = Mid$(A$, i + Len(c$) + Len(tail$))
 MaybeIsSymbol2 = ok
 End Function
 
-Function MaybeIsSymbolNoSpace(A$, c$, Optional remove As Boolean = False) As Boolean
+Function MaybeIsSymbolNoSpace(A$, c$, Optional Remove As Boolean = False) As Boolean
 Dim ok As Boolean
 
 If A$ = "" Then Exit Function
 ok = InStr(c$, Myleft$(A$, 1))
-If remove And ok Then A$ = Mid$(A$, 2)
+If Remove And ok Then A$ = Mid$(A$, 2)
 MaybeIsSymbolNoSpace = ok
 End Function
 Private Sub mDoc_ColorDataEvent(thispara As Long, data As String, col() As Variant, feedback As Long)
@@ -4434,8 +4435,8 @@ MyPopUp.Visible = True
 MyPopUp.ZOrder 0
 
         Do While MyPopUp.Visible
-   
-                     mywait basestack1, 1
+   ProcTask2 basestack1
+                '     mywait basestack1, 1
                 Loop
                 ModalId = oldModalId
            Hook Callback.hWnd, Nothing
@@ -4522,4 +4523,9 @@ End Property
 Sub GetFocus()
 On Error Resume Next
 Callback.Controls(CtrlName).SetFocus
+End Sub
+Sub ReColor()
+WrapAll
+mdoc.WrapAgainColor
+ManualInform
 End Sub

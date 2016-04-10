@@ -1225,7 +1225,8 @@ blockKeyboard = True
 MyDoEvents
 blockKeyboard = False
  On Error Resume Next
-mywait basestack1, 10
+ ProcTask2 basestack1
+''mywait basestack1, 10
 
 If Not NoColor Then SimpleHtmlData pp2
  SetTextData 13, pp1
@@ -2449,7 +2450,7 @@ Case Is >= "A"
     IsLabelOnly = rr& + Extra&
    
 End Function
-Function MaybeIsSymbol(A$, c$, Optional tail$ = "", Optional remove As Boolean = False) As Boolean
+Function MaybeIsSymbol(A$, c$, Optional tail$ = "", Optional Remove As Boolean = False) As Boolean
 Dim i As Long, ok As Boolean
 If A$ = "" Then Exit Function
 i = 1
@@ -2461,15 +2462,15 @@ ok = InStr(c$, Mid$(A$, i, 1)) > 0
 If tail$ <> "" And ok Then
 ok = Mid$(A$, i + 1, Len(tail$)) Like tail$
 End If
-If remove Then If ok Then A$ = Mid$(A$, i + 1 + Len(tail$))
+If Remove Then If ok Then A$ = Mid$(A$, i + 1 + Len(tail$))
 MaybeIsSymbol = ok
 End Function
-Function MaybeIsSymbolNoSpace(A$, c$, Optional remove As Boolean = False) As Boolean
+Function MaybeIsSymbolNoSpace(A$, c$, Optional Remove As Boolean = False) As Boolean
 Dim ok As Boolean
 
 If A$ = "" Then Exit Function
 ok = InStr(c$, Left$(A$, 1))
-If remove And ok Then A$ = Mid$(A$, 2)
+If Remove And ok Then A$ = Mid$(A$, 2)
 MaybeIsSymbolNoSpace = ok
 End Function
 Private Sub mDoc_Lastline()
@@ -2484,11 +2485,11 @@ Else
  glistN.BreakLine data, datanext
 End If
 End Sub
-Private Sub FillBack(thathDC As Long, There As RECT, bgcolor As Long)
+Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
 ' create brush
 Dim my_brush As Long
 my_brush = CreateSolidBrush(bgcolor)
-FillRect thathDC, There, my_brush
+FillRect thathDC, there, my_brush
 DeleteObject my_brush
 End Sub
  Private Sub PrintItem1(mHdc As Long, c As String, r As RECT, Optional way As Long = DT_NOPREFIX Or DT_NOCLIP)
@@ -3234,8 +3235,8 @@ On Error Resume Next
 
     
 
-Function colorline(ParamArray AA() As Variant) As Variant()
-colorline = AA()
+Function colorline(ParamArray aa() As Variant) As Variant()
+colorline = aa()
 End Function
 
 

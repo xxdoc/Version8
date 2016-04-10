@@ -198,8 +198,8 @@ jumphere:
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
              
                 Do While ModalId <> 0
-   
-                     mywait basestack1, 1
+                    ProcTask2 basestack1
+                    ' mywait basestack1, 1
                 Loop
                  ModalId = oldmoldid
            End If

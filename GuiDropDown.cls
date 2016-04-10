@@ -72,7 +72,8 @@ End Sub
  Set glistN = Pad.Controls(1)
  End If
  With Pad
-.gList2.HeadLine = ""
+ .Controls(0).Visible = 0
+ .gList2.HeadLine = ""
 .gList2.HeadLine = ""
 .gList2.HeadlineHeight = .gList2.HeightPixels
 End With
@@ -722,6 +723,7 @@ ff1.bold = .CtrlFontBold
 
 End With
 Set Textbox.glistN.Font = ff1
+Textbox.Retired
 With glistN
 .SingleLineSlide = True
 .NoPanLeft = True
@@ -847,6 +849,7 @@ End Property
 Public Property Let MenuStyle(ByVal vNewValue As Variant)
 mMenuStyle = vNewValue
 If mMenuStyle Then
+glistN.BorderStyle = 1
 Textbox.vartext = ""
 End If
 End Property

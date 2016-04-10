@@ -212,7 +212,7 @@ If Not LoadFile.Visible Then
     LoadFile.Visible = True
     MyDoEvents
     End If
-Hook3 LoadFile.hwnd, Nothing
+Hook3 LoadFile.hWnd, Nothing
 WaitDialog bstack
 
 Set LastGlist3 = Nothing
@@ -224,10 +224,14 @@ Public Function SaveAsDialog(bstack As basetask, Thisform As Object, LastName As
 If inUse Then SaveAsDialog = False: Exit Function
 inUse = True
 DialogPreview = False
+FileExist = False
+NewFolder = False
 FolderOnly = False
 SaveDialog = True
 UserFileName = LastName
-ReturnFile = ExtractPath(LastName)
+'ReturnFile = ExtractPath(LastName)
+ReturnFile = LastName
+If ReturnFile <> "" Then If ExtractPath(LastName) = "" Then ReturnFile = mcd + LastName
 FileTypesShow = TypeList
 ''If TopDir <> "" Then TopFolder = TopDir
 If TopDir = "" Then
@@ -243,7 +247,7 @@ ReturnFile = ""
 Else
 TopFolder = TopDir
 End If
-If ReturnFile = "" Then ReturnFile = TopDir + LastName
+If ReturnFile = "" Then ReturnFile = TopDir + ExtractName(LastName)
 If thattitle <> "" Then
 SaveFileCaption = thattitle
 If InStr(Settings, ",expand") = 0 Then
@@ -266,10 +270,14 @@ inUse = False
 End Function
 Public Function GetFile(bstack As basetask, thistitle As String, thisfolder As String, onetype As String) As String
 Dim thatform As Object
+If TypeOf bstack.Owner Is GuiM2000 Then
+Set thatform = bstack.Owner
+Else
 If Form1.Visible Then
 Set thatform = Form1
 Else
 Set thatform = Nothing
+End If
 End If
     If OpenDialog(bstack, thatform, thisfolder, "", thistitle, onetype, False, False) Then
     GetFile = ReturnFile

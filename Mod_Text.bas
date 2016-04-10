@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 208
+Global Const Revision = 209
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -13921,13 +13921,12 @@ startwithgroup:
                  End If
  
             If bstack.IamThread Then k1 = uintnew(timeGetTime + REFRESHRATE)
-If p > uintnew(timeGetTime) Then
-            ''  If TaskMaster.Processing Then TaskMaster.TimerTick Else Sleep 1
+                If p > uintnew(timeGetTime) Then
+
 
              ProcTask2 bstack
                    While p > uintnew(timeGetTime)
          ProcTask2 bstack
-                  ''  If TaskMaster.Processing Then TaskMaster.TimerTick Else Sleep 1
                     Wend
                     End If
                    p = sx + uintnew(timeGetTime)
@@ -20052,7 +20051,9 @@ loaddoc:
                 If Typename(var(i)) = doc Then
 
                 x1 = 2
+                On Error Resume Next
                 var(i).ReadUnicodeOrANSI ss$, DUM, x1
+                If Err.Number > 0 Then Err.Clear: Exit Function
                  var(i).ListLoadedType = x1
                  Exit Function
                 Else
@@ -20981,10 +20982,14 @@ par = False
 If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then par = p <> 0
 If FastSymbol(rest$, ",") Then f = IsExp(bstack, rest$, p) Else p = 0
  DUM = p <> 0
+If TypeOf bstack.Owner Is GuiM2000 Then
+Set photo = bstack.Owner
+Else
  If Form1.Visible Then
 Set photo = Form1
 Else
 Set photo = Nothing
+End If
 End If
 Dim aaa() As String
 If InStr(w$, "|") > 0 Then
@@ -21062,10 +21067,14 @@ If frm$ <> "" Then If Not isdir(frm$) Then NoSuchFolder rest$: Exit Function
 If FastSymbol(rest$, ",") Then If IsStrExp(bstack, rest$, pa$) Then ss$ = pa$
 If FastSymbol(rest$, ",") Then If Not IsStrExp(bstack, rest$, w$) Then MissNumExpr:  Exit Function
 par = False
- If Form1.Visible Then
-Set photo = Form1
+If TypeOf bstack.Owner Is GuiM2000 Then
+Set photo = bstack.Owner
 Else
-Set photo = Nothing
+         If Form1.Visible Then
+        Set photo = Form1
+        Else
+        Set photo = Nothing
+        End If
 End If
 If InStr(w$, "|") > 0 Then
 If InStr(w$, "(*.") > 0 Then
@@ -23674,11 +23683,14 @@ it = i
 If i > 16 Then it = -it
 If i > 0 And i < 16 Then i = QBColor(i)
 
-
-If Form1.Visible Then
-Set photo = Form1
+If TypeOf bstack.Owner Is GuiM2000 Then
+Set photo = bstack.Owner
 Else
-Set photo = Nothing
+    If Form1.Visible Then
+    Set photo = Form1
+    Else
+    Set photo = Nothing
+    End If
 End If
 DialogSetupLang lang
 If OpenColor(bstack, photo, i) Then
@@ -23715,10 +23727,14 @@ par = True ' p <> 0
 ' DUM = p <> 0 NOT USED FOR SAVE FILE
 DUM = False
 olamazi
+If TypeOf bstack.Owner Is GuiM2000 Then
+Set photo = bstack.Owner
+Else
 If Form1.Visible Then
 Set photo = Form1
 Else
 Set photo = Nothing
+End If
 End If
 ' change for file type
 If InStr(w$, "|") > 0 Then w$ = ""  ' NOT COMBATIBLE..CHANGE TO ALL FILES
