@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 207
+Global Const Revision = 208
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -10996,10 +10996,19 @@ itisarrayorfunction:
             ElseIf GetSub(q1$, w1&) Then
                 GoTo contStrFun
             Else
+            If bstackstr.UseGroupname <> "" Then
+            If InStr(q1$, bstackstr.UseGroupname) = 1 Then
+            
+            q1$ = bstackstr.UseGroupname + ChrW(&HFFBF) + Mid$(q1$, Len(bstackstr.UseGroupname) + 1)
+            If GetSub(q1$, w1&) Then GoTo contStrFun
+            End If
+            End If
+
+            
                 GoTo skiperrorStr
             End If
             End If
-    
+
     
         If GetSub(q1$, w1&) Then
 contStrFun:
@@ -17214,7 +17223,12 @@ Else
 flag = IsLabelSymbolNew(rest$, "топийа", "LOCAL", lang)
 If IsLabelSymbolNew(rest$, "сумаятгсг", "FUNCTION", lang) Then f = 3
 reenter1:
+
 i = Abs(IsLabel(basestack, rest$, what$))
+If i = 0 Then
+If Not IsStrExp(basestack, rest$, what$) Then MissPar: Exit Function
+i = Abs(IsLabel(basestack, (what$), what$))
+End If
 If f > 0 And i < 5 Then i = i + 4: what$ = what$ & "("
 If i = 1 Then
     If FastSymbol(rest$, ",") Then
