@@ -1183,7 +1183,7 @@ glistN_MarkDelete False
 KeyCode = 0
 End If
 End If
-If KeyCode <> 0 Or shift <> 0 Then gListN_KeyDown1 KeyCode, shift
+If KeyCode <> 0 Or shift <> 0 Then PressKey_A KeyCode, shift
 End Sub
 
 Private Sub glistN_KeyDownAfter(KeyCode As Integer, shift As Integer)
@@ -1582,6 +1582,12 @@ Private Sub glistN_MarkDestroy()
 If Not ClickInsideMarkedText Then
 BlockStartPara = BlockEndPara
 BlockStartPos = BlockEndPos
+  If mIndex >= 0 Then
+   Callback.Callback mesCtrlName + ".MarkNo(" + Str(mIndex) + ")"
+   Else
+      Callback.Callback mesCtrlName + ".MarkNo(" + ")"
+      End If
+
 Else
 glistN.MarkNext = 1
 ' we have to raise event now
@@ -1593,6 +1599,11 @@ Private Sub glistN_MarkDestroyAny()
 BlockStartPara = BlockEndPara
 BlockStartPos = BlockEndPos
 glistN.MarkNext = 0
+  If mIndex >= 0 Then
+   Callback.Callback mesCtrlName + ".MarkNo(" + Str(mIndex) + ")"
+   Else
+      Callback.Callback mesCtrlName + ".MarkNo(" + ")"
+      End If
 End Sub
 
 Private Sub glistN_MarkIn()
@@ -3899,7 +3910,14 @@ Public Property Get LineHeight() As Variant
 ''
 LineHeight = glistN.HeightTwips / glistN.lines
 End Property
-Private Sub gListN_KeyDown1(KeyCode As Integer, shift As Integer)
+Public Sub PressKey(KeyCode As Integer, shift As Integer)
+Dim b As Boolean
+  b = enabled
+    PressKey_A KeyCode, shift
+enabled = b
+  
+End Sub
+Private Sub PressKey_A(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
 Dim aa$, A$, JJ As Long, ii As Long
 
@@ -3908,9 +3926,6 @@ KeyCode = 0
 Exit Sub
 End If
 noentrance = True
-'Form1mn1Enabled = SelLength > 1
-'Form1mn2Enabled = Form1mn1Enabled
-'Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
 Select Case KeyCode
 Case vbKeyReturn
 nochange = True

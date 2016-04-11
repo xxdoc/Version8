@@ -29,6 +29,7 @@ Public CtrlName As String
 Private mesCtrlName As String
 Dim mIndex As Long, mStayOpen As Boolean, mMenuStyle As Boolean, mMenuWidth As Long
 Dim Callback As GuiM2000
+
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
 End Property
@@ -152,6 +153,8 @@ Textbox.Prompt = A$ + " " + ChrW(&H25BC) & " "
 Textbox.glistN.ShowMe
 End Property
 
+
+
 Private Sub glistN_MenuChecked(item As Long)
 '
   If mIndex >= 0 Then
@@ -226,11 +229,13 @@ If KeyCode = vbKeyLeft Or KeyCode = vbKeyRight Then
 If Textbox.glistN.EditFlag Then
 Iam = True
 glistN.BypassLeaveonChoose = True
+
 Textbox.SetFocus
 Else
 KeyCode = 9
 Iam = False
 glistN.BypassLeaveonChoose = True
+
 Textbox.SetFocus
 Pad.Visible = False
 End If
@@ -238,6 +243,7 @@ ElseIf KeyCode = 9 Then
 KeyCode = 0
 Iam = False
 glistN.BypassLeaveonChoose = True
+
 Textbox.SetFocus
 Pad.Visible = False
 End If
@@ -262,6 +268,7 @@ End If
    Else
       Callback.Callback mesCtrlName + ".DblClick(" + Str(item) + ")"
       End If
+      
    Textbox.SetFocus
 End If
 End Sub
@@ -301,15 +308,55 @@ If glistN.PanPos <> 0 Then glistN.PanPos = 0
       End If
 End Sub
 
+Private Sub Textbox_DeployMenu()
+Textbox.SetFocus
+ShowMenu
+End Sub
+
 Private Sub textbox_KeyDown(KeyCode As Integer, shift As Integer)
 Dim b$
-Dim gl As Long
+Dim gl As Long, x As Long, X1 As gList, xx As Boolean
 Iam = True
-If KeyCode = vbKeyDown Or (KeyCode = vbKeyReturn And UseOnlyTheList) Then
+If KeyCode = vbKeyRight And Len(MenuGroup) <> 0 Then
+Set X1 = Textbox.glistN
+With Callback
+For x = 1 To .Controls.Count - 1
+    
+    If xx Then
+        If .Controls(x).enabled Then
+            If .Controls(x).MenuGroup = X1.MenuGroup Then .Controls(x).ShowMenu: Exit For
+        End If
+    Else
+        If .Controls(x) = X1 Then xx = True
+    End If
+Next x
+End With
+Set X1 = Nothing
+ElseIf KeyCode = vbKeyLeft And Len(MenuGroup) <> 0 Then
+Set X1 = Textbox.glistN
+With Callback
+For x = .Controls.Count - 1 To 1 Step -1
+    
+    If xx Then
+        If .Controls(x).enabled Then
+            If .Controls(x).MenuGroup = X1.MenuGroup Then .Controls(x).ShowMenu: Exit For
+        End If
+    Else
+        If .Controls(x) = X1 Then xx = True
+    End If
+Next x
+End With
+Set X1 = Nothing
+ElseIf KeyCode = vbKeyDown Or (KeyCode = vbKeyReturn And UseOnlyTheList) Then
 Iam = False
 If Pad.Visible Then If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Exit Sub
 
     KeyCode = 0
+ If mIndex >= 0 Then
+   Callback.Callback mesCtrlName + ".OpenMenu(" + Str(mIndex) + "," + Str(-1) + ")"
+   Else
+      Callback.Callback mesCtrlName + ".OpenMenu(" + Str(-1) + ")"
+      End If
     gl = glistN.listcount
      If gl = 0 Then Exit Sub
      If mMenuStyle Then
@@ -337,7 +384,7 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
     Textbox.glistN.ShowPan
     glistN.LeaveonChoose = True
    ' glistN.SetFocus
-  If AutoComplete Then
+ If AutoComplete Then
   glistN.moveto Text
   If glistN.ListIndex < 0 Then
   glistN.ListIndex = 0
@@ -347,20 +394,21 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
   End If
   Else
         If glistN.LastSelected >= 0 Then
-        glistN.ListIndex = glistN.LastSelected
+        glistN.ListIndex = glistN.LastSelected - 1
+    ElseIf mMenuStyle Then
+    glistN.ListindexPrivateUseFirstFree 0
     Else
     glistN.moveto Text
         If glistN.ListIndex < 0 Then
   glistN.ListIndex = 0
   Else
-  glistN.ShowPan ' glistN.ListIndex + 1
-  
+glistN.ShowPan
+ 
   End If
+  
     End If
-
-
-
 End If
+
     If mMenuWidth <> 0 Then
     Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
     Else
@@ -424,7 +472,6 @@ If Pad.Visible Then
 glistN.enabled = False
 glistN.BypassLeaveonChoose = False
 End If
-Dim dummy As Long
 End Sub
 Private Sub glistN_Selected2(item As Long)
 If glistN.ListSep(item) Then Exit Sub
@@ -447,6 +494,7 @@ Textbox.SetFocus
    Else
       Callback.Callback mesCtrlName + ".DblClick(" + Str(item) + ")"
       End If
+       
 Else 'If item < -1 Then
 'glistN.Visible = False
 Pad.Visible = False
@@ -469,6 +517,12 @@ Iam = False
 
 
 If (Button And 1) = 1 And Not Pad.Visible Then
+
+ If mIndex >= 0 Then
+   Callback.Callback mesCtrlName + ".OpenMenu(" + Str(mIndex) + "," + Str(-1) + ")"
+   Else
+      Callback.Callback mesCtrlName + ".OpenMenu(" + Str(-1) + ")"
+      End If
 gl = glistN.listcount
 If gl = 0 Then Exit Sub
 
@@ -511,6 +565,8 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
   Else
         If glistN.LastSelected >= 0 Then
              glistN.ListIndex = glistN.LastSelected
+    ElseIf mMenuStyle Then
+    glistN.ListindexPrivateUseFirstFree 0
     Else
             glistN.moveto Text
                 If glistN.ListIndex < 0 Then
@@ -521,6 +577,7 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
                 End If
     End If
     End If
+
     If mMenuWidth <> 0 Then
     Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
     Else
@@ -608,6 +665,7 @@ If rhs = Textbox.Locked Then Exit Property
 If rhs Then
 If Not Textbox.Locked Then
 glistN.BypassLeaveonChoose = True
+
 Textbox.SetFocus
 glistN.BypassLeaveonChoose = False
 End If
@@ -866,6 +924,7 @@ On Error Resume Next
 Iam = False
 Pad.Visible = False
 glistN.Clear
+
 Textbox.SetFocus
 End Sub
 Public Property Let Mark(item)
@@ -896,3 +955,24 @@ glistN.MenuItem item, checked, radiobutton, firstate, CStr(IdD)
 End If
 glistN.menuEnabled(CLng(item - 1)) = enabledthis
 End Sub
+
+
+Public Property Get MenuGroup() As Variant
+MenuGroup = Textbox.glistN.MenuGroup
+End Property
+
+Public Property Let MenuGroup(ByVal rhs As Variant)
+Textbox.glistN.MenuGroup = rhs
+End Property
+
+Public Property Get BorderStyle() As Variant
+Bordestyle = glistN.BorderStyle
+End Property
+
+Public Property Let BorderStyle(ByVal vNewValue As Variant)
+glistN.BorderStyle = vNewValue
+End Property
+Public Sub ShowMenu()
+If mMenuStyle Then textbox_KeyDown vbKeyDown, 0
+End Sub
+

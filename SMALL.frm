@@ -70,10 +70,10 @@ InternalLeadingSpace = (tm.tmInternalLeading = 0) Or Not (tm.tmInternalLeading >
 End With
 End Function
 'Private onlyone As Boolean
-Public Function ask(bstack As basetask, a$) As Double
+Public Function ask(bstack As basetask, A$) As Double
 If ASKINUSE Then Exit Function
 DialogSetupLang DialogLang
-AskText$ = a$
+AskText$ = A$
 ask = NeoASK(bstack)
 
 End Function
@@ -108,9 +108,9 @@ On Error Resume Next
 ''SleepWait3 10
 Sleep 1
 If Form1.Visible Then
-Form1.refresh
+Form1.Refresh
 ElseIf form5iamloaded Then
-Form5.refresh
+Form5.Refresh
 Else
 MyDoEvents
 End If
@@ -125,7 +125,7 @@ End If
     
   If bstack.ThreadsNumber = 0 Then
     On Error Resume Next
-    If Not (bstack.toback Or bstack.toprinter) Then If bstack.Owner.Visible Then bstack.Owner.refresh
+    If Not (bstack.toback Or bstack.toprinter) Then If bstack.Owner.Visible Then bstack.Owner.Refresh
     End If
     If Not NeoMsgBox.Visible Then
     NeoMsgBox.Visible = True
@@ -134,16 +134,18 @@ End If
     Dim mycode As Variant
 mycode = Rnd * 12312314
 
-For Each x In Forms
-If x.Visible And x.name = "GuiM2000" Then
+For Each X In Forms
+If X.Visible And X.name = "GuiM2000" Then
 
-If Not x.Enabled = False Then
-x.Modal = mycode
-x.Enabled = False
+If Not X.enabled = False Then
+X.Modal = mycode
+X.enabled = False
 End If
 End If
-Next x
-
+Next X
+If INFOONLY Then
+NeoMsgBox.command1(0).SetFocus
+End If
 Do
 
         mywait bstack, 5
@@ -158,11 +160,11 @@ NOEXECUTION = False
 Wend
 BLOCKkey = False
 AskTitle$ = ""
-For Each x In Forms
-If x.Visible And x.name = "GuiM2000" Then
-x.TestModal mycode
+For Each X In Forms
+If X.Visible And X.name = "GuiM2000" Then
+X.TestModal mycode
 End If
-Next x
+Next X
 If INFOONLY Then
 NeoASK = 1
 Else
@@ -195,7 +197,7 @@ If bstack.Process Is Nothing Then
 If PP = 0 Then Exit Sub
 Else
 
-Err.clear
+Err.Clear
 p = bstack.Process.Done
 If Err.Number = 0 Then
 e = True
@@ -211,7 +213,7 @@ Do
 
 
 If TaskMaster.Processing And Not bstack.TaskMain Then
-        If Not bstack.toprinter Then bstack.Owner.refresh
+        If Not bstack.toprinter Then bstack.Owner.Refresh
         TaskMaster.TimerTick
        ' SleepWait 1
        MyDoEvents
@@ -269,7 +271,7 @@ Form1.IEUP ("")
 Cancel = True
 Exit Sub
 End If
-Timer1.Enabled = False
+Timer1.enabled = False
 NOEXECUTION = True
 ExTarget = True
 INK$ = Chr(27)
@@ -300,16 +302,16 @@ Private Sub Form_Resize()
  
  End If
 'Debug.Print "RESIZE ME"
- Timer1.Enabled = True
+ Timer1.enabled = True
 End Sub
 
 Private Sub Timer1_Timer()
 ' On Error Resume Next
-If DIALOGSHOW Or ASKINUSE Then
-Timer1.Enabled = False
+If DIALOGSHOW Or ASKINUSE Or ModalId <> 0 Then
+Timer1.enabled = False
 Exit Sub
 End If
-Timer1.Enabled = False
+Timer1.enabled = False
 Timer1.Interval = 20
 If Not hideme Then
 If Not Form1.Visible Then
@@ -328,11 +330,11 @@ If Not trace Then reopen2 = False
 If vH_title$ = "" Then reopen4 = False
 If reopen4 Then Form4.Show , Form1: Form4.Visible = True
 If reopen2 Then Form2.Show , Form1: Form2.Visible = True
-   For Each x In Forms
-       If Typename$(x) = "GuiM2000" Then
-       If x.Visible Then
-       x.Visible = False
-       x.Show , Form1
+   For Each X In Forms
+       If Typename$(X) = "GuiM2000" Then
+       If X.Visible Then
+       X.Visible = False
+       X.Show , Form1
        End If
        End If
        Next

@@ -109,11 +109,11 @@ Private Declare Function HideCaret Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
+Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal X1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
 
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function Ellipse Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function Ellipse Lib "gdi32" (ByVal hDC As Long, ByVal X1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Const PS_NULL = 5
@@ -227,6 +227,7 @@ Event MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
 Event SpinnerValue(ThatValue As Long)
 Event RegisterGlist(this As gList)
 Event UnregisterGlist()
+Event DeployMenu()
 Private state As Boolean
 Private secreset As Boolean
 Private scrollme As Long
@@ -324,6 +325,7 @@ Dim doubleclick As Long
 Dim mlx As Long, mly As Long
 Public SkipForm As Boolean
 Public dropkey As Boolean
+Public MenuGroup As String
 Public Function GetLastKeyPressed() As Long
 Dim Message As Msg
 If mynum$ <> "" Then
@@ -2501,7 +2503,7 @@ CalcAndShowBar
 
 'End If
 End Sub
-Public Sub additem(a$)
+Public Sub additem(A$)
 Dim i As Long
 
 If itemcount = Buffer Then
@@ -2510,7 +2512,7 @@ ReDim Preserve mlist(0 To Buffer)
 End If
 itemcount = itemcount + 1
 With mlist(itemcount - 1)
-.Content = a$
+.Content = A$
 .line = False
 .selected = False
 End With
@@ -2518,7 +2520,7 @@ Timer1.enabled = False
 Timer1.Interval = 100
 Timer1.enabled = True
 End Sub
-Public Sub additemAtListIndex(a$)
+Public Sub additemAtListIndex(A$)
 Dim i As Long
 If itemcount = Buffer Then
 Buffer = Buffer * 2
@@ -2529,7 +2531,7 @@ For i = itemcount - 1 To ListIndex + 1 Step -1
 mlist(i) = mlist(i - 1)
 Next i
 With mlist(i)
-.Content = a$
+.Content = A$
 .line = False
 .selected = False
 End With
@@ -2551,7 +2553,7 @@ Timer1.enabled = False
 Timer1.Interval = 100
 Timer1.enabled = True
 End Sub
-Public Sub additemFast(a$)
+Public Sub additemFast(A$)
 Dim i As Long
 If itemcount = Buffer Then
 Buffer = Buffer * 2
@@ -2559,7 +2561,7 @@ ReDim Preserve mlist(0 To Buffer)
 End If
 itemcount = itemcount + 1
 With mlist(itemcount - 1)
-.Content = a$
+.Content = A$
 .line = False
 .selected = False
 End With
@@ -3298,16 +3300,16 @@ Timer1.enabled = True
 LastVScroll = Value
 End If
 End Sub
-Public Function UserControlTextWidthPixels(a$) As Long
+Public Function UserControlTextWidthPixels(A$) As Long
 Dim nr As RECT
-If Len(a$) > 0 Then
-CalcRect UserControl.hDC, a$, nr
+If Len(A$) > 0 Then
+CalcRect UserControl.hDC, A$, nr
 UserControlTextWidthPixels = nr.Right
 End If
 End Function
-Public Function UserControlTextWidth(a$) As Long
+Public Function UserControlTextWidth(A$) As Long
 Dim nr As RECT
-CalcRect UserControl.hDC, a$, nr
+CalcRect UserControl.hDC, A$, nr
 UserControlTextWidth = nr.Right * scrTwips
 End Function
 Private Function UserControlTextHeight() As Long
@@ -3391,14 +3393,14 @@ Else
 
 End Sub
 
-Public Function SpellUnicode(a$)
+Public Function SpellUnicode(A$)
 ' use spellunicode to get numbers
 ' and make a ListenUnicode...with numbers for input text
 Dim b$, i As Long
-For i = 1 To Len(a$) - 1
-b$ = b$ & CStr(AscW(Mid$(a$, i, 1))) & ","
+For i = 1 To Len(A$) - 1
+b$ = b$ & CStr(AscW(Mid$(A$, i, 1))) & ","
 Next i
-SpellUnicode = b$ & CStr(AscW(Right$(a$, 1)))
+SpellUnicode = b$ & CStr(AscW(Right$(A$, 1)))
 End Function
 Public Function ListenUnicode(ParamArray aa() As Variant) As String
 Dim all$, i As Long
@@ -4127,7 +4129,7 @@ DeleteObject my_brush
 End Sub
 Private Sub myMark(thathDC As Long, radius As Long, x As Long, y As Long, item As Long, Optional reverse As Boolean = False) ' circle
 '
-Dim x1 As Long, y1 As Long, x2 As Long, y2 As Long
+Dim X1 As Long, y1 As Long, x2 As Long, y2 As Long
 Dim th As RECT
 th.Left = x - radius
 th.top = y - radius
@@ -4355,7 +4357,18 @@ Else
 SELECTEDITEM = 0
 End If
 End Property
+Public Sub ListindexPrivateUseFirstFree(item As Long)
+Dim x As Long
+If item < listcount Then
 
+For x = item To listcount - 1
+If Not mlist(x).line Then SELECTEDITEM = x + 1: Exit For
+Next x
+If item = listcount Then SELECTEDITEM = 0
+Else
+SELECTEDITEM = 0
+End If
+End Sub
 
 Private Property Get SELECTEDITEM() As Long
 SELECTEDITEM = Mselecteditem
@@ -4382,11 +4395,11 @@ scrollme = rhs
 End Property
 
 Public Sub Refresh()
-Dim a As Long
+Dim A As Long
 Shape Shape1
 Shape Shape2
 Shape Shape3
-a = GdiFlush()
+A = GdiFlush()
 'If Not OverrideShow Then
 UserControl.Refresh
 End Sub
@@ -4425,7 +4438,7 @@ Else
 mSelstart = rhs
 End If
 End Property
-Private Sub ShowMyCaretInTwips(x1 As Long, y1 As Long)
+Private Sub ShowMyCaretInTwips(X1 As Long, y1 As Long)
 
 If hWnd <> 0 Then
  With UserControl
@@ -4435,7 +4448,7 @@ If hWnd <> 0 Then
  End If
 ' we can set caret pos if we don't have the focus
 
-SetCaretPos .ScaleX(x1, 1, 3), .ScaleY(y1, 1, 3)
+SetCaretPos .ScaleX(X1, 1, 3), .ScaleY(y1, 1, 3)
 ShowCaret (hWnd)
 
 
@@ -4456,22 +4469,22 @@ mEditFlag = rhs
 If Not rhs Then If hWnd <> 0 Then DestroyCaret: caretCreated = False
 End Property
 Public Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long, Optional ByVal offsetx As Long = 0)
-Dim a As RECT
-CopyFromLParamToRect a, thatRect
-a.Bottom = a.Bottom - 1
-a.Left = a.Left + offsetx
-FillBack thathDC, a, thatbgcolor
+Dim A As RECT
+CopyFromLParamToRect A, thatRect
+A.Bottom = A.Bottom - 1
+A.Left = A.Left + offsetx
+FillBack thathDC, A, thatbgcolor
 End Sub
 Public Sub WriteThere(thatRect As Long, aa$, ByVal offsetx As Long, ByVal offsety As Long, thiscolor As Long)
-Dim a As RECT, fg As Long
-CopyFromLParamToRect a, thatRect
-If a.Left > Width Then Exit Sub
-a.Right = WidthPixels
-a.Left = a.Left + offsetx
-a.top = a.top + offsety
+Dim A As RECT, fg As Long
+CopyFromLParamToRect A, thatRect
+If A.Left > Width Then Exit Sub
+A.Right = WidthPixels
+A.Left = A.Left + offsetx
+A.top = A.top + offsety
 fg = ForeColor
 ForeColor = thiscolor
-    DrawText UserControl.hDC, StrPtr(aa$), -1, a, DT_NOPREFIX Or DT_NOCLIP
+    DrawText UserControl.hDC, StrPtr(aa$), -1, A, DT_NOPREFIX Or DT_NOCLIP
     ForeColor = fg
 End Sub
 Public Property Get FontBold() As Boolean
@@ -4664,30 +4677,30 @@ Function GetKeY(ascii As Integer) As String
 End Function
 
 Public Function LineTopOffsetPixels()
-Dim nr As RECT, a$
-a$ = "fg"
-CalcRect1 UserControl.hDC, a$, nr
+Dim nr As RECT, A$
+A$ = "fg"
+CalcRect1 UserControl.hDC, A$, nr
 LineTopOffsetPixels = (mytPixels - nr.Bottom) / 2
 End Function
 
 
-Private Sub Shape(a As Myshape, Optional Left As Long = -1, Optional top As Long = -1, Optional Width As Long = -1, Optional Height As Long = -1)
-If Left <> -1 Then a.Left = Left
-If top <> -1 Then a.top = top
-If Width <> -1 Then a.Width = Width
-If Height <> -1 Then a.Height = Height
+Private Sub Shape(A As Myshape, Optional Left As Long = -1, Optional top As Long = -1, Optional Width As Long = -1, Optional Height As Long = -1)
+If Left <> -1 Then A.Left = Left
+If top <> -1 Then A.top = top
+If Width <> -1 Then A.Width = Width
+If Height <> -1 Then A.Height = Height
 Dim th As RECT, my_brush As Long, br2 As Long
-If a.Visible Then
+If A.Visible Then
 With th
-.top = a.top / scrTwips
-.Left = a.Left / scrTwips
-.Bottom = .top + a.Height / scrTwips
-.Right = .Left + a.Width / scrTwips
+.top = A.top / scrTwips
+.Left = A.Left / scrTwips
+.Bottom = .top + A.Height / scrTwips
+.Right = .Left + A.Width / scrTwips
 End With
 
  br2 = CreateSolidBrush(BarHatchColor)
    
-   If a.hatchType = 1 Then
+   If A.hatchType = 1 Then
 
     SetBkColor UserControl.hDC, BarColor
  my_brush = CreateHatchBrush(BarHatch, BarHatchColor)
@@ -4755,4 +4768,7 @@ hRgn = CreateRoundRectRgn(0, 0, WidthPixels, HeightPixels, 25 * factor, 25 * fac
 SetWindowRgn Me.hWnd, hRgn, t
 DeleteObject hRgn
 End If
+End Sub
+Public Sub ShowMenu()
+    RaiseEvent DeployMenu
 End Sub

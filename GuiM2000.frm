@@ -45,22 +45,14 @@ Begin VB.Form GuiM2000
       TabStop         =   0   'False
       Top             =   0
       Width           =   9180
-      _ExtentX        =   16193
-      _ExtentY        =   873
-      Max             =   1
-      Vertical        =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   14.25
-         Charset         =   161
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Backcolor       =   3881787
-      ForeColor       =   16777215
-      CapColor        =   16777215
+      _extentx        =   16193
+      _extenty        =   873
+      max             =   1
+      vertical        =   -1  'True
+      font            =   "GuiM2000.frx":000C
+      backcolor       =   3881787
+      forecolor       =   16777215
+      capcolor        =   16777215
    End
 End
 Attribute VB_Name = "GuiM2000"

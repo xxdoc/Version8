@@ -23,6 +23,7 @@ Event GotFocus()
 Event KeyPress(KeyAscii As Integer)
 Event MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
 Event SpinnerValue(ThisValue As Long)
+Event DeployMenu()
 Private mprompt As String
 Private mkind As String
 Public SkipProcAtExitFocus As Boolean
@@ -147,6 +148,14 @@ mprompt = rhs
 glistN.PromptLineIdent = Len(rhs)
 Text = rhs
 End Property
+
+
+Private Sub glistN_DeployMenu()
+'
+RaiseEvent DeployMenu
+End Sub
+
+
 Private Sub glistN_RegisterGlist(this As gList)
 If Not glistN.Spinner Then this.NoWheel = True
 On Error Resume Next
