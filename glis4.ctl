@@ -109,11 +109,11 @@ Private Declare Function HideCaret Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal X1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
+Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
 
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function Ellipse Lib "gdi32" (ByVal hDC As Long, ByVal X1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function Ellipse Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Const PS_NULL = 5
@@ -470,12 +470,25 @@ ShowMe
 End Property
 Public Property Get Text() As String
 Attribute Text.VB_UserMemId = 0
-Dim i As Long
+Dim i As Long, pad$
+Text = Space$(500)
 RaiseEvent PureListOn
-For i = 0 To listcount - 2
-Text = Text + List(i) + vbCrLf
+
+Dim thiscur, l As Long
+Text = Space$(5)
+thiscur = 1
+
+For i = 0 To listcount - 1
+pad$ = List(i) + vbCrLf
+l = Len(pad)
+If Len(Text) < thiscur + l Then Text = Text + Space$((thiscur + l) + 100)
+Mid$(Text, thiscur, l) = pad$
+thiscur = thiscur + l
 Next i
-Text = Text + List(i)
+Text = Left$(Text, thiscur - 1)
+
+
+
 RaiseEvent PureListOff
 End Property
 Public Sub ScrollTo(ThatTopItem As Long, Optional this As Long = -2)
@@ -4129,7 +4142,7 @@ DeleteObject my_brush
 End Sub
 Private Sub myMark(thathDC As Long, radius As Long, x As Long, y As Long, item As Long, Optional reverse As Boolean = False) ' circle
 '
-Dim X1 As Long, y1 As Long, x2 As Long, y2 As Long
+Dim x1 As Long, y1 As Long, x2 As Long, y2 As Long
 Dim th As RECT
 th.Left = x - radius
 th.top = y - radius
@@ -4438,7 +4451,7 @@ Else
 mSelstart = rhs
 End If
 End Property
-Private Sub ShowMyCaretInTwips(X1 As Long, y1 As Long)
+Private Sub ShowMyCaretInTwips(x1 As Long, y1 As Long)
 
 If hWnd <> 0 Then
  With UserControl
@@ -4448,7 +4461,7 @@ If hWnd <> 0 Then
  End If
 ' we can set caret pos if we don't have the focus
 
-SetCaretPos .ScaleX(X1, 1, 3), .ScaleY(y1, 1, 3)
+SetCaretPos .ScaleX(x1, 1, 3), .ScaleY(y1, 1, 3)
 ShowCaret (hWnd)
 
 

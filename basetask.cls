@@ -17,7 +17,7 @@ Option Explicit
 Public addlen As Long
 Public nokillvars As Boolean
 Public IFCTRL As Boolean, jump As Boolean
-Public vars As Long, vname As Long
+Public Vars As Long, vname As Long
 Public LastComm$
 Public LastExecute As Long
 Public LastOnce As Boolean
@@ -50,7 +50,7 @@ Public StaticCollection As Collection
 Private topdotlevel As Long
 Public reflimit As Long
 Public IndexSub As Long
-Public LastObj As Object
+Public lastobj As Object
 Public FuncObj As Object
 Public FuncValue As Variant
 Public LastValue As Variant
@@ -66,7 +66,7 @@ Public Sub SetVar(ByVal name$, var As Variant)
     On Error Resume Next
     StaticCollection.Add var, name$
     If Err.Number > 0 Then
-    StaticCollection.remove name$
+    StaticCollection.Remove name$
     StaticCollection.Add var, name$
     End If
    
@@ -75,7 +75,7 @@ End Sub
 Function AlterVar(ByVal name$, p As Double, ss$, inttype As Boolean) As Boolean
 Dim var As Variant
   var = StaticCollection(name$)
-    StaticCollection.remove name$
+    StaticCollection.Remove name$
             Select Case ss$
             Case "!!"
             var = -1 - (var <> 0)
@@ -156,16 +156,16 @@ Public Function ExistVar(ByVal name$) As Boolean
     ExistVar = True
 End Function
 Public Sub ReadVar(ByVal name$, var As Variant)
-    Dim i As Long, VV As Variant
+    Dim i As Long, vv As Variant
     On Error Resume Next
     i = VarType(StaticCollection(name$))
     If Err.Number Then var = Empty: Exit Sub
     ''Debug.Print NAME$, OriginalName, OriginalCode, HERE$, mGroupName
     If i = vbObject Then
             Set var = StaticCollection(name$)
-            StaticCollection.remove name$  '' we do a remove
-            Set VV = Nothing
-            StaticCollection.Add VV, name$
+            StaticCollection.Remove name$  '' we do a remove
+            Set vv = Nothing
+            StaticCollection.Add vv, name$
             ' objects are popped
     Else
             var = StaticCollection(name$)
@@ -180,7 +180,7 @@ If dotcollection.Count - n < 0 Then
 Set dotcollection = New Collection
 Else
 For i = dotcollection.Count To dotcollection.Count - n + 1 Step -1
-dotcollection.remove dotcollection.Count
+dotcollection.Remove dotcollection.Count
 Next i
 End If
 End Sub
@@ -257,7 +257,7 @@ End Function
 Public Function GetDot(a$, st&) As Boolean
 On Error Resume Next
 Dim i&
-Err.clear
+Err.Clear
 If dotcollection.Count = 0 Then a$ = Mid$(a$, 2): Exit Function
 Do While Mid$(a$, st&, 1) = " "
 st& = st& + 1
@@ -359,7 +359,7 @@ Set Owner = myOwner
 End If
 
 On Error Resume Next
-Err.clear
+Err.Clear
 If Not Owner Is Nothing Then
 mitalic = Owner.Font.Italic
 mBold = Owner.Font.bold
@@ -368,7 +368,7 @@ myRun = True
 Else
 myRun = False
 End If
-Err.clear
+Err.Clear
 End Property
 Public Property Get IamThread() As Boolean
 IamThread = mprocessOk
@@ -424,21 +424,21 @@ On Error Resume Next
 ' this is mandatory
 If TaskMaster Is Nothing Then Exit Function
 If TaskMaster.ThrowOne(Threadid) Then ThrowOne = True
-If Err.Number > 0 Then Err.clear: Exit Function
+If Err.Number > 0 Then Err.Clear: Exit Function
 ' maybe the task isn't on our list - because we send message from other thread!
 Set aa = threadsnames(CStr(Threadid))
 If Err.Number = 0 Then
-threadsnames.remove CStr(Threadid)
+threadsnames.Remove CStr(Threadid)
 aa.thread.Dispose tmAllTasks
 ThrowOne = True
 Dim bb As basetask
 Set aa.thread = Nothing
 Else
-Err.clear
+Err.Clear
 ThrowOne = Me.Parent.ThrowOne(Threadid)
 
 End If
-Err.clear
+Err.Clear
 'If Me.IamChild Then Me.Parent.ThrowOne Threadid
 Set aa = Nothing
 End Function
@@ -505,6 +505,9 @@ Private Sub Class_Initialize()
 Set parentSoros = New mStiva ' maybe this will change
 Set dotcollection = New Collection
 Set StaticCollection = New Collection
+Set Owner = Nothing
+Set lastobj = Nothing
+Set FuncObj = Nothing
 End Sub
 Public Function IsNumber(r As Double) As Boolean
 If parentSoros.LookNull Then
@@ -591,8 +594,8 @@ End Function
 Private Sub Class_Terminate()
 ' debug.print "basestack terminate"
 Me.ThrowThreads
-If IamChild Then Set MyParent.LastObj = LastObj
-Set LastObj = Nothing
+If IamChild Then Set MyParent.lastobj = lastobj
+Set lastobj = Nothing
 Set myOwner = Nothing
 Set mprocess = Nothing
 Set parentSoros = Nothing
