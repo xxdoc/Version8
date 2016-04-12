@@ -15,9 +15,10 @@ Dim WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
 Dim mCaptext As String
 Public CtrlName As String
-Private mesCtrlName As String
+Private mesCtrlName As String, mlocked As Boolean
 Dim mIndex As Long
 Dim Callback As GuiM2000
+Dim white As Long, dimm1 As Long, dimm2 As Long
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
 End Property
@@ -90,9 +91,9 @@ With glistN
 .CenterText = True
 .VerticalCenterText = True
 .Text = mCaptext
-.BackColor = rgb(200, 120, 60)
+.backcolor = rgb(200, 120, 60)
 Set .Font = ff
-.ForeColor = Callback.Controls(1).ForeColor
+.forecolor = Callback.Controls(1).forecolor
 .dcolor = Callback.Controls(1).dcolor
 
 .enabled = True
@@ -110,16 +111,15 @@ Set glistN = Nothing
 End Sub
 
 Private Sub glistN_CheckGotFocus()
-''Callback.Callback mesCtrlName + ".GotFocus()"
-If mModalId <> ModalId And ModalId <> 0 Then Exit Sub
-glistN.BackColor = rgb(100, 200, 160)
+If mlocked Then Exit Sub
+glistN.backcolor = dimm1
 glistN.ShowMe
 End Sub
 
 Private Sub glistN_CheckLostFocus()
+
 If Me.enabled Then
-''Callback.Callback mesCtrlName + ".LostFocus()"
-glistN.BackColor = rgb(200, 120, 60)
+If Not mlocked Then glistN.backcolor = dimm2
 glistN.PanPos = 0
 glistN.ShowMe
 
@@ -147,7 +147,6 @@ End Sub
 
 Private Sub glistN_Selected2(item As Long)
 If item >= 0 Then
-   '' If (Not mCallback Is Nothing) Then mCallback.Press Index
    If mIndex >= 0 Then
    Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + ")"
    Else
@@ -187,7 +186,21 @@ End Property
 Public Property Let enabled(ByVal rhs As Long)
 glistN.enabled = rhs
 End Property
+Sub ColorsReset()
+glistN.forecolor = rgb(255, 255, 255)
+dimm1 = rgb(100, 200, 160)
+dimm2 = rgb(200, 120, 60)
+End Sub
+Sub Colors(white1, Optional dimm11, Optional dimm21)
 
+glistN.forecolor = mycolor(white1)
+
+If Not IsMissing(dimm11) Then
+dimm1 = dimm11
+If Not IsMissing(dimm21) Then dimm2 = dimm21
+End If
+'Retired
+End Sub
 Public Sub Shutdown()
 On Error Resume Next
 If Not glistN Is Nothing Then
@@ -226,4 +239,18 @@ Sub GetFocus()
 On Error Resume Next
 Callback.Controls(CtrlName).SetFocus
 End Sub
+
+
+Public Property Get Locked() As Variant
+Locked = mlocked
+End Property
+
+Public Property Let Locked(ByVal vNewValue As Variant)
+mlocked = vNewValue
+glistN.dropkey = mlocked
+glistN.TabStop = Not mlocked
+glistN.backcolor = mycolor(dimm1)
+glistN.PanPos = 0
+glistN.ShowMe
+End Property
 

@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 211
+Global Const Revision = 212
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -16536,7 +16536,7 @@ AL$ = AL$ & Stack.StackItemTypeObjectType(i) & " "
 End If
 Loop
 With Form2
-    .gList1.BackColor = &H3B3B3B
+    .gList1.backcolor = &H3B3B3B
         .Label1(2) = .Label1(2)
     
         .testpad.enabled = True
@@ -23015,7 +23015,7 @@ x2 = 0
      
     Else
   
-     RotateDib1 bstack, photo, x2, y2, scr.BackColor
+     RotateDib1 bstack, photo, x2, y2, scr.backcolor
       photo.PaintPicture scr.hDC, CLng(scr.ScaleX(x1, 1, 3)), CLng(scr.ScaleX(y1, 1, 3))
     End If
 End If
@@ -23654,13 +23654,13 @@ ElseIf IsLabelSymbolNew(rest$, "ΚΡΥΨΕ", "HIDE", lang) Then
 If Not form5iamloaded Then
 '
 End If
-Form5.BackColor = &H0 ' ALWAYS BLACK
+Form5.backcolor = &H0 ' ALWAYS BLACK
 Form5.Cls
 SetTrans Form5, CByte(255), mycolor(0), True
 ElseIf IsLabelSymbolNew(rest$, "ΚΑΘΑΡΗ", "CLEAR", lang) Then
 If form5iamloaded Then
 Form5.RestoreSizePos
-Form5.BackColor = &H0 ' ALWAYS BLACK
+Form5.backcolor = &H0 ' ALWAYS BLACK
 Form5.Cls
 
 Set Form5.Picture = LoadPicture("")
@@ -24802,11 +24802,11 @@ prive = GetCode(bstack.Owner)
         LEVCOLMENU = 1
         If FastSymbol(rest$, ",") Then
             If IsExp(bstack, rest$, p) Then
-                   Form1.List1.BackColor = mycolor(p)
+                   Form1.List1.backcolor = mycolor(p)
                    LEVCOLMENU = 2
                            If FastSymbol(rest$, ",") Then
                                 If IsExp(bstack, rest$, p) Then
-                                   Form1.List1.ForeColor = mycolor(p)
+                                   Form1.List1.forecolor = mycolor(p)
                                    LEVCOLMENU = 3
                                    Else
                                    MissNumExpr
@@ -26260,7 +26260,7 @@ If Id& < 100 Then
     If (Id& Mod 10) > 0 Then
     LCTbasket dd, prive, y&, x&
     dd.FontTransparent = True
-    dd.ForeColor = mycolor(prive.mypen)
+    dd.forecolor = mycolor(prive.mypen)
     ' Εδώ πρέπει να δώ σε ποιο basetask θα τυπώνει ο στόχος...
        PlainBaSket dd, prive, Tag$, True, True
     End If
@@ -30180,9 +30180,9 @@ Else
 .gList2.HeadLine = "Control"
 End If
 If TestShowCode And HERE$ <> "" Then
-    Form2.gList3(2).BackColor = &H606060
+    Form2.gList3(2).backcolor = &H606060
 Else
-    Form2.gList3(2).BackColor = &H3B3B3B
+    Form2.gList3(2).backcolor = &H3B3B3B
     End If
 .Label1(0) = ""
 .Label1(1) = ""
@@ -30222,7 +30222,7 @@ Form2.Label1(2) = GetStrUntil(vbCrLf, rest$ & vbCrLf, False)
 
 If TestShowCode And HERE$ <> "" Then
 
-Form2.gList3(2).BackColor = &H606060
+Form2.gList3(2).backcolor = &H606060
 ss$ = GetNextLine((sbf(bstack.OriginalCode).sb))
     If Left$(ss$, 10) = "'11001EDIT" Then
     
@@ -30629,10 +30629,10 @@ If p > 32 Then
         .XGRAPH = 0
         .YGRAPH = 0
         .lastprint = True
-        .Paper = Form1.DIS.BackColor
+        .Paper = Form1.DIS.backcolor
         .mypen = players(0).mypen
         End With
-        scr1.BackColor = Form1.DIS.BackColor
+        scr1.backcolor = Form1.DIS.backcolor
         scr1.CurrentX = 0
         scr1.CurrentY = 0
      End If
@@ -30647,10 +30647,10 @@ If f = 0 Then
     .currow = 0
     .mysplit = 0
     .osplit = 0
-    .Paper = Form1.DIS.BackColor
+    .Paper = Form1.DIS.backcolor
     .mypen = players(0).mypen
     End With
-    Form1.dSprite(f).BackColor = Form1.DIS.BackColor
+    Form1.dSprite(f).backcolor = Form1.DIS.backcolor
 End If
 
 p = f
@@ -30757,7 +30757,7 @@ End If
 If FastSymbol(rest$, ";") And scr.name = "DIS" Then
 adjustlinespace = False
     Form1.Move 0, 0, ScrX(), ScrY()
-    Form1.BackColor = players(-1).Paper
+    Form1.backcolor = players(-1).Paper
     
 Sleep 1
 End If
@@ -30836,7 +30836,7 @@ End If
 
 ElseIf FastSymbol(rest$, ";") And scr.name = "DIS" Then
 Form1.Move 0, 0, ScrX(), ScrY()
-Form1.BackColor = players(-1).Paper
+Form1.backcolor = players(-1).Paper
 Form1.Cls
 
 
@@ -30965,7 +30965,7 @@ s$ = KK.TextParagraph(1)
                 MyForm Form4, Form4.Left, Form4.top, CLng(x * Helplastfactor), CLng(y * Helplastfactor), True, Helplastfactor
         End If
        
-        Form4.Line (0, 0)-(Form4.ScaleWidth - dv15, Form4.ScaleHeight - dv15), Form4.BackColor, BF
+        Form4.Line (0, 0)-(Form4.ScaleWidth - dv15, Form4.ScaleHeight - dv15), Form4.backcolor, BF
         Form4.MoveMe
         If FastSymbol(rest$, ",") Or Not par Then
         If IsStrExp(basestack, rest$, ss$) Then
@@ -31080,7 +31080,7 @@ If basestack.toprinter Then Exit Function
 Dim scr As Object, p As Double
  ProcCls = True
 Set scr = basestack.Owner
-If Not IsExp(basestack, rest$, p) Then p = -scr.BackColor
+If Not IsExp(basestack, rest$, p) Then p = -scr.backcolor
 With players(GetCode(scr))
 .Paper = mycolor(p)
 If Not basestack.toprinter Then
@@ -33033,7 +33033,7 @@ newStart = True
 Set scr = basestack.Owner
 Targets = False
 ReDim q(0) As target
-scr.ForeColor = mycolor(11)
+scr.forecolor = mycolor(11)
 basestack.myBold = False
 basestack.myitalic = False
 pa = 0
@@ -33227,8 +33227,8 @@ W3 = bstack.tolayer
 bstack.toback = True
 Set bstack.Owner = Form1
 If NLtrim(ss$) = "" Then
-If players(-1).Paper <> Form1.BackColor Then
-Form1.BackColor = players(-1).Paper
+If players(-1).Paper <> Form1.backcolor Then
+Form1.backcolor = players(-1).Paper
  End If
 it = 1
 Else
@@ -33296,7 +33296,7 @@ ddd.FontName = .FontName
 ddd.Font.charset = .charset
 ddd.FontSize = .SZ
 End If
-ddd.ForeColor = .mypen
+ddd.forecolor = .mypen
 End With
 End Sub
 Function GetCode(dq As Object) As Long

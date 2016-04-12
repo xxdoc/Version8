@@ -147,7 +147,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   ""
+      Location        =   "http:///"
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -182,7 +182,7 @@ Public WithEvents TEXT1 As TextViewer
 Attribute TEXT1.VB_VarHelpID = -1
 Public EditTextWord As Boolean
 ' by default EditTextWord is false, so we look for identifiers not words
-Private pad$, s$
+Private Pad$, s$
 Private LastDocTitle$, Para1 As Long, PosPara1 As Long, Para2 As Long, PosPara2 As Long, Para3 As Long, PosPara3 As Long
 Public ShadowMarks As Boolean
 Private nochange As Boolean
@@ -261,7 +261,7 @@ End Function
 
 
 
-Private Sub DIS_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, state As Integer)
+Private Sub DIS_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
@@ -273,7 +273,7 @@ Private Sub dSprite_GotFocus(Index As Integer)
 If lockme Then TEXT1.SetFocus: Exit Sub
 End Sub
 
-Private Sub dSprite_OLEDragOver(Index As Integer, data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, state As Integer)
+Private Sub dSprite_OLEDragOver(Index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
@@ -289,7 +289,7 @@ Private Sub Form_GotFocus()
 UseEsc = True
 End Sub
 
-Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
+Private Sub Form_KeyUp(KeyCode As Integer, shift As Integer)
 Dim i As Long
  If List1.LeaveonChoose Then Exit Sub
 clickMe = -1
@@ -297,12 +297,12 @@ i = -1
 If KeyCode = vbKeyV Then
 Exit Sub
 End If
-If Shift <> 4 And mynum$ <> "" Then
+If shift <> 4 And mynum$ <> "" Then
 On Error Resume Next
 If Left$(mynum$, 1) = "0" Then
-i = Val(mynum$)
+i = val(mynum$)
 Else
-i = Val(mynum$)
+i = val(mynum$)
 End If
 mynum$ = ""
 Else
@@ -322,7 +322,7 @@ DestroyCaret
 UseEsc = False
 End Sub
 
-Private Sub Form_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, state As Integer)
+Private Sub Form_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
@@ -330,7 +330,7 @@ TaskMaster.rest
         End If
 End Sub
 
-Private Sub gList1_ChangeListItem(item As Long, content As String)
+Private Sub gList1_ChangeListItem(item As Long, Content As String)
 Dim i As Long
 
 If nochange Then
@@ -390,9 +390,9 @@ MyPopUp.Up
 
 End Sub
 
-Private Sub gList1_KeyDownAfter(KeyCode As Integer, Shift As Integer)
+Private Sub gList1_KeyDownAfter(KeyCode As Integer, shift As Integer)
 If KeyCode = vbKeyTab Then
-If Shift = 2 Then
+If shift = 2 Then
 choosenext
 KeyCode = 0
 End If
@@ -459,26 +459,26 @@ End If
 End If
 End Sub
 
-Private Sub ffhelp(A$)
-If Left$(A$, 1) < "Α" Then
-fHelp basestack1, A$, True
+Private Sub ffhelp(a$)
+If Left$(a$, 1) < "Α" Then
+fHelp basestack1, a$, True
 Else
-fHelp basestack1, A$
+fHelp basestack1, a$
 End If
 End Sub
 
 
 
 Private Sub List1_ListError(code As Long)
-Dim DUMMY As Long
-List1.listindex = -1
+Dim dummy As Long
+List1.ListIndex = -1
 List1.LeaveonChoose = False
 List1.Visible = False
 If List1.Tag <> "" Then
 If QRY Or GFQRY Then
 Else
 
-DUMMY = interpret(basestack1, List1.Tag)
+dummy = interpret(basestack1, List1.Tag)
 Me.KeyPreview = True
 End If
 End If
@@ -502,7 +502,7 @@ If escok Then
 IEUP ""
 While KeyPressed(&H1B)
 MyDoEvents
-refresh
+Refresh
 Wend
 INK$ = ""
 UINK$ = ""
@@ -512,7 +512,7 @@ End Select
 End Sub
 
 Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
-If item = List1.listindex Then
+If item = List1.ListIndex Then
 
 List1.FillThere thisHDC, thisrect, &HFFFFFF, -List1.LeftMarginPixels  ' or black in reverse
 List1.WriteThere thisrect, List1.List(item), List1.PanPos / dv15, List1.addpixels / 2, 0
@@ -524,12 +524,12 @@ End Sub
 
 
 Private Sub List1_PanLeftRight(Direction As Boolean)
-Dim DUMMY As Boolean
+Dim dummy As Boolean
 If List1.Tag <> "" Then
 If QRY Or GFQRY Then
 Else
 
-DUMMY = interpret(basestack1, List1.Tag)
+dummy = interpret(basestack1, List1.Tag)
 Me.KeyPreview = True
 End If
 Else
@@ -540,13 +540,13 @@ End If
 End Sub
 
 Private Sub List1_Selected2(item As Long)
-Dim DUMMY As Boolean
+Dim dummy As Boolean
 
 If List1.Tag <> "" Then
 If QRY Or GFQRY Then
 Else
 
-DUMMY = interpret(basestack1, List1.Tag)
+dummy = interpret(basestack1, List1.Tag)
 Me.KeyPreview = True
 End If
 Else
@@ -575,31 +575,33 @@ End Sub
 Public Sub mscatsub()
 ''
 Dim l As Long, w As Long, s$, TempLcid As Long, OldLcid As Long
-Dim eL As Long, eW As Long, SAFETY As Long, TT$
+Dim el As Long, eW As Long, SAFETY As Long, TT$
 
 w = TEXT1.mdoc.MarkParagraphID
 eW = w
 TEXT1.SelStartSilent = TEXT1.SelStart  'MOVE CHARPOS TO SELSTART
 
-eL = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
+el = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
 s$ = TEXT1.SelText
 OldLcid = TEXT1.mdoc.LCID
 TempLcid = FoundLocaleId(s$)
 If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
 
-l = eL + 1
+l = el + 1
 If EditTextWord Then
 Do
 If TEXT1.mdoc.FindWord(s$, True, w, l) Then
 TT$ = TEXT1.mdoc.TextParagraph(w)
 Mid$(TT$, l, Len(s$)) = s$
 TEXT1.mdoc.ReWritePara w, TT$
+TEXT1.mdoc.WrapAgainBlock w, w
+TEXT1.mdoc.ColorThis (w)
 Else
 w = 1
 l = 0
 SAFETY = SAFETY + 1
 End If
-Loop Until (w = eW And l = eL) Or SAFETY = 2
+Loop Until (w = eW And l = el) Or SAFETY = 2
 
 Else
 Do
@@ -607,16 +609,18 @@ If TEXT1.mdoc.FindIdentifier(s$, True, w, l) Then
 TT$ = TEXT1.mdoc.TextParagraph(w)
 Mid$(TT$, l, Len(s$)) = s$
 TEXT1.mdoc.TextParagraph(w) = TT$
+TEXT1.mdoc.WrapAgainBlock w, w
+TEXT1.mdoc.ColorThis (w)
 Else
 w = 1
 l = 0
 SAFETY = SAFETY + 1
 End If
-Loop Until (w = eW And l = eL) Or SAFETY = 2
+Loop Until (w = eW And l = el) Or SAFETY = 2
 
 End If
 TEXT1.mdoc.LCID = OldLcid
-TEXT1.mdoc.WrapAgainColor
+'TEXT1.mdoc.WrapAgainColor
 TEXT1.mdoc.WrapAgain
 
 TEXT1.Render
@@ -624,20 +628,20 @@ End Sub
 
 Public Sub rthissub()
 Dim l As Long, w As Long, s$, TempLcid As Long, OldLcid As Long
-Dim eL As Long, eW As Long, SAFETY As Long, TT$, w1 As Long, i1 As Long
-Dim neo$, mDoc10 As Document, addthat As Long
+Dim el As Long, eW As Long, SAFETY As Long, TT$, w1 As Long, i1 As Long
+Dim neo$, mDoc10 As Document, addthat As Long, w2 As Long
 w = TEXT1.mdoc.MarkParagraphID
 eW = w
 TEXT1.SelStartSilent = TEXT1.SelStart  'MOVE CHARPOS TO SELSTART
-eL = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
+el = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
 s$ = Trim$(TEXT1.SelText)
 TEXT1.SelStartSilent = TEXT1.SelStart
-eL = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
+el = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
 
 If pagio$ = "GREEK" Then
-neo$ = InputBoxN("Αλλαγή Λέξης", "Συγγραφή Κειμένου", s$)
+neo$ = InputBoxN("Αλλαγή Λέξης (Shift για σταμάτημα)", "Συγγραφή Κειμένου", s$)
 Else
-neo$ = InputBoxN("Replace Word", "Text Editor", s$)
+neo$ = InputBoxN("Replace Word (use Shift for Stop)", "Text Editor", s$)
 End If
 If neo$ = "" Then Exit Sub
 OldLcid = TEXT1.mdoc.LCID
@@ -657,7 +661,7 @@ If Len(neo$) >= Len(s$) Then
     
 End If
 
-i1 = eL
+i1 = el
 l = i1 + addthat
 w1 = w
 If EditTextWord Then
@@ -665,7 +669,8 @@ TEXT1.glistN.dropkey = True
 Do
 If TEXT1.mdoc.FindWord(s$, True, w, l) Then
 If SAFETY And w = w1 Then
-
+If w2 > 0 Then If w2 <> w Then TEXT1.mdoc.WrapAgainBlock w2, w2:  TEXT1.mdoc.ColorThis w2
+w2 = w
 If l = i1 Then
  TEXT1.SelLengthSilent = 0
 TEXT1.mdoc.MarkParagraphID = w
@@ -699,7 +704,7 @@ w = 1
 l = 0
 SAFETY = SAFETY + 1
 End If
-Loop Until SAFETY = 2
+Loop Until SAFETY = 2 Or KeyPressed(16)
 TEXT1.glistN.dropkey = False
 
 Else
@@ -707,6 +712,8 @@ Else
 TEXT1.glistN.dropkey = True
 Do
 If TEXT1.mdoc.FindIdentifier(s$, True, w, l) Then
+If w2 > 0 Then If w2 <> w Then TEXT1.mdoc.WrapAgainBlock w2, w2:  TEXT1.mdoc.ColorThis w2
+w2 = w
 If SAFETY And w = w1 Then
 
 If l = i1 Then
@@ -742,11 +749,13 @@ w = 1
 l = 0
 SAFETY = SAFETY + 1
 End If
-Loop Until SAFETY = 2
+Loop Until SAFETY = 2 Or KeyPressed(16)
 TEXT1.glistN.dropkey = False
 End If
 TEXT1.mdoc.LCID = OldLcid
-TEXT1.mdoc.WrapAgainColor
+If w2 > 0 Then TEXT1.mdoc.WrapAgainBlock w2, w2:  TEXT1.mdoc.ColorThis w2
+
+'TEXT1.mdoc.WrapAgainColor
 TEXT1.Render
 
 End Sub
@@ -829,9 +838,9 @@ Dim dX As Long, dy As Long
 clickMe2 = -1
 End Sub
 
-Private Sub DIS_KeyDown(KeyCode As Integer, Shift As Integer)
+Private Sub DIS_KeyDown(KeyCode As Integer, shift As Integer)
 If KeyCode = vbKeyPause Then
-Form_KeyDown KeyCode, Shift
+Form_KeyDown KeyCode, shift
 End If
 If Not NOEDIT Then
 End If
@@ -848,7 +857,7 @@ End If
 
 End Sub
 
-Private Sub DIS_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub DIS_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = Button
 
@@ -888,7 +897,7 @@ End If
 
 End Sub
 
-Private Sub DIS_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub DIS_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 
 MOUB = Button
@@ -898,7 +907,7 @@ Me.KeyPreview = True
 End If
 End Sub
 
-Private Sub DIS_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub DIS_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
 
 If lockme Then
 If Not NOEDIT Then TEXT1.SetFocus
@@ -912,7 +921,7 @@ End Sub
 
 
 
-Private Sub dSprite_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseDown(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 Dim p As Long, u2 As Long
 If lockme Then Exit Sub
  MOUB = Button
@@ -922,7 +931,7 @@ If lockme Then Exit Sub
 If Not NoAction Then
 NoAction = True
 Dim sel&
-p = Val("0" & dSprite(Index).Tag)
+p = val("0" & dSprite(Index).Tag)
 With players(p)
     u2 = .uMineLineSpace * 2
 
@@ -952,7 +961,7 @@ End If
 
 End Sub
 
-Private Sub dSprite_MouseMove(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseMove(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = Button
 If NOEDIT = True And (exWnd = 0 Or Button) Then
@@ -960,12 +969,12 @@ Me.KeyPreview = True
 End If
 End Sub
 
-Private Sub dSprite_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseUp(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = 0
 End Sub
 
-Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+Private Sub Form_KeyDown(KeyCode As Integer, shift As Integer)
 Dim i As Long
 Form1.Font.charset = GetCharSet(GetCodePage(GetLCIDFromKeyboard))
 
@@ -979,7 +988,7 @@ If KeyCode = 13 And trace Then
 If Not STq Then STbyST = True: KeyCode = 0
 
 End If
-clickMe = HighLow(CLng(Shift), CLng(KeyCode))
+clickMe = HighLow(CLng(shift), CLng(KeyCode))
 If clickMe2 = -2 Then clickMe2 = clickMe
 If clickMe = 27 And escok Then
 NOEXECUTION = True
@@ -1007,7 +1016,7 @@ If noentrance Then
 KeyCode = 0
 Exit Sub
 End If
-If Shift = 4 Then
+If shift = 4 Then
 If KeyCode = 18 Then
 If mynum$ = "" Then mynum$ = "0"
 KeyCode = 0
@@ -1038,7 +1047,7 @@ mynum$ = ""
 
 Select Case KeyCode
 Case vbKeyE, vbKeyD
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
 If QRY Then
 If pagio$ = "GREEK" Then
 INK$ = INK$ & "ΣΥΓΓΡΑΦΗ "
@@ -1048,7 +1057,7 @@ End If
 End If
 End If
 Case vbKeyA
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
 If QRY Then
 If LASTPROG$ <> "" Then
 If pagio$ = "GREEK" Then
@@ -1060,7 +1069,7 @@ End If
 End If
 End If
 Case vbKeyS
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
 If QRY Then
 If pagio$ = "GREEK" Then
 INK$ = "ΣΩΣΕ "
@@ -1070,7 +1079,7 @@ End If
 End If
 End If
 Case vbKeyL
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
 If QRY Then
 If pagio$ = "GREEK" Then
 INK$ = "ΛΙΣΤΑ "
@@ -1080,7 +1089,7 @@ End If
 End If
 End If
 Case vbKeyF
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
 If QRY Then
 If pagio$ = "GREEK" Then
 INK$ = "ΦΟΡΤΩΣΕ "
@@ -1090,7 +1099,7 @@ End If
 End If
 End If
 Case vbKeyP, vbKeyT
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
 If QRY Then
 If pagio$ = "GREEK" Then
 INK$ = "ΤΥΠΩΣΕ "
@@ -1100,7 +1109,7 @@ End If
 End If
 End If
 Case vbKeyM
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
  If QRY Then
  If pagio$ = "GREEK" Then
 INK$ = "ΤΜΗΜΑΤΑ "
@@ -1110,7 +1119,7 @@ End If
  End If
 End If
 Case vbKeyU
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
  If QRY Then
  If pagio$ = "GREEK" Then
 INK$ = "ΡΥΘΜΙΣΕΙΣ " + vbCr
@@ -1120,7 +1129,7 @@ End If
  End If
 End If
 Case vbKeyN
-If ctrl And (Shift And &H2) = 2 Then
+If ctrl And (shift And &H2) = 2 Then
  If QRY Then
  If pagio$ = "GREEK" Then
 INK$ = "ΤΜΗΜΑΤΑ ? " + vbCr
@@ -1130,23 +1139,23 @@ End If
  End If
 End If
 Case vbKeyTab
-    If (Shift And 1) = 1 Then
+    If (shift And 1) = 1 Then
     INK$ = INK$ & Chr$(6)
     KeyCode = 0
-    ElseIf ctrl Or Shift = 2 Then
+    ElseIf ctrl Or shift = 2 Then
     ctrl = False
         choosenext
         KeyCode = 0
         
     End If
 Case vbKeyV
-    If ctrl And (Shift And &H2) = 2 Then
-        pad$ = GetTextData(CF_UNICODETEXT)
+    If ctrl And (shift And &H2) = 2 Then
+        Pad$ = GetTextData(CF_UNICODETEXT)
     
-        If pad$ <> "" Then
+        If Pad$ <> "" Then
           '  For i = 1 To Len(pad$)
               '  If Asc(Mid$(pad$, i, 1)) > 31 Then
-                INK$ = pad$
+                INK$ = Pad$
               '  Exit Sub
              '   End If
            ' Next i
@@ -1156,7 +1165,7 @@ Case vbKeyV
     End If
 
 Case vbKeyC, &HFFFE
-If (ctrl And (Shift And &H2) = 2) Or KeyCode = &HFFFE Then
+If (ctrl And (shift And &H2) = 2) Or KeyCode = &HFFFE Then
 If QRY Then
 INK$ = INK$ & "CLS" & Chr$(13)
 Else
@@ -1238,9 +1247,9 @@ NOEXECUTION = True
 End If
 Case vbKeyF1 To vbKeyF12
 If FKey >= 0 Then FKey = KeyCode - vbKeyF1 + 1
-If Abs(FKey) = 1 And ctrl And (Shift And &H2) = 2 Then
+If Abs(FKey) = 1 And ctrl And (shift And &H2) = 2 Then
 FKey = 0: KeyCode = 0: vHelp
-ElseIf FKey = 1 And (Shift And 1) Then
+ElseIf FKey = 1 And (shift And 1) Then
 FKey = 13
 ElseIf FKey = 4 And ctrl And QRY Then
 interpret DisStack, "END"
@@ -1252,7 +1261,7 @@ ctrl = True
 KeyCode = 0
 Exit Sub
 Case Else
-If ctrl And (Shift And &H2) = 2 And lckfrm = 0 And KeyCode <> 3 And KeyCode <> 16 Then
+If ctrl And (shift And &H2) = 2 And lckfrm = 0 And KeyCode <> 3 And KeyCode <> 16 Then
 If escok Then
 STq = False
 STEXIT = False
@@ -1468,7 +1477,7 @@ End Sub
 
 
 
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = Button
 clickMe2 = -1
@@ -1505,7 +1514,7 @@ End If
 
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 If Button > 0 Then MOUB = Button
 'moux = x
@@ -1516,7 +1525,7 @@ Me.KeyPreview = True
 End If
 End Sub
 
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
  MOUB = 0
 'moux = x
@@ -1542,7 +1551,7 @@ Set DisStack.Owner = DIS
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
-Dim pn As Long, A As New cDIBSection
+Dim pn As Long, a As New cDIBSection
 AutoRedraw = True
 If OneOnly Then Exit Sub
 OneOnly = True
@@ -1579,7 +1588,7 @@ basestack1.Owner.Move 0, 0, ScaleWidth, ScaleHeight
 ''mmy = basestack1.Owner.Height
 
 If NoAction Then Exit Sub
-Dim DUMMY As Boolean, i
+Dim dummy As Boolean, i
 NOEXECUTION = False
 '
 myBreak basestack1
@@ -1636,7 +1645,7 @@ Form2.ComputeNow
   k1 = 0
     QUERY basestack1, ">", qq$, (mybasket.mx * 4), True
       mybasket = players(DisForm)
-If basestack1.Owner.Visible = True Then basestack1.Owner.refresh Else basestack1.Owner.Visible = True
+If basestack1.Owner.Visible = True Then basestack1.Owner.Refresh Else basestack1.Owner.Visible = True
 
     FK$(13) = "ΣΥΓΓΡΑΦΕΑΣ"
     INK$ = ""
@@ -1773,27 +1782,27 @@ If App.UnattendedApp Then End
 End Sub
 
 Private Sub List1_DblClick()
-Dim DUMMY As Boolean
+Dim dummy As Boolean
 List1.Visible = False
 If List1.Tag <> "" Then
 If QRY Or GFQRY Then
 Else
 
-DUMMY = interpret(basestack1, List1.Tag)
+dummy = interpret(basestack1, List1.Tag)
 Me.KeyPreview = True
 End If
 End If
 End Sub
 
 Private Sub List1_KeyPress(KeyAscii As Integer)
-Dim DUMMY As Boolean
+Dim dummy As Boolean
 If KeyAscii = 13 Then
 List1.Visible = False
 If List1.Tag <> "" Then
 If QRY Or GFQRY Then
 Else
 
-DUMMY = interpret(basestack1, List1.Tag)
+dummy = interpret(basestack1, List1.Tag)
 Me.KeyPreview = True
 End If
 End If
@@ -1803,9 +1812,9 @@ End Sub
 
 
 
-Private Sub gList1_KeyDown(KeyCode As Integer, Shift As Integer)
+Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, A$, JJ As Long, ii As Long
+Dim aa$, a$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -1857,7 +1866,7 @@ End If
 'Exit Sub
 If TEXT1.UsedAsTextBox Then
 Select Case KeyCode
-Case Is = vbKeyTab And (Shift Mod 2 = 1), vbKeyUp
+Case Is = vbKeyTab And (shift Mod 2 = 1), vbKeyUp
 result = -1
 Case vbKeyReturn, vbKeyTab, vbKeyDown
 result = 1
@@ -1903,7 +1912,7 @@ Case vbKeyControl
 ctrl = True
 KeyCode = 0
 Case vbKeyF1
-If (Shift And 2) = 2 Then
+If (shift And 2) = 2 Then
 If TEXT1.SelText <> "" Then
 helpmeSub
 Else
@@ -1918,29 +1927,29 @@ End If
 
 KeyCode = 0
 Case vbKeyF2
-If Shift <> 0 Then
+If shift <> 0 Then
 If pagio$ = "GREEK" Then
 s$ = InputBoxN("Αναζήτησε προς τα πάνω:", "Συγγραφή Κειμένου", s$)
 Else
 s$ = InputBoxN("Search to top:", "Text Editor", s$)
 End If
-If s$ <> "" Then Searchup s$, Shift Mod 2 = 1
-Shift = 0
+If s$ <> "" Then Searchup s$, shift Mod 2 = 1
+shift = 0
 ElseIf TEXT1.SelText <> "" Or s$ <> "" Then
 supsub
 End If
 
 KeyCode = 0
 Case vbKeyF3
-If Shift <> 0 Then
+If shift <> 0 Then
 
 If pagio$ = "GREEK" Then
 s$ = InputBoxN("Αναζήτησε προς τα κάτω:", "Συγγραφή Κειμένου", s$)
 Else
 s$ = InputBoxN("Search to down:", "Text Editor", s$)
 End If
-If s$ <> "" Then SearchDown s$, Shift Mod 2 = 1
-Shift = 0
+If s$ <> "" Then SearchDown s$, shift Mod 2 = 1
+shift = 0
 ElseIf TEXT1.SelText <> "" Or s$ <> "" Then
 
 sdnSub
@@ -1985,7 +1994,7 @@ TEXT1.mdoc.WrapAgainColor
 TEXT1.ManualInform
 KeyCode = 0
 Case vbKeyF12
-If Shift <> 0 Then
+If shift <> 0 Then
 mn5sub
 
 Else
@@ -1995,6 +2004,7 @@ KeyCode = 0
 
 Case vbKeyTab
 nochange = True
+If TEXT1.HaveMarkedText Then TEXT1.SelStartSilent = TEXT1.SelStart
 gList1.enabled = False
 JJ = TEXT1.SelStart
 where = JJ
@@ -2013,23 +2023,23 @@ End If
 
 If TEXT1.SelText <> "" Then
 
-    A$ = vbCrLf + TEXT1.SelText & "*"
-    If Shift <> 0 Then  ' βγάλε
-        A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+    a$ = vbCrLf + TEXT1.SelText & "*"
+    If shift <> 0 Then  ' βγάλε
+        a$ = Replace(a$, vbCrLf + Space$(6), vbCrLf)
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
          TEXT1.SelStartSilent = ii
-         TEXT1.SelLengthSilent = Len(A$) - 3
-         TEXT1.mdoc.WrapAgainColor
+         TEXT1.SelLengthSilent = Len(a$) - 3
+         
     Else
-        A$ = Replace(A$, vbCrLf, vbCrLf + Space$(6))
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf, vbCrLf + Space$(6))
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
         TEXT1.SelStartSilent = where + 6
-        TEXT1.SelLengthSilent = Len(A$) - 3 - (where + 6 - ii)
-        TEXT1.mdoc.WrapAgainColor
+        TEXT1.SelLengthSilent = Len(a$) - 3 - (where + 6 - ii)
+       
     End If
   
 Else
-If Shift <> 0 Then
+If shift <> 0 Then
 
     If Mid$(TEXT1.CurrentParagraph, 1, 6) = Space$(6) Then
 
@@ -2047,7 +2057,7 @@ If Shift <> 0 Then
     End If
 End If
 gList1.enabled = True
-TEXT1.mdoc.WrapAgainColor
+TEXT1.ReColorBlock
 TEXT1.Render
 nochange = False
 'gList1_MarkOut
@@ -2177,7 +2187,7 @@ view1.Visible = False
 Sleep 1
 PREPARE bstack, t1
 Sleep 1
-If Form1.Visible Then Form1.refresh
+If Form1.Visible Then Form1.Refresh
 End Sub
 Private Sub PREPARE(basestack As basetask, ByVal Nb As String)
 Dim g As Long, ic As Long
@@ -2287,7 +2297,7 @@ End If
 End Sub
 
 
-Private Function Parameters(A As String, b As String, c As String) As Boolean
+Private Function Parameters(a As String, b As String, c As String) As Boolean
 Dim i, ch As Boolean, vl As Boolean, chs$, all$, many As Long
 b = ""
 c = ""
@@ -2295,11 +2305,11 @@ c = ""
 'parameters = False
 ch = False
 vl = False
-Do While i < Len(A)
+Do While i < Len(a)
 i = i + 1
-Select Case Mid$(A, i, 1)
+Select Case Mid$(a, i, 1)
 Case "%"
-If Mid$(A, i + 1, 1) = "u" Then
+If Mid$(a, i + 1, 1) = "u" Then
 i = i + 1
 'we have four bytes
 many = 6
@@ -2329,7 +2339,7 @@ Exit Do
 End If
 Case Else
 If ch = True Then
-chs$ = chs$ & Mid$(A, i, 1)
+chs$ = chs$ & Mid$(a, i, 1)
 If Len(chs$) = many Then
 If many = 4 Then
 chs$ = Chr(Int(chs$))
@@ -2344,14 +2354,14 @@ b = b + chs$
 End If
 End If
 ElseIf vl = False Then
-b = b + Mid$(A, i, 1)
+b = b + Mid$(a, i, 1)
 Else
-c = c + Mid$(A, i, 1)
+c = c + Mid$(a, i, 1)
 End If
 End Select
 Loop
 If c <> "" Then Parameters = True
-A = Mid$(A, i + 1)
+a = Mid$(a, i + 1)
 End Function
 
 
@@ -2384,12 +2394,12 @@ MYFONT = defFontname
             MYFONT = Form1.FontName
             
             FFONT = MYFONT
-            Err.clear
+            Err.Clear
             DIS.FontName = MYFONT
             DIS.Font.Italic = False
             DIS.FontName = MYFONT
             If Err.Number > 0 Then
-            Err.clear
+            Err.Clear
             MYFONT = defFontname
             End If
             If TEXT1.Font.charset <> 161 Then
@@ -2484,12 +2494,12 @@ Else
        
         End If
 FFONT = MYFONT
-Err.clear
+Err.Clear
 DIS.FontName = MYFONT
 DIS.Font.Italic = False
 DIS.FontName = MYFONT
 If Err.Number > 0 Then
-Err.clear
+Err.Clear
 MYFONT = defFontname
 End If
     cc.ValueKey = "BOLD"
@@ -2604,13 +2614,14 @@ Dim aa$
 aa$ = GetTextData(13)
 If aa$ = "" Then aa$ = Clipboard.GetText(1)
 With TEXT1
-If .ParaSelStart = 2 And .glistN.List(.glistN.listindex) = "" Then
+If .ParaSelStart = 2 And .glistN.List(.glistN.ListIndex) = "" Then
 .SelStart = .SelStart - 1
 End If
 .AddUndo ""
 .SelText = aa$
 .RemoveUndo aa$
-.mdoc.WrapAgainColor
+'.mdoc.WrapAgainColor
+'.ReColorBlock
 End With
 End Sub
 Public Sub mn4sub()
@@ -2639,10 +2650,10 @@ Function GetKeY(ascii As Integer) As String
     Buffer = String$(514, 0)
     Dim r&, k&
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
-      r = CLng(Val("&H" & Right(Hex(r), 4)))
+      r = CLng(val("&H" & Right(Hex(r), 4)))
     Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
     If Ret > 0 Then
-        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(Val("&h" + Left$(Buffer, Ret - 1))))))
+        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(val("&h" + Left$(Buffer, Ret - 1))))))
     Else
         GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, 1033)))
     End If
@@ -2651,9 +2662,9 @@ Public Function GetLCIDFromKeyboard() As Long
     Dim Buffer As String, Ret&, r&
     Buffer = String$(514, 0)
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
-      r = Val("&H" & Right(Hex(r), 4))
+      r = val("&H" & Right(Hex(r), 4))
         Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
-    GetLCIDFromKeyboard = CLng(Val("&h" + Left$(Buffer, Ret - 1)))
+    GetLCIDFromKeyboard = CLng(val("&h" + Left$(Buffer, Ret - 1)))
 End Function
 Sub MarkSoftButton(para As Long, pospara As Long)
 If TEXT1.glistN.lines = 1 Then Exit Sub
