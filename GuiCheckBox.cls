@@ -12,7 +12,6 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' From Tools make changed property as default
-
 Public WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
 Dim check1focus As Boolean
@@ -141,7 +140,6 @@ Set glistN = Nothing
 End Sub
 
 Private Sub glistN_CheckGotFocus()
-
 check1focus = True
 End Sub
 
@@ -175,9 +173,9 @@ If item >= 0 Then
       End If
 End If
 End Sub
-Public Property Get Checked() As Boolean
+Public Property Get checked() As Boolean
 If Not glistN Is Nothing Then
-Checked = glistN.ListSelected(0)
+checked = glistN.ListSelected(0)
 Else
 ' error
 End If
@@ -206,17 +204,17 @@ End Sub
 
 Private Sub glistN_PanLeftRight(Direction As Boolean)
   If mIndex >= 0 Then
-   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(checked) + ")"
    Else
-      Callback.Callback mesCtrlName + ".Click(" + Str(Checked) + ")"
+      Callback.Callback mesCtrlName + ".Click(" + Str(checked) + ")"
       End If
 End Sub
 
 Private Sub glistN_Selected2(item As Long)
   If mIndex >= 0 Then
-   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(Checked) + ")"
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(checked) + ")"
    Else
-      Callback.Callback mesCtrlName + ".Click(" + Str(Checked) + ")"
+      Callback.Callback mesCtrlName + ".Click(" + Str(checked) + ")"
       End If
 End Sub
 Public Property Get top() As Variant
@@ -243,4 +241,6 @@ Sub GetFocus()
 On Error Resume Next
 Callback.Controls(CtrlName).SetFocus
 End Sub
-
+Sub Show()
+glistN.ShowPan
+End Sub

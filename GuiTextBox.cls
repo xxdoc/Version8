@@ -60,6 +60,7 @@ Public CtrlName As String
 Private mesCtrlName As String
 Dim mIndex As Long, mStayOpen As Boolean
 Dim Callback As GuiM2000
+Dim white As Long, black As Long, dimm1 As Long, dimm2 As Long
 Public Property Get GetCallBack() As Form
 Set GetCallBack = Callback
 End Property
@@ -170,8 +171,12 @@ End Property
 
 
 Public Sub SetUp()
+black = 0
+dimm1 = rgb(100, 200, 160)
+dimm2 = rgb(200, 120, 60)
 Dim ff As New StdFont
 With Callback
+white = .Controls(1).ForeColor
 ff.name = .CtrlFontName
 ff.charset = Form1.DIS.Font.charset
 ff.Size = .CtrlFontSize
@@ -187,7 +192,7 @@ If .listcount = 0 Then Text = ""
 If Not .CenterText Then .LeftMarginPixels = 8
 .BackColor = rgb(200, 120, 60)
 Set .Font = ff
-.ForeColor = Callback.Controls(1).ForeColor
+.ForeColor = white
 .dcolor = Callback.Controls(1).dcolor
 .ShowMe
 End With
@@ -247,6 +252,7 @@ End Sub
 
 Private Sub glistN_ChangeSelStart(thisselstart As Long)
 If thisselstart <= Len(mprompt) Then thisselstart = Len(mprompt) + 1
+glistN.ShowPan
 End Sub
 
 Public Property Get ThisKind() As String
@@ -275,13 +281,13 @@ If Not Locked Then
 If glistN.ListIndex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
 ' RaiseEvent GotFocus
 If enabled Then
-glistN.ForeColor = rgb(0, 0, 0)
-glistN.BackColor = rgb(255, 255, 255)
+glistN.ForeColor = black
+glistN.BackColor = white
 glistN.NoCaretShow = False:
 glistN.PanPos = 0
 Else
-glistN.ForeColor = rgb(255, 255, 255)
-glistN.BackColor = rgb(100, 200, 160)
+glistN.ForeColor = white
+glistN.BackColor = dimm1
 glistN.NoCaretShow = True
 End If
 glistN.ShowMe
@@ -290,12 +296,12 @@ End If
 End Sub
 Public Sub Retired()
 If mStayOpen Then
-glistN.ForeColor = rgb(0, 0, 0)
-glistN.BackColor = rgb(255, 255, 255)
+glistN.ForeColor = black
+glistN.BackColor = white
 glistN.NoCaretShow = False
 Else
-glistN.ForeColor = rgb(255, 255, 255)
-glistN.BackColor = rgb(200, 120, 60)
+glistN.ForeColor = white
+glistN.BackColor = dimm2
 glistN.NoCaretShow = True
 End If
  glistN.PanPos = 0: glistN.ShowMe
@@ -310,8 +316,10 @@ If glistN.Visible Then glistN.PanPos = 0: glistN.PrepareToShow
 Exit Sub
 End If
 If Not SkipProcAtExitFocus Then
-glistN.ForeColor = rgb(255, 255, 255)
-glistN.BackColor = rgb(200, 120, 60)
+If glistN.BackStyle <> 1 Then
+glistN.ForeColor = white
+glistN.BackColor = dimm2
+End If
 glistN.NoCaretShow = True: glistN.PanPos = 0: glistN.ShowMe
 Else
 '
@@ -371,7 +379,7 @@ Private Sub glistN_MouseMove(Button As Integer, shift As Integer, x As Single, y
 ' RaiseEvent MouseMove(Button, shift, x, y)
 End Sub
 
-Private Sub glistN_Selected(item As Long)
+Private Sub glistN_selected(item As Long)
 If item >= 0 Then
    '' If (Not mCallback Is Nothing) Then mCallback.Press Index
    If mIndex >= 0 Then
@@ -568,4 +576,29 @@ End Property
 Sub GetFocus()
 On Error Resume Next
 Callback.Controls(CtrlName).SetFocus
+End Sub
+Sub Transparent()
+Dim x  As Long, y As Long
+glistN.ForeColor = black
+glistN.BackStyle = 1
+glistN.GetLeftTop x, y
+glistN.RepaintFromOut Callback.image, x, y
+End Sub
+Sub ColorsReset()
+white = rgb(255, 255, 255)
+black = 0
+dimm1 = rgb(100, 200, 160)
+dimm2 = rgb(200, 120, 60)
+End Sub
+Sub Colors(white1, Optional black1, Optional dimm11, Optional dimm21)
+
+white = mycolor(white1)
+If Not IsMissing(black1) Then
+black = mycolor(black1)
+If Not IsMissing(dimm11) Then
+dimm1 = dimm11
+If Not IsMissing(dimm21) Then dimm2 = dimm21
+End If
+End If
+Retired
 End Sub

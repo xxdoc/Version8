@@ -76,6 +76,10 @@ Set Callback = Nothing
   Set glistN = Nothing
 End Sub
 Public Sub SetUp()
+white = Callback.Controls(1).ForeColor
+black = 0
+dimm1 = rgb(100, 200, 160)
+dimm2 = rgb(200, 120, 60)
 Dim ff As New StdFont
 With Callback
 ff.name = .CtrlFontName
@@ -91,9 +95,9 @@ With glistN
 .CenterText = True
 .VerticalCenterText = True
 .Text = mCaptext
-.backcolor = rgb(200, 120, 60)
+.BackColor = rgb(200, 120, 60)
 Set .Font = ff
-.forecolor = Callback.Controls(1).forecolor
+.ForeColor = Callback.Controls(1).ForeColor
 .dcolor = Callback.Controls(1).dcolor
 
 .enabled = True
@@ -110,16 +114,25 @@ Private Sub Class_Terminate()
 Set glistN = Nothing
 End Sub
 
+Private Sub glistN_BlinkNow(Face As Boolean)
+'
+  If mIndex >= 0 Then
+   Callback.Callback mesCtrlName + ".Blink(" + Str(mIndex) + "," + Str(Face) + ")"
+   Else
+      Callback.Callback mesCtrlName + ".Blink(" + Str(Face) + ")"
+      End If
+End Sub
+
 Private Sub glistN_CheckGotFocus()
 If mlocked Then Exit Sub
-glistN.backcolor = dimm1
+glistN.BackColor = dimm1
 glistN.ShowMe
 End Sub
 
 Private Sub glistN_CheckLostFocus()
 
 If Me.enabled Then
-If Not mlocked Then glistN.backcolor = dimm2
+If Not mlocked Then glistN.BackColor = dimm2
 glistN.PanPos = 0
 glistN.ShowMe
 
@@ -143,6 +156,16 @@ End Sub
 
 Private Sub glistN_RegisterGlist(this As gList)
 this.NoWheel = True
+End Sub
+
+Private Sub glistN_selected(item As Long)
+If mlocked Then
+ If mIndex >= 0 Then
+   Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + ")"
+   Else
+      Callback.Callback mesCtrlName + ".Click()"
+      End If
+End If
 End Sub
 
 Private Sub glistN_Selected2(item As Long)
@@ -187,13 +210,14 @@ Public Property Let enabled(ByVal rhs As Long)
 glistN.enabled = rhs
 End Property
 Sub ColorsReset()
-glistN.forecolor = rgb(255, 255, 255)
+white = rgb(255, 255, 255)
+glistN.ForeColor = rgb(255, 255, 255)
 dimm1 = rgb(100, 200, 160)
 dimm2 = rgb(200, 120, 60)
 End Sub
 Sub Colors(white1, Optional dimm11, Optional dimm21)
 
-glistN.forecolor = mycolor(white1)
+glistN.ForeColor = mycolor(white1)
 
 If Not IsMissing(dimm11) Then
 dimm1 = dimm11
@@ -249,8 +273,19 @@ Public Property Let Locked(ByVal vNewValue As Variant)
 mlocked = vNewValue
 glistN.dropkey = mlocked
 glistN.TabStop = Not mlocked
-glistN.backcolor = mycolor(dimm1)
+glistN.BackColor = mycolor(dimm1)
 glistN.PanPos = 0
 glistN.ShowMe
 End Property
-
+Sub Show()
+glistN.ShowPan
+End Sub
+Public Property Let Blink(ByVal vNewValue As Variant)
+glistN.BlinkTime = vNewValue
+End Property
+Sub Transparent()
+Dim x  As Long, y As Long
+glistN.BackStyle = 1
+glistN.GetLeftTop x, y
+glistN.RepaintFromOut Callback.image, x, y
+End Sub

@@ -135,8 +135,10 @@ If glistN.Visible Then glistN.PanPos = 0: glistN.PrepareToShow
 Exit Sub
 End If
 If Not trans Then
+If glistN.BackStyle <> 1 Then
 glistN.ForeColor = white
 glistN.BackColor = dimm2
+End If
 glistN.PanPos = 0: glistN.PrepareToShow
 End If
 End If
@@ -147,7 +149,7 @@ On Error Resume Next
 glistN.SetFocus
 End Sub
 Public Sub SetUp()
-white = rgb(255, 255, 255)
+white = Callback.Controls(1).ForeColor
 black = 0
 dimm1 = rgb(100, 200, 160)
 dimm2 = rgb(200, 120, 60)
@@ -170,7 +172,7 @@ With glistN
 .BackColor = dimm2
 
 Set .Font = ff
-.ForeColor = Callback.Controls(1).ForeColor
+.ForeColor = white
 .dcolor = Callback.Controls(1).dcolor
 .NoCaretShow = False
 .enabled = True
@@ -302,7 +304,7 @@ Private Sub glistN_ScrollSelected(item As Long, y As Long)
       End If
 End Sub
 
-Private Sub glistN_Selected(item As Long)
+Private Sub glistN_selected(item As Long)
 '
 If glistN.PanPos <> 0 Then glistN.PanPos = 0
    If mIndex >= 0 Then
@@ -429,14 +431,14 @@ glistN.Text = CStr(vNewValue)
 End Property
 Public Sub Sort(Optional SkipChar As Long = 1)
 If glistN.listcount < 2 Then Exit Sub
-Dim doc As Document, m As Long
+Dim doc As Document, M As Long
 Set doc = New Document
 doc.textDocFast = glistN.Text
-m = glistN.ListIndex
+M = glistN.ListIndex
 If SkipChar < 1 Then SkipChar = 1
 doc.SortDoc SkipChar, 1, glistN.listcount
 glistN.Text = doc.textDoc
-If m > 0 Then glistN.ListindexPrivateUse = m
+If M > 0 Then glistN.ListindexPrivateUse = M
 glistN.ShowMe2
 Set doc = Nothing
 End Sub

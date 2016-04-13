@@ -15,8 +15,8 @@ Public WithEvents Textbox As myTextBox
 Attribute Textbox.VB_VarHelpID = -1
 Public WithEvents glistN As gList
 Attribute glistN.VB_VarHelpID = -1
-Public WithEvents pad As Form
-Attribute pad.VB_VarHelpID = -1
+Public WithEvents Pad As Form
+Attribute Pad.VB_VarHelpID = -1
 Private mEnabled As Boolean
 Dim Iam As Boolean
 Public UseOnlyTheList As Boolean
@@ -36,14 +36,14 @@ End Property
  Public Sub Construct(there As Form, name$)
  mIndex = -1
  Set Callback = there
- Set pad = New GuiM2000
+ Set Pad = New GuiM2000
 
  On Error Resume Next
- Set glistN = pad.Controls(1)
+ Set glistN = Pad.Controls(1)
  If Err.Number > 0 Then
- Set glistN = pad.Controls(1)
+ Set glistN = Pad.Controls(1)
  End If
- With pad
+ With Pad
 .gList2.HeadLine = ""
 .gList2.HeadLine = ""
 .gList2.HeadlineHeight = .gList2.HeightPixels
@@ -65,14 +65,14 @@ End Sub
  Public Sub ConstructArray(there As Form, name$, i As Long)
  mIndex = i
  Set Callback = there
- Set pad = New GuiM2000
+ Set Pad = New GuiM2000
 
  On Error Resume Next
- Set glistN = pad.Controls(1)
+ Set glistN = Pad.Controls(1)
  If Err.Number > 0 Then
- Set glistN = pad.Controls(1)
+ Set glistN = Pad.Controls(1)
  End If
- With pad
+ With Pad
  .Controls(0).Visible = 0
  .gList2.HeadLine = ""
 .gList2.HeadLine = ""
@@ -102,19 +102,19 @@ ElseIf IsMissing(h) Then
 Else
 .glistN.MoveTwips CLng(x), CLng(y), CLng(w), CLng(h)
 End If
-pad.Move pad.Left, pad.top, .glistN.widthtwips, .glistN.HeightTwips * 5
+Pad.Move Pad.Left, Pad.top, .glistN.widthtwips, .glistN.HeightTwips * 5
 End With
 glistN.restrictLines = 5
-glistN.MoveTwips 0, 0, pad.Width, pad.Height
+glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
 End Sub
 Public Sub deconstruct()
 If Not glistN Is Nothing Then glistN.Shutdown
 Set glistN = Nothing
-If Not pad Is Nothing Then Unload pad
+If Not Pad Is Nothing Then Unload Pad
 If Not Textbox Is Nothing Then Textbox.Dereference
 Set Textbox = Nothing
 Set Callback = Nothing
-Set pad = Nothing
+Set Pad = Nothing
 End Sub
 Public Sub FontAttr(ThisFontName, Optional ThisMode = -1, Optional ThisBold = True)
 Dim aa As New StdFont
@@ -197,8 +197,8 @@ End Sub
 Private Sub Class_Terminate()
 Set Textbox = Nothing
 Set glistN = Nothing
-If Not pad Is Nothing Then Unload pad
-Set pad = Nothing
+If Not Pad Is Nothing Then Unload Pad
+Set Pad = Nothing
 End Sub
 
 Private Sub glistN_CheckGotFocus()
@@ -217,7 +217,7 @@ If Textbox.SkipProcAtExitFocus Then
 Textbox.Retired
 Textbox.SkipProcAtExitFocus = False
 Else
-pad.Visible = False
+Pad.Visible = False
 End If
 Iam = True
 
@@ -237,7 +237,7 @@ Iam = False
 glistN.BypassLeaveonChoose = True
 
 Textbox.SetFocus
-pad.Visible = False
+Pad.Visible = False
 End If
 ElseIf KeyCode = 9 Then
 KeyCode = 0
@@ -245,7 +245,7 @@ Iam = False
 glistN.BypassLeaveonChoose = True
 
 Textbox.SetFocus
-pad.Visible = False
+Pad.Visible = False
 End If
 End Sub
 
@@ -299,7 +299,7 @@ On Error Resume Next
 glistN.List(CLng(Index)) = CStr(rhs)
 End Property
 
-Private Sub glistN_Selected(item As Long)
+Private Sub glistN_selected(item As Long)
 If glistN.PanPos <> 0 Then glistN.PanPos = 0
    If mIndex >= 0 Then
    Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + "," + Str(item) + ")"
@@ -359,7 +359,7 @@ End With
 Set x1 = Nothing
 ElseIf KeyCode = vbKeyDown Or (KeyCode = vbKeyReturn And UseOnlyTheList) Then
 Iam = False
-If pad.Visible Then If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Exit Sub
+If Pad.Visible Then If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Exit Sub
 
     KeyCode = 0
  If mIndex >= 0 Then
@@ -371,24 +371,24 @@ If pad.Visible Then If glistN.Visible Then glistN.enabled = True: Textbox.SkipPr
      If gl = 0 Then Exit Sub
      If mMenuStyle Then
      If mMenuWidth > 1000 Then
-     pad.Width = mMenuWidth
+     Pad.Width = mMenuWidth
      Else
-     pad.Width = Callback.Controls(CtrlName).Width
+     Pad.Width = Callback.Controls(CtrlName).Width
      End If
      Else
-pad.Width = CLng(Callback.Controls(CtrlName).Width / 1.618 * dv15) \ dv15
+Pad.Width = CLng(Callback.Controls(CtrlName).Width / 1.618 * dv15) \ dv15
 End If
 If Callback.Controls(CtrlName).Height * gl < ScrY() * 2 / 3 Then
 
-pad.Height = Callback.Controls(CtrlName).Height * gl
+Pad.Height = Callback.Controls(CtrlName).Height * gl
 glistN.restrictLines = gl
 
 Else
 glistN.restrictLines = (ScrY() * 2 / 3) \ Callback.Controls(CtrlName).Height
-pad.Height = Callback.Controls(CtrlName).Height * glistN.restrictLines
+Pad.Height = Callback.Controls(CtrlName).Height * glistN.restrictLines
 
 End If
-glistN.MoveTwips 0, 0, pad.Width, pad.Height
+glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
     Textbox.SkipProcAtExitFocus = True
     Textbox.glistN.NoCaretShow = True
     Textbox.glistN.ShowPan
@@ -420,14 +420,14 @@ glistN.ShowPan
 End If
 
     If mMenuWidth <> 0 Then
-    Callback.PopUpPos pad, Left, top + Callback.Controls(CtrlName).Height
+    Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
     Else
-Callback.PopUpPos pad, Left + Callback.Controls(CtrlName).Width - pad.Width, top + Callback.Controls(CtrlName).Height
+Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top + Callback.Controls(CtrlName).Height
 End If
 
 ElseIf KeyCode = vbKeyTab Then
 Textbox.SkipProcAtExitFocus = False
-pad.Visible = False
+Pad.Visible = False
 'glistN.Visible = False
 ElseIf AutoComplete And KeyCode = vbKeyRight And Textbox.SelStart >= Len(Textbox.Text) Then
 b$ = Myleft$(Textbox.glistN.LastLinePart, 1)
@@ -451,20 +451,18 @@ End Function
 
 Private Sub TextBox_KeyPress(KeyAscii As Integer)
 Iam = KeyAscii = 9
-If KeyAscii = 9 Then pad.Visible = False
+If KeyAscii = 9 Then Pad.Visible = False
 End Sub
 
 Private Sub textbox_LostFocus()
-
-
 Textbox.glistN.NoCaretShow = True
 
-
+If Textbox.glistN.BackStyle = 1 Then Textbox.glistN.CenterText = True
 Textbox.glistN.ShowMe
 
 glistN.BypassLeaveonChoose = False
 If Iam Then
-pad.Visible = False
+Pad.Visible = False
 'glistN.Visible = False
 Else
 If Not glistN.enabled Then
@@ -476,8 +474,10 @@ End If
 End Sub
 Private Sub textbox_GotFocus()
  Textbox.glistN.NoCaretShow = Not Textbox.enabled
+ If Textbox.glistN.BackStyle = 1 Then Textbox.glistN.CenterText = False
+ 
  Textbox.glistN.ShowMe
-If pad.Visible Then
+If Pad.Visible Then
 'Iam = False
 glistN.enabled = False
 glistN.BypassLeaveonChoose = False
@@ -507,7 +507,7 @@ Textbox.SetFocus
        
 Else 'If item < -1 Then
 'glistN.Visible = False
-pad.Visible = False
+Pad.Visible = False
 End If
 End Sub
 
@@ -522,11 +522,11 @@ Iam = False
 
  End If
 
- If pad.Visible Then Iam = True: Exit Sub
+ If Pad.Visible Then Iam = True: Exit Sub
 
 
 
-If (Button And 1) = 1 And Not pad.Visible Then
+If (Button And 1) = 1 And Not Pad.Visible Then
 
  If mIndex >= 0 Then
    Callback.Callback mesCtrlName + ".OpenMenu(" + Str(mIndex) + "," + Str(-1) + ")"
@@ -540,25 +540,25 @@ Textbox.glistN.dropkey = True
 If glistN.Visible Then glistN.enabled = True: Textbox.SkipProcAtExitFocus = True: glistN.SetFocus: Textbox.glistN.dropkey = False: Exit Sub
 If mMenuStyle Then
      If mMenuWidth > 1000 Then
-     pad.Width = mMenuWidth
+     Pad.Width = mMenuWidth
      Else
-     pad.Width = Callback.Controls(CtrlName).Width
+     Pad.Width = Callback.Controls(CtrlName).Width
      End If
      Else
-pad.Width = CLng(Callback.Controls(CtrlName).Width / 1.618 * dv15) \ dv15
+Pad.Width = CLng(Callback.Controls(CtrlName).Width / 1.618 * dv15) \ dv15
 End If
 
 If Callback.Controls(CtrlName).Height * gl < ScrY() * 2 / 3 Then
 
-pad.Height = Callback.Controls(CtrlName).Height * gl
+Pad.Height = Callback.Controls(CtrlName).Height * gl
 glistN.restrictLines = gl
 
 Else
 glistN.restrictLines = (ScrY() * 2 / 3) \ Callback.Controls(CtrlName).Height
-pad.Height = Callback.Controls(CtrlName).Height * glistN.restrictLines
+Pad.Height = Callback.Controls(CtrlName).Height * glistN.restrictLines
 
 End If
-glistN.MoveTwips 0, 0, pad.Width, pad.Height
+glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
     Textbox.SkipProcAtExitFocus = True
 '    Textbox.glistN.NoCaretShow = True
   '  Textbox.glistN.ShowPan
@@ -589,15 +589,15 @@ glistN.MoveTwips 0, 0, pad.Width, pad.Height
     End If
 
     If mMenuWidth <> 0 Then
-    Callback.PopUpPos pad, Left, top + Callback.Controls(CtrlName).Height
+    Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
     Else
-Callback.PopUpPos pad, Left + Callback.Controls(CtrlName).Width - pad.Width, top + Callback.Controls(CtrlName).Height
+Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top + Callback.Controls(CtrlName).Height
 End If
 
 
 Button = 0
 Textbox.glistN.dropkey = False
-Iam = Not pad.Visible
+Iam = Not Pad.Visible
 
 End If
 
@@ -801,7 +801,7 @@ With glistN
 .Text = mListText
 .BackColor = dimm2
 
-.MoveTwips 0, 0, pad.Width, pad.Height
+.MoveTwips 0, 0, Pad.Width, Pad.Height
 
 Set .Font = ff
 .ForeColor = Callback.Controls(1).ForeColor
@@ -862,14 +862,14 @@ Callback.Controls(CtrlName).top = rhs
 End Property
 Public Sub Sort(Optional SkipChar As Long = 1)
 If glistN.listcount < 2 Then Exit Sub
-Dim doc As Document, m As Long
+Dim doc As Document, M As Long
 Set doc = New Document
 doc.textDocFast = glistN.Text
-m = glistN.ListIndex
+M = glistN.ListIndex
 If SkipChar < 1 Then SkipChar = 1
 doc.SortDoc SkipChar, 1, glistN.listcount
 glistN.Text = doc.textDoc
-If m > 0 Then glistN.ListindexPrivateUse = m
+If M > 0 Then glistN.ListindexPrivateUse = M
 glistN.ShowMe2
 Set doc = Nothing
 End Sub
@@ -932,7 +932,7 @@ End Property
 Public Sub Clear()
 On Error Resume Next
 Iam = False
-pad.Visible = False
+Pad.Visible = False
 glistN.Clear
 
 Textbox.SetFocus
@@ -985,4 +985,9 @@ End Property
 Public Sub ShowMenu()
 If mMenuStyle Then textbox_KeyDown vbKeyDown, 0
 End Sub
-
+Sub Transparent()
+Dim x  As Long, y As Long
+Textbox.glistN.BackStyle = 1
+Textbox.glistN.GetLeftTop x, y
+Textbox.glistN.RepaintFromOut Callback.image, x, y
+End Sub
