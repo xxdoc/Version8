@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 213
+Global Const Revision = 214
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2652,7 +2652,7 @@ clickMe2 = -1
 
 
 Dim soros As New mStiva
-Dim T As Long
+Dim t As Long
 ReDim q(0) As target
 
 Set basestack1.Sorosref = globalstack
@@ -27429,7 +27429,7 @@ If Form1.Visible Then
     End If
     End If
 End Sub
-Sub mywait(bstack As basetask, PP As Double)
+Sub mywait(bstack As basetask, PP As Double, Optional SLEEPSHORT As Boolean = False)
 Dim p As Boolean, e As Boolean
 On Error Resume Next
 If bstack.Process Is Nothing Then
@@ -27446,6 +27446,7 @@ Exit Sub
 End If
 End If
 End If
+
 PP = PP + CDbl(timeGetTime)
 
 Do
@@ -27460,6 +27461,7 @@ Else
         ' SleepWait 1
         MyDoEvents1 Form1
 End If
+If SLEEPSHORT Then Sleep 1
 If e Then
 p = bstack.Process.Done
 If Err.Number = 0 Then
@@ -27522,6 +27524,7 @@ MyDoEvents
 Loop
 
 End Sub
+
 Function myexit(bstack As basetask) As Boolean
 Static counter As Long
 Dim p As Boolean
@@ -27530,7 +27533,17 @@ On Error Resume Next
 If Not extreme Then
             If escok Then
                         If KeyPressed(&H1B) Then
+                        If ModalId <> 0 Then
+                         ModalId = 0
+                         ShutEnabledGuiM2000
+                         MyDoEvents
+                           While KeyPressed(&H1B)
+                                            MyDoEvents
+                                    Wend
+                        Else
                          NOEXECUTION = True
+                           ShutEnabledGuiM2000 True
+                         MyDoEvents
                                     If AVIRUN Then AVI.GETLOST
                                     NOEXECUTION = True
                                     While KeyPressed(&H1B)
@@ -27538,6 +27551,10 @@ If Not extreme Then
                                     Wend
                                     myexit = True
                                     Exit Function
+                        End If
+                        ElseIf NOEXECUTION Then
+                          ShutEnabledGuiM2000 True
+                         MyDoEvents
                         End If
              End If
 End If
@@ -29056,14 +29073,14 @@ ReDim var2(0 To 0)
 
 ''Exit Sub
 Dim what$, it As Long, items As Long
- If FastSymbol(rest$, ",") Then
+
 ' we have parameters..(by value)
 If FastSymbol(rest$, "(") Then  ' we have "(par1, par2...) as result"
-RealMeth bstack, rest$, var1(), var2(), items, namarg
+        RealMeth bstack, rest$, var1(), var2(), items, namarg
 If Not FastSymbol(rest$, ")", True) Then Exit Sub
-Else
+result = CallByNameFixParamArray(vv, FN$, VbMethod, var1(), var2(), items, retobject, namarg)
+ElseIf FastSymbol(rest$, ",") Then
 RealMeth bstack, rest$, var1(), var2(), items, namarg  ' if we have as result then we get an error...
-End If
  result = CallByNameFixParamArray(vv, FN$, VbMethod, var1(), var2(), items, retobject, namarg)
 Else
  result = CallByNameFixParamArray(vv, FN$, VbMethod, var1(), var2(), 0, retobject, namarg)
@@ -33790,6 +33807,7 @@ Set A = var(i)
 If Not PushParamGeneral(bstack, rest$) Then
 
 CallEvent = False
+Set A = Nothing
 Exit Function
 
 End If
@@ -33830,7 +33848,11 @@ Set bb = Nothing
 HERE$ = ohere$
 End Function
 Public Function CallEventFromGui(gui As Object, A As mEvent, aString$) As Boolean
-Dim tr As Boolean
+Dim tr As Boolean, extr As Boolean, olescok As Boolean
+olescok = escok
+escok = False
+extr = extreme
+extreme = True
 tr = trace
 If Rnd * 100 > 3 Then trace = False
 On Error Resume Next
@@ -33841,7 +33863,7 @@ Dim bstack As basetask
 Set bstack = basestack1
 bstack.IamAnEvent = True
 Dim i As Long
-If A Is Nothing Then Exit Function
+If A Is Nothing Then GoTo conthere1
 i = A.VarIndex
 bstack.soros.DataStr aString$
 If gui.Index >= 0 Then
@@ -33882,14 +33904,21 @@ Set oldbstack = Nothing
 bstack.soros.drop A.Params
 Set bb = Nothing
 HERE$ = ohere$
+conthere1:
+extreme = extr
 If tr Then
 If STq Then trace = tr
 End If
+escok = olescok
 End Function
 Public Function CallEventFromGuiOne(gui As Object, A As mEvent, aString$) As Boolean
-Dim tr As Boolean
+Dim tr As Boolean, extr As Boolean, olescok As Boolean
 CallEventFromGuiOne = True
+olescok = escok
+escok = False
 tr = trace
+extr = extreme
+extreme = True
 If Rnd * 100 > 3 Then trace = False
 Dim n$, f$, F1$, bb As mStiva, uIndex As Long
 Dim bstack As basetask
@@ -33897,7 +33926,7 @@ Set bstack = New basetask
 Set bstack.Owner = Form1.DIS
 bstack.IamAnEvent = True
 Dim i As Long
-If A Is Nothing Then Exit Function
+If A Is Nothing Then GoTo conthere0
 i = A.VarIndex
 uIndex = gui.Index
 If uIndex >= 0 Then
@@ -33941,13 +33970,20 @@ End If
 conthere:
 Set bstack = Nothing
 HERE$ = ohere$
+conthere0:
 If tr Then
 If STq Then trace = tr
 End If
+extreme = extr
+escok = olescok
 End Function
 Public Function CallEventFromGuiNow(gui As Object, A As mEvent, aString$, vrs()) As Boolean
-Dim tr As Boolean
+Dim tr As Boolean, extr As Boolean, olescok As Boolean
+olescok = escok
+escok = False
 CallEventFromGuiNow = True
+extr = extreme
+extreme = True
 tr = trace
 If Rnd * 100 > 3 Then trace = False
 Dim n$, f$, F1$, bb As mStiva, oldbstack As mStiva, nowtotal As Long
@@ -33956,7 +33992,7 @@ Set bstack = New basetask
 Set bstack.Owner = Form1.DIS
 bstack.IamAnEvent = True
 Dim i As Long
-If A Is Nothing Then Exit Function
+If A Is Nothing Then GoTo conthere0
 i = A.VarIndex
 F1$ = gui.ModuleName$
 Set oldbstack = bstack.soros
@@ -34035,14 +34071,16 @@ End If
 conthere:
 
 Set bstack.Sorosref = oldbstack
-'bstack.soros.drop a.Params
+HERE$ = ohere$
+conthere0:
 Set oldbstack = Nothing
 Set bb = Nothing
 
-HERE$ = ohere$
 If tr Then
 If STq Then trace = tr
 End If
+extreme = extr
+escok = olescok
 End Function
 
 Function ExpandGui(bstack As basetask, what$, rest$, ifier As Boolean, lang As Long, oName As String)
@@ -34393,7 +34431,7 @@ ElseIf IsLabelSymbolNew(rest$, "еисацыцг", "TEXTBOX", lang) Then
                 End If
             End If
         End If
- ElseIf IsLabelSymbolNew(rest$, "KEIMENO", "EDITBOX", lang) Then
+ ElseIf IsLabelSymbolNew(rest$, "йеилемо", "EDITBOX", lang) Then
           If IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
             If Not IsExp(bstack, rest$, p) Then
                 BadObjectDecl

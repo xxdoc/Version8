@@ -2050,7 +2050,7 @@ SelStart = Len(List(ListIndex)) + 1
 End If
 RaiseEvent selected(SELECTEDITEM)
 RaiseEvent ChangeSelStart(SelStart)
-If Not marvel Then ExternalCursor SelStart, List(ListIndex)
+'If Not marvel Then ExternalCursor SelStart, List(ListIndex), Me.ForeColor
 dragslow = 1
 End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -4313,14 +4313,14 @@ Public Function Pixels2Twips(pixels As Long) As Long
 Pixels2Twips = pixels * scrTwips
 End Function
 Public Function BreakLine(data As String, datanext As String, Optional thatTwipsPreserveRight As Long = -1, Optional aSpace$ = " ") As Boolean
-Dim i As Long, k As Long, M As Long
+Dim i As Long, k As Long, m As Long
 If thatTwipsPreserveRight = -1 Then
-M = widthtwips
+m = widthtwips
 Else
-M = widthtwips - thatTwipsPreserveRight
+m = widthtwips - thatTwipsPreserveRight
 End If
 ''If aSpace$ <> "" Then m = m - UserControlTextWidth(aSpace$)
-REALCURb data, M, k, i, True
+REALCURb data, m, k, i, True
 datanext = Mid$(data, 1, i)
 data = Mid$(data, i + 1)
 
@@ -4328,21 +4328,21 @@ data = Mid$(data, i + 1)
 If Len(data) > 0 Then
     If Right$(datanext, 1) <> aSpace$ And Left$(data, 1) <> aSpace$ Then
     ' we have a broken word
-    M = InStrRev(datanext, aSpace$)
-    If M > 0 Then
+    m = InStrRev(datanext, aSpace$)
+    If m > 0 Then
     ' we have a space inside datanext
-    If M > 1 Then
-    data = Mid$(datanext, M + 1) + data
-    datanext = Left$(datanext, M)
+    If m > 1 Then
+    data = Mid$(datanext, m + 1) + data
+    datanext = Left$(datanext, m)
     Else
     ' do nothing, we will have nothing for this line if we take the word
     End If
     Else
     ' do nothing it is a big word...
-    M = InStrRev(datanext, "\")
-    If M > 1 Then
-    data = Mid$(datanext, M + 1) + data
-    datanext = Left$(datanext, M)
+    m = InStrRev(datanext, "\")
+    If m > 1 Then
+    data = Mid$(datanext, m + 1) + data
+    datanext = Left$(datanext, m)
     Else
     ' do nothing, we will have nothing for this line if we take the word
     End If
@@ -4510,7 +4510,7 @@ If hWnd <> 0 Then
  End If
 ' we can set caret pos if we don't have the focus
 
-SetCaretPos .ScaleX(x1, 1, 3), .ScaleY(y1, 1, 3)
+SetCaretPos .ScaleX(x1, 1, 3), .ScaleY(y1, 1, 3) + 1
 ShowCaret (hWnd)
 
 
@@ -4568,10 +4568,9 @@ UserControl.Font.charset = rhs
 CalcNewFont
  PropertyChanged "Font"
 End Property
-Public Sub ExternalCursor(ByVal ExtSelStart, that$)
+Public Sub ExternalCursor(ByVal ExtSelStart, that$, Curcolor As Long)
 If HideCaretOnexit Then Exit Sub
  Dim REALX As Long, REALX2 As Long, myt1
- 
  myt1 = myt - scrTwips * 2
 If ExtSelStart <= 0 Then ExtSelStart = 1
                                              DrawStyle = vbNormal
@@ -4583,12 +4582,15 @@ If ExtSelStart <= 0 Then ExtSelStart = 1
                                           ShowMyCaretInTwips REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips + scrTwips
                                     Else
                                     If caretCreated Then caretCreated = False: DestroyCaret
-                                              ' DrawMode = vbInvert
-                                      Line (REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips + scrTwips)-(REALX2 + scrTwips, (SELECTEDITEM - topitem - 1) * myt + myt1 + mHeadlineHeightTwips), 0, BF
-                                             DrawMode = vbCopyPen
+                                              DrawMode = vbCopyPen
+                    ' If marvel Or Not NoCaretShow Then
+
+                    Line (REALX2, (SELECTEDITEM - topitem - 1) * myt + mHeadlineHeightTwips + scrTwips)-(REALX2 + scrTwips, (SELECTEDITEM - topitem - 1) * myt + myt1 + mHeadlineHeightTwips), Curcolor, BF
+                    
+                                            ' DrawMode = vbCopyPen
                                  End If
                                  
-                        
+
                                    If Not NoScroll Then If REALX2 > Width * 0.8 * dragslow Then scrollme = scrollme - Width * 0.2 * dragslow: PrepareToShow 10
                                    If REALX2 - Width * 0.2 * dragslow < 0 Then
                               If Not NoScroll Then
@@ -4824,21 +4826,21 @@ If UserControl.Parent Is Nothing Then Exit Property
 Set Parent = UserControl.Parent
 there:
 End Property
-Public Sub Curve(Optional T As Boolean = False, Optional factor As Single = 1)
+Public Sub Curve(Optional t As Boolean = False, Optional factor As Single = 1)
 Dim hRgn As Long
 If Int(25 * factor) > 2 Then
 hRgn = CreateRoundRectRgn(0, 0, WidthPixels, HeightPixels, 25 * factor, 25 * factor)
-SetWindowRgn Me.hWnd, hRgn, T
+SetWindowRgn Me.hWnd, hRgn, t
 DeleteObject hRgn
 End If
 End Sub
 Public Sub ShowMenu()
     RaiseEvent DeployMenu
 End Sub
-Public Property Let BlinkTime(T As Variant)
+Public Property Let BlinkTime(t As Variant)
 BlinkON = True <> 0
-mBlinkTime = T
-Timer1.Interval = T
+mBlinkTime = t
+Timer1.Interval = t
 Timer1.enabled = True
 End Property
 Sub DestCaret()

@@ -45,14 +45,22 @@ Begin VB.Form GuiM2000
       TabStop         =   0   'False
       Top             =   0
       Width           =   9180
-      _extentx        =   16193
-      _extenty        =   873
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "GuiM2000.frx":000C
-      backcolor       =   3881787
-      forecolor       =   16777215
-      capcolor        =   16777215
+      _ExtentX        =   16193
+      _ExtentY        =   873
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   161
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Backcolor       =   3881787
+      ForeColor       =   16777215
+      CapColor        =   16777215
    End
 End
 Attribute VB_Name = "GuiM2000"
@@ -116,7 +124,6 @@ Set myEvent = aEvent
 End Property
 
 Public Sub Callback(b$)
-
 If ByPassEvent Then
 CallEventFromGuiOne Me, myEvent, b$
 Else
@@ -129,7 +136,7 @@ CallEventFromGuiNow Me, myEvent, b$, VR()
 End Sub
 
 
-Public Sub ShowmeALl()
+Public Sub ShowmeALL()
 Dim w As Object
 If Controls.Count > 0 Then
 For Each w In Controls
@@ -139,7 +146,17 @@ Next w
 End If
 gList2.PrepareToShow
 End Sub
-
+Public Sub RefreshALL()
+Dim w As Object
+If Controls.Count > 0 Then
+For Each w In Controls
+If w.Visible Then
+If TypeOf w Is gList Then w.ShowMe2
+End If
+Next w
+End If
+Refresh
+End Sub
 
 Private Sub Form_Click()
 If gList2.Visible Then gList2.SetFocus
@@ -536,7 +553,7 @@ that.Move x, ScrY() - Height
 Else
 that.Move x, y
 End If
-that.ShowmeALl
+that.ShowmeALL
 If ModalId <> 0 Then PopupOn = True
 
 that.Show , Me

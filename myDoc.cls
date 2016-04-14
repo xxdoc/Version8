@@ -53,9 +53,9 @@ Private p3 As Long
 Dim mlcid As Long
 Private pos() As Long, SLen() As Long, hit() As Long
 Dim Buffer() As Byte, bufOffset As Long, bufsize As Long, SeekBuf As Long
-Function IsLast(ByVal Paranum As Long) As Boolean
+Function IsLast(ByVal ParaNum As Long) As Boolean
 ' for MarkParagraphID
-IsLast = (DocParaNext(Paranum) = 0)
+IsLast = (DocParaNext(ParaNum) = 0)
 End Function
 Function IsEmpty() As Boolean
 If DocParaNext(0) = 0 And DocParaBack(0) = 0 Then IsEmpty = True
@@ -76,60 +76,60 @@ FindNewPara = docpara
 If Not para(docpara).startfrom = 0 Then Stop  ' major error
 End If
 End Function
-Sub InsertDocPara(ByVal Paranum As Long, ByVal Previus As Long, ByVal NextPara As Long)
+Sub InsertDocPara(ByVal ParaNum As Long, ByVal Previus As Long, ByVal NextPara As Long)
 'ok
-    DocParaNext(Paranum) = NextPara
-    DocParaBack(Paranum) = Previus
-    DocParaNext(Previus) = Paranum
-    DocParaBack(NextPara) = Paranum
+    DocParaNext(ParaNum) = NextPara
+    DocParaBack(ParaNum) = Previus
+    DocParaNext(Previus) = ParaNum
+    DocParaBack(NextPara) = ParaNum
 End Sub
-Sub UnlinkDocPara(Paranum As Long)
-   DocParaNext(DocParaBack(Paranum)) = DocParaNext(Paranum)
-    DocParaBack(DocParaNext(Paranum)) = DocParaBack(Paranum)
+Sub UnlinkDocPara(ParaNum As Long)
+   DocParaNext(DocParaBack(ParaNum)) = DocParaNext(ParaNum)
+    DocParaBack(DocParaNext(ParaNum)) = DocParaBack(ParaNum)
     
-    para(Paranum).startfrom = 0
+    para(ParaNum).startfrom = 0
 End Sub
-Sub LinkDocParaAfter(Paranum As Long, thisparanum As Long)
-    DocParaBack(DocParaNext(thisparanum)) = Paranum
-    DocParaNext(Paranum) = DocParaNext(thisparanum)
-    DocParaBack(Paranum) = thisparanum
-    DocParaNext(thisparanum) = Paranum
-    If thisparanum > 0 Then para(Paranum).startfrom = para(thisparanum).startfrom
+Sub LinkDocParaAfter(ParaNum As Long, thisparanum As Long)
+    DocParaBack(DocParaNext(thisparanum)) = ParaNum
+    DocParaNext(ParaNum) = DocParaNext(thisparanum)
+    DocParaBack(ParaNum) = thisparanum
+    DocParaNext(thisparanum) = ParaNum
+    If thisparanum > 0 Then para(ParaNum).startfrom = para(thisparanum).startfrom
 End Sub
 
-Sub RemoveDocParaIndex(Paranum As Long)
-    DocParaNext(DocParaBack(Paranum)) = DocParaNext(Paranum)
-    DocParaBack(DocParaNext(Paranum)) = DocParaBack(Paranum)
-    para(Paranum).lines = 0   ' clear' also can be a flag to show that this is deleted
-    ReDim para(Paranum).Content(1 To 1)
-    ReDim para(Paranum).colordata(1)
-    DocParaNext(Paranum) = delDocPara
-    para(Paranum).startfrom = 0
-    delDocPara = Paranum
+Sub RemoveDocParaIndex(ParaNum As Long)
+    DocParaNext(DocParaBack(ParaNum)) = DocParaNext(ParaNum)
+    DocParaBack(DocParaNext(ParaNum)) = DocParaBack(ParaNum)
+    para(ParaNum).lines = 0   ' clear' also can be a flag to show that this is deleted
+    ReDim para(ParaNum).Content(1 To 1)
+    ReDim para(ParaNum).colordata(1)
+    DocParaNext(ParaNum) = delDocPara
+    para(ParaNum).startfrom = 0
+    delDocPara = ParaNum
 End Sub
-Function InvalidPara(Paranum) As Boolean
-If Paranum < 1 Or Paranum > docpara Then
+Function InvalidPara(ParaNum) As Boolean
+If ParaNum < 1 Or ParaNum > docpara Then
 InvalidPara = True
 Else
-InvalidPara = para(Paranum).lines = 0
+InvalidPara = para(ParaNum).lines = 0
 End If
 End Function
-Sub WritePara(Paranum As Long, ByVal data$)
+Sub WritePara(ParaNum As Long, ByVal data$)
     Dim neodata$, neolines As Long, thatmax As Long, lookthis As Long
     Do
-    neolines = para(Paranum).lines + 1
+    neolines = para(ParaNum).lines + 1
     If neolines = 1 Then
     thatmax = 10
-    ReDim Preserve para(Paranum).Content(1 To thatmax)
-        ReDim para(Paranum).colordata(1)
+    ReDim Preserve para(ParaNum).Content(1 To thatmax)
+        ReDim para(ParaNum).colordata(1)
        '' RaiseEvent ColorDataEvent(Paranum, data$, para(Paranum).ColorData(), LookThis)
           
     End If
-    thatmax = UBound(para(Paranum).Content())
+    thatmax = UBound(para(ParaNum).Content())
     If thatmax < neolines Then
     thatmax = thatmax * 2
-    ReDim Preserve para(Paranum).Content(1 To thatmax)
-    ReDim para(Paranum).colordata(1)
+    ReDim Preserve para(ParaNum).Content(1 To thatmax)
+    ReDim para(ParaNum).colordata(1)
     
     End If
     If False Then
@@ -138,19 +138,24 @@ Sub WritePara(Paranum As Long, ByVal data$)
     
     RaiseEvent BreakLine(data$, neodata$)  ' no method inside this class
     If neodata$ = "" Then neodata$ = data$: data$ = ""
-    para(Paranum).Content(neolines) = neodata$
-    para(Paranum).lines = neolines
+    para(ParaNum).Content(neolines) = neodata$
+    para(ParaNum).lines = neolines
     neodata$ = ""
     Loop Until data$ = ""
 End Sub
-Sub WriteParaOneline(Paranum As Long, ByVal neodata$)
-    ReDim para(Paranum).Content(1 To 1)
-    para(Paranum).Content(1) = neodata$
-    para(Paranum).lines = 1
-    ReDim para(Paranum).colordata(1)
-        para(Paranum).startfrom = 0
+Sub WriteParaOneline(ParaNum As Long, ByVal neodata$)
+    ReDim para(ParaNum).Content(1 To 1)
+    para(ParaNum).Content(1) = neodata$
+    para(ParaNum).lines = 1
+    ReDim para(ParaNum).colordata(1)
+        para(ParaNum).startfrom = 0
         
 End Sub
+Public Sub ResetColor(ParaNum)
+On Error Resume Next
+ReDim para(ParaNum).colordata(2)
+End Sub
+
 Public Sub ColorThis(mNum As Long)
 
 Dim docback As Long, lookthis As Long, data$, oldstart As Long, lenfinal As Long
@@ -263,33 +268,33 @@ If mNum = 0 Then Exit Sub
 End Sub
  
 
-Sub PlaceColorData(Paranum As Long, thatcolordata() As Variant)
-    para(Paranum).colordata = thatcolordata()
+Sub PlaceColorData(ParaNum As Long, thatcolordata() As Variant)
+    para(ParaNum).colordata = thatcolordata()
 End Sub
-Sub ReWritePara(Paranum As Long, ByVal data$, Optional skipcolor As Boolean = False)
+Sub ReWritePara(ParaNum As Long, ByVal data$, Optional skipcolor As Boolean = False)
     Dim neodata$, neolines As Long, thatmax As Long, lookthis As Long
-    If Paranum = 0 Then Exit Sub
-    para(Paranum).lines = 0  ' clear
-    ReDim para(Paranum).Content(1 To 1)
+    If ParaNum = 0 Then Exit Sub
+    para(ParaNum).lines = 0  ' clear
+    ReDim para(ParaNum).Content(1 To 1)
     Do
-    neolines = para(Paranum).lines + 1
+    neolines = para(ParaNum).lines + 1
     If neolines = 1 Then
     thatmax = 10
-    ReDim Preserve para(Paranum).Content(1 To thatmax)
+    ReDim Preserve para(ParaNum).Content(1 To thatmax)
     End If
-    thatmax = UBound(para(Paranum).Content())
+    thatmax = UBound(para(ParaNum).Content())
     If thatmax < neolines Then
     thatmax = thatmax * 2
-    ReDim Preserve para(Paranum).Content(1 To thatmax)
+    ReDim Preserve para(ParaNum).Content(1 To thatmax)
     End If
     RaiseEvent BreakLine(data$, neodata$)  ' no method inside this class
     If neodata$ = "" Then neodata$ = data$: data$ = ""
-    para(Paranum).Content(neolines) = neodata$
-    para(Paranum).lines = neolines
+    para(ParaNum).Content(neolines) = neodata$
+    para(ParaNum).lines = neolines
     neodata$ = ""
     Loop Until data$ = ""
      If Not skipcolor Then
-            ColorThis (Paranum)
+            ColorThis (ParaNum)
         
     End If
 End Sub
@@ -335,34 +340,34 @@ Function AppendParagraphPlusColor(myparagraph$, colordata() As Variant, Optional
     AppendParagraphPlusColor = getAparaNum
 End Function
 
-Function InsertAfterParagraph(Paranum As Long, myparagraph$) As Long
+Function InsertAfterParagraph(ParaNum As Long, myparagraph$) As Long
     Dim getAparaNum As Long
     getAparaNum = FindNewPara
     WritePara getAparaNum, myparagraph$
-    If Paranum = -1 Then
+    If ParaNum = -1 Then
      If docpara = 0 Then
         InsertDocPara getAparaNum, 0, 0  ' back is 0 and next is zero.
     Else
         InsertDocPara getAparaNum, DocParaBack(0), 0  ' DocParaBack(0) link to last
     End If
     Else
-    InsertDocPara getAparaNum, Paranum, DocParaNext(Paranum)
+    InsertDocPara getAparaNum, ParaNum, DocParaNext(ParaNum)
     End If
     InsertAfterParagraph = getAparaNum
 End Function
-Function InsertAfterParagraphPlusColor(Paranum As Long, myparagraph$, colordata() As Variant, Optional offset As Long = 0) As Long
+Function InsertAfterParagraphPlusColor(ParaNum As Long, myparagraph$, colordata() As Variant, Optional offset As Long = 0) As Long
     Dim getAparaNum As Long, mcolor() As Variant
     mcolor() = colordata()
     getAparaNum = FindNewPara
     WritePara getAparaNum, myparagraph$
-    If Paranum = -1 Then
+    If ParaNum = -1 Then
      If docpara = 0 Then
         InsertDocPara getAparaNum, 0, 0  ' back is 0 and next is zero.
     Else
         InsertDocPara getAparaNum, DocParaBack(0), 0  ' DocParaBack(0) link to last
     End If
     Else
-    InsertDocPara getAparaNum, Paranum, DocParaNext(Paranum)
+    InsertDocPara getAparaNum, ParaNum, DocParaNext(ParaNum)
     End If
         If offset > 0 Then mcolor() = Relocate(mcolor(), offset)
     para(getAparaNum).colordata() = mcolor()
@@ -370,32 +375,32 @@ Function InsertAfterParagraphPlusColor(Paranum As Long, myparagraph$, colordata(
     InsertAfterParagraphPlusColor = getAparaNum
 End Function
 
-Function InsertAfterParagraph2(Paranum As Long, myparagraph$) As Long
+Function InsertAfterParagraph2(ParaNum As Long, myparagraph$) As Long
     Dim getAparaNum As Long
     getAparaNum = FindNewPara
 
     WritePara getAparaNum, myparagraph$
 
-    If Paranum = -1 Then
+    If ParaNum = -1 Then
      If docpara = 0 Then
         InsertDocPara getAparaNum, 0, 0  ' back is 0 and next is zero.
     Else
         InsertDocPara getAparaNum, DocParaBack(0), 0  ' DocParaBack(0) link to last
     End If
     Else
-    InsertDocPara getAparaNum, Paranum, DocParaNext(Paranum)
+    InsertDocPara getAparaNum, ParaNum, DocParaNext(ParaNum)
     End If
     
-  If Paranum > 0 Then para(DocParaNext(Paranum)).startfrom = para(Paranum).startfrom
+  If ParaNum > 0 Then para(DocParaNext(ParaNum)).startfrom = para(ParaNum).startfrom
   'ColorThis DocParaNext(Paranum)
     InsertAfterParagraph2 = getAparaNum
 End Function
  
-Function InsertBeforeParagraph(Paranum As Long, myparagraph$) As Long
+Function InsertBeforeParagraph(ParaNum As Long, myparagraph$) As Long
     Dim getAparaNum As Long
     getAparaNum = FindNewPara
     WritePara getAparaNum, myparagraph$
-       InsertDocPara getAparaNum, DocParaBack(Paranum), Paranum
+       InsertDocPara getAparaNum, DocParaBack(ParaNum), ParaNum
     InsertBeforeParagraph = getAparaNum
 End Function
 Property Let textDocFast(norawtext As String)
@@ -647,12 +652,12 @@ mycur = DocParaNext(mycur)
 Loop
 textDoc1LINE = Left$(textDoc1LINE, thiscur - 1)
 End Property
-Private Sub InsertLine(b$, Paranum, cur)
+Private Sub InsertLine(b$, ParaNum, cur)
     Dim mlines As Long, neodata As String
-    If Paranum = 0 Then Exit Sub
+    If ParaNum = 0 Then Exit Sub
     If cur <> 0 Then neodata = vbCrLf Else cur = 1
-    For mlines = 1 To para(Paranum).lines
-        neodata = neodata + para(Paranum).Content(mlines)
+    For mlines = 1 To para(ParaNum).lines
+        neodata = neodata + para(ParaNum).Content(mlines)
     Next mlines
 
 If Len(b$) < cur + Len(neodata) Then b$ = b$ + Space$(Len(b$) * 2)
@@ -660,7 +665,7 @@ Mid$(b$, cur, Len(neodata)) = neodata
 cur = cur + Len(neodata)
 End Sub
 
-Public Sub InsertDoc(ByVal Paranum As Long, fromPos As Long, norawtext As String)
+Public Sub InsertDoc(ByVal ParaNum As Long, fromPos As Long, norawtext As String)
     Dim t_text As String, Once As Boolean
     Dim A() As String
     Dim b$
@@ -676,40 +681,42 @@ Dim i As Long
     i = i + 1
     If t_text = "" And i > UBound(A()) Then
     If b$ <> "" Then
-        ReWritePara Paranum, TextParagraph(Paranum) + b$, True
+        ReWritePara ParaNum, TextParagraph(ParaNum) + b$, True
         b$ = ""
     End If
     Exit Do
     End If
     If Once Then
     Once = False
-        b$ = TextParagraph(Paranum)
+        b$ = TextParagraph(ParaNum)
         If fromPos = 1 Then
-          ReWritePara Paranum, t_text, True
+          ReWritePara ParaNum, t_text, True
           fromPos = Len(t_text) + 1
        
         ElseIf fromPos > Len(b$) Then
            
-           ReWritePara Paranum, b$ & t_text, True
+           ReWritePara ParaNum, b$ & t_text, True
             fromPos = Len(b$ & t_text) + 1
             
             b$ = ""
         Else
         If fromPos <= 0 Then fromPos = 1
         
-        ReWritePara Paranum, Left$(b$, fromPos - 1) + t_text, True
+        ReWritePara ParaNum, Left$(b$, fromPos - 1) + t_text, True
         b$ = Mid$(b$, fromPos)
         fromPos = fromPos + Len(t_text)
         
         End If
     Else
     'ColorThis (Paranum)
-    Paranum = InsertAfterParagraph(Paranum, t_text)
+    ResetColor ParaNum
+    ParaNum = InsertAfterParagraph(ParaNum, t_text)
          fromPos = Len(t_text) + 1
        
     End If
     Loop
-    MarkParagraphID = Paranum
+    MarkParagraphID = ParaNum
+    ResetColor ParaNum
    ' ColorThis (Paranum)
 End Sub
 Property Get DocLines() As Long
@@ -731,13 +738,13 @@ Property Get DocParagraphs() As Long
     DocParagraphs = dPara
 End Property
 
-Property Get FirstParagraphLine(Paranum As Long) As Long
+Property Get FirstParagraphLine(ParaNum As Long) As Long
     Dim mycur As Long, mlines As Long, mlinesold As Long, valid As Boolean
     mlinesold = 0
     mycur = DocParaNext(0)
     Do While mycur <> 0
         mlinesold = mlines
-        If mycur = Paranum Then valid = True: Exit Do
+        If mycur = ParaNum Then valid = True: Exit Do
         mlines = para(mycur).lines + mlines
         mycur = DocParaNext(mycur)
     Loop
@@ -871,20 +878,20 @@ If fromLineNo < 1 Then Exit Sub
     toParaPos = toParaPos + 1
     toPos = toPos + 1
 End Sub
-Public Function RemoveEmptyParagraph(Paranum As Long) As Boolean
+Public Function RemoveEmptyParagraph(ParaNum As Long) As Boolean
 ' but not last, only erased
 Dim oldone As Long
-If TextParagraphLen(Paranum) = 0 Then
+If TextParagraphLen(ParaNum) = 0 Then
 RemoveEmptyParagraph = True
-oldone = DocParaNext(Paranum)
-If oldone = 0 Then oldone = DocParaBack(Paranum)
+oldone = DocParaNext(ParaNum)
+If oldone = 0 Then oldone = DocParaBack(ParaNum)
 If oldone = 0 Then
-    para(Paranum).lines = 1  ' clear
-    ReDim para(Paranum).Content(1 To 1)
-    ReDim para(Paranum).colordata(1)
+    para(ParaNum).lines = 1  ' clear
+    ReDim para(ParaNum).Content(1 To 1)
+    ReDim para(ParaNum).colordata(1)
 Else
-RemoveDocParaIndex Paranum
-Paranum = oldone
+RemoveDocParaIndex ParaNum
+ParaNum = oldone
 End If
 End If
 End Function
@@ -967,6 +974,7 @@ If lineno < 1 Then Exit Property
         mycur = DocParaNext(mycur)
     Loop
     If lineno <= mlines Then
+    
     If Not skipcolor Then
     If Trim(para(mycur).Content(1)) <> "" Then
     If para(mycur).colordata(0) = Empty Then
@@ -1011,17 +1019,17 @@ Property Get ParagraphFromOrder(ByVal order As Long) As Long
         mycur = DocParaNext(mycur)
     Loop
 End Property
-Property Get Paracolordata(Paranum As Long) As Variant()
+Property Get Paracolordata(ParaNum As Long) As Variant()
 ' it is valid
-Paracolordata = para(Paranum).colordata()
+Paracolordata = para(ParaNum).colordata()
 End Property
-Property Get ParagraphOrder(Paranum As Long) As Long
+Property Get ParagraphOrder(ParaNum As Long) As Long
     ParagraphOrder = 0
     Dim mycur As Long, order As Long
     mycur = DocParaNext(0)
     Do While mycur > 0
         order = order + 1
-        If mycur = Paranum Then ParagraphOrder = order: Exit Do
+        If mycur = ParaNum Then ParagraphOrder = order: Exit Do
         mycur = DocParaNext(mycur)
     Loop
 End Property
@@ -1221,88 +1229,88 @@ Property Let TextParagraphOrder(ByVal order As Long, data$)
         mycur = DocParaNext(mycur)
     Loop
 End Property
-Property Get TextParagraph(ByVal Paranum As Long) As String
-If InvalidPara(Paranum) Then Exit Property
+Property Get TextParagraph(ByVal ParaNum As Long) As String
+If InvalidPara(ParaNum) Then Exit Property
     Dim mlines As Long, neodata As String
-    If Paranum = 0 Then TextParagraph = "": Exit Property
-    For mlines = 1 To para(Paranum).lines
-        neodata = neodata + para(Paranum).Content(mlines)
+    If ParaNum = 0 Then TextParagraph = "": Exit Property
+    For mlines = 1 To para(ParaNum).lines
+        neodata = neodata + para(ParaNum).Content(mlines)
     Next mlines
     TextParagraph = neodata
 End Property
-Property Get TextParagraphKey(ByVal Paranum As Long) As String
+Property Get TextParagraphKey(ByVal ParaNum As Long) As String
     Dim mlines As Long, neodata As String
-    If Paranum = 0 Then TextParagraphKey = "": Exit Property
-    For mlines = 1 To para(Paranum).lines
-        neodata = neodata + para(Paranum).Content(mlines)
+    If ParaNum = 0 Then TextParagraphKey = "": Exit Property
+    For mlines = 1 To para(ParaNum).lines
+        neodata = neodata + para(ParaNum).Content(mlines)
     Next mlines
     TextParagraphKey = Mid$(neodata, mKeystart)
 End Property
 
-Property Let TextParagraph(ByVal Paranum As Long, data$)
-    If Paranum = 0 Then Exit Property
-    para(Paranum).lines = 1   ' clear' also can be a flag to show that this is deleted
-    ReDim para(Paranum).Content(1 To 1)
-    ReDim para(Paranum).colordata(1)   ' erase old color  --
-    para(Paranum).Content(1) = data$
+Property Let TextParagraph(ByVal ParaNum As Long, data$)
+    If ParaNum = 0 Then Exit Property
+    para(ParaNum).lines = 1   ' clear' also can be a flag to show that this is deleted
+    ReDim para(ParaNum).Content(1 To 1)
+    ReDim para(ParaNum).colordata(1)   ' erase old color  --
+    para(ParaNum).Content(1) = data$
 End Property
 
-Property Get TextParagraphLen(ByVal Paranum As Long) As Long
+Property Get TextParagraphLen(ByVal ParaNum As Long) As Long
 ' without addition of 2 chars vbcrlf
     Dim mlines As Long, neodatalen As Long
-    If Paranum = 0 Then TextParagraphLen = "": Exit Property
-    For mlines = 1 To para(Paranum).lines
-        neodatalen = neodatalen + Len(para(Paranum).Content(mlines))
+    If ParaNum = 0 Then TextParagraphLen = "": Exit Property
+    For mlines = 1 To para(ParaNum).lines
+        neodatalen = neodatalen + Len(para(ParaNum).Content(mlines))
     Next mlines
     TextParagraphLen = neodatalen
 End Property
-Function TextNextParagraph(Paranum As Long) As String
+Function TextNextParagraph(ParaNum As Long) As String
 Dim mycur As Long
-mycur = DocParaNext(Paranum)
+mycur = DocParaNext(ParaNum)
 If mycur > 0 Then
 TextNextParagraph = TextParagraph(mycur)
-Paranum = mycur
+ParaNum = mycur
 End If
 
 End Function
-Function DeleteNextParagraph(ByVal Paranum As Long) As String
+Function DeleteNextParagraph(ByVal ParaNum As Long) As String
     Dim mynextcur As Long
-    mynextcur = DocParaNext(Paranum)
+    mynextcur = DocParaNext(ParaNum)
     If mynextcur <> 0 Then
         DeleteNextParagraph = TextParagraph(mynextcur)
         RemoveDocParaIndex mynextcur
     End If
 End Function
-Function DeletePreviusParagraph(ByVal Paranum As Long) As String
+Function DeletePreviusParagraph(ByVal ParaNum As Long) As String
     Dim mybackcur As Long
-    mybackcur = DocParaBack(Paranum)
+    mybackcur = DocParaBack(ParaNum)
     If mybackcur <> 0 Then
         DeletePreviusParagraph = TextParagraph(mybackcur)
         RemoveDocParaIndex mybackcur
     End If
 End Function
 
-Property Get TextParagraph2Line(ByVal Paranum As Long, ByVal Charpos As Long, newselstart, Optional skipcolor As Boolean = False) As Long
+Property Get TextParagraph2Line(ByVal ParaNum As Long, ByVal Charpos As Long, newselstart, Optional skipcolor As Boolean = False) As Long
 Dim mlines As Long, counter As Long
-    If Paranum = 0 Then Exit Property
-    If para(Paranum).lines = 0 Then Exit Property
+    If ParaNum = 0 Then Exit Property
+    If para(ParaNum).lines = 0 Then Exit Property
     If Not skipcolor Then
-If para(Paranum).colordata(0) = Empty Then
-    ColorThis (Paranum)
+If para(ParaNum).colordata(0) = Empty Then
+    ColorThis (ParaNum)
 End If
 End If
-     For mlines = 1 To para(Paranum).lines
-        counter = counter + Len(para(Paranum).Content(mlines))
+     For mlines = 1 To para(ParaNum).lines
+        counter = counter + Len(para(ParaNum).Content(mlines))
         If Charpos <= counter Then
-            newselstart = Charpos - (counter - Len(para(Paranum).Content(mlines))) '  - 1 to write from right to left
+            newselstart = Charpos - (counter - Len(para(ParaNum).Content(mlines))) '  - 1 to write from right to left
             TextParagraph2Line = mlines - 1
             Exit Property
         End If
     Next mlines
-    If Charpos > counter Then newselstart = Len(para(Paranum).Content(para(Paranum).lines)) + 1
+    If Charpos > counter Then newselstart = Len(para(ParaNum).Content(para(ParaNum).lines)) + 1
     TextParagraph2Line = mlines - 2
 End Property
-Function TextParagraphLine2(ByVal lineno As Long, thistext As String, Paranum As Long, showpar As Boolean) As Long
+Function TextParagraphLine2(ByVal lineno As Long, thistext As String, ParaNum As Long, showpar As Boolean) As Long
     ' for lineno get line and paragraph id..
     ' we want to mark the current paragraph
     Dim mycur As Long, mlines As Long, mlinesold As Long, i As Long
@@ -1324,7 +1332,7 @@ Function TextParagraphLine2(ByVal lineno As Long, thistext As String, Paranum As
       thistext = para(mycur).Content(lineno - mlinesold)
       End If
       End If
-        Paranum = mycur
+        ParaNum = mycur
         'If Not sckipcolor Then
         'If para(Paranum).colordata(0) = Empty Then
     'ColorThis (Paranum)
@@ -1341,10 +1349,10 @@ Function TextParagraphLine2(ByVal lineno As Long, thistext As String, Paranum As
         
     Else
         thistext = ""
-        Paranum = 0
+        ParaNum = 0
     End If
 End Function
-Function TextParagraphLine(ByVal lineno As Long, thistext As String, Paranum As Long) As Long
+Function TextParagraphLine(ByVal lineno As Long, thistext As String, ParaNum As Long) As Long
     ' for lineno get line and paragraph id..
     ' we want to mark the current paragraph
     Dim mycur As Long, mlines As Long, mlinesold As Long, i As Long
@@ -1359,7 +1367,7 @@ Function TextParagraphLine(ByVal lineno As Long, thistext As String, Paranum As 
     If lineno <= mlines Then
     If lineno = mlines Then RaiseEvent Lastline
       If (lineno - mlinesold) > 0 Then thistext = para(mycur).Content(lineno - mlinesold)
-        Paranum = mycur
+        ParaNum = mycur
         If (lineno - mlinesold) = 1 Then
             TextParagraphLine = 0
         Else
@@ -1370,61 +1378,61 @@ Function TextParagraphLine(ByVal lineno As Long, thistext As String, Paranum As 
         
     Else
         thistext = ""
-        Paranum = 0
+        ParaNum = 0
     End If
 End Function
 
-Sub GoTopLinePreviusParagraph(lineno As Long, thistext As String, Paranum As Long)
+Sub GoTopLinePreviusParagraph(lineno As Long, thistext As String, ParaNum As Long)
 ' we give Paranum and we get lineno and thistext as first line, and new paranum
     Dim mycur As Long, mlines As Long, mlinesold As Long
     mlinesold = 0
     mycur = DocParaNext(0)
     If mycur > 0 Then
-        If mycur = Paranum Then
-            thistext = para(Paranum).Content(1)  ' first line
+        If mycur = ParaNum Then
+            thistext = para(ParaNum).Content(1)  ' first line
             lineno = 1
             Exit Sub
         End If
     End If
     Do While mycur <> 0
         mlinesold = mlines
-        If DocParaNext(mycur) = Paranum Then Exit Do
+        If DocParaNext(mycur) = ParaNum Then Exit Do
         mlines = para(mycur).lines + mlines
         mycur = DocParaNext(mycur)
     Loop
-    If DocParaNext(mycur) = Paranum Then
-        Paranum = mycur
-        thistext = para(Paranum).Content(1)  ' first line
+    If DocParaNext(mycur) = ParaNum Then
+        ParaNum = mycur
+        thistext = para(ParaNum).Content(1)  ' first line
         lineno = mlinesold + 1
     Else
-        Paranum = DocParaNext(0): mlinesold = 0
-        thistext = para(Paranum).Content(1)  ' first line
+        ParaNum = DocParaNext(0): mlinesold = 0
+        thistext = para(ParaNum).Content(1)  ' first line
         lineno = mlinesold + 1
     End If
 End Sub
-Sub GoTopLineNextParagraph(lineno As Long, thistext As String, Paranum As Long)
+Sub GoTopLineNextParagraph(lineno As Long, thistext As String, ParaNum As Long)
 ' we give Paranum and we get lineno and thistext as first line at the next Paranum..
     Dim mycur As Long, mlines As Long, mlinesold As Long
     mlinesold = 0
     mycur = DocParaNext(0)
     Do While mycur <> 0
         mlinesold = mlines
-        If mycur = Paranum Then Exit Do  'lineno=mlinesold+1
+        If mycur = ParaNum Then Exit Do  'lineno=mlinesold+1
         mlines = para(mycur).lines + mlines
         mycur = DocParaNext(mycur)
     Loop
-    If mycur = Paranum Then
+    If mycur = ParaNum Then
         If DocParaNext(mycur) <> 0 Then
             mlines = para(mycur).lines + mlines
             mycur = DocParaNext(mycur)
         End If
-        Paranum = mycur ' new paragraph id
-        thistext = para(Paranum).Content(1)  ' first line
+        ParaNum = mycur ' new paragraph id
+        thistext = para(ParaNum).Content(1)  ' first line
         lineno = mlinesold + 1
     Else
         mycur = DocParaNext(0): mlinesold = 0  ' go to start again if not found..
-        Paranum = mycur ' new paragraph id
-        thistext = para(Paranum).Content(1)  ' first line
+        ParaNum = mycur ' new paragraph id
+        thistext = para(ParaNum).Content(1)  ' first line
         lineno = mlinesold + 1
     End If
 End Sub
@@ -2481,9 +2489,9 @@ End If
 oncemore = True
 End If
 End Function
-Public Function NextTextParagraph(ByVal Paranum As Long, nextparanum As Long) As String
-If Not IsLast(Paranum) Then
-nextparanum = DocParaNext(Paranum)
+Public Function NextTextParagraph(ByVal ParaNum As Long, nextparanum As Long) As String
+If Not IsLast(ParaNum) Then
+nextparanum = DocParaNext(ParaNum)
 NextTextParagraph = TextParagraph(nextparanum)
 End If
 End Function

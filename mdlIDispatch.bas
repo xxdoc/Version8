@@ -55,6 +55,22 @@ If Not getone(Typename(pobjTarget) & "." & pstrProcName, DISPID) Then
 End If
 If lngRet = 0 Then FindDISPID = DISPID
 End Function
+Public Sub ShutEnabledGuiM2000(Optional all As Boolean = False)
+Dim x As Form, bb As Boolean
+
+Do
+For Each x In Forms
+bb = True
+If TypeOf x Is GuiM2000 Then
+    If x.enabled Then bb = False: x.CloseNow: bb = False: Exit For
+    
+End If
+Next x
+
+Loop Until bb Or Not all
+
+End Sub
+
 Public Function CallByNameFixParamArray _
     (pobjTarget As Object, _
     ByVal pstrProcName As Variant, _
@@ -177,7 +193,8 @@ jumphere:
             
                pobjTarget.Modal = mycodeid
                
-               Dim x As Form
+               Dim x As Form, z As Form
+               
                If Not pobjTarget.IamPopUp Then
                
                     For Each x In Forms
@@ -195,21 +212,29 @@ jumphere:
                     End If
            If pobjTarget.NeverShow Then
            ModalId = mycodeid
+      
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
-             
+           
                 Do While ModalId <> 0
-                    ProcTask2 basestack1
-                    ' mywait basestack1, 1
+                    'ProcTask2 basestack1
+                     mywait basestack1, 1, True
+                     'SleepWaitEdit2 1
                 Loop
                  ModalId = oldmoldid
+              
+      
            End If
 
            For Each x In Forms
             If x.Visible And x.name = "GuiM2000" Then
             x.TestModal mycodeid
+            Set z = x
             End If
             Next x
-          
+          If TypeOf z Is GuiM2000 Then
+            z.SetFocus
+            Set z = Nothing
+          End If
            End If
            
            ElseIf items = 0 Then

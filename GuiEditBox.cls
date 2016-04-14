@@ -198,6 +198,7 @@ glistN.DragEnabled = False
 Set .Font = ff
 .ForeColor = white
 .dcolor = Callback.Controls(1).dcolor
+.LeftMarginPixels = 8
 End With
 NoMark = False
 mNoColor = True
@@ -489,6 +490,7 @@ End Sub
 
 Private Sub glistN_CheckGotFocus()
 If Not Locked Then
+glistN.HideCaretOnexit = False
 If glistN.ListIndex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
 'RaiseEvent GotFocus
 If enabled Then
@@ -521,8 +523,10 @@ End If
 If Not SkipProcAtExitFocus Then
 mNoColor = True
 glistN.NoCaretShow = False Or NoMark
-If glistN.BackStyle <> 1 Then
+glistN.HideCaretOnexit = True
 glistN.ForeColor = white
+If glistN.BackStyle <> 1 Then
+
 glistN.BackColor = dimm2
 End If
 glistN.PanPos = 0: glistN.PrepareToShow
@@ -708,7 +712,8 @@ Else
       Callback.Callback mesCtrlName + ".Inform(" + Str(glistN.ListIndex + 1) + ", " + Str(glistN.SelStart) + ")"
       End If
 End If
-glistN.PrepareToShow
+''glistN.PrepareToShow
+glistN.ShowMe
 End Sub
 
 Private Sub glistN_DragData(ThatData As String)
@@ -751,14 +756,11 @@ Private Sub glistN_DropOk(ok As Boolean)
 If HaveMarkedText Then
 If ClickInsideMarkedText Then
 Else
-'glistN.NoCaretShow = False
 ok = True
 End If
 Else
-'glistN.NoCaretShow = False
 ok = True
 End If
-
 End Sub
 
 Private Sub glistN_ExposeListcount(cListCount As Long)
@@ -837,7 +839,7 @@ Else
                 final$ = Mid$(glistN.List(item), 1, BlockEndCursor - 1)
              fbypass = False
                  Else
-                   If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$
+                   If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$, black
                   GoTo conthere
                  End If
                  End If
@@ -850,7 +852,7 @@ Else
                 final$ = Mid$(glistN.List(item), 1, BlockStartCursor - 1)
                fbypass = False
                      Else
-                       If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$
+                       If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$, black
                       GoTo conthere
                  End If
                  End If
@@ -902,14 +904,16 @@ End If
             If EditDoc Then
                         ' old patch -- removed here
                       If mNoWrap And (glistN.ListIndex = item) Then
-                      glistN.ExternalCursor glistN.SelStart, what$
+                      glistN.ExternalCursor glistN.SelStart, what$, black
                        ElseIf (Not skipcolor) And (glistN.ListIndex = item) Then
-                            glistN.ExternalCursor glistN.SelStart, what$
+                            glistN.ExternalCursor glistN.SelStart, what$, black
                        End If
             ElseIf Not NoMark Then
             
                     FillBack thisHDC, b, 0
                      SetTextColor thisHDC, SelectionTextColor
+                 
+                     
             End If
     
     Else
@@ -929,7 +933,7 @@ End If
     Else
 conthere:
 If skipcolor Then
-  PrintItem1 thisHDC, mdoc.TextLine2(item + 1, showparagraph), A
+  PrintItem1 thisHDC, mdoc.TextLine2(item + 1, showparagraph, False), A
 Else
   PrintItem1X thisHDC, mdoc.TextLine2(item + 1, showparagraph, NoColor), A, mdoc.lastcolordata()
 End If
@@ -1008,10 +1012,12 @@ Else
 End If
 Exit Sub
 End If
-If NoMark Then KeyCode = 0: Exit Sub
+If NoMark And Not (KeyCode <> vbKeyDown Or KeyCode <> vbKeyUp Or KeyCode <> vbKeyPageUp Or KeyCode <> vbKeyPageDown) Then KeyCode = 0: Exit Sub
 
 If KeyCode = vbKeyLeft Or KeyCode = vbKeyUp Or KeyCode = vbKeyDown Or KeyCode = vbKeyRight Or KeyCode = vbKeyEnd Or KeyCode = vbKeyHome Or KeyCode = vbKeyPageUp Or KeyCode = vbKeyPageDown Then
 '
+If NoMark And KeyCode = vbKeyUp Then KeyCode = vbKeyPageUp
+If NoMark And KeyCode = vbKeyDown Then KeyCode = vbKeyPageDown
 ElseIf KeyCode = vbKeyX And (shift And 3) = 2 Then
 MarkCut
 Show
@@ -1192,6 +1198,7 @@ glistN_MarkDelete False
 KeyCode = 0
 End If
 End If
+If NoMark And EditDoc = False Then glistN.ShowMe2: Exit Sub
 If KeyCode <> 0 Or shift <> 0 Then PressKey_A KeyCode, shift
 End Sub
 
@@ -1740,7 +1747,7 @@ Dim what$, ThatPara As Long
    mdoc.MarkParagraphID = ThatPara
 End Sub
 
-Private Sub glistN_selected(item As Long)
+Private Sub glistN_Selected(item As Long)
        
 If NoMark Then Exit Sub
 
@@ -1765,6 +1772,11 @@ glistN.PrepareToShow 5
 End Sub
 
 
+
+Private Sub glistN_SpinnerValue(ThatValue As Long)
+'
+
+End Sub
 
 Private Sub glistN_SplitLine()
 '
@@ -3191,6 +3203,7 @@ Private Property Let InsertText2(ByVal rhs As String)
 glistN_MarkDelete True
 glistN.MarkNext = 0
 If Right$(rhs, 1) = vbCr Then rhs = rhs + vbLf
+mdoc.ResetColor mdoc.MarkParagraphID
 mdoc.InsertDoc mdoc.MarkParagraphID, Charpos, rhs
 End Property
 Public Property Let InsertText(ByVal rhs As String)
@@ -3199,8 +3212,8 @@ glistN.MarkNext = 0
 Dim k As Long, l As Long
 If Right$(rhs, 1) = vbCr Then rhs = rhs + vbLf
 If rhs <> "" Then
+mdoc.ResetColor mdoc.MarkParagraphID
 mdoc.InsertDoc mdoc.MarkParagraphID, Charpos, rhs
-'mdoc.WrapAgainColorBlock mdoc.MarkParagraphID, mdoc.MarkParagraphID
 Render
 
 End If
@@ -4546,8 +4559,8 @@ End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)
 If mStayOpen Then
-glistN.ForeColor = rgb(0, 0, 0)
-glistN.BackColor = rgb(255, 255, 255)
+glistN.ForeColor = black 'rgb(0, 0, 0)
+glistN.BackColor = white ' rgb(255, 255, 255)
 End If
 End Property
 
@@ -4594,6 +4607,9 @@ End Sub
 Sub TextViewOnly()
 mStayOpen = False
 NoMark = True
+mNoColor = True
+mNoColor1 = True
+
 EditDoc = False
 glistN.PanPos = 0
 nowrap = False

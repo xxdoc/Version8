@@ -189,7 +189,7 @@ Info = ""
 If .listcount = 0 Then Text = ""
 .NoCaretShow = True
 .VerticalCenterText = True
-If Not .CenterText Then .LeftMarginPixels = 8
+If Not .CenterText Then .LeftMarginPixels = 8 Else .LeftMarginPixels = 0
 .BackColor = rgb(200, 120, 60)
 Set .Font = ff
 .ForeColor = white
@@ -252,7 +252,11 @@ End Sub
 
 Private Sub glistN_ChangeSelStart(thisselstart As Long)
 If thisselstart <= Len(mprompt) Then thisselstart = Len(mprompt) + 1
-glistN.ShowPan
+'glistN.ShowPan
+With glistN
+.ShowPan
+.ExternalCursor .SelStart, .List(.ListIndex), .ForeColor
+End With
 End Sub
 
 Public Property Get ThisKind() As String
@@ -379,7 +383,7 @@ Private Sub glistN_MouseMove(Button As Integer, shift As Integer, x As Single, y
 ' RaiseEvent MouseMove(Button, shift, x, y)
 End Sub
 
-Private Sub glistN_selected(item As Long)
+Private Sub glistN_Selected(item As Long)
 If item >= 0 Then
    '' If (Not mCallback Is Nothing) Then mCallback.Press Index
    If mIndex >= 0 Then
@@ -600,5 +604,11 @@ dimm1 = dimm11
 If Not IsMissing(dimm21) Then dimm2 = dimm21
 End If
 End If
-Retired
+If enabled Then
+glistN.ForeColor = white
+Else
+glistN.ForeColor = black
+End If
+
+'Retired
 End Sub

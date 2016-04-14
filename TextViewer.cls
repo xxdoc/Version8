@@ -661,7 +661,7 @@ Else
                 final$ = Mid$(glistN.List(item), 1, BlockEndCursor - 1)
              fbypass = False
                  Else
-                   If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$
+                   If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$, oldcolor
                   GoTo conthere
                  End If
                  End If
@@ -674,7 +674,7 @@ Else
                 final$ = Mid$(glistN.List(item), 1, BlockStartCursor - 1)
                fbypass = False
                      Else
-                       If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$
+                       If ThatPara = mdoc.MarkParagraphID Then glistN.ExternalCursor glistN.SelStart, what$, oldcolor
                       GoTo conthere
                  End If
                  End If
@@ -726,9 +726,9 @@ End If
             If EditDoc Then
                         ' old patch -- removed here
                       If mNoWrap And (glistN.ListIndex = item) Then
-                      glistN.ExternalCursor glistN.SelStart, what$
+                      glistN.ExternalCursor glistN.SelStart, what$, oldcolor
                        ElseIf (Not skipcolor) And (glistN.ListIndex = item) Then
-                            glistN.ExternalCursor glistN.SelStart, what$
+                            glistN.ExternalCursor glistN.SelStart, what$, oldcolor
                        End If
             ElseIf Not NoMark Then
             
@@ -753,6 +753,7 @@ End If
     Else
 conthere:
 If skipcolor Then
+    
   PrintItem1 thisHDC, mdoc.TextLine2(item + 1, showparagraph, False), A
 Else
   PrintItem1X thisHDC, mdoc.TextLine2(item + 1, showparagraph, NoColor), A, mdoc.lastcolordata()
@@ -1538,7 +1539,7 @@ Dim what$, ThatPara As Long
    mdoc.MarkParagraphID = ThatPara
 End Sub
 
-Private Sub glistN_selected(item As Long)
+Private Sub glistN_Selected(item As Long)
        
 If NoMark Then Exit Sub
 
@@ -2946,16 +2947,18 @@ Private Property Let InsertText2(ByVal rhs As String)
 glistN_MarkDelete True
 glistN.MarkNext = 0
 If Right$(rhs, 1) = vbCr Then rhs = rhs + vbLf
+mdoc.ResetColor mdoc.MarkParagraphID
 mdoc.InsertDoc mdoc.MarkParagraphID, Charpos, rhs
 End Property
+
 Public Property Let InsertText(ByVal rhs As String)
 glistN_MarkDelete False
 glistN.MarkNext = 0
 Dim k As Long, l As Long
 If Right$(rhs, 1) = vbCr Then rhs = rhs + vbLf
 If rhs <> "" Then
+mdoc.ResetColor mdoc.MarkParagraphID
 mdoc.InsertDoc mdoc.MarkParagraphID, Charpos, rhs
-'mdoc.WrapAgainColorBlock mdoc.MarkParagraphID, mdoc.MarkParagraphID
 Render
 
 End If
