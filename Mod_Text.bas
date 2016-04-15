@@ -30,7 +30,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 214
+Global Const Revision = 215
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -9464,8 +9464,10 @@ rvalObjectstring:
 
     Case "FONTNAME$", "цяаллатосеияа$"
     With bstackstr
-                 If .tolayer > 0 Then
+                 If .tolayer > 0 And .tolayer < 32 Then
                  r$ = Form1.dSprite(.tolayer).Font.name
+                 ElseIf .tolayer >= 32 Then
+                 r$ = players(.tolayer).FontName
                  ElseIf .toback Then
                  r$ = Form1.Font.name
                  ElseIf .toprinter Then
@@ -17659,6 +17661,9 @@ newHide basestack
 Exit Function
 Case "SHOW", "амаье"
 newshow basestack
+Exit Function
+Case "FORMLABEL", "етийета.жоялас"
+Identifier = ProcLabel(basestack, rest$)
 Exit Function
 Case "LEGEND", "епицяажг"
 ' NEW JUSTIFY...1 RIGHT,2 CENTER ,3 LEFT
@@ -30331,6 +30336,47 @@ End If
 
 End Function
 
+Function ProcLabel(basestack As basetask, rest$) As Boolean
+Dim s$, frm$, p As Double, x As Double, y As Double, sx As Double, sy As Double
+Dim scr As Object, prive As basket
+Set scr = basestack.Owner
+prive = players(GetCode(scr))
+ProcLabel = True
+If Not IsStrExp(basestack, rest$, s$) Then Exit Function
+
+
+frm$ = Replace(s$, ChrW(&HFFFFF8FB), ChrW(&H2007))
+s$ = ""
+x = 0
+If FastSymbol(rest$, ",") Then
+    If Not IsStrExp(basestack, rest$, s$) Then s$ = prive.FontName
+    If FastSymbol(rest$, ",") Then
+        If Not IsExp(basestack, rest$, x) Then x = prive.SZ
+        
+            y = 0
+            
+                If FastSymbol(rest$, ",") Then
+                    If Not IsExp(basestack, rest$, p) Then p = 0
+                  If FastSymbol(rest$, ",") Then
+                    If IsExp(basestack, rest$, sy) Then
+                        nPlain basestack, frm$, s$, x, y, CLng(p), True, CLng(sy \ DXP)
+                    Else
+                        nPlain basestack, frm$, s$, x, y, CLng(-p - 1)
+                    End If
+                 Else
+                    nPlain basestack, frm$, s$, x, y, CLng(-p - 1)
+                 End If
+                Else
+                    nPlain basestack, frm$, s$, x, y, -1
+                End If
+    Else
+        nPlain basestack, frm$, s$, x, 0, -1
+    End If
+Else
+nPlain basestack, frm$, prive.FontName, prive.SZ, x, -1
+End If
+PlaceBasket scr, prive
+End Function
 Function ProcLegend(basestack As basetask, rest$) As Boolean
 Dim s$, frm$, p As Double, x As Double, y As Double, sx As Double, sy As Double
 Dim scr As Object, prive As basket
@@ -30394,13 +30440,9 @@ Else
 nPlain basestack, frm$, s$, x
 End If
 End If
-If FastSymbol(rest$, ";") Then
-''NO REFRESH
-Else
-If Not extreme Then If Not basestack.toprinter Then MyDoEvents1 scr
-End If
 PlaceBasket scr, prive
 End Function
+
 Function ProcText(basestack As basetask, what$, rest$) As Boolean
 Dim x1 As Long, frm$, pa$, s$
 ProcText = True

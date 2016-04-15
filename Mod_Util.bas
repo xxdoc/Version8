@@ -388,82 +388,82 @@ Public Function RemoveFont(FntFileName As String) As Boolean
 End Function
 
 
-Sub MyForm(M As Object, x As Long, y As Long, x1 As Long, y1 As Long, Optional T As Boolean = False, Optional factor As Single = 1)
+Sub MyForm(m As Object, x As Long, y As Long, x1 As Long, y1 As Long, Optional t As Boolean = False, Optional factor As Single = 1)
 Dim hRgn As Long
-M.Move x, y, x1, y1
+m.Move x, y, x1, y1
 If Int(25 * factor) > 2 Then
-M.ScaleMode = vbPixels
+m.ScaleMode = vbPixels
 
-hRgn = CreateRoundRectRgn(0, 0, M.ScaleX(x1, 1, 3), M.ScaleY(y1, 1, 3), 25 * factor, 25 * factor)
-SetWindowRgn M.hWnd, hRgn, T
+hRgn = CreateRoundRectRgn(0, 0, m.ScaleX(x1, 1, 3), m.ScaleY(y1, 1, 3), 25 * factor, 25 * factor)
+SetWindowRgn m.hWnd, hRgn, t
 DeleteObject hRgn
-M.ScaleMode = vbTwips
+m.ScaleMode = vbTwips
 
-M.Line (0, 0)-(M.ScaleWidth - dv15, M.ScaleHeight - dv15), M.BackColor, BF
+m.Line (0, 0)-(m.ScaleWidth - dv15, m.ScaleHeight - dv15), m.BackColor, BF
 End If
 End Sub
 
-Sub MyRect(M As Object, mb As basket, x1 As Long, y1 As Long, way As Long, par As Variant, Optional zoom As Long = 0)
+Sub MyRect(m As Object, mb As basket, x1 As Long, y1 As Long, way As Long, par As Variant, Optional zoom As Long = 0)
 Dim r As RECT, b$
 With mb
 Dim x0&, y0&, x As Long, y As Long
-GetXYb M, mb, x0&, y0&
-x = M.ScaleX(x0& * .Xt - DXP, 1, 3)
-y = M.ScaleY(y0& * .Yt - DYP, 1, 3)
-If x1 >= .mx Then x1 = M.ScaleX(M.ScaleWidth, 1, 3) Else x1 = M.ScaleX(x1 * .Xt, 1, 3)
-If y1 >= .My Then y1 = M.ScaleY(M.ScaleHeight, 1, 3) Else y1 = M.ScaleY(y1 * .Yt + .Yt, 1, 3)
+GetXYb m, mb, x0&, y0&
+x = m.ScaleX(x0& * .Xt - DXP, 1, 3)
+y = m.ScaleY(y0& * .Yt - DYP, 1, 3)
+If x1 >= .mx Then x1 = m.ScaleX(m.ScaleWidth, 1, 3) Else x1 = m.ScaleX(x1 * .Xt, 1, 3)
+If y1 >= .My Then y1 = m.ScaleY(m.ScaleHeight, 1, 3) Else y1 = m.ScaleY(y1 * .Yt + .Yt, 1, 3)
 
 SetRect r, x + zoom, y + zoom, x1 - zoom, y1 - zoom
 Select Case way
 Case 0
-DrawEdge M.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+DrawEdge m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
 Case 1
-DrawCaption M.hWnd, M.hDC, r, CLng(par)
+DrawCaption m.hWnd, m.hDC, r, CLng(par)
 Case 2
-DrawEdge M.hDC, r, CLng(par), BF_RECT
+DrawEdge m.hDC, r, CLng(par), BF_RECT
 Case 3
-DrawFocusRect M.hDC, r
+DrawFocusRect m.hDC, r
 Case 4
-DrawFrameControl M.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
+DrawFrameControl m.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
 Case 5
 b$ = Replace(CStr(par), ChrW(&HFFFFF8FB), ChrW(&H2007))
-DrawText M.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
+DrawText m.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
 Case 6
-DrawFrameControl M.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+DrawFrameControl m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
 Case Else
 k1 = 0
 MyDoEvents1 Form1
 End Select
-LCTbasket M, mb, y0&, x0&
+LCTbasket m, mb, y0&, x0&
 End With
 End Sub
-Sub MyFill(M As Object, x1 As Long, y1 As Long, way As Long, par As Variant, Optional zoom As Long = 0)
+Sub MyFill(m As Object, x1 As Long, y1 As Long, way As Long, par As Variant, Optional zoom As Long = 0)
 Dim r As RECT, b$
 Dim x As Long, y As Long
-With players(GetCode(M))
+With players(GetCode(m))
 x1 = .XGRAPH + x1
 y1 = .YGRAPH + y1
-x1 = M.ScaleX(x1, 1, 3)
-y1 = M.ScaleY(y1, 1, 3)
-x = M.ScaleX(.XGRAPH, 1, 3)
-y = M.ScaleY(.YGRAPH, 1, 3)
+x1 = m.ScaleX(x1, 1, 3)
+y1 = m.ScaleY(y1, 1, 3)
+x = m.ScaleX(.XGRAPH, 1, 3)
+y = m.ScaleY(.YGRAPH, 1, 3)
 SetRect r, x + zoom, y + zoom, x1 - zoom, y1 - zoom
 Select Case way
 Case 0
-DrawEdge M.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+DrawEdge m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
 Case 1
-DrawCaption M.hWnd, M.hDC, r, CLng(par)
+DrawCaption m.hWnd, m.hDC, r, CLng(par)
 Case 2
-DrawEdge M.hDC, r, CLng(par), BF_RECT
+DrawEdge m.hDC, r, CLng(par), BF_RECT
 Case 3
-DrawFocusRect M.hDC, r
+DrawFocusRect m.hDC, r
 Case 4
-DrawFrameControl M.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
+DrawFrameControl m.hDC, r, DFC_BUTTON, DFCS_BUTTON3STATE
 Case 5
 b$ = Replace(CStr(par), ChrW(&HFFFFF8FB), ChrW(&H2007))
-DrawText M.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
+DrawText m.hDC, StrPtr(b$), Len(CStr(par)), r, DT_CENTER
 Case 6
-DrawFrameControl M.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
+DrawFrameControl m.hDC, r, CLng(par) Mod 256, CLng(par) \ 256
 Case Else
 k1 = 0
 MyDoEvents1 Form1
@@ -502,13 +502,13 @@ DqQQ.CurrentY = y * mybasket.Yt + mybasket.uMineLineSpace
 mybasket.curpos = x
 mybasket.currow = y
 End Sub
-Public Sub nomoveLCTC(dqq As Object, mb As basket, y As Long, x As Long, T&)
+Public Sub nomoveLCTC(dqq As Object, mb As basket, y As Long, x As Long, t&)
 Dim oldx&, oldy&
 With mb
 oldx& = dqq.CurrentX
 oldy& = dqq.CurrentY
 dqq.DrawMode = vbInvert
-If T& = 1 Then
+If t& = 1 Then
 dqq.Line (x * .Xt, y * .Yt + .uMineLineSpace)-(x * .Xt + .Xt - DXP, y * .Yt - .uMineLineSpace + .Yt - DYP), , BF
 Else
 dqq.Line (x * .Xt, y * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace)-(x * .Xt + .Xt - DXP, y * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace + Int((.Yt - .uMineLineSpace * 2) * 0.2) - DYP), , BF
@@ -519,11 +519,11 @@ dqq.CurrentY = oldy&
 End With
 End Sub
 
-Public Sub oldLCTCB(dqq As Object, mb As basket, T&)
+Public Sub oldLCTCB(dqq As Object, mb As basket, t&)
 dqq.DrawMode = vbInvert
 With mb
 'QRY = Not QRY
-If T& = 1 Then
+If t& = 1 Then
 dqq.Line (.curpos * .Xt, .currow * .Yt + .uMineLineSpace)-(.curpos * .Xt + .Xt, .currow * .Yt - .uMineLineSpace + .Yt), , BF
 Else
 dqq.Line (.curpos * .Xt, .currow * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace)-(.curpos * .Xt + .Xt - DXP, .currow * .Yt + Int(((.Yt - .uMineLineSpace * 2)) * 0.8) + .uMineLineSpace + Int((.Yt - .uMineLineSpace * 2) * 0.2) - DYP), , BF
@@ -539,10 +539,10 @@ CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpac
 SetCaretPos dqq.ScaleX(x * .Xt, 1, 3), dqq.ScaleY((y + 0.8) * .Yt, 1, 3)
 End With
 End Sub
-Public Sub LCTCB(dqq As Object, mb As basket, T&)
+Public Sub LCTCB(dqq As Object, mb As basket, t&)
 With mb
-If T& = -1 Or Not Form1.ActiveControl Is dqq Then
-        If Not T& = -1 Then
+If t& = -1 Or Not Form1.ActiveControl Is dqq Then
+        If Not t& = -1 Then
         
         Else
         If Form1.ActiveControl Is Nothing Then
@@ -553,7 +553,7 @@ If T& = -1 Or Not Form1.ActiveControl Is dqq Then
         End If
         Exit Sub
 End If
-If T& = 1 Then
+If t& = 1 Then
         CreateCaret dqq.hWnd, 0, dqq.ScaleX(.Xt, 1, 3), dqq.ScaleY((.Yt - .uMineLineSpace * 2), 1, 3)
         SetCaretPos dqq.ScaleX(.curpos * .Xt, 1, 3), dqq.ScaleY(.currow * .Yt + .uMineLineSpace, 1, 3)
         On Error Resume Next
@@ -1979,6 +1979,7 @@ BFONT = ddd.Font.name
 If ExtraWidth <> 0 Then
 SetTextCharacterExtra ddd.hDC, ExtraWidth
 End If
+If JUSTIFY < 0 Then degree = 0
 DEGR = (degree) * 180# / Pi
   f.lfItalic = Abs(basestack.myitalic)
   f.lfWeight = Abs(basestack.myBold) * 800
@@ -1995,11 +1996,28 @@ DEGR = (degree) * 180# / Pi
   hPrevFont = SelectObject(ddd.hDC, hFont)
 Dim icx As Long, icy As Long, x As Long, y As Long, icH As Long
 icH = TextHeight(ddd, "fj")    '' Aq"
+
 icy = CLng(Cos(degree) * icH)
 icx = CLng(Sin(degree) * icH)
+
 With players(GetCode(ddd))
+If JUSTIFY < 0 Then
+JUSTIFY = Abs(JUSTIFY) - 1
+If JUSTIFY = 0 Then
+y = .YGRAPH - icy
+x = .XGRAPH - icx * 2
+ElseIf JUSTIFY = 1 Then
+y = .YGRAPH
+x = .XGRAPH
+Else
+y = .YGRAPH - icy / 2
+x = .XGRAPH - icx
+End If
+Else
 y = .YGRAPH - icy
 x = .XGRAPH - icx
+
+End If
 End With
 what$ = ReplaceStr(vbCrLf, vbCr, what) + vbCr
 Do While what$ <> ""
@@ -3776,7 +3794,7 @@ End If
 
 End Function
 
-Function QUERY(bstack As basetask, Prompt$, s$, M&, Optional USELIST As Boolean = True, Optional endchars As String = vbCr, Optional excludechars As String = "", Optional checknumber As Boolean = False) As String
+Function QUERY(bstack As basetask, Prompt$, s$, m&, Optional USELIST As Boolean = True, Optional endchars As String = vbCr, Optional excludechars As String = "", Optional checknumber As Boolean = False) As String
 'NoAction = True
 Dim dX As Long, dy As Long, safe$
 
@@ -4023,7 +4041,7 @@ End If
 If safe$ <> "" Then
         A$ = 65
 End If
-If AscW(A$) > 31 And (RealLen(s$) < M& Or RealLen(A$, True) = 0) Then
+If AscW(A$) > 31 And (RealLen(s$) < m& Or RealLen(A$, True) = 0) Then
 If RealLen(A$, True) = 0 Then
 If Asc(A$) = 63 And s$ <> "" Then
 s$ = s$ & A$: A$ = s$: ExcludeOne s$: A$ = Mid$(A$, Len(s$) + 1)
@@ -4142,17 +4160,17 @@ x = dd.CurrentX \ .Xt
 y = (dd.CurrentY) \ .Yt
 End With
 End Sub
-Sub Gradient(TheObject As Object, ByVal f&, ByVal T&, ByVal xx1&, ByVal xx2&, ByVal yy1&, ByVal yy2&, ByVal hor As Boolean, ByVal all As Boolean)
+Sub Gradient(TheObject As Object, ByVal f&, ByVal t&, ByVal xx1&, ByVal xx2&, ByVal yy1&, ByVal yy2&, ByVal hor As Boolean, ByVal all As Boolean)
     Dim Redval&, Greenval&, Blueval&
     Dim r1&, g1&, b1&, sr&, SG&, sb&
     f& = f& Mod &H1000000
-    T& = T& Mod &H1000000
+    t& = t& Mod &H1000000
     Redval& = f& And &H10000FF
     Greenval& = (f& And &H100FF00) / &H100
     Blueval& = (f& And &HFF0000) / &H10000
-    r1& = T& And &H10000FF
-    g1& = (T& And &H100FF00) / &H100
-    b1& = (T& And &HFF0000) / &H10000
+    r1& = t& And &H10000FF
+    g1& = (t& And &H100FF00) / &H100
+    b1& = (t& And &HFF0000) / &H10000
     sr& = (r1& - Redval&) * 1000 / 127
     SG& = (g1& - Greenval&) * 1000 / 127
     sb& = (b1& - Blueval&) * 1000 / 127

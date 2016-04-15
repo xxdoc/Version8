@@ -2393,8 +2393,8 @@ Public Property Get LCID() As Long
 LCID = mlcid
 End Property
 
-Public Property Let LCID(ByVal rhs As Long)
-mlcid = rhs
+Public Property Let LCID(ByVal RHS As Long)
+mlcid = RHS
 End Property
 Function FindWord(Find$, Direction As Boolean, there As Long, cur As Long) As Boolean
 Dim oncemore As Boolean, result As Boolean, res$
