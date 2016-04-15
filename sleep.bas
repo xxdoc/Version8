@@ -80,6 +80,9 @@ Private Declare Function MsgWaitForMultipleObjects Lib "user32" ( _
     ByVal dwMilliseconds As Long, _
     ByVal dwWakeMask As Long) As Long
 ''DoEvents alternative function.
+
+
+
 Public Sub MyDoEvents0(some As Object)
 
 
@@ -89,7 +92,7 @@ TaskMaster.rest
             
                 If RRCOUNTER = 0 Then
                     k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
-                 If some.Visible Then some.refresh
+                 If some.Visible Then some.Refresh
                   End If
                   
  DoEvents
@@ -106,7 +109,7 @@ TaskMaster.rest
             
             If RRCOUNTER = 0 Then
             k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
-         If some.Visible Then some.refresh
+         If some.Visible Then some.Refresh
                   
           DoEvents
                   End If
@@ -122,7 +125,7 @@ Public Sub MyRefresh(some As Object)
             
             If RRCOUNTER = 0 Then
             k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
-         If some.Visible Then some.refresh
+         If some.Visible Then some.Refresh
 
                   End If
                   
@@ -141,26 +144,26 @@ Loop Until lNumberOf10ThmiliSeconds < 0
 
 End Sub
 
-Public Sub SleepWaitNO(ByVal a As Long)
+Public Sub SleepWaitNO(ByVal A As Long)
 Exit Sub
  Dim b As New clsProfiler
 Dim l As Boolean, k
 l = NOEDIT
   b.MARKONE
   ''If A > 10 Then Sleep 0
-While a > b.MARKTWO And l = NOEDIT
+While A > b.MARKTWO And l = NOEDIT
 MyDoEvents2 Form1
 If TaskMaster.Processing Then TaskMaster.TimerTick Else Sleep 0
 
- a = a \ 3
+ A = A \ 3
 Wend
 End Sub
-Private Sub SleepWaitNew(a As Long)
+Private Sub SleepWaitNew(A As Long)
  Dim b As New clsProfiler
   b.MARKONE
 Do
  MyDoEvents
-Loop Until a > b.MARKTWO
+Loop Until A > b.MARKTWO
 End Sub
 Public Sub SleepWaitEdit(lNumberOf10ThmiliSeconds As Long)
     

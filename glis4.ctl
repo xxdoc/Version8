@@ -341,10 +341,10 @@ ElseIf PeekMessageW(Message, 0, WM_KEYFIRST, WM_KEYLAST, 0) Then
     End If
     Exit Function
 End Function
-Public Property Let HeadlineHeight(ByVal RHS As Long)
+Public Property Let HeadlineHeight(ByVal rhs As Long)
 If HeadLine <> "" Then
-mHeadlineHeight = RHS
-mHeadlineHeightTwips = RHS * scrTwips
+mHeadlineHeight = rhs
+mHeadlineHeightTwips = rhs * scrTwips
 
 Else
 mHeadlineHeight = 0
@@ -371,16 +371,16 @@ HeadlineHeight = 0
 End If
 End Property
 
-Public Property Let HeadLine(ByVal RHS As String)
+Public Property Let HeadLine(ByVal rhs As String)
 If mHeadline = "" Then
 ' reset headlineheight
-mHeadline = RHS
+mHeadline = rhs
 HeadlineHeight = UserControlTextHeight() / scrTwips
 
 Exit Property
 
 End If
-mHeadline = RHS
+mHeadline = rhs
 End Property
 
 Public Property Get HeadLine() As String
@@ -409,8 +409,8 @@ End Property
 Public Property Get BorderStyle() As Integer
     BorderStyle = m_BorderStyle
 End Property
-Public Property Let BorderStyle(ByVal RHS As Integer)
-    m_BorderStyle = RHS
+Public Property Let BorderStyle(ByVal rhs As Integer)
+    m_BorderStyle = rhs
     
  If BackStyle = 0 Then UserControl.BorderStyle = m_BorderStyle Else UserControl.BorderStyle = 0
     PropertyChanged "BorderStyle"
@@ -570,7 +570,7 @@ Else
   listcount = itemcount
   End If
 End Property
-Public Property Let ShowBar(ByVal RHS As Boolean)
+Public Property Let ShowBar(ByVal rhs As Boolean)
 If restrictLines > 0 Then
 myt = (UserControl.ScaleHeight - mHeadlineHeightTwips) / restrictLines
 Else
@@ -578,7 +578,7 @@ myt = UserControlTextHeight() + addpixels * scrTwips
 End If
 mytPixels = myt / scrTwips
 myt = mytPixels * scrTwips
-    m_showbar = RHS
+    m_showbar = rhs
     barwidth = UserControlTextWidth("W")
     
     state = True
@@ -602,10 +602,10 @@ Else
     End If
 End Property
 
-Public Property Let BackColor(ByVal RHS As OLE_COLOR)
+Public Property Let BackColor(ByVal rhs As OLE_COLOR)
 
-    m_backcolor = RHS
-UserControl.BackColor = RHS
+    m_backcolor = rhs
+UserControl.BackColor = rhs
   PropertyChanged "BackColor"
     
 End Property
@@ -616,9 +616,9 @@ Public Property Get ForeColor() As OLE_COLOR
     ForeColor = m_ForeColor
 End Property
 
-Public Property Let ForeColor(ByVal RHS As OLE_COLOR)
-    m_ForeColor = RHS
-    UserControl.ForeColor = Abs(RHS)
+Public Property Let ForeColor(ByVal rhs As OLE_COLOR)
+    m_ForeColor = rhs
+    UserControl.ForeColor = Abs(rhs)
     PropertyChanged "ForeColor"
 End Property
 Public Property Get CapColor() As OLE_COLOR
@@ -626,8 +626,8 @@ Public Property Get CapColor() As OLE_COLOR
   
 End Property
 
-Public Property Let CapColor(ByVal RHS As OLE_COLOR)
-    m_CapColor = RHS
+Public Property Let CapColor(ByVal rhs As OLE_COLOR)
+    m_CapColor = rhs
     PropertyChanged "CapColor"
 End Property
 Public Property Get dcolor() As OLE_COLOR
@@ -635,15 +635,15 @@ Public Property Get dcolor() As OLE_COLOR
   
 End Property
 
-Public Property Let dcolor(ByVal RHS As OLE_COLOR)
-    m_dcolor = RHS
+Public Property Let dcolor(ByVal rhs As OLE_COLOR)
+    m_dcolor = rhs
     PropertyChanged "dcolor"
 End Property
 Public Property Get enabled() As Boolean
     enabled = myEnabled
 End Property
-Public Property Let enabled(ByVal RHS As Boolean)
- myEnabled = RHS
+Public Property Let enabled(ByVal rhs As Boolean)
+ myEnabled = rhs
  
     PropertyChanged "Enabled"
     On Error Resume Next
@@ -665,9 +665,9 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
-mo.TabStop = RHS
+mo.TabStop = rhs
 End Property
-Public Property Let TabStop(ByVal RHS As Boolean)
+Public Property Let TabStop(ByVal rhs As Boolean)
 ''    PropertyChanged "TabStop"
     On Error Resume Next
     If Not waitforparent Then Exit Property
@@ -688,10 +688,9 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
-mo.TabStop = RHS
+mo.TabStop = rhs
 End Property
 Public Property Get Font() As Font
-
 Dim i As Integer
  Set Font = m_font
 End Property
@@ -2276,17 +2275,17 @@ End With
 End If
 nnn1:
 End Property
-Property Let menuEnabled(item As Long, ByVal RHS As Boolean)
+Property Let menuEnabled(item As Long, ByVal rhs As Boolean)
 If item >= 0 Then
 With mlist(item)
-.line = Not RHS   ' The line flag used as enabled flag, in reverse logic
+.line = Not rhs   ' The line flag used as enabled flag, in reverse logic
 End With
 End If
 End Property
-Property Let ListSep(item As Long, ByVal RHS As Boolean)
+Property Let ListSep(item As Long, ByVal rhs As Boolean)
 If item >= 0 Then
 With mlist(item)
-.line = RHS
+.line = rhs
 End With
 End If
 End Property
@@ -3176,7 +3175,7 @@ Public Function TextHeightOffset() As Variant
 If restrictLines = 0 Then
 TextHeightOffset = 0
 Else
-TextHeightOffset = (myt - UserControlTextHeight()) \ scrTwips + addpixels \ 2 + 1
+TextHeightOffset = (myt - UserControlTextHeight()) \ scrTwips \ 2 - 1 ' + addpixels \ 2 + 1
 End If
 End Function
 Public Sub RepaintOld7_18()
@@ -3530,9 +3529,9 @@ If mLargeChange < 1 Then mLargeChange = 1
 largechange = mLargeChange
 End Property
 
-Private Property Let largechange(ByVal RHS As Long)
-If RHS < 1 Then RHS = 1
-mLargeChange = RHS
+Private Property Let largechange(ByVal rhs As Long)
+If rhs < 1 Then rhs = 1
+mLargeChange = rhs
 showshapes
 PropertyChanged "LargeChange"
 End Property
@@ -3540,9 +3539,9 @@ Public Property Get smallchange() As Long
 smallchange = mSmallChange
 End Property
 
-Private Property Let smallchange(ByVal RHS As Long)
-If RHS < 1 Then RHS = 1
-mSmallChange = RHS
+Private Property Let smallchange(ByVal rhs As Long)
+If rhs < 1 Then rhs = 1
+mSmallChange = rhs
 showshapes
 PropertyChanged "SmallChange"
 End Property
@@ -3550,11 +3549,11 @@ Private Property Get Max() As Long
 Max = mmax
 End Property
 
-Private Property Let Max(ByVal RHS As Long)
-If Min > RHS Then RHS = Min
-If mValue > RHS Then mValue = RHS  ' change but not send event
-If RHS = 0 Then RHS = 1
-mmax = RHS
+Private Property Let Max(ByVal rhs As Long)
+If Min > rhs Then rhs = Min
+If mValue > rhs Then mValue = rhs  ' change but not send event
+If rhs = 0 Then rhs = 1
+mmax = rhs
 showshapes
 PropertyChanged "Max"
 End Property
@@ -3573,11 +3572,11 @@ mjumptothemousemode = True
 End If
 End Sub
 
-Private Property Let Min(ByVal RHS As Long)
-If Max <= RHS Then RHS = Max
-If mValue < RHS Then mValue = RHS  ' change but not send event
+Private Property Let Min(ByVal rhs As Long)
+If Max <= rhs Then rhs = Max
+If mValue < rhs Then mValue = rhs  ' change but not send event
 
-mmin = RHS
+mmin = rhs
 showshapes
 PropertyChanged "LargeChange"
 PropertyChanged "Min"
@@ -3586,7 +3585,7 @@ Public Property Get EnabledBar() As Boolean
 EnabledBar = Not NoFire
 End Property
 
-Public Property Let EnabledBar(ByVal RHS As Boolean)
+Public Property Let EnabledBar(ByVal rhs As Boolean)
 If Not myEnabled Then Exit Property
 NoFire = Not EnabledBar
 Shape1.Visible = Not NoFire
@@ -3637,7 +3636,7 @@ Set mo = UserControl.Parent.Controls(nm$)
 End If
 TopTwips = CLng(mo.top)
 End Property
-Public Property Let Visible(ByVal RHS As Boolean)
+Public Property Let Visible(ByVal rhs As Boolean)
 Dim MM$, mo As Control, nm$, cnt$, p As Long
 On Error Resume Next
 MM$ = UserControl.Ambient.DisplayName
@@ -3653,11 +3652,11 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
-If mo.Visible = RHS Then Exit Property
-mo.Visible = RHS
+If mo.Visible = rhs Then Exit Property
+mo.Visible = rhs
 
 End Property
-Public Property Let TopTwips(ByVal RHS As Long)
+Public Property Let TopTwips(ByVal rhs As Long)
 Dim MM$, mo As Control, nm$, cnt$, p As Long
 MM$ = UserControl.Ambient.DisplayName
 
@@ -3672,7 +3671,7 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
-mo.Move mo.Left, CSng(RHS)
+mo.Move mo.Left, CSng(rhs)
 End Property
 Public Property Get HeightTwips() As Long
 Dim MM$, mo As Control, nm$, cnt$, p As Long
@@ -3710,7 +3709,7 @@ Ltwips = CLng(mo.Left)
 Ttwips = CLng(mo.top)
 
 End Sub
-Public Property Let HeightTwips(ByVal RHS As Long)
+Public Property Let HeightTwips(ByVal rhs As Long)
 Dim MM$, mo As Control, nm$, cnt$, p As Long
 MM$ = UserControl.Ambient.DisplayName
 
@@ -3725,7 +3724,7 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
-mo.Move mo.Left, mo.top, mo.Width, RHS
+mo.Move mo.Left, mo.top, mo.Width, rhs
 End Property
 Public Sub MoveTwips(ByVal mleft As Long, ByVal mtop As Long, mWidth As Long, mHeight As Long)
 Dim MM$, mo As Control, nm$, cnt$, p As Long
@@ -3750,7 +3749,7 @@ Else
 mo.Move mleft, mtop, mWidth, mHeight
 End If
 End Sub
-Public Sub ZOrder(Optional ByVal RHS As Long = 0)
+Public Sub ZOrder(Optional ByVal rhs As Long = 0)
 Dim MM$, mo As Control, nm$, cnt$, p As Long
 MM$ = UserControl.Ambient.DisplayName
 
@@ -3765,7 +3764,7 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
-mo.ZOrder RHS
+mo.ZOrder rhs
 End Sub
 
 Public Sub SetFocus()
@@ -3785,14 +3784,14 @@ Set mo = UserControl.Parent.Controls(nm$)
 End If
 mo.SetFocus
 End Sub
-Public Property Let Value(ByVal RHS As Long)
+Public Property Let Value(ByVal rhs As Long)
 ' Dim oldvalue As Long
-If RHS < Min Then RHS = Min
-If RHS > Max Then RHS = Max
+If rhs < Min Then rhs = Min
+If rhs > Max Then rhs = Max
 If state And Spinner Then
 'don't fix the value
 Else
-mValue = RHS
+mValue = rhs
 End If
 showshapes
 
@@ -3809,12 +3808,12 @@ Redraw
 End If
 PropertyChanged "Value"
 End Property
-Public Property Let ValueSilent(ByVal RHS As Long)
+Public Property Let ValueSilent(ByVal rhs As Long)
 If Spinner Then
 ' no events
-If RHS < Min Then RHS = Min
-If RHS > Max Then RHS = Max
-mValue = Max - RHS + Min
+If rhs < Min Then rhs = Min
+If rhs > Max Then rhs = Max
+mValue = Max - rhs + Min
 showshapes
 End If
 End Property
@@ -3824,14 +3823,14 @@ End Property
 Private Property Get BarVisible() As Boolean
 BarVisible = Shape1.Visible
 End Property
-Private Property Let BarVisible(ByVal RHS As Boolean)
+Private Property Let BarVisible(ByVal rhs As Boolean)
 If Not myEnabled Then
 Exit Property
 End If
-If listcount = 0 Then RHS = False
-Shape1.Visible = RHS Or Spinner
-Shape2.Visible = RHS Or Spinner
-Shape3.Visible = RHS Or Spinner
+If listcount = 0 Then rhs = False
+Shape1.Visible = rhs Or Spinner
+Shape2.Visible = rhs Or Spinner
+Shape3.Visible = rhs Or Spinner
 Shape Shape1
 Shape Shape2
 Shape Shape3
@@ -3847,8 +3846,8 @@ Public Property Get Percent() As Single
 Percent = mpercent
 End Property
 
-Public Property Let Percent(ByVal RHS As Single)
-mpercent = RHS
+Public Property Let Percent(ByVal rhs As Single)
+mpercent = rhs
 PropertyChanged "Percent"
 End Property
 Private Sub UserControl_KeyDown(KeyCode As Integer, shift As Integer)
@@ -3949,9 +3948,9 @@ Public Property Get Vertical() As Boolean
 Vertical = mVertical
 End Property
 
-Public Property Let Vertical(ByVal RHS As Boolean)
-RHS = True ' intercept
-mVertical = RHS
+Public Property Let Vertical(ByVal rhs As Boolean)
+rhs = True ' intercept
+mVertical = rhs
 showshapes
 PropertyChanged "Vertical"
 End Property
@@ -3960,8 +3959,8 @@ Public Property Get jumptothemousemode() As Boolean
 jumptothemousemode = mjumptothemousemode
 End Property
 
-Public Property Let jumptothemousemode(ByVal RHS As Boolean)
-mjumptothemousemode = RHS
+Public Property Let jumptothemousemode(ByVal rhs As Boolean)
+mjumptothemousemode = rhs
 End Property
 Private Function processXY(ByVal x As Single, ByVal y As Single, Optional rep As Boolean = True) As Boolean
 Timer1bar.enabled = False
@@ -4450,13 +4449,13 @@ Private Property Get SELECTEDITEM() As Long
 SELECTEDITEM = Mselecteditem
 End Property
 
-Private Property Let SELECTEDITEM(ByVal RHS As Long)
-If RHS > listcount And RHS > 0 Then
-RHS = 0
+Private Property Let SELECTEDITEM(ByVal rhs As Long)
+If rhs > listcount And rhs > 0 Then
+rhs = 0
 
-If RHS > listcount Then Exit Property
+If rhs > listcount Then Exit Property
 End If
-Mselecteditem = RHS
+Mselecteditem = rhs
 End Property
 
 Public Property Get PanPos() As Long
@@ -4466,8 +4465,8 @@ End Property
 Public Property Get PanPosPixels() As Long
 If scrollme <> 0 Then PanPosPixels = scrollme / scrTwips
 End Property
-Public Property Let PanPos(ByVal RHS As Long)
-scrollme = RHS
+Public Property Let PanPos(ByVal rhs As Long)
+scrollme = rhs
 End Property
 
 Public Sub Refresh()
@@ -4483,35 +4482,35 @@ Public Property Get PreserveNpixelsHeaderRightTwips() As Long
 PreserveNpixelsHeaderRightTwips = mPreserveNpixelsHeaderRight
 End Property
 
-Public Property Let PreserveNpixelsHeaderRightTwips(ByVal RHS As Long)
-mPreserveNpixelsHeaderRight = RHS
+Public Property Let PreserveNpixelsHeaderRightTwips(ByVal rhs As Long)
+mPreserveNpixelsHeaderRight = rhs
 End Property
 
 
 Public Property Get SelStart() As Long
 SelStart = mSelstart
 End Property
-Public Property Let SelStartEventAlways(ByVal RHS As Long)
+Public Property Let SelStartEventAlways(ByVal rhs As Long)
 Dim checkline As Long
 RaiseEvent PromptLine(checkline)
-If PromptLineIdent > 0 And (ListIndex = checkline) And PromptLineIdent >= RHS Then RHS = PromptLineIdent + 1
+If PromptLineIdent > 0 And (ListIndex = checkline) And PromptLineIdent >= rhs Then rhs = PromptLineIdent + 1
 
-mSelstart = RHS
+mSelstart = rhs
 
-RaiseEvent ChangeSelStart(RHS)
-mSelstart = RHS
+RaiseEvent ChangeSelStart(rhs)
+mSelstart = rhs
 End Property
-Public Property Let SelStart(ByVal RHS As Long)
+Public Property Let SelStart(ByVal rhs As Long)
 Dim checkline As Long
 RaiseEvent PromptLine(checkline)
-If PromptLineIdent > 0 And (ListIndex = checkline) And PromptLineIdent >= RHS Then RHS = PromptLineIdent + 1
-If Not (mSelstart = RHS) Then
-mSelstart = RHS
-RaiseEvent ChangeSelStart(RHS)
-mSelstart = RHS
+If PromptLineIdent > 0 And (ListIndex = checkline) And PromptLineIdent >= rhs Then rhs = PromptLineIdent + 1
+If Not (mSelstart = rhs) Then
+mSelstart = rhs
+RaiseEvent ChangeSelStart(rhs)
+mSelstart = rhs
 
 Else
-mSelstart = RHS
+mSelstart = rhs
 End If
 End Property
 Private Sub ShowMyCaretInTwips(x1 As Long, y1 As Long)
@@ -4540,9 +4539,9 @@ EditFlag = mEditFlag
 
 End Property
 
-Public Property Let EditFlag(ByVal RHS As Boolean)
-mEditFlag = RHS
-If Not RHS Then If hWnd <> 0 Then DestroyCaret: caretCreated = False
+Public Property Let EditFlag(ByVal rhs As Boolean)
+mEditFlag = rhs
+If Not rhs Then If hWnd <> 0 Then DestroyCaret: caretCreated = False
 End Property
 Public Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long, Optional ByVal offsetx As Long = 0)
 Dim A As RECT
@@ -4567,8 +4566,8 @@ Public Property Get FontBold() As Boolean
 FontBold = UserControl.FontBold
 End Property
 
-Public Property Let FontBold(ByVal RHS As Boolean)
-UserControl.FontBold = RHS
+Public Property Let FontBold(ByVal rhs As Boolean)
+UserControl.FontBold = rhs
 CalcNewFont
  PropertyChanged "Font"
 End Property
@@ -4577,8 +4576,8 @@ Public Property Get charset() As Integer
 charset = UserControl.Font.charset
 End Property
 
-Public Property Let charset(ByVal RHS As Integer)
-UserControl.Font.charset = RHS
+Public Property Let charset(ByVal rhs As Integer)
+UserControl.Font.charset = rhs
 CalcNewFont
  PropertyChanged "Font"
 End Property
@@ -4737,8 +4736,8 @@ Public Property Get mousepointer() As Integer
 mousepointer = UserControl.mousepointer
 End Property
 
-Public Property Let mousepointer(ByVal RHS As Integer)
-UserControl.mousepointer = RHS
+Public Property Let mousepointer(ByVal rhs As Integer)
+UserControl.mousepointer = rhs
 End Property
 Function GetKeY(ascii As Integer) As String
     Dim Buffer As String, Ret As Long
@@ -4860,4 +4859,9 @@ Sub DestCaret()
  DestroyCaret
  caretCreated = False
 End Sub
+
+
+Public Property Get FontName() As Variant
+FontName = UserControl.Font
+End Property
 

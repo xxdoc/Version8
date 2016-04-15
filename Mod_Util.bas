@@ -1,6 +1,7 @@
 Attribute VB_Name = "Module2"
 Option Explicit
 Public k1 As Long, kForm As Boolean
+
 Public Type basket
     used As Long
     x As Long  ' for hotspot
@@ -272,6 +273,30 @@ Private Declare Function GetAsyncKeyState Lib "user32" _
 Public TextEditLineHeight As Long
 Public LablelEditLineHeight As Long
 Private Const Utf8CodePage As Long = 65001
+Private Declare Function GetMem4 Lib "msvbvm60" ( _
+                         ByRef Src As Any, _
+                         ByRef Dst As Any) As Long
+Private Declare Function VirtualProtect Lib "kernel32" ( _
+                         ByVal lpAddress As Long, _
+                         ByVal dwSize As Long, _
+                         ByVal flNewProtect As Long, _
+                         ByRef lpflOldProtect As Long) As Long
+ 
+Private Const PAGE_EXECUTE_READWRITE = &H40
+
+' from The Trick
+Public Sub PatchFunc(ByVal Addr As Long)
+    If m_bInIDE Then
+        GetMem4 ByVal Addr + &H16, Addr
+    Else
+      VirtualProtect Addr, 8, PAGE_EXECUTE_READWRITE, 0
+      
+    End If
+
+    GetMem4 &HFF505958, ByVal Addr
+    GetMem4 &HE1, ByVal Addr + 4
+End Sub
+ 
 Public Function Utf16toUtf8(s As String) As Byte()
     ' code from vbforum
     ' UTF-8 returned to VB6 as a byte array (zero based) because it's pretty useless to VB6 as anything else.
@@ -5725,3 +5750,4 @@ If Not Screen.ActiveForm Is Nothing Then
     End If
 
 End Sub
+

@@ -2184,17 +2184,17 @@ Dim task As TaskInterface
           TaskMaster.AddTask task, tmHigh
 
 End Sub
-Public Sub sThreadInternal(BS As basetask, ByVal ThID As Long, ByVal Thinterval As Double, ByVal ThCode As String, holdtime As Double, threadhere$, Nostretch)
+Public Sub sThreadInternal(bs As basetask, ByVal ThID As Long, ByVal Thinterval As Double, ByVal ThCode As String, holdtime As Double, threadhere$, Nostretch)
 Dim task As TaskInterface, bsdady As basetask
-Set bsdady = BS.Parent
+Set bsdady = bs.Parent
 ' above 20000 the thid
  Set task = New myProcess
  
-          Set task.Owner = BS.Parent.Owner
-          Set task.Process = BS
+          Set task.Owner = bs.Parent.Owner
+          Set task.Process = bs
           
-          Set bsdady.LinkThread(ThID) = BS.Process
-          Set BS = Nothing
+          Set bsdady.LinkThread(ThID) = bs.Process
+          Set bs = Nothing
           task.Parameters ThID, Thinterval, ThCode, holdtime, threadhere$, Nostretch
           TaskMaster.rest
           TaskMaster.AddTask task
@@ -3606,7 +3606,16 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 , "сулпкгяысг", "сумаятгсг", "сумевисе", "сумхгла", "сус", "сустгла", "сведиа", "сведио.мглатым", "сыяос", "сысе", "сысе.еццяажо", "таимиа", "таимиес", "танг", "танимолгсг", "текос", "титкос", "тлгла", "тлглата", "томос", "топийа", "топийес", "топийг", "топийо", "тоте", "тупос", "тупысе", "упойатакоцос", "упокоцистг", "жаядиа", "жеяе", "жеяеписы", "жомто", "жояла", "жоятос", "жоятысе" _
 , "жоятысе.еццяажо", "жымг", "ваяайтгяес", "ваяане", "вягсг", "вягстг", "вягстгс", "вяыла", "?")
 For i = 0 To UBound(mycommands())
-    aHash.ItemCreator CStr(mycommands(i)), i + 1
+If mycommands(i) = "PRINT" Or mycommands(i) = "тупысе" Then
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPrint)
+ElseIf mycommands(i) = "CALL" Or mycommands(i) = "йакесе" Then
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCall)
+Else
+    aHash.ItemCreator CStr(mycommands(i)), 0 ' i + 1
+    End If
 Next i
 allcommands = True
+End Function
+Private Function ProcPtr(ByVal nAddress As Long) As Long
+    ProcPtr = nAddress
 End Function
