@@ -59,6 +59,62 @@ tmCharSet As Byte
 End Type
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Dim tm As TEXTMETRIC
+Private Declare Function GetModuleHandleW Lib "kernel32" (ByVal lpModuleName As Long) As Long
+
+
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+
+
+Private Declare Function GetWindowLongA Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+
+
+Private Declare Function SetWindowLongA Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+
+
+Private Declare Function SetWindowLongW Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+
+
+Private Declare Function SetWindowTextW Lib "user32" (ByVal hWnd As Long, ByVal lpString As Long) As Long
+    Private Const GWL_WNDPROC = -4
+    Private m_Caption As String
+
+
+Public Property Get CaptionW() As String
+    CaptionW = m_Caption
+End Property
+
+
+Public Property Let CaptionW(ByRef NewValue As String)
+    Static WndProc As Long, VBWndProc As Long
+    m_Caption = NewValue
+    ' get window procedures if we don't have
+    '     them
+
+
+    If WndProc = 0 Then
+        ' the default Unicode window procedure
+        WndProc = GetProcAddress(GetModuleHandleW(StrPtr("user32")), "DefWindowProcW")
+        ' window procedure of this form
+        VBWndProc = GetWindowLongA(hWnd, GWL_WNDPROC)
+    End If
+    ' ensure we got them
+
+
+    If WndProc <> 0 Then
+        ' replace form's window procedure with t
+        '     he default Unicode one
+        SetWindowLongW hWnd, GWL_WNDPROC, WndProc
+        ' change form's caption
+        SetWindowTextW hWnd, StrPtr(m_Caption)
+        ' restore the original window procedure
+        SetWindowLongA hWnd, GWL_WNDPROC, VBWndProc
+    Else
+        ' no Unicode for us
+        Caption = m_Caption
+    End If
+End Property
+' usage sample
+
 
 
 '** Function **
@@ -134,15 +190,15 @@ End If
     Dim mycode As Variant
 mycode = Rnd * 12312314
 
-For Each X In Forms
-If X.Visible And X.name = "GuiM2000" Then
+For Each x In Forms
+If x.Visible And x.name = "GuiM2000" Then
 
-If Not X.enabled = False Then
-X.Modal = mycode
-X.enabled = False
+If Not x.enabled = False Then
+x.Modal = mycode
+x.enabled = False
 End If
 End If
-Next X
+Next x
 If INFOONLY Then
 NeoMsgBox.command1(0).SetFocus
 End If
@@ -160,11 +216,11 @@ NOEXECUTION = False
 Wend
 BLOCKkey = False
 AskTitle$ = ""
-For Each X In Forms
-If X.Visible And X.name = "GuiM2000" Then
-X.TestModal mycode
+For Each x In Forms
+If x.Visible And x.name = "GuiM2000" Then
+x.TestModal mycode
 End If
-Next X
+Next x
 If INFOONLY Then
 NeoASK = 1
 Else
@@ -259,6 +315,7 @@ Private Sub Form_Load()
 ttl = True
 'Icon = Form2.Icon
 'hideme = True
+ CaptionW = ""
 End Sub
 
 
@@ -330,11 +387,11 @@ If Not trace Then reopen2 = False
 If vH_title$ = "" Then reopen4 = False
 If reopen4 Then Form4.Show , Form1: Form4.Visible = True
 If reopen2 Then Form2.Show , Form1: Form2.Visible = True
-   For Each X In Forms
-       If Typename$(X) = "GuiM2000" Then
-       If X.Visible Then
-       X.Visible = False
-       X.Show , Form1
+   For Each x In Forms
+       If Typename$(x) = "GuiM2000" Then
+       If x.Visible Then
+       x.Visible = False
+       x.Show , Form1
        End If
        End If
        Next

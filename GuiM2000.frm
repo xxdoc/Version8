@@ -170,7 +170,7 @@ End Sub
 Private Sub Form_Activate()
 If PopupOn Then PopupOn = False
 If novisible Then Hide: Unload Me
-If ttl Then Form3.Caption = gList2.HeadLine
+If ttl Then Form3.CaptionW = gList2.HeadLine
 MarkSize = 4
 ResizeMark.Width = MarkSize * dv15
 ResizeMark.Height = MarkSize * dv15

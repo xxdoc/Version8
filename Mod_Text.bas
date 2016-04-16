@@ -43,7 +43,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 218
+Global Const Revision = 219
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -789,7 +789,6 @@ Dim scr As Object, oldCol As Long, oldFTEXT As Long, oldFTXT As String, oldpen A
 Dim par As Boolean, i As Long, f As Long, p As Double, W4 As Boolean, pn&, s$, Dlen As Long
 Dim o As Long, W3 As Long, x1 As Long, y1 As Long, x As Double, ColOffset As Long
 Dim work As Boolean, work2 As Long, skiplast As Boolean
-If myexit(basestack) Then RevisionPrint = True: Exit Function
 Set scr = basestack.Owner
 W3 = -1
 Dim basketcode As Long, prive As basket
@@ -1707,6 +1706,8 @@ End If
 End If
 RevisionPrint = True
 players(basketcode) = prive
+If par Then If myexit(basestack) Then RevisionPrint = True: Exit Function
+
 End With
 End Function
 
@@ -17359,7 +17360,8 @@ End If
 Case "TITLE", "титкос"
 If IsStrExp(basestack, rest$, s$) Then
 If Not ttl Then Load Form3
-Form3.Caption = s$
+''If s$ <> "" Then Form3.Font.charset = GetCharSet(GetCodePage(FoundLocaleId(s$)))
+Form3.CaptionW = s$
 Form3.Visible = True
 
 If FastSymbol(rest$, ",") Then
@@ -26742,14 +26744,14 @@ With Form1.PrinterDocument1
 .CurrentY = 0
 End With
 oprinter.CopyPicture Form1.PrinterDocument1
-oprinter.ThumbnailPaintPrinter 1, , False, True, True, , , , , , Form3.Caption & " " & Str$(pnum)
+oprinter.ThumbnailPaintPrinter 1, , False, True, True, , , , , , Form3.CaptionW & " " & Str$(pnum)
 Form1.PrinterDocument1.Cls
 End If
 End Sub
 Sub getenddoc()
 pnum = pnum + 1
 oprinter.CopyPicture Form1.PrinterDocument1
-oprinter.ThumbnailPaintPrinter 1, 100, False, True, True, , , , , , Form3.Caption & " " & Str$(pnum)
+oprinter.ThumbnailPaintPrinter 1, 100, False, True, True, , , , , , Form3.CaptionW & " " & Str$(pnum)
 oprinter.ClearUp
 Form1.PrinterDocument1.Picture = LoadPicture("")
 End Sub
