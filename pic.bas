@@ -3606,13 +3606,83 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 , "сулпкгяысг", "сумаятгсг", "сумевисе", "сумхгла", "сус", "сустгла", "сведиа", "сведио.мглатым", "сыяос", "сысе", "сысе.еццяажо", "таимиа", "таимиес", "танг", "танимолгсг", "текос", "титкос", "тлгла", "тлглата", "томос", "топийа", "топийес", "топийг", "топийо", "тоте", "тупос", "тупысе", "упойатакоцос", "упокоцистг", "жаядиа", "жеяе", "жеяеписы", "жомто", "жояла", "жоятос", "жоятысе" _
 , "жоятысе.еццяажо", "жымг", "ваяайтгяес", "ваяане", "вягсг", "вягстг", "вягстгс", "вяыла", "?")
 For i = 0 To UBound(mycommands())
-If mycommands(i) = "PRINT" Or mycommands(i) = "тупысе" Then
+Select Case mycommands(i)
+
+Case "PRINT", "тупысе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPrint)
-ElseIf mycommands(i) = "CALL" Or mycommands(i) = "йакесе" Then
+Case "CALL", "йакесе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCall)
-Else
-    aHash.ItemCreator CStr(mycommands(i)), 0 ' i + 1
-    End If
+Case "REM", "сгл"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRem)
+Case "IF", "ам"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 50
+Case "ELSE", "аккиыс"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 51
+Case "ELSE.IF", "аккиыс.ам"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 52
+Case "SELECT", "епекене", "епикене"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 53
+Case "TRY", "дес"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 60
+Case "FOR", "циа"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 100
+Case "DO", "REPEAT", "епамакабе", "епамекабе"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 301
+Case "NEXT", "еполемо"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 199
+Case "REFRESH", "амамеысг"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 200
+Case "емы", "WHILE"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 300
+Case "GOTO", "пяос"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 400
+Case "SUB", "яоутима"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 401
+Case "GOSUB", "диалесоу"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 402
+Case "апо", "ON"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 403
+Case "LOOP", "йуйкийа"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 600
+Case "BREAK", "диейоье"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 601
+Case "CONTINUE", "сумевисе"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 602
+Case "RESTART", "нейима"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 603
+Case "RETURN", "епистяожг"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 604
+Case "END", "текос"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 605
+Case "енодос", "EXIT"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 606
+Case "INLINE", "емхесг"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 650
+Case "UPDATE", "епийаияо"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 651
+Case "мгла", "THREAD"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 700
+Case "AFTER", "лета"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 701
+Case "леяос", "PART"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 702
+Case "статийг", "статийес", "STATIC"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 800
+Case "йахе", "EVERY"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 850
+Case "йуяио.еяцо", "MAIN.TASK", "TASK.MAIN"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 851
+Case "SCAN", "саяысе"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 900
+Case "TARGET", "стовос"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 1000
+Case "LOCAL", "топийа", "топийг", "топийес"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, -100  ' Local A, B, C=10, K
+Case "GLOBAL", "цемийо", "цемийг", "цемийес"
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, -200   'Global A, B=6, X
+Case Else
+    aHash.ItemCreator CStr(mycommands(i)), 0
+End Select
 Next i
 allcommands = True
 End Function

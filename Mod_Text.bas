@@ -43,7 +43,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 216
+Global Const Revision = 218
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -789,6 +789,7 @@ Dim scr As Object, oldCol As Long, oldFTEXT As Long, oldFTXT As String, oldpen A
 Dim par As Boolean, i As Long, f As Long, p As Double, W4 As Boolean, pn&, s$, Dlen As Long
 Dim o As Long, W3 As Long, x1 As Long, y1 As Long, x As Double, ColOffset As Long
 Dim work As Boolean, work2 As Long, skiplast As Boolean
+If myexit(basestack) Then RevisionPrint = True: Exit Function
 Set scr = basestack.Owner
 W3 = -1
 Dim basketcode As Long, prive As basket
@@ -12586,8 +12587,6 @@ If mybreakkey Then
            k1 = 0
                 MyDoEvents0 bstack.Owner
                MyEr "", ""
-               Else
- If myexit(bstack) Then Execute = 1: Exit Function
 End If
 Set di = bstack.Owner
 Dim myobject As Object
@@ -12745,6 +12744,7 @@ sss = LLL  'basic...
 
 
     End If
+contVarNew:
 If MaybeIsSymbol(b$, "\'") Then
     NewStat = False
     VarStat = False
@@ -12754,6 +12754,7 @@ lbl = True
  GoTo again1
 End If
 jumpforCR:
+
 If FastSymbol(b$, vbCrLf, , 2) Then
     If Trim(b$) = "" Then b$ = "": Exit Function
     NewStat = False
@@ -12764,9 +12765,42 @@ If FastSymbol(b$, vbCrLf, , 2) Then
 Else
     If lbl Then If IsNumberLabel(b$, w$) Then sss = Len(b$): sss = LLL: jump = False: If sss = 0 Then sss = 2: b$ = vbCrLf
 End If
-If VarStat Or NewStat Then If FastSymbol(b$, ",") Then sss = LLL: lbl = False: jump = False
-If FastSymbol(b$, ":") Then
+If VarStat Or NewStat Then
+
+
+If FastSymbol(b$, ",") Then sss = LLL: lbl = False: jump = False
+iscom = True
+Select Case IsLabelDotSub(HERE$, b$, w$, ss$, lang)
+Case 1234, 0
+VarStat = False
+NewStat = False
+GoTo contconthere
+Case 1
+If Left$(w$, 1) = "." Then
+ ss$ = w$
+IsLabel bstack, ss$, w$
+End If
+GoTo varonly
+Case 2
+MyEr "No with reference (&)", "º˜È ÏÂ ·Ì·ˆÔÒ‹ (&)"
+Execute = 0
+Exit Function
+Case 3
+GoTo contcase3
+Case 4
+GoTo contcase4
+Case 5
+GoTo contcase5
+Case 6
+GoTo contcase6
+Case 7
+GoTo contcase7
+Case Else
+GoTo errstat
+End Select
+ElseIf FastSymbol(b$, ":") Then
 If linebyline Then Exit Do
+contconthere:
 NewStat = False: VarStat = False: sss = LLL: lbl = False: jump = False:  If sss = 0 Then sss = 2: b$ = vbCrLf
 End If
 
@@ -12785,7 +12819,7 @@ Case 1
 
     If sss = LLL Then
 If lbl And IsOperator(b$, ":") Then
-If VarStat Or NewStat Then b$ = w$ + " :" + b$: sss = Len(b$): GoTo again1
+''If VarStat Or NewStat Then b$ = w$ + " :" + b$: sss = Len(b$): GoTo again1
 sw$ = GetNextLine(b$)
 If Trim$(sw$) <> "" Then
 If MaybeIsSymbol(sw$, "\'") Then
@@ -12890,27 +12924,105 @@ iscom = True
 GoTo varonly
 ElseIf Not NoOptimum Then
 
-              If Not comhash.Find(w$, i) Then
+      If Not comhash.Find2(w$, i, v) Then
                 iscom = True
                 GoTo varonly
-            ElseIf i <> 0 Then
-               If CallByPtr(i, bstack, b$, lang) Then
-                    GoTo conthere222
-                Else
-                      If LastErNum1 = -1 And bstack.IamThread Then Execute = 1 Else Execute = 0
-                        Exit Function
-                End If
-                Debug.Print "ok"
-            
+
+          ElseIf v > 0 Then
+              ' If VarStat Or NewStat Then GoTo errstat
+                Select Case v
+                Case 50
+                GoTo contif
+                Case 51
+                GoTo ContElse
+                Case 52
+                GoTo contElseIf
+                Case 53
+                GoTo contSelect
+                Case 60
+                GoTo ContTry
+                Case 100 ' For
+                GoTo ForCont
+                Case 199
+                GoTo contNext
+                Case 200
+                GoTo contRefr
+                Case 300
+                GoTo contWhile
+                Case 301
+                GoTo ContRepeat
+                Case 400
+                GoTo ContGoto
+                Case 401
+                GoTo contSub
+                Case 402
+                GoTo autogosub
+                Case 403
+                GoTo ContOn
+                Case 600
+                GoTo contLoop
+                Case 601
+                GoTo contBreak
+                Case 602
+                GoTo ContContinue
+                Case 603
+                GoTo ContRestart
+                Case 604
+                GoTo ContReturn
+                Case 605
+                GoTo ContEnd
+                Case 606
+                GoTo ContExit
+                Case 650
+                GoTo ContInline
+                Case 651
+                GoTo contUpdate
+                Case 700
+                GoTo contThread
+                Case 701
+                GoTo contAfter
+                Case 702
+                GoTo contPart
+                Case 800
+                GoTo contStatic
+                Case 850
+                GoTo contEvery
+                Case 851
+                GoTo contTask
+                Case 900
+                GoTo ContScan
+                Case 1000
+                GoTo contTarg
+                End Select
+             ElseIf v < 0 Then
+             Select Case v
+                Case -100  ' local
+                GoTo contNegLocal
+                Case -200
+                GoTo contNegGlobal
+                
+             End Select
+             ElseIf i <> 0 Then
+             'GoTo parsecommand
+             '
+              If CallByPtr(i, bstack, b$, lang) Then
+                  GoTo conthere222
+              Else
+                   If LastErNum1 = -1 And bstack.IamThread Then Execute = 1 Else Execute = 0
+                 Exit Function
+               End If
+               Else
+               GoTo parsecommand
              End If
-             
+
              
 End If
 
         Select Case w$
 
             Case "TARGET", "”‘œ◊œ”"
-            If VarStat Or NewStat Then GoTo errstat
+contTarg:
+           ' If VarStat Or NewStat Then GoTo errstat
                   If Abs(IsLabel(bstack, b$, w$)) = 1 Then
                     If Not GetVar(bstack, w$, v) Then
                      v = GlobalVar(w$, 0, , VarStat)
@@ -12959,7 +13071,7 @@ End If
                 End If
           
         Case "SCAN", "”¡—Ÿ”≈"
-If VarStat Or NewStat Then GoTo errstat
+ContScan:
              ClearJoyAll
              PollJoypadk
              
@@ -13015,7 +13127,7 @@ If VarStat Or NewStat Then GoTo errstat
                 nomore = False
                 End If
         Case "REFRESH", "¡Õ¡Õ≈Ÿ”«"
-        If VarStat Or NewStat Then GoTo errstat
+contRefr:
         If IsLabelSymbolNew(b$, "ƒœ …Ã«", "TEST", lang) Then
         MyDoEvents1 di
         ElseIf IsExp(bstack, b$, p) Then
@@ -13051,9 +13163,10 @@ MyDoEvents1 di
                 End If
                 FKey = 0
 Case "”‘¡‘… «", "”‘¡‘… ≈”", "STATIC"
+contStatic:
  StaticNew bstack, b$, w$
 Case "Õ«Ã¡", "THREAD"
-If VarStat Or NewStat Then GoTo errstat
+contThread:
 Us$ = ""
 If IsLabelSymbolNewExp(b$, "»≈”≈", "SET", lang, Us$) Then
 If bstack.Process Is Nothing Then GoTo dothesame
@@ -13098,25 +13211,27 @@ dothesame:
         Execute = Execute(bstack, b$, Once, False)
          Exit Do
         End If
-            ok = False
- If Not I2(bstack, w$, b$, ok, lang) Then Execute = 0: Exit Function
-      ''     If Not Identifier(bstack, w$, B$) Then Execute = 0: Exit Function
-            If Left$(HERE$ & "#", 1) = "!" Then HERE$ = Mid$(HERE$, 2): ohere$ = HERE$
+            If Not MyThread(bstack, b$, lang) Then Execute = 0: Exit Function
+               If Left$(HERE$ & "#", 1) = "!" Then HERE$ = Mid$(HERE$, 2): ohere$ = HERE$
             End If
         Case "LOOP", " ’ À… ¡"
-        
+contLoop:
+    
         If Once = True Then Execute = 0: Exit Function
-        If VarStat Or NewStat Then GoTo errstat
             loopthis = True
             Execute = 2
+        If myexit(bstack) Then Execute = 1: b$ = "": Exit Function
        Case "BREAK", "ƒ…≈ œÿ≈"
-       If VarStat Or NewStat Then GoTo errstat
+contBreak:
+     
                   b$ = "BREAK"
            Once = True
         Execute = 2
         Exit Function
+     If myexit(bstack) Then Execute = 1: b$ = ""
        Case "CONTINUE", "”’Õ≈◊…”≈"
-        If VarStat Or NewStat Then GoTo errstat
+ContContinue:
+
            If Execute <> 2 Then
               b$ = "CONTINUE"
            Once = True
@@ -13126,14 +13241,17 @@ dothesame:
            b$ = ""
            
         End If
+                If myexit(bstack) Then Execute = 1: b$ = ""
           Exit Function
        Case "RESTART", "Œ≈ …Õ¡"
-       If VarStat Or NewStat Then GoTo errstat
+ContRestart:
          b$ = ""
         Execute = 2
-       
+       If myexit(bstack) Then Execute = 1
        Exit Function
+
        Case "RETURN", "≈–…”‘—œ÷«"
+ContReturn:
        If IsStrExp(bstack, b$, ss$) Then
             append_table bstack, ss$, b$, True, lang
         Else
@@ -13144,7 +13262,7 @@ dothesame:
                 Exit Function
     End If
        Case "END", "‘≈Àœ”"
-               If VarStat Or NewStat Then GoTo errstat
+ContEnd:
                If IsLabelSymbolNew(b$, "—œ’‘…Õ¡”", "SUB", lang) Then
                 Once = False
                 b$ = Chr$(0)
@@ -13157,7 +13275,7 @@ dothesame:
                 End If
         Case "≈Œœƒœ”", "EXIT"
          ''\\"SUB", "—œ’‘…Õ¡"
-        If VarStat Or NewStat Then GoTo errstat
+ContExit:
         Us$ = ""
         If IsLabelSymbolNewExp(b$, "—œ’‘…Õ¡”", "SUB", lang, Us$) Then
                 Once = False
@@ -13190,7 +13308,7 @@ dothesame:
            
            
         Case "FOR", "√…¡"
-        If VarStat Or NewStat Then GoTo errstat
+ForCont:
                   If linebyline Then
                   If AscW(b$) <> 32 Then
                 
@@ -13619,6 +13737,7 @@ startwithgroup:
         Exit Function
         End If
         Case "NEXT", "≈–œÃ≈Õœ"
+contNext:
         If IsLabel(bstack, b$, w$) Then
         If bstack.RetStack.StackItemType(1) = "S" Then
         ss$ = bstack.RetStack.PopStr
@@ -13644,7 +13763,7 @@ startwithgroup:
         End If
         
         Case "INLINE", "≈Õ»≈”«"
-        If VarStat Or NewStat Then GoTo errstat
+ContInline:
                If Once = True Then Execute = 0: Exit Function
         If IsLabelSymbolNew(b$, " Ÿƒ… ¡", "CODE", lang) Then
         If IsLabelDot(HERE$, b$, sw$) = 1 Then
@@ -13669,6 +13788,7 @@ startwithgroup:
         End If
         End If
         Case "UPDATE", "≈–… ¡…—œ"
+contUpdate:
         If bstack.UseGroupname <> "" Then
         
         b$ = ": set " + Left$(bstack.UseGroupname, Len(bstack.UseGroupname) - 1) + "=" + Left$(bstack.UseGroupname, Len(bstack.UseGroupname) - 1) + vbCrLf + b$
@@ -13680,7 +13800,7 @@ startwithgroup:
                 End If
                 GoTo again1
         Case "AFTER", "Ã≈‘¡"
-        If VarStat Or NewStat Then GoTo errstat
+contAfter:
                  If linebyline Then
           b$ = w$ + " " + b$
         Execute = Execute(bstack, b$, Once, False)
@@ -13709,12 +13829,13 @@ startwithgroup:
         End If
         
         Case "Ã≈—œ”", "PART"
+contPart:
                  If linebyline Then
           b$ = w$ + " " + b$
         Execute = Execute(bstack, b$, Once, False)
          Exit Do
         End If
-        If VarStat Or NewStat Then GoTo errstat
+
                If Once = True Then Execute = 0: Exit Function
         Execute = 0
         If FastSymbol(b$, "{") Then
@@ -13749,7 +13870,7 @@ startwithgroup:
 
         
         Case "DO", "REPEAT", "≈–¡Õ¡À¡¬≈", "≈–¡Õ≈À¡¬≈"
-        If VarStat Or NewStat Then GoTo errstat
+ContRepeat:
                    If linebyline Then
           b$ = w$ + " " + b$
         Execute = Execute(bstack, b$, Once, False)
@@ -13843,8 +13964,7 @@ startwithgroup:
             End If
             
         Case "≈ÕŸ", "WHILE"
-        
-        If VarStat Or NewStat Then GoTo errstat
+contWhile:
                    If linebyline Then
           b$ = w$ + " " + b$
         Execute = Execute(bstack, b$, Once, False)
@@ -13910,7 +14030,7 @@ startwithgroup:
                 End If
         End If
         Case " ¡»≈", "EVERY"
-        If VarStat Or NewStat Then GoTo errstat
+contEvery:
         If Once = True Then Execute = 0: Exit Function
                    If linebyline Then
           b$ = w$ + " " + b$
@@ -13982,7 +14102,7 @@ startwithgroup:
                 End If
         End If
         Case " ’—…œ.≈—√œ", "MAIN.TASK", "TASK.MAIN"
-        If VarStat Or NewStat Then GoTo errstat
+contTask:
                If Once = True Then Execute = 0: Exit Function
               If linebyline Then
           b$ = w$ + " " + b$
@@ -14028,8 +14148,8 @@ startwithgroup:
         If MOUT Then Execute = 0: Exit Function
         
         Case "ELSE", "¡ÀÀ…Ÿ”"
-        If VarStat Or NewStat Then GoTo errstat
-               If Once = True Then Execute = 0: Exit Function
+ContElse:
+        If Once = True Then Execute = 0: Exit Function
         If IFCTRL = 0 Then
         SyntaxError
         Execute = 0
@@ -14050,7 +14170,7 @@ startwithgroup:
             
                 sss = Len(b$)
         Case "TRY", "ƒ≈”"
-        If VarStat Or NewStat Then GoTo errstat
+ContTry:
                If Once = True Then Execute = 0: Exit Function
                  If linebyline Then
           b$ = w$ + " " + b$
@@ -14110,9 +14230,9 @@ startwithgroup:
         If MOUT Then Execute = 0: Exit Function
         Execute = 1
          Case "ELSE.IF", "¡ÀÀ…Ÿ”.¡Õ"
-         If VarStat Or NewStat Then GoTo errstat
-                If Once = True Then Execute = 0: Exit Function
-       If IFCTRL = 0 Then
+contElseIf:
+        If Once = True Then Execute = 0: Exit Function
+        If IFCTRL = 0 Then
         SyntaxError
         Else
         
@@ -14138,7 +14258,7 @@ startwithgroup:
             Case 1
             Select Case w$
                 Case "THEN", "‘œ‘≈"
-                If VarStat Or NewStat Then GoTo errstat
+                'If VarStat Or NewStat Then GoTo errstat
                        If Once = True Then Execute = 0: Exit Function
                              If jump Then
                     If FastSymbol(b$, "{") Then
@@ -14154,7 +14274,7 @@ startwithgroup:
               End If
                 
                Case "ELSE", "¡ÀÀ…Ÿ”"
-               If VarStat Or NewStat Then GoTo errstat
+              ' If VarStat Or NewStat Then GoTo errstat
                       If Once = True Then Execute = 0: Exit Function
                    '  IFCTRL = 1
                 If Not jump Then      ' JUMP FALSE SKIP ELSE
@@ -14170,7 +14290,7 @@ startwithgroup:
                 sss = Len(b$)
                             Case "ELSE.IF", "¡ÀÀ…Ÿ”.¡Õ"
                             
-                            If VarStat Or NewStat Then GoTo errstat
+                          '  If VarStat Or NewStat Then GoTo errstat
                                    If Once = True Then Execute = 0: Exit Function
                    '  IFCTRL = 1
                 b$ = w$ & b$
@@ -14194,7 +14314,7 @@ startwithgroup:
         sss = Len(b$)
         
         Case "IF", "¡Õ"
-        If VarStat Or NewStat Then GoTo errstat
+contif:
         If IsExp(bstack, b$, p) Then
           IFCTRL = 1           ' NEED THEN OR ELSE OR ELSE.IF
         jump = (p = 0)                    ' JUMP TRUE GOTO ELSE
@@ -14202,7 +14322,7 @@ startwithgroup:
             Case 1
             Select Case w$
                 Case "THEN", "‘œ‘≈"
-                If VarStat Or NewStat Then GoTo errstat
+              '  If VarStat Or NewStat Then GoTo errstat
                 If jump Then
                     If FastSymbol(b$, "{") Then
                      If Once = True Then Execute = 0: Exit Function
@@ -14231,7 +14351,7 @@ startwithgroup:
         
                 
                 Case "ELSE", "¡ÀÀ…Ÿ”"
-                If VarStat Or NewStat Then GoTo errstat
+               ' If VarStat Or NewStat Then GoTo errstat
                    '  IFCTRL = 1
                 If Not jump Then      ' JUMP FALSE SKIP ELSE
                 If FastSymbol(b$, "{") Then
@@ -14246,7 +14366,7 @@ startwithgroup:
                 End If
                 sss = Len(b$)
                             Case "ELSE.IF", "¡ÀÀ…Ÿ”.¡Õ"
-                            If VarStat Or NewStat Then GoTo errstat
+                          '  If VarStat Or NewStat Then GoTo errstat
                           
                    '  IFCTRL = 1
                 b$ = w$ & b$
@@ -14274,8 +14394,7 @@ startwithgroup:
         End If
         sss = Len(b$)
         Case "SELECT", "≈–≈À≈Œ≈", "≈–…À≈Œ≈"  '*************************************** SELECT CASE
-        
-        If VarStat Or NewStat Then GoTo errstat
+contSelect:
          If Once = True Then Execute = 0: Exit Function
         x1 = 0 ' mode numbers using p, sp and st
                 ' x1=2 using sw$ w$ ss$
@@ -14679,7 +14798,7 @@ startwithgroup:
         End If
       sss = Len(b$)
         Case "¡–œ", "ON"                 '************************************* ON NUMBER GOTO LABELS
-        If VarStat Or NewStat Then GoTo errstat
+ContOn:
         If IsExp(bstack, b$, p) Then
         y1 = IsLabelSymbolNew(b$, "–—œ”", "GOTO", lang)
         y2 = False
@@ -14778,7 +14897,7 @@ End If
         End If
           
         Case "SUB", "—œ’‘…Õ¡"
-          If VarStat Or NewStat Then GoTo errstat
+contSub:
            If Once = True Then Execute = 0: Exit Function
    If Execute <> 2 Then
               b$ = w$
@@ -14792,7 +14911,9 @@ End If
            Exit Function
         Case "GOSUB", "ƒ…¡Ã≈”œ’"
 autogosub:
-         If VarStat Or NewStat Then GoTo errstat
+
+If myexit(bstack) Then Execute = 1: Exit Function
+
 If bstack.SubLevel > deep And deep <> 0 Then
 ' GO BACK TO FIRST CALL
 If bstack.RetStack.Total >= 9 * deep Then
@@ -14869,7 +14990,8 @@ contHere2FromOn:
                 Exit Do
                 End If
         Case "GOTO", "–—œ”"               '**************************************** This is the GOTO statement
-        If VarStat Or NewStat Then GoTo errstat
+ContGoto:
+        If myexit(bstack) Then Execute = 1: Exit Function
         If Trim$(b$) = "" Or FastSymbol(b$, ":") Then
                 Execute = 0
                 MyEr "No Label or Number in GOTO", "◊˘ÒﬂÚ ¸ÌÔÏ· ﬁ ·ÒÈËÏ¸ Á –—œ”"
@@ -14897,11 +15019,13 @@ contHere2FromOn:
                 End If
               End If
               Case "LOCAL", "‘œ–… ¡", "‘œ–… «", "‘œ–… ≈”"
+contNegLocal:
                     NewStat = True
                     sss = Len(b$)
                 GoTo again1
                 
                 Case "GLOBAL", "√≈Õ… œ", "√≈Õ… «", "√≈Õ… ≈”"
+contNegGlobal:
                 If NewStat Then MyEr "Global and local together;", "√ÂÌÈÍﬁ Í·È ÙÔÈÍﬁ Ï·Êﬂ!": Execute = 0: Exit Function
                 If Not VarStat Then
              
@@ -15140,9 +15264,9 @@ varonly:
         If VarStat Or NewStat Then
         p = 0
             GlobalVar w$, p, , VarStat
-              If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
+          '   If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
                     sss = Len(b$)
-                GoTo again1
+                GoTo contVarNew
         End If
         
         
@@ -15348,7 +15472,7 @@ contlambda:
 
         Else
 parsecommand:
-            If VarStat Or NewStat Then GoTo errstat
+            'If VarStat Or NewStat Then GoTo errstat
             
                If Not Identifier(bstack, w$, b$, iscom, lang) Then
 conthere111:
@@ -15397,6 +15521,7 @@ b$ = Mid$(b$, 2)
 lbl = False
 sss = Len(b$)
 Case 3
+contcase3:
 If Left$(w$, 1) = "." Then
  ss$ = w$
 IsLabel bstack, ss$, w$
@@ -15551,10 +15676,10 @@ Else
         If VarStat Or NewStat Then
             
             GlobalVar w$, ss$, , VarStat
-            If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
+           ' If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
           
                     sss = Len(b$)
-                GoTo again1
+                GoTo contVarNew
                 
         End If
 
@@ -15563,6 +15688,7 @@ Else
                     Exit Function
 End If
 Case 4
+contcase4:
 If Left$(w$, 1) = "." Then
  ss$ = w$
 IsLabel bstack, ss$, w$
@@ -15736,8 +15862,8 @@ Else
     If VarStat Or NewStat Then
         p = 0
         GlobalVar w$, p, , VarStat
-        If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
-        sss = Len(b$): GoTo again1
+       ' If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
+        sss = Len(b$): GoTo contVarNew
     Else
         MyEr "No value for variable " & w$, "◊˘ÒﬂÚ ÙÈÏﬁ Á ÏÂÙ·‚ÎÁÙﬁ " & w$
         Execute = 0: Exit Function
@@ -15747,7 +15873,7 @@ End If
     
 
 Case 5
-
+contcase5:
 If AscW(w$) = 46 Then
 IsLabel bstack, (w$), w$
 End If
@@ -15755,8 +15881,8 @@ If VarStat Or NewStat Then
 
 MakeArray bstack, w$, 5, b$, pppp, NewStat, VarStat
 
- If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
-        sss = Len(b$): GoTo again1
+' If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
+        sss = Len(b$): GoTo contVarNew
 End If
 
 If neoGetArray(bstack, w$, pppp) Then
@@ -15924,13 +16050,14 @@ Execute = 0: Exit Function
 End If
 End If
 Case 6
+contcase6:
 If AscW(w$) = 46 Then
 IsLabel bstack, (w$), w$
 End If
 If VarStat Or NewStat Then
 MakeArray bstack, w$, 6, b$, pppp, NewStat, VarStat
  If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
-        sss = Len(b$): GoTo again1
+        sss = Len(b$): GoTo contVarNew
 End If
 If neoGetArray(bstack, w$, pppp) Then
     If FastSymbol(b$, ")") Then
@@ -16035,13 +16162,14 @@ Else
 Execute = 0: Exit Function
 End If
 Case 7
+contcase7:
 If AscW(w$) = 46 Then
 IsLabel bstack, (w$), w$
 End If
 If VarStat Or NewStat Then
 MakeArray bstack, w$, 7, b$, pppp, NewStat, VarStat
- If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
-        sss = Len(b$): GoTo again1
+ 'If Not MaybeIsSymbol(b$, ",") Then b$ = " :" + b$
+        sss = Len(b$): GoTo contVarNew
 End If
 If neoGetArray(bstack, w$, pppp) Then
     If FastSymbol(b$, ")") Then
@@ -17005,12 +17133,12 @@ Dim myIdentifier As Boolean
                         TaskMaster.OnlyMusic = False
 End If
 
-If myexit(basestack) Then
+'If myexit(basestack) Then
 ' done ..
-rest$ = ""
-Identifier = True
-Exit Function
-End If
+'rest$ = ""
+'Identifier = True
+'Exit Function
+'End If
 
 
 On Error GoTo NERR
@@ -17203,7 +17331,6 @@ End If
 Case "CALL", " ¡À≈”≈"
 ' CHECK FOR NUMBER...
 NeoCall ObjPtr(basestack), rest$, lang, Identifier
-'CallByPtr AddressOf NeoCall, basestack, rest$, lang
 Case "COMMIT", "¡Õ≈»≈”≈"
 If basestack.UseGroupname <> "" Then
 f = True
@@ -18003,28 +18130,24 @@ BYPASS1:
                         x1 = GlobalSub(what$, ""): basestack.IndexSub = x1
                 End If
                 If FastSymbol(rest$, "{") Then
-                       '''' I = Len(Rest$)
-                       '''' what$ = block(Rest$)
-                       '' If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
-                       '''' If Not FastSymbol(Rest$, "}") Then Identifier = False Else sbf(x1).sb = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(I) + vbCrLf + what$
- ss$ = block(rest$)
-                                i = Len(rest$)
-                                If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
-                                If Left$(sbf(basestack.OriginalCode).sb, 10) = "'11001EDIT" Then
-                                        If InStr(HERE$, ChrW(&H1FFF)) > 0 Then
-                                                s$ = ""
-                                        Else
-                                                pa$ = sbf(basestack.OriginalCode).sb
-                                                If Not Left$(ss$, 10) = "'11001EDIT" Then
-                                                            s$ = GetNextLine(pa$) & "-" & CStr(i) + vbCrLf
-                                                End If
-                                        End If
-                                Else
-                                        If Left$(ss$, 10) <> "'11001EDIT" Then
-                                                s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
-                                        End If
+                ss$ = block(rest$)
+                i = Len(rest$)
+                If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
+                If Left$(sbf(basestack.OriginalCode).sb, 10) = "'11001EDIT" Then
+                        If InStr(HERE$, ChrW(&H1FFF)) > 0 Then
+                                s$ = ""
+                        Else
+                                pa$ = sbf(basestack.OriginalCode).sb
+                                If Not Left$(ss$, 10) = "'11001EDIT" Then
+                                            s$ = GetNextLine(pa$) & "-" & CStr(i) + vbCrLf
                                 End If
-                                 sbf(x1).sb = s$ + ss$: basestack.IndexSub = x1
+                        End If
+                Else
+                        If Left$(ss$, 10) <> "'11001EDIT" Then
+                                s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
+                        End If
+                End If
+                 sbf(x1).sb = s$ + ss$: basestack.IndexSub = x1
                          If Not FastSymbol(rest$, "}") Then Identifier = False
                         
                 Else
@@ -20464,77 +20587,8 @@ Exit Function
 
 
 Case "Õ«Ã¡", "THREAD"  ' ************************************************************************* THREAD CONSTRUCT AND HANDLE FROM OTHER POINT
-      If FastSymbol(rest$, "{") Then
-        frm$ = NLtrim$(block(rest$))
-        If FastSymbol(rest$, "}") Then
-                par = False
-                If IsLabelSymbolNew(rest$, "Ÿ”", "AS", lang) Then
-                Else
-                    MyEr "can't find clause AS variable_name", "‰ÂÌ ÏÔÒ˛ Ì· ‚Ò˛ ÙÔ Ï›ÒÔÚ Ÿ” ÔÌÔÏ·_ÏÂÙ·‚ÎÁÙﬁÚ"
-                   ifier = True
-                    I2 = False
-               
-                    Exit Function
-                End If
-                Select Case Abs(IsLabel(bstack, rest$, what$)) ' is Ifier
-                Case 1
-                        p = GetTaskId + 20000
-                        If GetVar(bstack, what$, i) Then ' if exist
-                            var(i) = p
-                        Else
-                            GlobalVar what$, p     ' or make one
-                        End If
-                        Set bs = New basetask   ' bs is the basetask of the thread but thread process class arn't constructed yet
-                        Set bs.Parent = bstack  ' link to current basestask
-      
-                        bs.reflimit = bstack.reflimit
-                        bstack.PushThread CLng(p), what$  'push thread id and Ifier to threads collection in current basetask
-                        sThreadInternal bs, p, 0, frm$, uintnew(-1), HERE$, False ' thread construction - also we have a connection to
-                        
-                        
-                        Set bs = Nothing
-                        ss$ = ""
-                        If IsLabelSymbolNewExp(rest$, " ¡»≈", "INTERVAL", lang, ss$) Then
-                        GoTo chekInterval
-                        ElseIf IsLabelSymbolNewExp(rest$, "≈ ‘≈À≈”«", "EXECUTE", lang, ss$) Then
-                        TaskMaster.Message CLng(p), 4, , rest$
-                        End If
-                Case Else
-                       MissingnumVar
-                        ifier = True
-                        I2 = False
-  
-                     Exit Function
-                End Select
-        End If
-ElseIf IsExp(bstack, rest$, p) Then
-ss$ = ""
-    If IsLabelSymbolNewExp(rest$, "”¬«”≈", "ERASE", lang, ss$) Then
-        bstack.ThrowOne CLng(p)
-    ElseIf IsLabelSymbolNewExp(rest$, " —¡‘¡", "HOLD", lang, ss$) Then
-        TaskMaster.Message CLng(p), 0
-    ElseIf IsLabelSymbolNewExp(rest$, "≈ ‘≈À≈”«", "EXECUTE", lang, ss$) Then
-     TaskMaster.Message CLng(p), 4, , rest$
-    ElseIf IsLabelSymbolNewExp(rest$, "Œ≈ …Õ¡", "RESTART", lang, ss$) Then
-        TaskMaster.Message CLng(p), 2
-    ElseIf IsLabelSymbolNewExp(rest$, " ¡»≈", "INTERVAL", lang, ss$) Then
-chekInterval:
-        If IsExp(bstack, rest$, x) Then
-            If x < 2 Then x = 2
-            TaskMaster.Message CLng(p), 3, CLng(x)
-        Else
-            MyEr "Expected number for interval, miliseconds", "–ÂÒﬂÏÂÌ· ·ÒÈËÏ¸ „È· ÔÒÈÛÏ¸ Ù·ÍÙÈÍÔ˝ ‰È·ÛÙﬁÏ·ÙÔÚ ÂÍÍﬂÌÁÛÁÚ ÌﬁÏ·ÙÔÚ (˜Ò¸ÌÔ ÛÂ ˜ÈÎÈÔÛÙ‹ ‰ÂıÙÂÒÔÎ›ÙÔı)"
-           ifier = True
-            I2 = False
-        End If
-    Else
-        MyEr "can't find ERASE or HOLD or RESTART or INTERVAL clause", "ƒÂÌ ÏÔÒ˛ Ì· ‚Ò˘ ¸ÒÔ ¸˘Ú ÙÔ ”¬«”≈ ﬁ ÙÔ  —¡‘¡ ﬁ ÙÔ Œ≈ …Õ¡ ﬁ ÙÔ  ¡»≈"
-      ifier = True
-        I2 = False
-
-    End If
-End If
-what$ = ""
+I2 = MyThread(bstack, rest$, lang)
+ifier = True
 Exit Function
 Case "HOLD", " —¡‘«”≈"
 Form1.MY_BACK.ClearUp
@@ -21457,9 +21511,9 @@ End If
     Exit Function
 
 Case "REM", "”«Ã"
-SetNextLine rest$
-rest$ = vbCrLf + rest$
-Exit Function
+    NeoRem 0, rest$, 0, ifier
+    Exit Function
+
 Case "VOLUME", "≈Õ‘¡”«"
 If IsExp(bstack, rest$, p) Then
 vol = (CLng(p) Mod 101)
@@ -25973,6 +26027,11 @@ Dim i
 i = InStr(c$, vbCrLf)
 If i = 0 Then c$ = "" Else c$ = Mid$(c$, i + 2)
 End Sub
+Sub SetNextLineNL(c$)
+Dim i
+i = InStr(c$, vbCrLf)
+If i = 0 Then c$ = "" Else c$ = Mid$(c$, i)
+End Sub
 Function GetNextLine(c$) As String
 Dim i, j$
 i = InStr(c$, vbCrLf)
@@ -27316,10 +27375,9 @@ Loop
 End Sub
 
 Function myexit(bstack As basetask) As Boolean
-Static counter As Long
+'Static counter As Long
 Dim p As Boolean
 On Error Resume Next
-
 If Not extreme Then
             If escok Then
                         If KeyPressed(&H1B) Then
@@ -27348,8 +27406,8 @@ If Not extreme Then
                         End If
              End If
 End If
-If counter = 0 Then Sleep 0: counter = 5001
-counter = counter - 1
+'If counter = 0 Then Sleep 0: counter = 5001
+'counter = counter - 1
 If bstack Is Nothing Then
 myexit = True: Exit Function
 End If
@@ -31828,6 +31886,7 @@ i = 1
        End With
        
         i = preProcessor(bs, sbf(x1).sb)
+If myexit(bs) Then ProcModuleEntry = False: Exit Function
 
  Do
   frm$ = Mid$(sbf(x1).sb, i)
@@ -32270,10 +32329,10 @@ oldexec = Exec
 myLevel = bstack.SubLevel
 i = 1
 monce = Once
-If FastSymbol(b$, "}") Then
-''MyDoEvents
+If FastSymbol(b$, "}") Then ''MyDoEvents
 executeblock = False
-Exec = Abs(NOEXECUTION = False) * oldexec: Exit Function
+ If myexit(bstack) Then Exec = 1 Else Exec = Abs(NOEXECUTION = False) * oldexec
+Exit Function
 ElseIf IsSymbolBracket(b$) Then
 stepbystep = False
 ec1$ = b$
@@ -32292,6 +32351,7 @@ Else
 LL = oldLL
 End If
 ec1$ = ""
+
         Do
                 bb$ = Mid$(ec$, i)
 fromfirst0:
@@ -32415,7 +32475,7 @@ findelsesub0:
                                                                         End If
                                                           
                                                                         kolpo = False
-                                                                        GoTo contsub
+                                                                        GoTo contSub
                                                                 ElseIf bstack.IamChild Then
                                                                         If searchsub(sbf(bstack.Parent.OriginalCode).sb, bb$, i) Then
                                                                                 subspoint = True
@@ -32426,7 +32486,7 @@ findelsesub0:
                                                                                 End If
                                                                                 kolpo = False
                                                                                   
-contsub:
+contSub:
 y2 = y2 + 1
 subsub02:
                                                                         Exec = 0
@@ -32548,6 +32608,7 @@ subsub02:
 
                 If monce Then Exit Do
         Loop
+        
 executeblock = False
 End Function
 Function StockValues(bstack As basetask, b$, lang As Long) As Boolean
@@ -34461,14 +34522,14 @@ If TaskMaster.PlayMusic Then
                         TaskMaster.TimerTick
                         TaskMaster.OnlyMusic = False
 End If
-If myexit(basestack) Then
+'If myexit(basestack) Then
 ' done ..
-rest$ = ""
-CallByPtr = True
-Exit Function
-Else
+'rest$ = ""
+'CallByPtr = True
+'Exit Function
+'Else
 CallWindowProc nSubAddress, VarPtr(basestack), VarPtr(rest$), VarPtr(lang), VarPtr(resp)
-End If
+'End If
 CallByPtr = resp
 End Function
 Sub NeoCall(basestackLP As Long, rest$, lang As Long, resp As Boolean)
@@ -34737,6 +34798,88 @@ End Sub
 Sub NeoPrint(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 resp = RevisionPrint(ObjFromPtr(basestackLP), rest$, 0, lang)
 End Sub
+Sub NeoPrinthEX(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = RevisionPrint(ObjFromPtr(basestackLP), rest$, 1, lang)
+End Sub
+Sub NeoRem(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+    SetNextLineNL rest$
+    resp = True
+End Sub
+Function MyThread(bstack As basetask, rest$, lang As Long) As Boolean
+Dim frm$, ss$, what$, i As Long, p As Double, x As Double, par As Boolean, bs As basetask
+MyThread = True
+     If FastSymbol(rest$, "{") Then
+        frm$ = NLtrim$(block(rest$))
+        If FastSymbol(rest$, "}") Then
+                par = False
+                If IsLabelSymbolNew(rest$, "Ÿ”", "AS", lang) Then
+                Else
+                    MyEr "can't find clause AS variable_name", "‰ÂÌ ÏÔÒ˛ Ì· ‚Ò˛ ÙÔ Ï›ÒÔÚ Ÿ” ÔÌÔÏ·_ÏÂÙ·‚ÎÁÙﬁÚ"
+                   
+                    MyThread = False
+               
+                    Exit Function
+                End If
+                Select Case Abs(IsLabel(bstack, rest$, what$)) ' is Ifier
+                Case 1
+                        p = GetTaskId + 20000
+                        If GetVar(bstack, what$, i) Then ' if exist
+                            var(i) = p
+                        Else
+                            GlobalVar what$, p     ' or make one
+                        End If
+                        Set bs = New basetask   ' bs is the basetask of the thread but thread process class arn't constructed yet
+                        Set bs.Parent = bstack  ' link to current basestask
+      
+                        bs.reflimit = bstack.reflimit
+                        bstack.PushThread CLng(p), what$  'push thread id and Ifier to threads collection in current basetask
+                        sThreadInternal bs, p, 0, frm$, uintnew(-1), HERE$, False ' thread construction - also we have a connection to
+                        
+                        
+                        Set bs = Nothing
+                        ss$ = ""
+                        If IsLabelSymbolNewExp(rest$, " ¡»≈", "INTERVAL", lang, ss$) Then
+                        GoTo chekInterval
+                        ElseIf IsLabelSymbolNewExp(rest$, "≈ ‘≈À≈”«", "EXECUTE", lang, ss$) Then
+                        TaskMaster.Message CLng(p), 4, , rest$
+                        End If
+                Case Else
+                       MissingnumVar
+                        
+                        MyThread = False
+  
+                     Exit Function
+                End Select
+        End If
+ElseIf IsExp(bstack, rest$, p) Then
+ss$ = ""
+    If IsLabelSymbolNewExp(rest$, "”¬«”≈", "ERASE", lang, ss$) Then
+        bstack.ThrowOne CLng(p)
+    ElseIf IsLabelSymbolNewExp(rest$, " —¡‘¡", "HOLD", lang, ss$) Then
+        TaskMaster.Message CLng(p), 0
+    ElseIf IsLabelSymbolNewExp(rest$, "≈ ‘≈À≈”«", "EXECUTE", lang, ss$) Then
+     TaskMaster.Message CLng(p), 4, , rest$
+    ElseIf IsLabelSymbolNewExp(rest$, "Œ≈ …Õ¡", "RESTART", lang, ss$) Then
+        TaskMaster.Message CLng(p), 2
+    ElseIf IsLabelSymbolNewExp(rest$, " ¡»≈", "INTERVAL", lang, ss$) Then
+chekInterval:
+        If IsExp(bstack, rest$, x) Then
+            If x < 2 Then x = 2
+            TaskMaster.Message CLng(p), 3, CLng(x)
+        Else
+            MyEr "Expected number for interval, miliseconds", "–ÂÒﬂÏÂÌ· ·ÒÈËÏ¸ „È· ÔÒÈÛÏ¸ Ù·ÍÙÈÍÔ˝ ‰È·ÛÙﬁÏ·ÙÔÚ ÂÍÍﬂÌÁÛÁÚ ÌﬁÏ·ÙÔÚ (˜Ò¸ÌÔ ÛÂ ˜ÈÎÈÔÛÙ‹ ‰ÂıÙÂÒÔÎ›ÙÔı)"
+           
+            MyThread = False
+        End If
+    Else
+        MyEr "can't find ERASE or HOLD or RESTART or INTERVAL clause", "ƒÂÌ ÏÔÒ˛ Ì· ‚Ò˘ ¸ÒÔ ¸˘Ú ÙÔ ”¬«”≈ ﬁ ÙÔ  —¡‘¡ ﬁ ÙÔ Œ≈ …Õ¡ ﬁ ÙÔ  ¡»≈"
+      
+        MyThread = False
+
+    End If
+End If
+what$ = ""
+End Function
 Private Function ObjFromPtr(ByVal lpObject As Long) As Object
     Dim objTemp As Object
     RtlMoveMemory objTemp, lpObject, 4&

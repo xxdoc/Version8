@@ -12,7 +12,6 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
-
  Private Type item
  Key As String
   NDX As Long
@@ -178,6 +177,25 @@ Do
 Loop Until k < 0
 End If
 End Function
+Friend Function Find2(Key As String, num As Long, internal As Long) As Boolean
+'' used with KeyType as Long not a flag
+Dim k As Long
+num = 0
+If Len(Key) = 0 Then Exit Function
+k = Hash(HashFunc(Key)) - 1
+
+If k >= 0 Then
+Do
+    With PriveSpace(k)
+    If .Key = Key Then
+    internal = .KeyType
+    num = .NDX: Find2 = True: lastfind = Key: Exit Function
+    End If
+     k = .Pleft - 1
+     End With
+Loop Until k < 0
+End If
+End Function
 Friend Function ExistKey(Key As String) As Boolean
 Dim k As Long
 If Len(Key) = 0 Then Exit Function
@@ -191,28 +209,7 @@ Loop Until k < 0
 End If
 End Function
 
-Friend Function findRebound(Key As String, newnum As Long, v()) As Boolean
-Dim k As Long
-If Len(Key) = 0 Then Exit Function
-k = Hash(HashFunc(Key)) - 1
 
-If k >= 0 Then
-Do
-With PriveSpace(k)
-    If .Key = Key Then
-    If .KeyType = 0 Then
-        If IsObject(v(.NDX)) Then Set v(.NDX) = Nothing
-        v(.NDX) = Empty
-        .KeyType = 1
-    End If
-    .NDX = newnum
-     findRebound = True: Exit Function
-    End If
-    End With
-     k = PriveSpace(k).Pleft - 1
-Loop Until k < 0
-End If
-End Function
 Friend Sub ItemCreator(Key As String, num As Long, Optional isref As Boolean = False)
 Dim A As Long
 A = Malloc()
@@ -225,6 +222,19 @@ With PriveSpace(A)
     Else
         .KeyType = 0
     End If
+    .firsthash = HashFunc0(Key)
+End With
+place HashFunc(Key), A
+End Sub
+Friend Sub ItemCreator2(Key As String, num As Long, internal As Long)
+'' used with KeyType as Long not a flag
+Dim A As Long
+A = Malloc()
+
+With PriveSpace(A)
+    .Key = Key
+    .NDX = num
+    .KeyType = internal
     .firsthash = HashFunc0(Key)
 End With
 place HashFunc(Key), A
@@ -274,7 +284,7 @@ Private Function uintnew(ByVal A As Double) As Double
 If A > CDbl(2147483647) Then A = CDbl(2147483647)
 If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
 If A < 0 Then
-uintnew = CDbl(&H7FFFFFFF) + (CDbl(&H7FFFFFFF) + A) + 2
+uintnew = 4294967296# + A
 Else
 uintnew = A
 End If
@@ -295,3 +305,4 @@ ShowRev = ShowRev + Chr(1) + PriveSpace(i).Key + Str$(PriveSpace(i).NDX) + Chr(1
 End If
 Next i
 End Function
+

@@ -222,7 +222,7 @@ Private Function uintnew(ByVal A As Double) As Double
 If A > CDbl(2147483647) Then A = CDbl(2147483647)
 If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
 If A < 0 Then
-uintnew = CDbl(&H7FFFFFFF) + (CDbl(&H7FFFFFFF) + A) + 2
+uintnew = 4294967296# + A
 Else
 uintnew = A
 End If

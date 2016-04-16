@@ -2782,9 +2782,9 @@ r.top = r.top + TextPixelOffset
     r.top = r.top - TextPixelOffset
     End Sub
  Private Sub PrintItem(mHdc As Long, c As String, r As RECT, Optional way As Long = DT_SINGLELINE Or DT_NOPREFIX Or DT_NOCLIP)
-
+  r.top = r.top + TextPixelOffset
   DrawText mHdc, StrPtr(c), -1, r, way
-
+r.top = r.top - TextPixelOffset
     End Sub
      Private Sub PrintItem2(mHdc As Long, c As String, r As RECT, Optional way As Long = DT_SINGLELINE Or DT_NOPREFIX Or DT_NOCLIP)
  Dim that As Long
