@@ -3606,6 +3606,7 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 , "сулпкгяысг", "сумаятгсг", "сумевисе", "сумхгла", "сус", "сустгла", "сведиа", "сведио.мглатым", "сыяос", "сысе", "сысе.еццяажо", "таимиа", "таимиес", "танг", "танимолгсг", "текос", "титкос", "тлгла", "тлглата", "томос", "топийа", "топийес", "топийг", "топийо", "тоте", "тупос", "тупысе", "упойатакоцос", "упокоцистг", "жаядиа", "жеяе", "жеяеписы", "жомто", "жояла", "жоятос", "жоятысе" _
 , "жоятысе.еццяажо", "жымг", "ваяайтгяес", "ваяане", "вягсг", "вягстг", "вягстгс", "вяыла", "?")
 For i = 0 To UBound(mycommands())
+
 Select Case mycommands(i)
 
 Case "PRINT", "тупысе"
@@ -3614,6 +3615,64 @@ Case "CALL", "йакесе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCall)
 Case "REM", "сгл"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRem)
+Case "LINESPACE", "диастиво"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoLinespace)
+Case "BOLD", "жаядиа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoBold)
+Case "MODE", "тупос"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoMode)
+Case "GRADIENT", "жомто"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoGradient)
+Case "FILES", "аявеиа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoFiles)
+Case "CAT", "йатакоцои", "йат"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCat)
+Case "MOVE", "хесг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoMove)
+Case "ваяане", "DRAW"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDraw)
+Case "WIDTH", "павос"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoWidth)
+Case "покуцымо", "POLYGON"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPoly)
+Case "CIRCLE", "йуйкос"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCircle)
+Case "йалпукг", "CURVE"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCurve)
+Case "TEXT", "йеилемо"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoText)
+Case "HTML"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoHtml)
+Case "STRUCTURE", "долг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoStructure)
+Case "басг", "BASE"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoBase)
+Case "аявеио", "TABLE"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoTable)
+Case "ейтекесг", "EXECUTE"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoExecute)
+Case "амафгтгсг", "SEARCH"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRetr)
+Case "амафгтгсг", "SEARCH"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSearch)
+Case "пяосхгйг", "APPEND"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoAppend)
+Case "ажаияесг", "DELETE"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDelete)
+Case "танг", "ORDER"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoOrder)
+Case "сулпиесг", "COMPRESS"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCompact)
+Case "LAYER", "епипедо"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoLayer)
+Case "PRINTER", "ейтупытгс"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPrinter)
+Case "PAGE", "секида"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPage)
+Case "PLAYER", "паийтгс"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPlayer)
+Case "SPRITE", "диажамо", "диажамеиа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSprite)
 Case "IF", "ам"
     aHash.ItemCreator2 CStr(mycommands(i)), 0, 50
 Case "ELSE", "аккиыс"

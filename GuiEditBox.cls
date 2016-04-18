@@ -19,7 +19,10 @@ Public textinform As String
 Private mysp As Boolean
 Private TextPixelOffset As Long
 Private nochange As Boolean
+Public tabwidth As Long
 Public ShadowMarks As Boolean
+Public LineComment1 As String
+Public LineComment2 As String
 Public MultiLineComment1 As String
 Private mMultiLineComment2 As String
 Public Form1mn1Enabled As Boolean
@@ -173,10 +176,13 @@ CtrlName = name$ + "_" + LTrim(Str$(i))
 End Sub
 
 Public Sub SetUp()
+tabwidth = 6
 EditTextWord = True
 black = 0
 dimm1 = rgb(100, 200, 160)
 dimm2 = rgb(200, 120, 60)
+LineComment1 = "\"
+LineComment2 = "'"
 MultiLineComment1 = "{"
 MultiLineComment2 = "}"
 Dim ff As New StdFont
@@ -214,8 +220,8 @@ SetME
 End Sub
 Sub Show()
 TextPixelOffset = Int(glistN.TextHeightOffset)
-glistN.ShowPan
-'glistN.PrepareToShow 5
+'glistN.ShowPan
+glistN.PrepareToShow 5
 End Sub
 Public Sub PasteDoc(thisdoc As String)
 
@@ -577,12 +583,10 @@ End Sub
 
 Private Sub glistN_PureListOff()
 showparagraphWork = True
-
 End Sub
 
 Private Sub glistN_PureListOn()
 showparagraphWork = False
-
 End Sub
 
 Private Sub glistN_PushMark2Undo(that As String)
@@ -802,11 +806,13 @@ FillBack thisHDC, b, glistN.CapColor
    Exit Sub
    
 Else
+showparagraphWork = showparagraph
    A.Left = A.Left + 1
     A.top = A.top + glistN.addpixels \ 2
     pastchars = mdoc.TextParagraphLine2(item + 1, what$, ThatPara, showparagraph)
     
         If MarkedTextAny Then
+        showparagraphWork = True
     If item > BlockTopline And item < BlockBottomline Then
         FillBack thisHDC, b, SelectionColor
          SetTextColor thisHDC, SelectionTextColor
@@ -911,9 +917,9 @@ End If
             If EditDoc Then
                         ' old patch -- removed here
                       If mNoWrap And (glistN.ListIndex = item) Then
-                      glistN.ExternalCursor glistN.SelStart, what$, black
+              '        glistN.ExternalCursor glistN.SelStart, what$, black
                        ElseIf (Not skipcolor) And (glistN.ListIndex = item) Then
-                            glistN.ExternalCursor glistN.SelStart, what$, black
+                      '      glistN.ExternalCursor glistN.SelStart, what$, black
                        End If
             ElseIf Not NoMark Then
             
@@ -937,6 +943,7 @@ End If
    Else
    PrintItem1 thisHDC, final$, A
    End If
+   showparagraphWork = False
     Else
 conthere:
 If skipcolor Then
@@ -1412,6 +1419,7 @@ fbl:
 End Sub
 
 Public Sub MarkCopy()
+If Not NoColor Then ColorBlockOnly
 If HaveMarkedText Then
 FillBlock
 Dim pp1 As String, pp2 As String
@@ -1757,8 +1765,7 @@ End Sub
 Private Sub glistN_Selected(item As Long)
        
 If NoMark Then Exit Sub
-
-EditDoc = EditDoc
+If mEditDoc <> glistN.EditFlag Then EditDoc = EditDoc
 Dim what$, ThatPara As Long
    mdoc.TextParagraphLine2 item, what$, ThatPara, showparagraphWork And showparagraph
    mdoc.MarkParagraphID = ThatPara
@@ -2475,6 +2482,9 @@ Exit Sub
   Next k
   
 End If
+While FastSymbol(A$, Chr(9))
+ pos2 = k - Len(A$) + 1
+Wend
 While FastSymbol(A$, ":")
 If pos2 > 0 Then
 addone col(), pos2, 14
@@ -3164,7 +3174,7 @@ rhs = glistN.List(0)
 glistN.List(0) = Pad$
 If Not glistN.List(0) = Pad$ Then glistN.List(0) = rhs
 Else
-mdoc.InsertDoc mdoc.MarkParagraphID, Charpos, rhs
+mdoc.InsertDoc mdoc.MarkParagraphID, Charpos, rhs, tabwidth
 End If
 Render
 End If
@@ -3736,7 +3746,21 @@ Do While pos <= Len(A$)
                     
                 part$ = "o"
                 End If
-        Case "*", "/", "^"
+        Case "/", "^"
+            If Mid$(A$, pos + 1, 1) = "/" Then Exit Do
+            If Mid$(A$, pos + 1, 1) = "/*" Then Exit Do
+            If part$ <> "o" Then
+            b$ = b$ & part$
+            End If
+            part$ = "o"
+        Case "^"
+            If Mid$(A$, pos + 1, 1) = "^" Then Exit Do
+            If part$ <> "o" Then
+            b$ = b$ & part$
+            End If
+            part$ = "o"
+            
+        Case "*"
             If part$ <> "o" Then
             b$ = b$ & part$
             End If
@@ -3826,7 +3850,7 @@ Do While pos <= Len(A$)
                 Exit Do
                 End If
         
-        Case ")", "}", Is < " ", ":", ";", "'", "\"
+        Case ")", "}", Is < " ", ":", ";", LineComment1, LineComment2
         Exit Do
         Case Else
         If part$ = "N" Then
@@ -4501,12 +4525,10 @@ End Sub
 
 
 Public Sub mn1sub()
-ColorBlockOnly
 MarkCut
 End Sub
 
 Public Sub mn2sub()
-ColorBlockOnly
 MarkCopy
 End Sub
 
@@ -4514,8 +4536,8 @@ Public Sub mn3sub()
 On Error Resume Next
 Dim aa$
 aa$ = GetTextData(13)
-If aa$ = "" Then aa$ = Clipboard.GetText(1)
 
+If aa$ = "" Then aa$ = Clipboard.GetText(1)
 If ParaSelStart = 2 And glistN.List(glistN.ListIndex) = "" Then
 SelStart = SelStart - 1
 End If
@@ -4617,7 +4639,7 @@ mdoc.WrapAgainColorBlock2 BlockStartPara, BlockEndPara
 Else
 mdoc.WrapAgainColorBlock2 BlockEndPara, BlockStartPara
 End If
-ManualInform
+''ManualInform
 End Sub
 Sub TextViewOnly()
 mStayOpen = False
@@ -4674,3 +4696,4 @@ glistN.restrictLines = CLng(vNewValue)
 glistN.CalcNewFont
 TextPixelOffset = Int(glistN.TextHeightOffset)
 End Property
+

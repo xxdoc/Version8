@@ -1,5 +1,9 @@
 Attribute VB_Name = "Module1"
 Option Explicit
+Private Declare Function ObjSetAddRef Lib "msvbvm60.dll" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
+
+Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Long
+Private Declare Sub GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef retval As Long)
 Private Declare Sub RtlMoveMemory Lib "kernel32" ( _
     ByRef lpvDest As Any, _
     ByRef lpvSrc As Any, _
@@ -9,7 +13,7 @@ Private Declare Function CallWindowProc _
  Lib "user32.dll" Alias "CallWindowProcW" ( _
  ByVal lpPrevWndFunc As Long, _
  ByVal hWnd As Long, _
- ByVal msg As Long, _
+ ByVal Msg As Long, _
  ByVal wParam As Long, _
  ByVal lParam As Long) As Long
 Public ModalId As Variant
@@ -43,7 +47,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 219
+Global Const Revision = 220
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -13006,6 +13010,7 @@ ElseIf Not NoOptimum Then
              ElseIf i <> 0 Then
              'GoTo parsecommand
              '
+             If Not IsBadCodePtr(i) Then
               If CallByPtr(i, bstack, b$, lang) Then
                   GoTo conthere222
               Else
@@ -13014,6 +13019,10 @@ ElseIf Not NoOptimum Then
                End If
                Else
                GoTo parsecommand
+               End If
+               Else
+               GoTo parsecommand
+               
              End If
 
              
@@ -17402,6 +17411,20 @@ ElseIf ttl Then
 Unload Form3
 End If
 Exit Function
+Case "диажуцг"
+If IsLabelSymbol(rest$, "маи") Then
+escok = True
+ElseIf IsLabelSymbol(rest$, "ови") Then
+escok = False
+Else
+Identifier = False
+End If
+Case "HIDE", "сбгсе"
+newHide basestack
+Exit Function
+Case "SHOW", "амаье"
+newshow basestack
+Exit Function
 Case "WRITE", "цяаье"
 If IsLabelSymbolNew(rest$, "ле", "WITH", lang) Then
 If IsStrExp(basestack, rest$, s$) Then
@@ -17491,31 +17514,32 @@ If FastSymbol(rest$, "#") Then
 End If
 Exit Function
 
-Case "TEXT", "йеилемо", "HTML"
-Identifier = ProcText(basestack, what$, rest$)
+Case "TEXT", "йеилемо", "HTML"  'ok
+Identifier = ProcText(basestack, what$ = "HTML", rest$)
 Exit Function
-Case "STRUCTURE", "долг"
+Case "STRUCTURE", "долг"  ' ok
 TABLENAMES basestack, rest$, lang
 Exit Function
-Case "басг", "BASE"
+Case "басг", "BASE"   'ok
 ' меа басг
 NewBase basestack, rest$
 Exit Function
-Case "аявеио", "TABLE"
+Case "аявеио", "TABLE"   'ok
 NewTable basestack, rest$
 Exit Function
 ' меос пимайас стгм басг
 Exit Function
-Case "ейтекесг", "EXECUTE"
+Case "ейтекесг", "EXECUTE"   'ok
 CommExecAndTimeOut basestack, rest$
+Exit Function
 ' меа киста
-Case "амайтгсг", "RETRIEVE"
+Case "амайтгсг", "RETRIEVE"  'ok
 getrow basestack, rest$, , , lang
 Exit Function
-Case "амафгтгсг", "SEARCH"
+Case "амафгтгсг", "SEARCH"  'ok
 getrow basestack, rest$, , "", lang
 Exit Function
-Case "пяосхгйг", "APPEND"
+Case "пяосхгйг", "APPEND"  'ok
 ' басг,пимайас,стоивеиа
 If IsStrExp(basestack, rest$, s$) Then
 append_table basestack, s$, rest$, False
@@ -17524,31 +17548,33 @@ SyntaxError
 Identifier = False
 End If
 Exit Function
-Case "ажаияесг", "DELETE"
+Case "ажаияесг", "DELETE"  'ok
 ' басг, пимайас,поио , ти
 par = DELfields(basestack, rest$)
-Case "танг", "ORDER"
+Exit Function
+Case "танг", "ORDER"  'ok
 MyOrder basestack, rest$
-Case "епистяожг", "RETURN"
+Exit Function
+Case "епистяожг", "RETURN"  ' no need here
 ' басг,"SELECT пимайас",стоивеиа
 If IsStrExp(basestack, rest$, s$) Then
 append_table basestack, s$, rest$, True, lang
 End If
 Exit Function
-Case "сулпиесг", "COMPRESS"
+Case "сулпиесг", "COMPRESS"  'ok
 BaseCompact basestack, rest$
 Exit Function
 
-Case "LAYER", "епипедо"
+Case "LAYER", "епипедо" ' ok
 Identifier = ProcLayer(basestack, rest$)
 Exit Function
-Case "PRINTER", "ейтупытгс"
+Case "PRINTER", "ейтупытгс"  ' ok
 Identifier = ProcPrinter(basestack, rest$)
 Exit Function
 Case "MOTION", "йимгсг"
 Identifier = ProcMotion(basestack, rest$, lang)
 Exit Function
-Case "PAGE", "секида"
+Case "PAGE", "секида" 'ok
 ProcPage basestack, rest$, lang
 Exit Function
 Case "PRINTING", "ейтупысг"
@@ -17562,20 +17588,7 @@ escok = False
 Else
 Identifier = False
 End If
-Case "диажуцг"
-If IsLabelSymbol(rest$, "маи") Then
-escok = True
-ElseIf IsLabelSymbol(rest$, "ови") Then
-escok = False
-Else
-Identifier = False
-End If
-Case "HIDE", "сбгсе"
-newHide basestack
-Exit Function
-Case "SHOW", "амаье"
-newshow basestack
-Exit Function
+
 Case "FORMLABEL", "етийета.жоялас"
 Identifier = ProcLabel(basestack, rest$)
 Exit Function
@@ -17618,7 +17631,7 @@ Identifier = True
 End If
 
 Case "жояла", "FORM"
-kForm = True
+Kform = True
 Identifier = MakeForm(basestack, rest$)
 
 
@@ -21084,7 +21097,7 @@ ifier = False
 End If
 Exit Function
 Case "WINDOW", "паяахуяо"
-kForm = True
+Kform = True
 ProcWindow bstack, rest$, bstack.Owner, ifier
 Exit Function
 Case "FIELD", "педио"
@@ -21549,141 +21562,24 @@ Function I3(bstack As basetask, what$, rest$, ifier As Boolean, lang As Long) As
 Dim s$, p As Double, i As Long, x1 As Long, x As Double, y As Double, f As Long, y1 As Long, sx As Double, ss$, pa$, photo As Object, it As Long
 Dim scr As Object, frm$, par As Boolean, w$, task As TaskInterface, Once As Boolean
 Dim prive As Long
-Dim pppp As mArray, stac1$, col As Long, sy As Double, sxy As Double, DUM As Boolean, ps As mStiva
+Dim pppp As mArray, stac1$, col As Long, sy As Double, DUM As Boolean, ps As mStiva
 ifier = True
 I3 = True
 Select Case what$
-Case "LINESPACE", "диастиво"
+Case "LINESPACE", "диастиво"  'ok
 ifier = procLineSpace(bstack, rest$)
 Exit Function
-Case "BOLD", "жаядиа"
-If IsExp(bstack, rest$, p) Then
-bstack.myBold = (p <> 0)
-Else
-bstack.myBold = Not bstack.myBold
-
-p = CDbl(bstack.myBold)
-End If
-players(GetCode(bstack.Owner)).bold = Abs(p <> 0)
-
-bstack.Owner.Font.bold = Abs(p <> 0)
-
-
-
+Case "BOLD", "жаядиа"      'ok
+ProcBold bstack, rest$
 Exit Function
-
-
-
 Case "MODE", "тупос"
-kForm = True
-On Error Resume Next
-Set scr = bstack.Owner
-With players(GetCode(scr))
-x1 = scr.Width
-y1 = scr.Height
-If scr.name = "GuiM2000" Then
-    Else
-If scr.name = "Form1" Then
-DisableTargets q(), -1
-
-ElseIf scr.name = "DIS" Then
-DisableTargets q(), 0
-
-ElseIf scr.name = "dSprite" Then
-DisableTargets q(), val(scr.Index)
-End If
-End If
-If IsExp(bstack, rest$, p) Then
-.SZ = CSng(p)
-If .SZ < 4 Then .SZ = 4
-If Not bstack.toprinter Then
-If FastSymbol(rest$, ",") Then
-    If IsExp(bstack, rest$, p) Then x1 = CLng(p): y1 = CLng(x1 * ScrY() / ScrX())
-    If FastSymbol(rest$, ",") Then
-            If IsExp(bstack, rest$, p) Then y1 = CLng(p)
-        
-    End If
-ElseIf FastSymbol(rest$, ";") Then
-.mysplit = 0
-scr.Font.Size = .SZ
-       SetText scr
-        GetXYb scr, players(prive), .curpos, .currow
-
-Set scr = Nothing
+ifier = ProcMode(bstack, rest$)
 Exit Function
-End If
-Else
-.SZ = .SZ * 3
-End If
-Err.Clear
-scr.Font.Size = .SZ
-If Err.Number > 0 Then
-
-MYFONT = "ARIAL"
-scr.Font.name = MYFONT
-scr.Font.charset = bstack.myCharSet
-scr.Font.name = MYFONT
-scr.Font.charset = bstack.myCharSet
-End If
-.SZ = scr.Font.Size
-     .uMineLineSpace = .MineLineSpace
-    
- FrameText scr, .SZ, x1, y1, .Paper
- 
-    Else
-    ifier = False
-    Exit Function
-    End If
-    .currow = 0
-    .curpos = 0
-    .XGRAPH = 0
-    .YGRAPH = 0
-End With
-Set scr = Nothing
 Case "GRADIENT", "жомто"
-If Not IsExp(bstack, rest$, x) Then x = rgb(255, 255, 255)
-If Not FastSymbol(rest$, ",") Then
-y = 0
-Else
-If Not IsExp(bstack, rest$, y) Then y = 0
-End If
-If Not FastSymbol(rest$, ",") Then
-
-Gradient bstack.Owner, mycolor(x), mycolor(y), 0, 0, 0, 0, True, False
-
-
-Else
-If Not IsExp(bstack, rest$, p) Then
-ifier = IfierVal: Exit Function
-Else
-Gradient bstack.Owner, mycolor(x), mycolor(y), 0, 0, 0, 0, p <> 0, False
-
-
-End If
-End If
+ifier = ProcGradient(bstack, rest$)
 Exit Function
-
 Case "CHOOSE.FONT", "епекене.цяаллатосеияа", "епикене.цяаллатосеияа"
-If Form4.Visible Then
-Form4.Visible = False
-    If Form1.TEXT1.Visible Then
-        Form1.TEXT1.SetFocus
-    Else
-        Form1.SetFocus
-    End If
-End If
-'GETFONT bstack, Form1.DIS
-
-DialogSetupLang lang
-With bstack.Owner
-    ReturnFontName = .Font.name
-    ReturnBold = .Font.bold
-    ReturnItalic = .Font.Italic
-    ReturnSize = CSng(.Font.Size)
-    ReturnCharset = .Font.charset
-End With
-FeedFont2Stack bstack, OpenFont(bstack, Form1)
-
+ProcChooseFont bstack, lang
 Exit Function
 Case "ояио.амадяолгс", "RECURSION.LIMIT"
 If IsExp(bstack, rest$, p) Then
@@ -22474,288 +22370,20 @@ MyDoEvents1 bstack.Owner
 Exit Function
 
 Case "покуцымо", "POLYGON"
-Set scr = bstack.Owner
-If IsExp(bstack, rest$, p) Then
-col = p
-End If
-If Not FastSymbol(rest$, ",") Then SyntaxError: ifier = False: Exit Function
-If IsLabelSymbolNew(rest$, "цымиа", "ANGLE", lang) Then par = True
-scr.FillStyle = vbSolid
-scr.FillColor = mycolor(col)
-f = 32
-ReDim PLG(f)
-x1 = 1
-With players(GetCode(scr))
-PLG(0).x = scr.ScaleX(.XGRAPH, 1, 3)
-PLG(0).y = scr.ScaleY(.YGRAPH, 1, 3)
-Do
-If x1 >= f Then f = f * 2: ReDim Preserve PLG(f)
-If IsExp(bstack, rest$, p) Then
-x = p
-
-If Not FastSymbol(rest$, ",") Then SyntaxError: ifier = False: Set scr = Nothing: Exit Function
-    If IsExp(bstack, rest$, p) Then
-        If par Then
-      
-            sx = x / PI2
-            sx = (sx - Fix(sx)) * PI2
-            .XGRAPH = .XGRAPH + Cos(sx) * p
-            .YGRAPH = .YGRAPH - Sin(sx) * p
-        Else
-            .XGRAPH = .XGRAPH + CLng(x)
-            .YGRAPH = .YGRAPH + CLng(p)
-        End If
-        PLG(x1).x = scr.ScaleX(.XGRAPH, 1, 3)
-        PLG(x1).y = scr.ScaleY(.YGRAPH, 1, 3)
-    
-    Else
-         MissNumExpr
-         Set scr = Nothing
-        ifier = False: Exit Function
-    End If
-Else
-MissNumExpr
-Set scr = Nothing
-ifier = False: Exit Function
-End If
-
-x1 = x1 + 1
-Loop Until Not FastSymbol(rest$, ",")
-x1 = x1 - 1
-If Polygon(scr.hDC, PLG(0), x1) = 0 Then
-ifier = True: BadGraphic: Set scr = Nothing: Exit Function
-End If
-scr.FillStyle = vbSolid
-End With
-MyDoEvents1 scr
-Set scr = Nothing
-Case "CIRCLE", "йуйкос" ' LINE X1,Y1,COL
-par = False
-If IsLabelSymbolNew(rest$, "целисла", "FILL", lang) Then
-If IsExp(bstack, rest$, p) Then x = p
-If Not FastSymbol(rest$, ",") Then MissNumExpr: ifier = False: Exit Function
-par = True
-End If
-x1 = 0
-y = 1
-
-With players(GetCode(bstack.Owner))
-col = .mypen
-If IsExp(bstack, rest$, p) Then x1 = p
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then y = p
-
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then col = p Else MissNumExpr: ifier = False: Exit Function
-sx = 0
-sy = 0
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then sx = p Else MissNumExpr: ifier = False: Exit Function
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then sy = p Else MissNumExpr: ifier = False: Exit Function
-sx = sx / PI2
-sx = (sx - Fix(sx)) * PI2
-sy = sy / PI2
-sy = (sy - Fix(sy)) * PI2
-Set scr = bstack.Owner
-scr.CurrentX = .XGRAPH
-scr.CurrentY = .YGRAPH
-If par Then
-    scr.FillStyle = vbSolid
-    scr.FillColor = mycolor(x)
-    If sx = sy Or Abs(sx - sy) + 0.0001 > PI2 Then
-        scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), , , y
-    Else
-        If sx = 0 Then sx = 0.0001
-        If sy = 0 Then sy = PI2
-        scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), -sx, -sy, y
-    End If
-    scr.FillStyle = 1
-Else
-    scr.FillStyle = 1
-    scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), sx, sy, y
-End If
-End With
-MyDoEvents1 scr
-Set scr = Nothing
-Case "PLAYER", "паийтгс"
-If IsExp(bstack, rest$, p) Then
-    If p = 0 Then   ' ZERO CLEAR ALL HARDWARE SPRITES
-        ClrSprites
-        ifier = True
-        Exit Function
-    End If
-    If p < 1 Or p > 32 Then SyntaxError: ifier = False: Exit Function
-    it = FindSpriteByTag(CLng(p))
-    If FastSymbol(rest$, ",") Then
-        If Not IsExp(bstack, rest$, x) Then  ' get new left or leave it empty
-            If it = 0 Then
-                x = 0
-            Else
-                x = Form1.dSprite(it).Left + players(it).x
-            End If
-            If FastSymbol(rest$, ",") Then
-                If Not IsExp(bstack, rest$, y) Then MissNumExpr: ifier = False: Exit Function
-            Else
-                MissNumExpr
-                ifier = False: Exit Function
-            End If
-        Else
-            If FastSymbol(rest$, ",") Then   ' so ,, is "stay X where you are
-                If Not IsExp(bstack, rest$, y) Then MissNumExpr: ifier = False: Exit Function
-            Else
-                If it = 0 Then
-                    y = 0
-                Else
-                    y = Form1.dSprite(it).top + players(it).y
-                End If
-            End If
-        End If
-        If IsLabelSymbolNew(rest$, "ле", "USE", lang) Then ' no need for coma
-            Select Case Abs(IsLabel(bstack, rest$, what$))
-            Case 3
-                If GetVar(bstack, what$, i) Then s$ = var(i)
-            Case 6
-                If neoGetArray(bstack, what$, pppp) Then
-                    
-                    If Not NeoGetArrayItem(pppp, bstack, what$, it, rest$) Then
-                        MissNumExpr
-                        ifier = True: Exit Function
-                    End If
-                Else
-                    MissNumExpr
-                    ifier = False: Exit Function
-                End If
-                s$ = pppp.item(it)  ' get the sprite image
-            Case Else
-                MissNumExpr
-                ifier = False: Exit Function
-            End Select
-            col = rgb(255, 255, 255)
-            sx = 0
-            If FastSymbol(rest$, ",") Then  ' get image manipulators..
-                    If IsExp(bstack, rest$, sy) Then
-                     col = CLng(sy)
-                     If col > 0 Then col = QBColor(col Mod 16) Else col = -col
-                     ElseIf IsStrExp(bstack, rest$, frm$) Then
-                     '' maybe is a mask
-                     
-                     col = 0
-                     Else
-                     ifier = False: MissNumExpr: Exit Function
-                    End If
-                     
-                        If FastSymbol(rest$, ",") Then
-                            If IsExp(bstack, rest$, sx) Then
-                          
-                               Else
-                            MissNumExpr
-                            ifier = False: Exit Function
-                            End If
-                        Else
-                
-                        End If
-                    
-              End If
-              If FastSymbol(rest$, ",") Then
-                            If IsExp(bstack, rest$, sxy) Then
-                        
-                               Else
-                            MissNumExpr
-                            ifier = False: Exit Function
-                            End If
-                        Else
-                
-                        End If
-                   If IsLabelSymbolNew(rest$, "лецехос", "SIZE", lang) Then
-              If Not IsExp(bstack, rest$, sy) Then ifier = False: MissNumExpr: Exit Function
-              Else
-              sy = 1
-              End If
-              ' so col, sx and sy are image manipulators
-            it = GetNewSpriteObj(CLng(p), s$, col, CLng(sx), CSng(sy), CSng(sxy), frm$)
-          
-            PosSprite CLng(p), x - players(it).x, y - players(it).y
-        Else ' without USE
-         PosSprite CLng(p), x - players(it).x, y - players(it).y
-        End If
-        Else ' without x, y
-            If IsLabelSymbolNew(rest$, "ле", "USE", lang) Then
-        Select Case Abs(IsLabel(bstack, rest$, what$))
-        Case 3
-            If GetVar(bstack, what$, i) Then s$ = var(i)
-        Case 6
-             If neoGetArray(bstack, what$, pppp) Then
-   
-                If Not NeoGetArrayItem(pppp, bstack, what$, it, rest$) Then
-                     ifier = False: MissNumExpr: Exit Function
-                End If
-            Else
-                 ifier = False: MissNumExpr: Exit Function
-            End If
-            s$ = pppp.item(it)
-        Case Else
-             ifier = False: MissNumExpr: Exit Function
-        End Select
-        col = rgb(255, 255, 255)
-        sx = 0
-    If FastSymbol(rest$, ",") Then
-        If IsExp(bstack, rest$, sy) Then
-            col = CLng(sy)
-            If col > 0 Then col = QBColor(col) Else col = -col
-        ElseIf IsStrExp(bstack, rest$, frm$) Then
-            '' maybe is a mask
-            col = 0
-        Else
-            ifier = False: MissNumExpr: Exit Function
-        End If
-        If FastSymbol(rest$, ",") Then
-            If IsExp(bstack, rest$, sx) Then
-            Else
-                MissNumExpr
-                ifier = False: Exit Function
-            End If
-        Else
-        End If
-    End If
-            If FastSymbol(rest$, ",") Then
-                If IsExp(bstack, rest$, sxy) Then
-                Else
-                    MissNumExpr
-                    ifier = False: Exit Function
-                End If
-            Else
-    
-            End If
-            If IsLabelSymbolNew(rest$, "лецехос", "SIZE", lang) Then          ' SIZE WITHOUT COMMA
-                If Not IsExp(bstack, rest$, sy) Then ifier = False: MissNumExpr: Exit Function
-            Else
-                sy = 1
-            End If
-    
-            it = GetNewSpriteObj(CLng(p), s$, col, CLng(sx), CSng(sy), CSng(sxy), frm$)
-            ' no USE no X, Y or X,Y USE ..
-            ' only command
-        ElseIf IsLabelSymbolNew(rest$, "деине", "SHOW", lang) Then     ' SHOW
-            SrpiteHideShow p, (True)
-        ElseIf IsLabelSymbolNew(rest$, "йяуье", "HIDE", lang) Then        ' HIDE
-            SrpiteHideShow p, (False)
-        ElseIf IsLabelSymbolNew(rest$, "аккане", "SWAP", lang) Then       ' SWAP
-            If IsExp(bstack, rest$, x) Then
-                SpriteControl CLng(p), CLng(x)
-            Else
-                ifier = False
-            End If
-        End If
-    End If
-End If
-ifier = True
+ifier = ProcPoly(bstack, rest$, lang)
 Exit Function
-
+Case "CIRCLE", "йуйкос"
+ifier = ProcCircle(bstack, rest$, lang)
+Exit Function
+Case "PLAYER", "паийтгс"
+ifier = ProcPlayer(bstack, rest$, lang)
+Exit Function
 Case "IMAGE", "еийома"
 ifier = ProcImage(bstack, rest$, lang)
 Exit Function
 Case "SPRITE", "диажамо", "диажамеиа"
-            If IsStrExp(bstack, rest$, s$) Then
-            sprite bstack, s$, rest$
-           MyDoEvents1 bstack.Owner
-End If
+        If IsStrExp(bstack, rest$, s$) Then sprite bstack, s$, rest$
+        Exit Function
 Case "COPY", "амтецяаье", "амтицяаье"
             x1 = 0
             y1 = 0
@@ -23111,14 +22739,8 @@ End If
 End With
 
 Case "MOVE", "хесг"
-With players(GetCode(bstack.Owner))
-If FastSymbol(rest$, "!") Then
- .XGRAPH = .curpos * .Xt
- .YGRAPH = .currow * .Yt
-ElseIf IsExp(bstack, rest$, p) Then .XGRAPH = p
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then .YGRAPH = p Else ifier = False: MissNumExpr: Exit Function
-End If
-End With
+ifier = ProcMove(bstack, rest$)
+Exit Function
 Case "FILL", "баье"
 prive = GetCode(bstack.Owner)
 With players(prive)
@@ -23222,137 +22844,15 @@ End With
 MyDoEvents1 bstack.Owner
 '' LCT scr, .currow, .curpos
 Case "ваяане", "DRAW"   ' LINE X1,Y1,COL
-With players(GetCode(bstack.Owner))
-x1 = 0
-y1 = 1
-col = .mypen
-If IsLabelSymbolNew(rest$, "еыс", "TO", lang) Then
-If IsExp(bstack, rest$, p) Then x1 = p Else x1 = .XGRAPH
-If FastSymbol(rest$, ",") Then
-If IsExp(bstack, rest$, p) Then y1 = p Else y1 = .YGRAPH
-If FastSymbol(rest$, ",") Then
-If IsExp(bstack, rest$, p) Then col = p Else I3 = False: Exit Function
-End If
-Else
- y1 = .YGRAPH
-End If
-
-Set scr = bstack.Owner
-scr.CurrentX = .XGRAPH
-scr.CurrentY = .YGRAPH
-scr.Line (.XGRAPH, .YGRAPH)-(x1, y1), mycolor(col)
-
-.XGRAPH = scr.CurrentX
-.YGRAPH = scr.CurrentY
-MyDoEvents1 scr
-Set scr = Nothing
+I3 = ProcDraw(bstack, rest$, lang)
 Exit Function
-ElseIf IsLabelSymbolNew(rest$, "цымиа", "ANGLE", lang) Then
-If IsExp(bstack, rest$, p) Then sx = p Else I3 = False: Exit Function
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then sy = p Else I3 = False: Exit Function
-sx = sx / PI2
-sx = (sx - Fix(sx)) * PI2
-x1 = Cos(sx) * sy
-y1 = -Sin(sx) * sy
-Else
-If IsExp(bstack, rest$, p) Then x1 = p
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then y1 = p
-End If
-If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then col = p Else I3 = False: Exit Function
-Set scr = bstack.Owner
-scr.CurrentX = .XGRAPH
-scr.CurrentY = .YGRAPH
-
-scr.Line (.XGRAPH, .YGRAPH)-Step(x1, y1), mycolor(col)
-
-.XGRAPH = scr.CurrentX
-.YGRAPH = scr.CurrentY
-Set scr = Nothing
-End With
 Case "WIDTH", "павос"
-Set scr = bstack.Owner
-If IsExp(bstack, rest$, p) Then
-    i = scr.DrawWidth
-    x1 = scr.DrawStyle
-    scr.DrawWidth = p
-    If p = 1 Then
-        If FastSymbol(rest$, ",") Then
-            If IsExp(bstack, rest$, x) Then
-                On Error Resume Next
-                x = Int(x)
-                If x >= 0 Or x <= 6 Then
-                    scr.DrawStyle = x
-                    If Err Then x = 0: scr.DrawStyle = Int(x)
-                    scr.DrawWidth = p
-                End If
-            End If
-        End If
-    End If
-    If FastSymbol(rest$, "{") Then
-        ss$ = "{" & block(rest$) & "}"
-        frm$ = rest$
-        If FastSymbol(rest$, "}") Then
-            Call executeblock(it, bstack, ss$, False, False)
-        End If
-    End If
-End If
-scr.DrawWidth = i
-scr.DrawStyle = x1
-If it <> 1 Then
-    If Trim(ss$) = "" Then ss$ = " "
-    rest$ = Left$(ss$, Len(ss$) - 1) + frm$
-    ifier = False
-    Set scr = Nothing
-    Exit Function
-End If
-Set scr = Nothing
+ifier = ProcDrawWidth(bstack, rest$)
 Exit Function
 Case "йалпукг", "CURVE"
-With players(GetCode(bstack.Owner))
-If IsLabelSymbolNew(rest$, "цымиа", "ANGLE", lang) Then par = True
-f = 32
-ReDim PLG(f)
-x1 = 1
-PLG(0).x = bstack.Owner.ScaleX(.XGRAPH, 1, 3)
-PLG(0).y = bstack.Owner.ScaleY(.YGRAPH, 1, 3)
-Do
-If x1 >= f Then f = f * 2: ReDim Preserve PLG(f)
-If IsExp(bstack, rest$, p) Then
-x = p
-
-If Not FastSymbol(rest$, ",") Then ifier = False: MissNumExpr: Exit Function
-If IsExp(bstack, rest$, p) Then
-If par Then
-sx = x / PI2
-sx = (sx - Fix(sx)) * PI2
-.XGRAPH = .XGRAPH + Cos(sx) * p
-.YGRAPH = .YGRAPH - Sin(sx) * p
-Else
-.XGRAPH = .XGRAPH + CLng(x)
-.YGRAPH = .YGRAPH + CLng(p)
-End If
-PLG(x1).x = bstack.Owner.ScaleX(.XGRAPH, 1, 3)
-PLG(x1).y = bstack.Owner.ScaleY(.YGRAPH, 1, 3)
-
-Else
- ifier = False: MissNumExpr: Exit Function
-End If
-Else
- ifier = False: MissNumExpr: Exit Function
-End If
-
-x1 = x1 + 1
-Loop Until Not FastSymbol(rest$, ",")
-x1 = x1 - 1
-
-If PolyBezier(bstack.Owner.hDC, PLG(0), x1 + 1) = 0 Then
-BadGraphic
- Exit Function
-End If
-bstack.Owner.FillStyle = vbSolid
-End With
-MyDoEvents1 bstack.Owner
-'' LCT scr, .currow, .curpos
+''
+ifier = ProcCurve(bstack, rest$, lang)
+Exit Function
 Case "PATH", "COLOR", "вяыла", "ивмос"
 f = IsLabelSymbolNew(rest$, "памы", "OVER", lang)
 If FastSymbol(rest$, "!") Then par = True
@@ -30303,10 +29803,15 @@ Else
 nPlain basestack, frm$, s$, x
 End If
 End If
+If FastSymbol(rest$, ";") Then
+''NO REFRESH
+Else
+If Not extreme Then If Not basestack.toprinter Then MyDoEvents1 scr
+End If
 PlaceBasket scr, prive
 End Function
 
-Function ProcText(basestack As basetask, what$, rest$) As Boolean
+Function ProcText(basestack As basetask, isHtml As Boolean, rest$) As Boolean
 Dim x1 As Long, frm$, pa$, s$
 ProcText = True
 If IsSymbol(rest$, "UTF-8", 5) Then
@@ -30330,7 +29835,7 @@ If s$ <> "" Then
 If FastSymbol(rest$, "+") Then pa$ = "" Else pa$ = "new"
 If FastSymbol(rest$, "{") Then frm$ = NLtrim$(blockString(rest$))
 If frm$ <> "" Then
-If what$ = "HTML" Then
+If isHtml Then
 If ExtractType(s$) = "" Then s$ = s$ & ".html"
 End If
  textPUT basestack, mylcasefILE(s$), frm$, pa$, x1
@@ -34530,6 +34035,7 @@ End If
 'CallByPtr = True
 'Exit Function
 'Else
+
 CallWindowProc nSubAddress, VarPtr(basestack), VarPtr(rest$), VarPtr(lang), VarPtr(resp)
 'End If
 CallByPtr = resp
@@ -34797,6 +34303,106 @@ basestack.nokillvars = False
 Set basestack = Nothing
 
 End Sub
+Sub NeoSprite(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+Dim s$
+If IsStrExp(ObjFromPtr(basestackLP), rest$, s$) Then sprite ObjFromPtr(basestackLP), s$, rest$
+           
+resp = True
+End Sub
+
+Sub NeoPlayer(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcPlayer(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
+
+Sub NeoPrinter(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcPrinter(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoPage(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+ProcPage ObjFromPtr(basestackLP), rest$, lang
+resp = True
+End Sub
+Sub NeoCompact(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+BaseCompact ObjFromPtr(basestackLP), rest$
+resp = True
+End Sub
+Sub NeoLayer(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcLayer(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoOrder(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+MyOrder ObjFromPtr(basestackLP), rest$
+resp = True
+End Sub
+
+Sub NeoDelete(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = DELfields(ObjFromPtr(basestackLP), rest$)
+resp = True  '' maybe this can be change
+End Sub
+Sub NeoAppend(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+Dim s$
+resp = True
+If IsStrExp(ObjFromPtr(basestackLP), rest$, s$) Then
+append_table ObjFromPtr(basestackLP), s$, rest$, False
+Else
+SyntaxError
+resp = False
+End If
+End Sub
+Sub NeoSearch(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+getrow ObjFromPtr(basestackLP), rest$, , "", lang
+resp = True
+End Sub
+Sub NeoRetr(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+getrow ObjFromPtr(basestackLP), rest$, , , lang
+resp = True
+End Sub
+Sub NeoExecute(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+CommExecAndTimeOut ObjFromPtr(basestackLP), rest$
+resp = True
+End Sub
+
+Sub NeoTable(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+NewTable ObjFromPtr(basestackLP), rest$
+resp = True
+End Sub
+Sub NeoBase(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+NewBase ObjFromPtr(basestackLP), rest$
+resp = True
+End Sub
+
+Sub NeoStructure(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+TABLENAMES ObjFromPtr(basestackLP), rest$, lang
+resp = True
+End Sub
+
+Sub NeoText(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcText(ObjFromPtr(basestackLP), False, rest$)
+End Sub
+Sub NeoHtml(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcText(ObjFromPtr(basestackLP), True, rest$)
+End Sub
+
+Sub NeoCurve(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcCurve(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
+Sub NeoPoly(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcPoly(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
+
+Sub NeoCircle(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcCircle(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
+
+Sub NeoDraw(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcDraw(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
+Sub NeoWidth(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcDrawWidth(ObjFromPtr(basestackLP), rest$)
+End Sub
+
+Sub NeoMove(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcMove(ObjFromPtr(basestackLP), rest$)
+End Sub
+
 Sub NeoPrint(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 resp = RevisionPrint(ObjFromPtr(basestackLP), rest$, 0, lang)
 End Sub
@@ -34807,6 +34413,31 @@ Sub NeoRem(basestackLP As Long, rest$, lang As Long, resp As Boolean)
     SetNextLineNL rest$
     resp = True
 End Sub
+Sub NeoLinespace(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = procLineSpace(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoBold(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+ProcBold ObjFromPtr(basestackLP), rest$
+resp = True
+End Sub
+Sub NeoChooseFont(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+    ProcChooseFont ObjFromPtr(basestackLP), lang
+    resp = True
+End Sub
+Sub NeoMode(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcMode(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoGradient(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcGradient(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoFiles(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcFiles(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
+Sub NeoCat(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcCat(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
+
+
 Function MyThread(bstack As basetask, rest$, lang As Long) As Boolean
 Dim frm$, ss$, what$, i As Long, p As Double, x As Double, par As Boolean, bs As basetask
 MyThread = True
@@ -34882,10 +34513,587 @@ chekInterval:
 End If
 what$ = ""
 End Function
-Private Function ObjFromPtr(ByVal lpObject As Long) As Object
-    Dim objTemp As Object
-    RtlMoveMemory objTemp, lpObject, 4&
-    Set ObjFromPtr = objTemp
-    RtlMoveMemory objTemp, 0&, 4&
+'Private Function ObjFromPtrOld(ByVal lpObject As Long) As Object
+ '   Dim objTemp As Object
+  '  RtlMoveMemory objTemp, lpObject, 4&
+   ' Set ObjFromPtr = objTemp
+    'RtlMoveMemory objTemp, 0&, 4&
+'End Function
+'Public Function GetObjFromPtr(ByVal Ptr As Long) As Object
+Private Function ObjFromPtr(ByVal Ptr As Long) As Object
+    ObjSetAddRef ObjFromPtr, Ptr
+End Function
+Sub ProcBold(bstack As basetask, rest$)
+Dim p As Double
+If IsExp(bstack, rest$, p) Then
+bstack.myBold = (p <> 0)
+Else
+bstack.myBold = Not bstack.myBold
+p = CDbl(bstack.myBold)
+End If
+players(GetCode(bstack.Owner)).bold = Abs(p <> 0)
+bstack.Owner.Font.bold = Abs(p <> 0)
+
+End Sub
+Sub ProcChooseFont(bstack As basetask, lang As Long)
+If Form4.Visible Then
+Form4.Visible = False
+    If Form1.TEXT1.Visible Then
+        Form1.TEXT1.SetFocus
+    Else
+        Form1.SetFocus
+    End If
+End If
+DialogSetupLang lang
+With bstack.Owner
+    ReturnFontName = .Font.name
+    ReturnBold = .Font.bold
+    ReturnItalic = .Font.Italic
+    ReturnSize = CSng(.Font.Size)
+    ReturnCharset = .Font.charset
+End With
+FeedFont2Stack bstack, OpenFont(bstack, Form1)
+
+End Sub
+Function ProcGradient(bstack As basetask, rest$) As Boolean
+Dim x As Double, y As Double, p As Double
+ProcGradient = True
+If Not IsExp(bstack, rest$, x) Then x = rgb(255, 255, 255)
+If Not FastSymbol(rest$, ",") Then
+y = 0
+Else
+If Not IsExp(bstack, rest$, y) Then y = 0
+End If
+If Not FastSymbol(rest$, ",") Then
+
+Gradient bstack.Owner, mycolor(x), mycolor(y), 0, 0, 0, 0, True, False
+
+
+Else
+If Not IsExp(bstack, rest$, p) Then
+ProcGradient = IfierVal: Exit Function
+Else
+Gradient bstack.Owner, mycolor(x), mycolor(y), 0, 0, 0, 0, p <> 0, False
+
+
+End If
+End If
+
+End Function
+Function ProcMode(bstack As basetask, rest$) As Boolean
+Dim scr As Object, p As Double, x1 As Long, y1 As Long
+Dim prive As Long
+ProcMode = True
+'' Kform is global
+Kform = True
+On Error Resume Next
+Set scr = bstack.Owner
+With players(GetCode(scr))
+x1 = scr.Width
+y1 = scr.Height
+If scr.name = "GuiM2000" Then
+    Else
+If scr.name = "Form1" Then
+DisableTargets q(), -1
+
+ElseIf scr.name = "DIS" Then
+DisableTargets q(), 0
+
+ElseIf scr.name = "dSprite" Then
+DisableTargets q(), val(scr.Index)
+End If
+End If
+If IsExp(bstack, rest$, p) Then
+.SZ = CSng(p)
+If .SZ < 4 Then .SZ = 4
+If Not bstack.toprinter Then
+If FastSymbol(rest$, ",") Then
+    If IsExp(bstack, rest$, p) Then x1 = CLng(p): y1 = CLng(x1 * ScrY() / ScrX())
+    If FastSymbol(rest$, ",") Then
+            If IsExp(bstack, rest$, p) Then y1 = CLng(p)
+        
+    End If
+ElseIf FastSymbol(rest$, ";") Then
+prive = GetCode(bstack.Owner)
+.mysplit = 0
+scr.Font.Size = .SZ
+       SetText scr
+        GetXYb scr, players(prive), .curpos, .currow
+
+Set scr = Nothing
+Exit Function
+End If
+Else
+.SZ = .SZ * 3
+End If
+Err.Clear
+scr.Font.Size = .SZ
+If Err.Number > 0 Then
+
+MYFONT = "ARIAL"
+scr.Font.name = MYFONT
+scr.Font.charset = bstack.myCharSet
+scr.Font.name = MYFONT
+scr.Font.charset = bstack.myCharSet
+End If
+.SZ = scr.Font.Size
+     .uMineLineSpace = .MineLineSpace
+    
+ FrameText scr, .SZ, x1, y1, .Paper
+ 
+    Else
+    ProcMode = False
+    Exit Function
+    End If
+    .currow = 0
+    .curpos = 0
+    .XGRAPH = 0
+    .YGRAPH = 0
+End With
+Set scr = Nothing
+
+End Function
+Function ProcDrawWidth(bstack As basetask, rest$) As Boolean
+Dim x As Double, p As Double, it As Long, ss$, frm$, i As Long, x1 As Long
+ProcDrawWidth = True
+Dim scr As Object
+Set scr = bstack.Owner
+If IsExp(bstack, rest$, p) Then
+    i = scr.DrawWidth
+    x1 = scr.DrawStyle
+    scr.DrawWidth = p
+    If p = 1 Then
+        If FastSymbol(rest$, ",") Then
+            If IsExp(bstack, rest$, x) Then
+                On Error Resume Next
+                x = Int(x)
+                If x >= 0 Or x <= 6 Then
+                    scr.DrawStyle = x
+                    If Err Then x = 0: scr.DrawStyle = Int(x)
+                    scr.DrawWidth = p
+                End If
+            End If
+        End If
+    End If
+    If FastSymbol(rest$, "{") Then
+        ss$ = "{" & block(rest$) & "}"
+        frm$ = rest$
+        If FastSymbol(rest$, "}") Then
+            Call executeblock(it, bstack, ss$, False, False)
+        End If
+    End If
+End If
+scr.DrawWidth = i
+scr.DrawStyle = x1
+If it <> 1 Then
+    If Trim(ss$) = "" Then ss$ = " "
+    rest$ = Left$(ss$, Len(ss$) - 1) + frm$
+    ProcDrawWidth = False
+End If
+Set scr = Nothing
+End Function
+Function ProcCurve(bstack As basetask, rest$, lang As Long) As Boolean
+Dim par As Boolean, sx As Double, sy As Double, x As Double, y As Double, x1 As Integer, p As Double, f As Long
+
+ProcCurve = True
+With players(GetCode(bstack.Owner))
+If IsLabelSymbolNew(rest$, "цымиа", "ANGLE", lang) Then par = True
+f = 32
+ReDim PLG(f)
+x1 = 1
+PLG(0).x = bstack.Owner.ScaleX(.XGRAPH, 1, 3)
+PLG(0).y = bstack.Owner.ScaleY(.YGRAPH, 1, 3)
+Do
+If x1 >= f Then f = f * 2: ReDim Preserve PLG(f)
+If IsExp(bstack, rest$, p) Then
+x = p
+
+If Not FastSymbol(rest$, ",") Then ProcCurve = False: MissNumExpr: Exit Function
+If IsExp(bstack, rest$, p) Then
+If par Then
+sx = x / PI2
+sx = (sx - Fix(sx)) * PI2
+.XGRAPH = .XGRAPH + Cos(sx) * p
+.YGRAPH = .YGRAPH - Sin(sx) * p
+Else
+.XGRAPH = .XGRAPH + CLng(x)
+.YGRAPH = .YGRAPH + CLng(p)
+End If
+PLG(x1).x = bstack.Owner.ScaleX(.XGRAPH, 1, 3)
+PLG(x1).y = bstack.Owner.ScaleY(.YGRAPH, 1, 3)
+
+Else
+ ProcCurve = False: MissNumExpr: Exit Function
+End If
+Else
+ ProcCurve = False: MissNumExpr: Exit Function
+End If
+
+x1 = x1 + 1
+Loop Until Not FastSymbol(rest$, ",")
+x1 = x1 - 1
+
+If PolyBezier(bstack.Owner.hDC, PLG(0), x1 + 1) = 0 Then
+BadGraphic
+ Exit Function
+End If
+bstack.Owner.FillStyle = vbSolid
+End With
+MyDoEvents1 bstack.Owner
+
+
 End Function
 
+Function ProcPoly(bstack As basetask, rest$, lang As Long) As Boolean
+Dim par As Boolean, sx As Double, sy As Double, x As Double, y As Double, x1 As Integer, p As Double, f As Long
+Dim col As Long, scr As Object
+ProcPoly = True
+
+
+Set scr = bstack.Owner
+If IsExp(bstack, rest$, p) Then
+col = p
+End If
+If Not FastSymbol(rest$, ",") Then SyntaxError: ProcPoly = False: Exit Function
+If IsLabelSymbolNew(rest$, "цымиа", "ANGLE", lang) Then par = True
+scr.FillStyle = vbSolid
+scr.FillColor = mycolor(col)
+f = 32
+ReDim PLG(f)
+x1 = 1
+With players(GetCode(scr))
+PLG(0).x = scr.ScaleX(.XGRAPH, 1, 3)
+PLG(0).y = scr.ScaleY(.YGRAPH, 1, 3)
+Do
+If x1 >= f Then f = f * 2: ReDim Preserve PLG(f)
+If IsExp(bstack, rest$, p) Then
+x = p
+
+If Not FastSymbol(rest$, ",") Then SyntaxError: ProcPoly = False: Set scr = Nothing: Exit Function
+    If IsExp(bstack, rest$, p) Then
+        If par Then
+      
+            sx = x / PI2
+            sx = (sx - Fix(sx)) * PI2
+            .XGRAPH = .XGRAPH + Cos(sx) * p
+            .YGRAPH = .YGRAPH - Sin(sx) * p
+        Else
+            .XGRAPH = .XGRAPH + CLng(x)
+            .YGRAPH = .YGRAPH + CLng(p)
+        End If
+        PLG(x1).x = scr.ScaleX(.XGRAPH, 1, 3)
+        PLG(x1).y = scr.ScaleY(.YGRAPH, 1, 3)
+    
+    Else
+         MissNumExpr
+         Set scr = Nothing
+        ProcPoly = False: Exit Function
+    End If
+Else
+MissNumExpr
+Set scr = Nothing
+ProcPoly = False: Exit Function
+End If
+
+x1 = x1 + 1
+Loop Until Not FastSymbol(rest$, ",")
+x1 = x1 - 1
+If Polygon(scr.hDC, PLG(0), x1) = 0 Then
+ProcPoly = True: BadGraphic: Set scr = Nothing: Exit Function
+End If
+scr.FillStyle = vbSolid
+End With
+MyDoEvents1 scr
+Set scr = Nothing
+End Function
+Function ProcCircle(bstack As basetask, rest$, lang As Long) As Boolean
+Dim par As Boolean, sx As Double, sy As Double, x As Double, y As Double, x1 As Integer, p As Double
+Dim col As Long, scr As Object
+ProcCircle = True
+par = False
+If IsLabelSymbolNew(rest$, "целисла", "FILL", lang) Then
+If IsExp(bstack, rest$, p) Then x = p
+If Not FastSymbol(rest$, ",") Then MissNumExpr: ProcCircle = False: Exit Function
+par = True
+End If
+x1 = 0
+y = 1
+
+With players(GetCode(bstack.Owner))
+col = .mypen
+If IsExp(bstack, rest$, p) Then x1 = p
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then y = p
+
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then col = p Else MissNumExpr: ProcCircle = False: Exit Function
+sx = 0
+sy = 0
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then sx = p Else MissNumExpr: ProcCircle = False: Exit Function
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then sy = p Else MissNumExpr: ProcCircle = False: Exit Function
+sx = sx / PI2
+sx = (sx - Fix(sx)) * PI2
+sy = sy / PI2
+sy = (sy - Fix(sy)) * PI2
+Set scr = bstack.Owner
+scr.CurrentX = .XGRAPH
+scr.CurrentY = .YGRAPH
+If par Then
+    scr.FillStyle = vbSolid
+    scr.FillColor = mycolor(x)
+    If sx = sy Or Abs(sx - sy) + 0.0001 > PI2 Then
+        scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), , , y
+    Else
+        If sx = 0 Then sx = 0.0001
+        If sy = 0 Then sy = PI2
+        scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), -sx, -sy, y
+    End If
+    scr.FillStyle = 1
+Else
+    scr.FillStyle = 1
+    scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), sx, sy, y
+End If
+End With
+MyDoEvents1 scr
+Set scr = Nothing
+
+End Function
+Function ProcDraw(bstack As basetask, rest$, lang As Long) As Boolean
+Dim col As Long, x1 As Long, sx As Double, sy As Double, f As Long, y1 As Long
+Dim p As Double, scr As Object
+ProcDraw = True
+With players(GetCode(bstack.Owner))
+x1 = 0
+y1 = 1
+col = .mypen
+If IsLabelSymbolNew(rest$, "еыс", "TO", lang) Then
+If IsExp(bstack, rest$, p) Then x1 = p Else x1 = .XGRAPH
+If FastSymbol(rest$, ",") Then
+If IsExp(bstack, rest$, p) Then y1 = p Else y1 = .YGRAPH
+If FastSymbol(rest$, ",") Then
+If IsExp(bstack, rest$, p) Then col = p Else ProcDraw = False: Exit Function
+End If
+Else
+ y1 = .YGRAPH
+End If
+
+Set scr = bstack.Owner
+scr.CurrentX = .XGRAPH
+scr.CurrentY = .YGRAPH
+scr.Line (.XGRAPH, .YGRAPH)-(x1, y1), mycolor(col)
+
+.XGRAPH = scr.CurrentX
+.YGRAPH = scr.CurrentY
+MyDoEvents1 scr
+Set scr = Nothing
+Exit Function
+ElseIf IsLabelSymbolNew(rest$, "цымиа", "ANGLE", lang) Then
+If IsExp(bstack, rest$, p) Then sx = p Else ProcDraw = False: Exit Function
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then sy = p Else ProcDraw = False: Exit Function
+sx = sx / PI2
+sx = (sx - Fix(sx)) * PI2
+x1 = Cos(sx) * sy
+y1 = -Sin(sx) * sy
+Else
+If IsExp(bstack, rest$, p) Then x1 = p
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then y1 = p
+End If
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then col = p Else ProcDraw = False: Exit Function
+Set scr = bstack.Owner
+scr.CurrentX = .XGRAPH
+scr.CurrentY = .YGRAPH
+
+scr.Line (.XGRAPH, .YGRAPH)-Step(x1, y1), mycolor(col)
+
+.XGRAPH = scr.CurrentX
+.YGRAPH = scr.CurrentY
+Set scr = Nothing
+End With
+
+End Function
+Function ProcMove(bstack As basetask, rest$) As Boolean
+ProcMove = True
+Dim p As Double
+With players(GetCode(bstack.Owner))
+If FastSymbol(rest$, "!") Then
+ .XGRAPH = .curpos * .Xt
+ .YGRAPH = .currow * .Yt
+ElseIf IsExp(bstack, rest$, p) Then .XGRAPH = p
+If FastSymbol(rest$, ",") Then If IsExp(bstack, rest$, p) Then .YGRAPH = p Else ProcMove = False: MissNumExpr: Exit Function
+End If
+End With
+End Function
+Function ProcPlayer(bstack As basetask, rest$, lang As Long)
+Dim par As Boolean, sx As Double, sy As Double, x As Double, y As Double, x1 As Integer, p As Double, it As Long
+Dim col As Long, scr As Object, what$, i As Long, s$, pppp As mArray, frm$, sxy As Double
+If IsExp(bstack, rest$, p) Then
+    If p = 0 Then   ' ZERO CLEAR ALL HARDWARE SPRITES
+        ClrSprites
+        ProcPlayer = True
+        Exit Function
+    End If
+    If p < 1 Or p > 32 Then SyntaxError: ProcPlayer = False: Exit Function
+    it = FindSpriteByTag(CLng(p))
+    If FastSymbol(rest$, ",") Then
+        If Not IsExp(bstack, rest$, x) Then  ' get new left or leave it empty
+            If it = 0 Then
+                x = 0
+            Else
+                x = Form1.dSprite(it).Left + players(it).x
+            End If
+            If FastSymbol(rest$, ",") Then
+                If Not IsExp(bstack, rest$, y) Then MissNumExpr: ProcPlayer = False: Exit Function
+            Else
+                MissNumExpr
+                ProcPlayer = False: Exit Function
+            End If
+        Else
+            If FastSymbol(rest$, ",") Then   ' so ,, is "stay X where you are
+                If Not IsExp(bstack, rest$, y) Then MissNumExpr: ProcPlayer = False: Exit Function
+            Else
+                If it = 0 Then
+                    y = 0
+                Else
+                    y = Form1.dSprite(it).top + players(it).y
+                End If
+            End If
+        End If
+        If IsLabelSymbolNew(rest$, "ле", "USE", lang) Then ' no need for coma
+            Select Case Abs(IsLabel(bstack, rest$, what$))
+            Case 3
+                If GetVar(bstack, what$, i) Then s$ = var(i)
+            Case 6
+                If neoGetArray(bstack, what$, pppp) Then
+                    
+                    If Not NeoGetArrayItem(pppp, bstack, what$, it, rest$) Then
+                        MissNumExpr
+                        ProcPlayer = True: Exit Function
+                    End If
+                Else
+                    MissNumExpr
+                    ProcPlayer = False: Exit Function
+                End If
+                s$ = pppp.item(it)  ' get the sprite image
+            Case Else
+                MissNumExpr
+                ProcPlayer = False: Exit Function
+            End Select
+            col = rgb(255, 255, 255)
+            sx = 0
+            If FastSymbol(rest$, ",") Then  ' get image manipulators..
+                    If IsExp(bstack, rest$, sy) Then
+                     col = CLng(sy)
+                     If col > 0 Then col = QBColor(col Mod 16) Else col = -col
+                     ElseIf IsStrExp(bstack, rest$, frm$) Then
+                     '' maybe is a mask
+                     
+                     col = 0
+                     Else
+                     ProcPlayer = False: MissNumExpr: Exit Function
+                    End If
+                     
+                        If FastSymbol(rest$, ",") Then
+                            If IsExp(bstack, rest$, sx) Then
+                          
+                               Else
+                            MissNumExpr
+                            ProcPlayer = False: Exit Function
+                            End If
+                        Else
+                
+                        End If
+                    
+              End If
+              If FastSymbol(rest$, ",") Then
+                            If IsExp(bstack, rest$, sxy) Then
+                        
+                               Else
+                            MissNumExpr
+                            ProcPlayer = False: Exit Function
+                            End If
+                        Else
+                
+                        End If
+                   If IsLabelSymbolNew(rest$, "лецехос", "SIZE", lang) Then
+              If Not IsExp(bstack, rest$, sy) Then ProcPlayer = False: MissNumExpr: Exit Function
+              Else
+              sy = 1
+              End If
+              ' so col, sx and sy are image manipulators
+            it = GetNewSpriteObj(CLng(p), s$, col, CLng(sx), CSng(sy), CSng(sxy), frm$)
+          
+            PosSprite CLng(p), x - players(it).x, y - players(it).y
+        Else ' without USE
+         PosSprite CLng(p), x - players(it).x, y - players(it).y
+        End If
+        Else ' without x, y
+            If IsLabelSymbolNew(rest$, "ле", "USE", lang) Then
+        Select Case Abs(IsLabel(bstack, rest$, what$))
+        Case 3
+            If GetVar(bstack, what$, i) Then s$ = var(i)
+        Case 6
+             If neoGetArray(bstack, what$, pppp) Then
+   
+                If Not NeoGetArrayItem(pppp, bstack, what$, it, rest$) Then
+                     ProcPlayer = False: MissNumExpr: Exit Function
+                End If
+            Else
+                 ProcPlayer = False: MissNumExpr: Exit Function
+            End If
+            s$ = pppp.item(it)
+        Case Else
+             ProcPlayer = False: MissNumExpr: Exit Function
+        End Select
+        col = rgb(255, 255, 255)
+        sx = 0
+    If FastSymbol(rest$, ",") Then
+        If IsExp(bstack, rest$, sy) Then
+            col = CLng(sy)
+            If col > 0 Then col = QBColor(col) Else col = -col
+        ElseIf IsStrExp(bstack, rest$, frm$) Then
+            '' maybe is a mask
+            col = 0
+        Else
+            ProcPlayer = False: MissNumExpr: Exit Function
+        End If
+        If FastSymbol(rest$, ",") Then
+            If IsExp(bstack, rest$, sx) Then
+            Else
+                MissNumExpr
+                ProcPlayer = False: Exit Function
+            End If
+        Else
+        End If
+    End If
+            If FastSymbol(rest$, ",") Then
+                If IsExp(bstack, rest$, sxy) Then
+                Else
+                    MissNumExpr
+                    ProcPlayer = False: Exit Function
+                End If
+            Else
+    
+            End If
+            If IsLabelSymbolNew(rest$, "лецехос", "SIZE", lang) Then          ' SIZE WITHOUT COMMA
+                If Not IsExp(bstack, rest$, sy) Then ProcPlayer = False: MissNumExpr: Exit Function
+            Else
+                sy = 1
+            End If
+    
+            it = GetNewSpriteObj(CLng(p), s$, col, CLng(sx), CSng(sy), CSng(sxy), frm$)
+            ' no USE no X, Y or X,Y USE ..
+            ' only command
+        ElseIf IsLabelSymbolNew(rest$, "деине", "SHOW", lang) Then     ' SHOW
+            SrpiteHideShow p, (True)
+        ElseIf IsLabelSymbolNew(rest$, "йяуье", "HIDE", lang) Then        ' HIDE
+            SrpiteHideShow p, (False)
+        ElseIf IsLabelSymbolNew(rest$, "аккане", "SWAP", lang) Then       ' SWAP
+            If IsExp(bstack, rest$, x) Then
+                SpriteControl CLng(p), CLng(x)
+            Else
+                ProcPlayer = False
+            End If
+        End If
+    End If
+End If
+ProcPlayer = True
+Exit Function
+End Function

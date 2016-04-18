@@ -1213,6 +1213,7 @@ fbl:
 End Sub
 
 Public Sub MarkCopy()
+If Not NoColor Then ColorBlockOnly
 If HaveMarkedText Then
 FillBlock
 Dim pp1 As String, pp2 As String
@@ -3649,6 +3650,20 @@ Else
 mdoc.WrapAgainBlock BlockEndPara, BlockStartPara
 mdoc.WrapAgainColorBlock BlockEndPara, BlockStartPara
 
+End If
+ManualInform
+End Sub
+Sub ColorBlockOnly()
+Dim order1, order2
+order1 = 0: order2 = 0
+If BlockEndPara <> BlockStartPara Then
+order1 = mdoc.ParagraphOrder(BlockStartPara)
+order2 = mdoc.ParagraphOrder(BlockEndPara)
+End If
+If order1 <= order2 Then
+mdoc.WrapAgainColorBlock2 BlockStartPara, BlockEndPara
+Else
+mdoc.WrapAgainColorBlock2 BlockEndPara, BlockStartPara
 End If
 ManualInform
 End Sub

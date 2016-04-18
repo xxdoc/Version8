@@ -36,33 +36,33 @@ Public Function isdir(f$) As Boolean
 On Error Resume Next
 Dim MM As New recDir
 Dim lookfirst As Boolean
-Dim pad$
+Dim Pad$
 If f$ = "" Then Exit Function
 If f$ = "." Then f$ = mcd
 If InStr(f$, "\..") > 0 Or f$ = ".." Or Left$(f$, 3) = "..\" Then
 If Right$(f$, 1) <> "\" Then
-pad$ = ExtractPath(f$ & "\", True, True)
+Pad$ = ExtractPath(f$ & "\", True, True)
 Else
-pad$ = ExtractPath(f$, True, True)
+Pad$ = ExtractPath(f$, True, True)
 End If
-If pad$ = "" Then
+If Pad$ = "" Then
 If Right$(f$, 1) <> "\" Then
-pad$ = ExtractPath(mcd + f$ & "\", True)
+Pad$ = ExtractPath(mcd + f$ & "\", True)
 Else
-pad$ = ExtractPath(mcd + f$, True)
+Pad$ = ExtractPath(mcd + f$, True)
 End If
 End If
-lookfirst = MM.isdir(pad$)
-If lookfirst Then f$ = pad$
+lookfirst = MM.isdir(Pad$)
+If lookfirst Then f$ = Pad$
 Else
 f$ = mylcasefILE(f$)
 lookfirst = MM.isdir(f$)
 If Not lookfirst Then
 
-pad$ = mcd + f$
+Pad$ = mcd + f$
 
-lookfirst = MM.isdir(pad$)
-If lookfirst Then f$ = pad$
+lookfirst = MM.isdir(Pad$)
+If lookfirst Then f$ = Pad$
 
 End If
 End If
@@ -193,7 +193,7 @@ JetPrefix = JetPrefixUser
 JetPostfix = JetPostfixUser
 DBUser = extDBUser
 DBUserPassword = extDBUserPassword
-Err.clear
+Err.Clear
 End Sub
 Public Function inames(i As Long, lang As Long) As String
 If (i And &H3) <> 1 Then
@@ -333,7 +333,7 @@ If CFname((base)) <> "" Then
 RemoveOneConn base
 If CheckMine(base) Then
 KillFile base
-Err.clear
+Err.Clear
 
 Else
 MyEr "Can 't delete the Base", "Δεν μπορώ να διαγράψω τη βάση"
@@ -402,7 +402,7 @@ End If
                         End If
                     Loop
                     If srl = DriveSerial(Left$(base, 3)) Then
-                        Err.clear
+                        Err.Clear
                         If myBase = "" Then myBase.Open JetPrefix & GetDosPath(base) & ";Mode=Share Deny Write" & JetPostfix & "User Id=" & DBUser & ";Password=" & DBSecurityOFF       'open the Connection
                     End If
                 End If
@@ -564,7 +564,7 @@ g102:
 End Sub
 
 Public Sub append_table(bstackstr As basetask, base As String, r$, ED As Boolean, Optional lang As Long = -1)
-Dim table$, i&, par$, ok As Boolean, t As Double, j&
+Dim table$, i&, par$, ok As Boolean, T As Double, j&
 Dim gindex As Long
 ok = False
 
@@ -573,7 +573,7 @@ If IsStrExp(bstackstr, r$, table$) Then
 ok = True
 End If
 End If
-If lang <> -1 Then If IsLabelSymbolNew(r$, "ΣΤΟ", "TO", lang) Then If IsExp(bstackstr, r$, t) Then gindex = CLng(t) Else SyntaxError
+If lang <> -1 Then If IsLabelSymbolNew(r$, "ΣΤΟ", "TO", lang) Then If IsExp(bstackstr, r$, T) Then gindex = CLng(T) Else SyntaxError
 Dim Id$
   If InStr(UCase(Trim$(table$)) + " ", "SELECT") = 1 Then
 Id$ = table$
@@ -615,7 +615,7 @@ End If
                 End If
                 PushOne base, myBase
             End If
-           Err.clear
+           Err.Clear
          
          '  If Err.Number > 0 Then GoTo thh
            
@@ -624,7 +624,7 @@ End If
           Dim rec, LL$
           
            Set rec = CreateObject("ADODB.Recordset")
-            Err.clear
+            Err.Clear
            rec.Open Id$, myBase, 3, 4 'adOpenStatic, adLockBatchOptimistic
 
  If Err.Number <> 0 Then
@@ -634,7 +634,7 @@ RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
  myBase.Open = LL$
  PushOne base, myBase
- Err.clear
+ Err.Clear
 rec.Open Id$, myBase, 3, 4
 If Err.Number Then
 MyEr Err.Description & " " & Id$, Err.Description & " " & Id$
@@ -645,7 +645,7 @@ End If
    
 If ED Then
 If gindex > 0 Then
-Err.clear
+Err.Clear
     rec.MoveLast
     rec.MoveFirst
     rec.AbsolutePosition = gindex '  - 1
@@ -668,13 +668,13 @@ If ED Then
 End If
 If IsStrExp(bstackstr, r$, par$) Then
     rec.FIELDS(i&) = par$
-ElseIf IsExp(bstackstr, r$, t) Then
-    rec.FIELDS(i&) = CStr(t)   '??? convert to a standard format
+ElseIf IsExp(bstackstr, r$, T) Then
+    rec.FIELDS(i&) = CStr(T)   '??? convert to a standard format
 End If
 
 i& = i& + 1
 Wend
-Err.clear
+Err.Clear
 rec.UpdateBatch  ' update be an updatebatch
 If Err.Number > 0 Then
 MyEr "Can't append " & Err.Description, "Αδυναμία προσθήκης:" & Err.Description
@@ -753,7 +753,7 @@ If Not IamHelpFile Then If Not CanKillFile(base) Then FilePathNotForUser: Exit S
 End If
 
 g05:
-Err.clear
+Err.Clear
    On Error Resume Next
 Dim Id$
    
@@ -796,7 +796,7 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
                 End If
             Loop
             If srl = DriveSerial(Left$(base, 3)) Then
-            Err.clear
+            Err.Clear
         If myBase = "" Then myBase.Open JetPrefix & GetDosPath(base) & ";Mode=Share Deny Write" & JetPostfix & "User Id=" & DBUser & ";Password=" & DBSecurityOFF      'open the Connection
         
             End If
@@ -827,7 +827,7 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
 
 Dim LL$
    Set rec = CreateObject("ADODB.Recordset")
- Err.clear
+ Err.Clear
   rec.Open Id$, myBase, 3, 4
 If Err.Number <> 0 Then
 LL$ = myBase ' AS A STRING
@@ -836,7 +836,7 @@ RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
  myBase.Open = LL$
  PushOne base, myBase
- Err.clear
+ Err.Clear
 rec.Open Id$, myBase, 3, 4
 If Err.Number Then
 MyEr Err.Description & " " & Id$, Err.Description & " " & Id$
@@ -906,7 +906,7 @@ If ask("Το ερώτημα SQL δεν μπορεί να ολοκληρωθεί" & vbCrLf & table$, True) = vbR
 Else
 If ask("SQL can't complete" & vbCrLf & table$) = vbRetry Then GoTo g05
 End If
-Err.clear
+Err.Clear
 MyErMacro r$, "Can't read a database table :" & table$, "Δεν μπορώ να διαβάσω πίνακα :" & table$
 End If
 On Error Resume Next
@@ -982,7 +982,7 @@ End If
             End If
             Loop
             If srl = DriveSerial(Left$(base, 3)) Then
-            Err.clear
+            Err.Clear
    myBase.Open JetPrefix & GetDosPath(base) & ";Mode=Share Deny Write" & JetPostfix & "User Id=" & DBUser & ";Password=" & DBSecurityOFF   'open the Connection
                 
             End If
@@ -1005,7 +1005,7 @@ On Error GoTo g101
       End If
  Dim LL$
    Set rec = CreateObject("ADODB.Recordset")
-    Err.clear
+    Err.Clear
      rec.Open Id$, myBase, 3, 4
       If Err.Number <> 0 Then
 LL$ = myBase ' AS A STRING
@@ -1014,7 +1014,7 @@ RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
  myBase.Open = LL$
  PushOne base, myBase
- Err.clear
+ Err.Clear
 rec.Open Id$, myBase, 3, 4
 If Err.Number Then
 MyEr Err.Description & " " & Id$, Err.Description & " " & Id$
@@ -1110,14 +1110,14 @@ Dim myBase
                 End If
                 PushOne base, myBase
     End If
-           Err.clear
+           Err.Clear
            If comTimeOut >= 10 Then myBase.CommandTimeout = CLng(comTimeOut)
-           If Err.Number > 0 Then Err.clear: myBase.errors.clear
+           If Err.Number > 0 Then Err.Clear: myBase.errors.Clear
             myBase.Execute com2execute
 
 If myBase.errors.Count <> 0 Then
 MyEr "Can't execute command", "Δεν μπορώ εκτελέσω εντολή"
- myBase.errors.clear
+ myBase.errors.Clear
 End If
 
 ' we have response
@@ -1172,11 +1172,11 @@ End If
                 End If
                 PushOne base, myBase
             End If
-           Err.clear
+           Err.Clear
            Dim LL$, mcat, pindex, mtable
            Dim okntable As Boolean
           
-            Err.clear
+            Err.Clear
             Set mcat = CreateObject("ADOX.Catalog")
             mcat.activeconnection = myBase
 
@@ -1189,7 +1189,7 @@ RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
  myBase.Open = LL$
  PushOne base, myBase
- Err.clear
+ Err.Clear
             Set mcat = CreateObject("ADOX.Catalog")
             mcat.activeconnection = myBase
             
@@ -1199,9 +1199,9 @@ MyEr Err.Description & " " & tablename, Err.Description & " " & tablename
 Exit Sub
 End If
 End If
-error.clear
-mcat.TABLES(tablename).indexes("ndx").remove
-mcat.TABLES(tablename).indexes.refresh
+error.Clear
+mcat.TABLES(tablename).indexes("ndx").Remove
+mcat.TABLES(tablename).indexes.Refresh
 
    If mcat.TABLES.Count > 0 Then
    okntable = True
@@ -1222,12 +1222,12 @@ Exit Sub
 End If
 ' now we have mtable from mybase
 
- mtable.indexes("ndx").remove  ' remove the old index/
- Err.clear
+ mtable.indexes("ndx").Remove  ' remove the old index/
+ Err.Clear
  If mcat.activeconnection.errors.Count > 0 Then
- mcat.activeconnection.errors.clear
+ mcat.activeconnection.errors.Clear
  End If
- Err.clear
+ Err.Clear
    Set pindex = CreateObject("ADOX.Index")
     pindex.name = "ndx"  ' standard
     pindex.indexnulls = 0 ' standrard
@@ -1255,7 +1255,7 @@ End If
          Exit Sub
         End If
 mcat.TABLES.Append mtable
-mcat.TABLES.refresh
+mcat.TABLES.Refresh
 End If
     
 End Sub
@@ -1283,7 +1283,7 @@ End If
     Dim okndx As Boolean, okntable As Boolean, one_ok As Boolean
     ' Dim wrkDefault As Workspace
     Dim myBase ' As Database
-    Err.clear
+    Err.Clear
     On Error Resume Next
                    If Not getone(base, myBase) Then
            
@@ -1305,7 +1305,7 @@ End If
                 End If
                 PushOne base, myBase
             End If
-           Err.clear
+           Err.Clear
 
     On Error Resume Next
    okntable = True
@@ -1321,7 +1321,7 @@ RemoveOneConn base
  Set myBase = CreateObject("ADODB.Connection")
  myBase.Open = LL$
  PushOne base, myBase
- Err.clear
+ Err.Clear
  Set cat.activeconnection = myBase
 If Err.Number Then
 MyEr Err.Description & " " & mtable, Err.Description & " " & mtable
@@ -1386,10 +1386,10 @@ End With
          MyEr Err.Description, Err.Description
          Exit Sub
         End If
-        cat.TABLES.refresh
+        cat.TABLES.Refresh
         ElseIf Not one_ok Then
         cat.TABLES.Delete tablename
-        cat.TABLES.refresh
+        cat.TABLES.Refresh
         End If
         
 ' may the objects find the creator...
@@ -1467,7 +1467,7 @@ If realtype$ <> "" Then
  
       MyErMacro r$, "Can't compact databese " & ExtractName(base) & "." & " use a back up", "Πρόβλημα με την βάση " & ExtractName(base) & ".mdb χρησιμοποίησε ένα σωσμένο αρχείο"
       End If
-      Err.clear
+      Err.Clear
     End If
 End If
 End Sub
@@ -1558,7 +1558,7 @@ Dim myBase
                 End If
                 PushOne base, myBase
             End If
-           Err.clear
+           Err.Clear
 
     On Error Resume Next
 Dim rec
@@ -1570,7 +1570,7 @@ Dim rec
    DELfields = False
    Exit Function
    Else
-   myBase.errors.clear
+   myBase.errors.Clear
    myBase.Execute "DELETE * FROM [" & table$ & "] WHERE " & first$ & " = " & Second$
    If myBase.errors.Count > 0 Then
    MyEr "Can't delete " & table$, "Δεν μπορώ να διαγράψω"
@@ -1592,7 +1592,7 @@ Dim Cnn1
  On Error Resume Next
  Cnn1.Open JetPrefix & DBFileName & ";Jet OLEDB:Database Password=;User Id=" & DBUser & ";Password=" & DBUserPassword & ";"  ' &  DBSecurityOFF 'open the Connection
  If Err Then
- Err.clear
+ Err.Clear
  Cnn1.Open JetPrefix & DBFileName & JetPostfix & "User Id=" & DBUser & ";Password=" & DBUserPassword & ";" & DBSecurityOFF    'open the Connection
  If Err Then
  Else
@@ -1615,7 +1615,7 @@ On Error Resume Next
 If Not Init Then Exit Sub
 If conCollection.Count > 0 Then
 Dim i As Long
-Err.clear
+Err.Clear
 For i = conCollection.Count To 1 Step -1
 On Error Resume Next
 bb = conCollection(i).connectionstring <> ""
@@ -1624,45 +1624,51 @@ If Err.Number = 0 Then
   If conCollection(i).activeconnection <> "" Then conCollection(i).Close
      ''   If conCollection(I) <> "" Then conCollection(I).Close
 End If
-conCollection.remove i
-Err.clear
+conCollection.Remove i
+Err.Clear
 Next i
 Set conCollection = New Collection
 End If
-Err.clear
+Err.Clear
 End Sub
 Public Sub RemoveOneConn(conname)
 On Error Resume Next
-Dim VV
-Set VV = conCollection(conname)
-If Typename$(VV) = "Empty" Then
-Err.clear
-    VV = conCollection(conname)
+Dim vv
+Set vv = conCollection(conname)
+If Typename$(vv) = "Empty" Then
+Err.Clear
+    vv = conCollection(conname)
     If Not Err.Number <> 0 Then
-        conCollection.remove conname
+        conCollection.Remove conname
         
-        
+Else
+    Err.Clear
+    conname = mylcasefILE(conname)
+    If ExtractPath(conname) = "" Then conname = mylcasefILE(mcd + conname)
+    If ExtractType(CVar(conname)) = "" Then conname = mylcasefILE(conname + ".mdb")
+    conCollection.Remove conname
     End If
+    
     Exit Sub
 End If
 If Not Err.Number <> 0 Then
-Err.clear
-If VV.connectionstring <> "" Then
-If Err.Number = 0 Then If VV.activeconnection <> "" Then VV.Close
-Err.clear
+Err.Clear
+If vv.connectionstring <> "" Then
+If Err.Number = 0 Then If vv.activeconnection <> "" Then vv.Close
+Err.Clear
 End If
-conCollection.remove conname
-Err.clear
+conCollection.Remove conname
+Err.Clear
 End If
 End Sub
 Private Function getone(conname As String, this As Variant) As Boolean
 On Error Resume Next
 Dim v As Variant
 InitMe
-Err.clear
+Err.Clear
 Set v = conCollection(conname)
 If Err.Number = 0 Then getone = True: Set this = v
-Err.clear
+Err.Clear
 End Function
 
 Private Sub InitMe()
@@ -1670,10 +1676,10 @@ If Init Then Exit Sub
 Set conCollection = New Collection
 Init = True
 End Sub
-Function ftype(ByVal a As Long, lang As Long) As String
+Function ftype(ByVal A As Long, lang As Long) As String
 Select Case lang
 Case 0
-Select Case a
+Select Case A
     Case 0
 ftype = "ΑΔΕΙΟ"
     Case 2
@@ -1761,7 +1767,7 @@ ftype = "????"
 End Select
 
 Case Else  ' this is for 1
-Select Case a
+Select Case A
     Case 0
 ftype = "EMPTY"
     Case 2

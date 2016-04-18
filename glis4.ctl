@@ -3359,6 +3359,7 @@ End Sub
 Public Function UserControlTextWidthPixels(A$) As Long
 Dim nr As RECT
 If Len(A$) > 0 Then
+
 CalcRect UserControl.hDC, A$, nr
 UserControlTextWidthPixels = nr.Right
 End If
@@ -4838,21 +4839,21 @@ If UserControl.Parent Is Nothing Then Exit Property
 Set Parent = UserControl.Parent
 there:
 End Property
-Public Sub Curve(Optional t As Boolean = False, Optional factor As Single = 1)
+Public Sub Curve(Optional T As Boolean = False, Optional factor As Single = 1)
 Dim hRgn As Long
 If Int(25 * factor) > 2 Then
 hRgn = CreateRoundRectRgn(0, 0, WidthPixels, HeightPixels, 25 * factor, 25 * factor)
-SetWindowRgn Me.hWnd, hRgn, t
+SetWindowRgn Me.hWnd, hRgn, T
 DeleteObject hRgn
 End If
 End Sub
 Public Sub ShowMenu()
     RaiseEvent DeployMenu
 End Sub
-Public Property Let BlinkTime(t As Variant)
+Public Property Let BlinkTime(T As Variant)
 BlinkON = True <> 0
-mBlinkTime = t
-Timer1.Interval = t
+mBlinkTime = T
+Timer1.Interval = T
 Timer1.enabled = True
 End Property
 Sub DestCaret()

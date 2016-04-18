@@ -665,21 +665,45 @@ Mid$(b$, cur, Len(neodata)) = neodata
 cur = cur + Len(neodata)
 End Sub
 
-Public Sub InsertDoc(ByVal ParaNum As Long, fromPos As Long, norawtext As String)
+Public Sub InsertDoc(ByVal ParaNum As Long, fromPos As Long, norawtext As String, Optional tabwidth As Long = 0)
     Dim t_text As String, Once As Boolean
-    Dim A() As String
+    Dim A() As String, T() As String
     Dim b$
     Once = True
       A() = Split(norawtext, vbCrLf)
         norawtext = Join(A(), vbLf)
      A() = Split(norawtext + vbLf, vbLf)
-Dim i As Long
+Dim i As Long, k As Long, j As Long, ii As Long
     i = LBound(A())
     Do
-
+   ' If i > UBound(A()) Then Exit Do
+    
+    If tabwidth > 0 Then
+    T() = Split(A(i), Chr(9))
+    k = LBound(T())
+    j = UBound(T())
+        If k = j Then
+        t_text = T(k)
+        Else
+        t_text = ""
+        For ii = k To j
+        If Len(T(ii)) = 0 Then
+        t_text = t_text + Space(tabwidth)
+        ElseIf Len(t_text) Mod tabwidth = 0 Then
+        t_text = t_text + T(ii)
+        Else
+            t_text = t_text + Space(tabwidth - (Len(t_text) Mod tabwidth)) + T(ii)
+            End If
+        Next ii
+      
+        End If
+    Else
     t_text = A(i)
+    End If
+    
     i = i + 1
     If t_text = "" And i > UBound(A()) Then
+    
     If b$ <> "" Then
         ReWritePara ParaNum, TextParagraph(ParaNum) + b$, True
         b$ = ""
@@ -2393,8 +2417,8 @@ Public Property Get LCID() As Long
 LCID = mlcid
 End Property
 
-Public Property Let LCID(ByVal RHS As Long)
-mlcid = RHS
+Public Property Let LCID(ByVal rhs As Long)
+mlcid = rhs
 End Property
 Function FindWord(Find$, Direction As Boolean, there As Long, cur As Long) As Boolean
 Dim oncemore As Boolean, result As Boolean, res$

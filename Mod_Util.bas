@@ -1,6 +1,6 @@
 Attribute VB_Name = "Module2"
 Option Explicit
-Public k1 As Long, kForm As Boolean
+Public k1 As Long, Kform As Boolean
 
 Public Type basket
     used As Long
@@ -754,22 +754,25 @@ If Not cDib(f, raster) Then
                         CheckOrientation raster, f
                         End If
     Else
+        '' error
+        Set d1 = Nothing
         Exit Sub
     End If
 End If
 If raster.Width = 0 Then
  BACKSPRITE = ""
-Set raster = Nothing: Exit Sub
+Set raster = Nothing
+Set d1 = Nothing
+Exit Sub
 End If
 Pcw = raster.Width \ 2
 Pch = raster.Height \ 2
 With players(GetCode(d1))
 raster.PaintPicture d1.hDC, Int(d1.ScaleX(.XGRAPH, 1, 3) - Pcw), Int(d1.ScaleX(.YGRAPH, 1, 3) - Pch)
 End With
-
-
-
-
+MyDoEvents1 d1.Owner
+Set raster = Nothing
+Set d1 = Nothing
 Exit Sub
     End If
     If FastSymbol(rst$, ",") Then If IsExp(bstack, rst$, p) Then ROT = p
@@ -783,7 +786,10 @@ Exit Sub
         blend = Abs(Int(blend)) Mod 101
         Else
              blend = 100
-        If Not IsStrExp(bstack, rst$, amask$) Then Exit Sub
+        If Not IsStrExp(bstack, rst$, amask$) Then
+        ' error ??
+        Exit Sub
+        End If
         End If
         
     End If
@@ -806,6 +812,7 @@ If Not cDib(f, raster) Then
                         CheckOrientation raster, f
                         End If
     Else
+    ' error
         Exit Sub
     End If
 End If
@@ -824,6 +831,8 @@ If Not bstack.toprinter Then
 GdiFlush
 End If
 Set raster = Nothing
+MyDoEvents1 d1.Owner
+Set d1 = Nothing
 Exit Sub
 SPerror:
  BACKSPRITE = ""
@@ -2004,11 +2013,13 @@ BFONT = ddd.Font.name
 If ExtraWidth <> 0 Then
 SetTextCharacterExtra ddd.hDC, ExtraWidth
 End If
+Dim icx As Long, icy As Long, x As Long, y As Long, icH As Long
 If JUSTIFY < 0 Then degree = 0
 DEGR = (degree) * 180# / Pi
+
   f.lfItalic = Abs(basestack.myitalic)
   f.lfWeight = Abs(basestack.myBold) * 800
-  f.lfEscapement = CLng(10 * DEGR)
+  f.lfEscapement = 0
   f.lfFaceName = Left$(Font, 30) + Chr$(0)
   f.lfCharSet = basestack.myCharSet
   If qual Then
@@ -2019,8 +2030,27 @@ DEGR = (degree) * 180# / Pi
   f.lfHeight = (Size * -20) / DYP
   hFont = CreateFontIndirect(f)
   hPrevFont = SelectObject(ddd.hDC, hFont)
-Dim icx As Long, icy As Long, x As Long, y As Long, icH As Long
-icH = TextHeight(ddd, "fj")    '' Aq"
+    icH = TextHeight(ddd, "fq")
+  hFont = SelectObject(ddd.hDC, hPrevFont)
+  DeleteObject hFont
+ f.lfItalic = Abs(basestack.myitalic)
+  f.lfWeight = Abs(basestack.myBold) * 800
+f.lfEscapement = CLng(10 * DEGR)
+  f.lfFaceName = Left$(Font, 30) + Chr$(0)
+  f.lfCharSet = basestack.myCharSet
+  If qual Then
+  f.lfQuality = PROOF_QUALITY 'NONANTIALIASED_QUALITY '
+  Else
+  f.lfQuality = NONANTIALIASED_QUALITY
+  End If
+  f.lfHeight = (Size * -20) / DYP
+  
+
+  
+    hFont = CreateFontIndirect(f)
+  hPrevFont = SelectObject(ddd.hDC, hFont)
+
+
 
 icy = CLng(Cos(degree) * icH)
 icx = CLng(Sin(degree) * icH)
@@ -5093,8 +5123,8 @@ If TaskMaster.Processing Then
             If RRCOUNTER = 0 Then
           
                 If obj.Visible Then
-                        If kForm Then
-                kForm = False
+                        If Kform Then
+                Kform = False
                  k1 = 0
                 TaskMaster.rest
                 UpdateWindow obj.hWnd
@@ -5132,8 +5162,8 @@ Else
         If QRY Then
             DoEvents
         Else
-        If kForm Then
-        kForm = False
+        If Kform Then
+        Kform = False
             TaskMaster.rest
      DoEvents
             TaskMaster.RestEnd
