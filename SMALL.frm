@@ -29,6 +29,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+Option Explicit
 Private hideme As Boolean
 Private foundform5 As Boolean
 Private reopen4 As Boolean, reopen2 As Boolean
@@ -59,10 +60,10 @@ tmCharSet As Byte
 End Type
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Dim tm As TEXTMETRIC
-Private Declare Function GetModuleHandleW Lib "kernel32" (ByVal lpModuleName As Long) As Long
+Private Declare Function GetModuleHandleW Lib "KERNEL32" (ByVal lpModuleName As Long) As Long
 
 
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GetProcAddress Lib "KERNEL32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 
 
 Private Declare Function GetWindowLongA Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
@@ -142,6 +143,8 @@ Static Once As Boolean
 If Once Then Exit Function
 Once = True
 ASKINUSE = True
+If TypeOf Screen.ActiveForm Is GuiM2000 Then Screen.ActiveForm.UNhookMe
+
 Dim INFOONLY As Boolean
 k1 = 0
 If AskTitle$ = "" Then AskTitle$ = MesTitle$
@@ -187,26 +190,27 @@ End If
     NeoMsgBox.Visible = True
     MyDoEvents
     End If
-    Dim mycode As Variant
+    Dim mycode As Double, oldcodeid As Double, x As Form
 mycode = Rnd * 12312314
-
-For Each x In Forms
-If x.Visible And x.name = "GuiM2000" Then
-
-If Not x.enabled = False Then
-x.Modal = mycode
-x.enabled = False
-End If
-End If
-Next x
+oldcodeid = ModalId
+ For Each x In Forms
+                            If x.Visible And x.name = "GuiM2000" Then
+                     
+                           If x.Enablecontrol Then
+                               x.Modal = mycode
+                                x.Enablecontrol = False
+                            End If
+                            End If
+                    Next x
 If INFOONLY Then
 NeoMsgBox.command1(0).SetFocus
 End If
+ModalId = mycode
 Do
-
-        mywait bstack, 5
+        mywaitOld bstack, 5
       Sleep 1
 Loop Until NOEXECUTION Or Not ASKINUSE
+ ModalId = mycode
 k1 = 0
  BLOCKkey = True
 While KeyPressed(&H1B) ''And UseEsc
@@ -216,11 +220,21 @@ NOEXECUTION = False
 Wend
 BLOCKkey = False
 AskTitle$ = ""
-For Each x In Forms
-If x.Visible And x.name = "GuiM2000" Then
-x.TestModal mycode
-End If
-Next x
+Dim z As Form
+ Set z = Nothing
+
+           For Each x In Forms
+            If x.Visible And x.name = "GuiM2000" Then
+            If Not x.Enablecontrol Then x.TestModal mycode
+          If x.Enablecontrol Then Set z = x
+            End If
+            Next x
+          If Typename(z) = "GuiM2000" Then
+            z.ShowmeALL
+            z.SetFocus
+            Set z = Nothing
+          End If
+          ModalId = oldcodeid
 If INFOONLY Then
 NeoASK = 1
 Else
@@ -243,7 +257,59 @@ End If
 End If
   escok = oldesc
 End Function
-Private Sub mywait(bstack As basetask, PP As Double)
+Sub mywait(bstack As basetask, PP As Double, Optional SLEEPSHORT As Boolean = False)
+Dim p As Boolean, e As Boolean
+On Error Resume Next
+If bstack.Process Is Nothing Then
+''If extreme Then MyDoEvents1 Form1
+If PP = 0 Then Exit Sub
+Else
+
+Err.Clear
+p = bstack.Process.Done
+If Err.Number = 0 Then
+e = True
+If p <> 0 Then
+Exit Sub
+End If
+End If
+End If
+
+PP = PP + CDbl(timeGetTime)
+
+Do
+
+
+'If TaskMaster.Processing And Not bstack.TaskMain Then
+        'If Not bstack.toprinter Then bstack.Owner.Refresh
+      
+      '  If Not TaskMaster Is Nothing Then TaskMaster.TimerTickNow
+        If Form1.DIS.Visible And Not bstack.toprinter Then
+        MyDoEvents0 Form1.DIS
+   
+        Else
+        MyDoEvents0 Me
+        End If
+'Els
+        'MyDoEvents
+'End If
+If SLEEPSHORT Then Sleep 1
+If e Then
+p = bstack.Process.Done
+If Err.Number = 0 Then
+If p <> 0 Then
+Exit Do
+End If
+End If
+End If
+Loop Until PP <= CDbl(timeGetTime) Or NOEXECUTION Or MOUT
+
+                       If exWnd <> 0 Then
+                mytitle$ bstack
+                End If
+End Sub
+
+Private Sub mywaitOld(bstack As basetask, PP As Double)
 Dim p As Boolean, e As Boolean
 
 On Error Resume Next
@@ -311,11 +377,9 @@ If Not BLOCKkey Then INK$ = INK$ & Chr(KeyAscii)
 End Sub
 
 Private Sub Form_Load()
-'''Debug.Print "FORM3 LOADED"
+Debug.Assert (InIDECheck = True)
 ttl = True
-'Icon = Form2.Icon
-'hideme = True
- CaptionW = ""
+CaptionW = ""
 End Sub
 
 
@@ -364,6 +428,7 @@ End Sub
 
 Private Sub Timer1_Timer()
 ' On Error Resume Next
+Dim x As Form
 If DIALOGSHOW Or ASKINUSE Or ModalId <> 0 Then
 Timer1.enabled = False
 Exit Sub
@@ -424,3 +489,7 @@ If Err.Number > 0 Then aSize = 12: Form3.Font.Size = aSize
     Form3.Font.Size = aSize
     aSize = Form3.Font.Size '' return
 End Sub
+Public Function InIDECheck() As Boolean
+    m_bInIDE = True
+    InIDECheck = True
+End Function

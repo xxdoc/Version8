@@ -96,7 +96,7 @@ rest
        If myMasterList.Count > 0 Then
        For i = 1 To myMasterList.Count
        If myMasterList(i).Id = thisid Then
-       myMasterList.remove i
+       myMasterList.Remove i
        ThrowOne = True
 GoTo thh
        End If
@@ -109,7 +109,7 @@ GoTo thh
        If myRunningList(i).Id = thisid Then
        
        myRunningList(i).Done = True
-       myRunningList.remove i
+       myRunningList.Remove i
        ThrowOne = True
  GoTo thh
        End
@@ -122,7 +122,7 @@ GoTo thh
                If myMasterList.Count > 0 Then
        For i = 1 To myMasterList.Count
        If myMasterList(i).Id = thisid Then
-       myMasterList.remove i
+       myMasterList.Remove i
        ThrowOne = True
 GoTo thh
        End If
@@ -134,7 +134,7 @@ GoTo thh
        For i = 1 To myRunningList.Count
        If myRunningList(i).Id = thisid Then
        myRunningList(i).Done = True
-       myRunningList.remove i
+       myRunningList.Remove i
        ThrowOne = True
  GoTo thh
        End
@@ -150,15 +150,15 @@ thh:
         StopProcess
         End If
 End Function
-Private Function remove(thisid As Long) As Boolean
+Private Function Remove(thisid As Long) As Boolean
 Dim i As Long
 rest
 
        If myRunningList.Count > 0 Then
        For i = 1 To myRunningList.Count
        If myRunningList(i).Id = thisid Then
-       myRunningList.remove i
-       remove = True
+       myRunningList.Remove i
+       Remove = True
        RestEnd
        Exit Function
        End
@@ -213,7 +213,7 @@ GoTo thh
 thh:
         RestEnd
 End Property
-Public Sub Message(Mes As Long, code As Long, Optional PARAM As Long = 0, Optional Exec$)
+Public Sub Message(Mes As Long, code As Long, Optional param As Long = 0, Optional Exec$)
 Dim ok As Boolean
 Dim task As TaskInterface
 Set task = getone(Mes)
@@ -228,7 +228,7 @@ If Not (task Is Nothing) Then
         Case 2 ' Restart
             task.busy = False
         Case 3
-        task.Interval = PARAM
+        task.Interval = param
         Case 4
         If Execute(task.Process, Exec$, True) = 0 Then
             task.Dispose tmAllTasks
@@ -250,12 +250,12 @@ Public Sub Dispose()
         StopTimer
         Do While myMasterList.Count > 0
           myMasterList(1).Dispose tmAllTasks
-          myMasterList.remove 1
+          myMasterList.Remove 1
         Loop
             Do While myRunningList.Count > 0
         
           myRunningList(1).Dispose tmAllTasks
-          myRunningList.remove 1
+          myRunningList.Remove 1
         Loop
    
 End Sub
@@ -268,7 +268,7 @@ Dim this As TaskInterface
   Do
   
   Set this = myMasterList(1)
-  myMasterList.remove 1
+  myMasterList.Remove 1
 
   
  If OnlyMusic Then
@@ -288,7 +288,70 @@ Dim this As TaskInterface
 
   this.Tick
   End If
-  If remove(this.Id) Then
+  If Remove(this.Id) Then
+  If this.Done Then
+
+    this.Dispose tmThisTask
+  Else
+If Not NOEXECUTION Then
+AddTask this, this.Priority
+Else
+this.Dispose tmThisTask
+End If
+    
+  End If
+  Else
+    If this.Done Then
+
+  Else
+
+''  AddTask this, this.Priority
+    
+  End If
+    this.Dispose tmThisTask
+  End If
+
+  If myTimerIsRunning = False Or QueueCount = 0 Then
+    StopTimer
+
+       ElseIf QueueCount = 1 And taskmainonly Then
+    Sleep 50
+  End If
+
+  If LastErNum <> 0 Then Dispose
+End Sub
+Public Sub TimerTickOne()
+If tickdrop > 0 Then Exit Sub
+tickdrop = 1000
+Dim this As TaskInterface
+  If myMasterList.Count = 0 Then tickdrop = 0: Exit Sub
+  
+  Do
+  
+  Set this = myMasterList(1)
+  myMasterList.Remove 1
+
+  
+ If OnlyMusic Then
+ If this.Id > 100 Then
+ AddTask this
+ tickdrop = 0
+ Exit Sub
+ End If
+ ElseIf holdtasks Then
+ AddTask this, this.Priority
+ tickdrop = 0
+ Exit Sub
+ End If
+  myRunningList.Add this
+  Loop While this.Id < 0 And myMasterList.Count <> 0
+  If this.Id < 0 Then tickdrop = 0: Exit Sub
+  
+  If Not this.busy And Not this.Done Then
+
+  this.Tick
+  End If
+  If Remove(this.Id) Then
   If this.Done Then
 
     this.Dispose tmThisTask
@@ -327,7 +390,7 @@ Dim this As TaskInterface
   Do
   
   Set this = myMasterList(1)
-  myMasterList.remove 1
+  myMasterList.Remove 1
 
   
  If OnlyMusic Then
@@ -347,7 +410,7 @@ Dim this As TaskInterface
 
   this.Tick
   End If
-  If remove(this.Id) Then
+  If Remove(this.Id) Then
   If this.Done Then
 
     this.Dispose tmThisTask
@@ -378,6 +441,7 @@ End If
   End If
 
   If LastErNum <> 0 Then Dispose
+  tickdrop = 0
 End Sub
 
 Public Sub StopProcess()

@@ -110,8 +110,11 @@ TaskMaster.rest
             If RRCOUNTER = 0 Then
             k1 = uintnew(timeGetTime + REFRESHRATE): RRCOUNTER = 1
          If some.Visible Then some.Refresh
-                  
+        ' If TaskMaster.tickdrop < 5 Then
           DoEvents
+         ' Else
+          'TaskMaster.tickdrop = 1
+          'End If
                   End If
                   
 

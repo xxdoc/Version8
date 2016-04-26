@@ -46,10 +46,10 @@ Private Const C3_DIACRITIC As Long = &H2
 Private Const CT_CTYPE3 As Byte = &H4
 Private Declare Function GetStringTypeExW Lib "kernel32.dll" (ByVal Locale As Long, ByVal dwInfoType As Long, ByVal lpSrcStr As Long, ByVal cchSrc As Long, ByRef lpCharType As Byte) As Long
 Private Declare Function SetTextCharacterExtra Lib "gdi32" (ByVal hDC As Long, ByVal nCharExtra As Long) As Long
-Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal codepage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
+Private Declare Function WideCharToMultiByte Lib "KERNEL32" (ByVal codepage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
 Private Declare Function GdiFlush Lib "gdi32" () As Long
 Public iamactive As Boolean
-Declare Function MultiByteToWideChar& Lib "kernel32" (ByVal codepage&, ByVal dwFlags&, MultiBytes As Any, ByVal cBytes&, ByVal pWideChars&, ByVal cWideChars&)
+Declare Function MultiByteToWideChar& Lib "KERNEL32" (ByVal codepage&, ByVal dwFlags&, MultiBytes As Any, ByVal cBytes&, ByVal pWideChars&, ByVal cWideChars&)
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 
@@ -273,30 +273,6 @@ Private Declare Function GetAsyncKeyState Lib "user32" _
 Public TextEditLineHeight As Long
 Public LablelEditLineHeight As Long
 Private Const Utf8CodePage As Long = 65001
-Private Declare Function GetMem4 Lib "msvbvm60" ( _
-                         ByRef Src As Any, _
-                         ByRef Dst As Any) As Long
-Private Declare Function VirtualProtect Lib "kernel32" ( _
-                         ByVal lpAddress As Long, _
-                         ByVal dwSize As Long, _
-                         ByVal flNewProtect As Long, _
-                         ByRef lpflOldProtect As Long) As Long
- 
-Private Const PAGE_EXECUTE_READWRITE = &H40
-
-' from The Trick
-Public Sub PatchFunc(ByVal Addr As Long)
-    If m_bInIDE Then
-        GetMem4 ByVal Addr + &H16, Addr
-    Else
-      VirtualProtect Addr, 8, PAGE_EXECUTE_READWRITE, 0
-      
-    End If
-
-    GetMem4 &HFF505958, ByVal Addr
-    GetMem4 &HE1, ByVal Addr + 4
-End Sub
- 
 Public Function Utf16toUtf8(s As String) As Byte()
     ' code from vbforum
     ' UTF-8 returned to VB6 as a byte array (zero based) because it's pretty useless to VB6 as anything else.
@@ -1657,7 +1633,7 @@ nohi = Hi
 nopr = True
 End If
 Dim paragr As Boolean, help1 As Long, help2 As Long, hstr$
-
+nopr = nopr Or collectit
 paragr = True
 If bstack.IamThread Then nopage = True
 For ttt = 1 To Len(what)
@@ -3637,17 +3613,17 @@ NOEDIT = False
     If Not (bstack.toback Or bstack.toprinter) Then If bstack.Owner.Visible Then bstack.Owner.Refresh
 
     End If
-     Dim mycode As Variant
-mycode = Rnd * 123114
+    Dim mycode As Double, oldcodeid As Double
+mycode = Rnd * 1233312231
+oldcodeid = ModalId
 Dim x As Form
 For Each x In Forms
-If x.Visible And x.name = "GuiM2000" Then
-
-If Not x.enabled = False Then
-x.Modal = mycode
-x.enabled = False
-End If
-End If
+        If x.Visible And x.name = "GuiM2000" Then
+                                   If x.Enablecontrol Then
+                                        x.Modal = mycode
+                                        x.Enablecontrol = False
+                                    End If
+        End If
 Next x
   
     Do
@@ -3657,6 +3633,7 @@ Next x
       Sleep 1
     
     Loop Until loadfileiamloaded = False Or NOEDIT = True
+    ModalId = mycode
     MOUT = False
     Do
     drop = mouse Or KeyPressed(&H1B)
@@ -3670,11 +3647,23 @@ While KeyPressed(&H1B) ''And UseEsc
 ProcTask2 bstack
 NOEXECUTION = False
 Wend
-For Each x In Forms
-If x.name = "GuiM2000" Then
-x.TestModal mycode
-End If
-Next x
+Dim z As Form
+Set z = Nothing
+
+           For Each x In Forms
+            If x.Visible And x.name = "GuiM2000" Then
+            
+   '        x.TestModal mycode
+            If Not x.Enablecontrol Then x.TestModal mycode
+          If x.Enablecontrol Then Set z = x
+            End If
+            Next x
+          If Typename(z) = "GuiM2000" Then
+            z.ShowmeALL
+            z.SetFocus
+            Set z = Nothing
+          End If
+          ModalId = oldcodeid
 
 BLOCKkey = False
 escok = oldesc

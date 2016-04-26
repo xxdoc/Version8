@@ -93,28 +93,55 @@ Private MarkSize As Long
 Public MY_BACK As New cDIBSection
 Dim CtrlFont As New StdFont
 Dim novisible As Boolean
-Private mModalId As Variant
+Private mModalId As Double, mModalIdPrev As Double
 Public IamPopUp As Boolean
+Private mEnabled As Boolean
 Public Sub AddGuiControl(widget As Object)
 GuiControls.Add widget
 End Sub
-Public Sub TestModal(alfa As Variant)
+Public Sub TestModal(alfa As Double)
 If mModalId = alfa Then
-mModalId = 0
-Me.enabled = True
+mModalId = mModalIdPrev
+mModalIdPrev = 0
+Enablecontrol = True
 End If
 End Sub
-Property Let Modal(rhs As Variant)
+Property Get Modal() As Double
+    Modal = mModalId
+End Property
+Property Let Modal(rhs As Double)
+mModalIdPrev = mModalId
 mModalId = rhs
 End Property
-Sub ModalOff()
-Dim x As Form
-For Each x In Forms
-If x.Visible And x.name = "GuiM2000" And Not x Is Me Then x.enabled = True
-ModalId = 0
-mModalId = 0
-Next x
-End Sub
+
+Public Property Let Enablecontrol(rhs As Boolean)
+If rhs = False Then UnHook hWnd '  And Not Me Is Screen.ActiveForm Then UnHook hWnd
+If Len(MyName$) = 0 Then Exit Property
+'If rhs = Fals Then UnHook hWnd
+If mEnabled = False And rhs = True Then Me.enabled = True
+mEnabled = rhs
+
+Dim w As Object
+If Controls.Count > 0 Then
+For Each w In Me.Controls
+If w Is gList2 Then
+gList2.enabled = rhs
+gList2.mousepointer = 0
+ElseIf w.Visible Then
+w.enabled = rhs
+If TypeOf w Is gList Then w.TabStop = rhs
+End If
+Next w
+End If
+Me.enabled = rhs
+End Property
+Public Property Get Enablecontrol() As Boolean
+If Len(MyName$) = 0 Then Enablecontrol = False: Exit Property
+Enablecontrol = mEnabled
+
+
+End Property
+
 
 Property Get NeverShow() As Boolean
 NeverShow = Not novisible
@@ -186,19 +213,18 @@ Else
 Hook hWnd, Nothing
 End If
 End Sub
-
-
-
-Private Sub Form_Deactivate()
+Private Sub Form_Deactivate0()
 If PopupOn Then
-            UnHook hWnd
+UnHook hWnd
+
 Exit Sub
 End If
 If IamPopUp Then
 If mModalId = ModalId And ModalId <> 0 Then
-        ModalId = 0
+        
         If Visible Then Hide
-        ModalOff
+       
+        ModalId = 0
             novisible = False
 End If
 Else
@@ -207,9 +233,10 @@ Else
             On Error Resume Next
             Me.SetFocus
         Else
+        UnHook hWnd
+            If mModalId <> 0 Then ModalId = 0
+ 
             
-            ModalOff
-            UnHook hWnd
         End If
     
     Else
@@ -219,13 +246,39 @@ Else
     End If
 End Sub
 
+
+Private Sub Form_Deactivate()
+            UnHook hWnd
+If PopupOn Then
+
+Exit Sub
+End If
+If IamPopUp Then
+If mModalId = ModalId And ModalId <> 0 Then
+If Visible Then Hide
+ModalId = 0
+novisible = False
+End If
+Else
+If mModalId = ModalId And ModalId <> 0 Then If Not Visible Then If mModalId <> 0 Then ModalId = 0
+End If
+
+End Sub
+
+
+Private Sub Form_Initialize()
+mEnabled = True
+End Sub
+
 Private Sub Form_LostFocus()
 If Index > -1 Then
     Callback MyName$ + ".LostFocus(" + CStr(Index) + ")"
 Else
     Callback MyName$ + ".LostFocus()"
 End If
-
+If HOOKTEST <> 0 Then
+UnHook hWnd
+End If
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
@@ -276,15 +329,22 @@ End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 If mModalId = ModalId And ModalId <> 0 Then
-        ModalId = 0
-        If Visible Then Hide
-        ModalOff
-        
+    If Visible Then Hide
+    If mModalId <> 0 Then ModalId = 0
+    Cancel = True
+    novisible = False
+ElseIf mModalId <> 0 And Visible Then
+    mModalId = mModalIdPrev
+    mModalIdPrev = 0
+    If mModalId > 0 Then
         Cancel = True
-        novisible = False
+    Else
+      '    Set LastGlist = Nothing
+
+    End If
 Else
-Set LastGlist = Nothing
-UnHook hWnd
+mModalIdPrev = 0
+'Set LastGlist = Nothing
 End If
 End Sub
 
@@ -292,6 +352,7 @@ Private Sub Form_Resize()
 gList2.MoveTwips 0, 0, Me.Width, gList2.HeightTwips
 ResizeMark.Move Width - ResizeMark.Width, Height - ResizeMark.Height
 End Sub
+
 
 Private Sub gList2_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
 If item = -1 Then
@@ -351,14 +412,22 @@ gList2.FloatLimitLeft = ScrX() - 450
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+ UNhookMe
+' If mModalId Then
+'If Visible Then Hide
+ 'Cancel = True
+' Exit Sub
+' End If
 Set myEvent = Nothing
-If Not IamPopUp Then ModalId = 0
+'If Not IamPopUp Then ModalId = 0
+
 If prive <> 0 Then
 players(prive).used = False
 players(prive).MAXXGRAPH = 0  '' as a flag
 prive = 0
 End If
 'ModalId = 0
+
 Dim w As Object
 If GuiControls.Count > 0 Then
 For Each w In GuiControls
@@ -420,8 +489,8 @@ Public Sub CloseNow()
     If mModalId = ModalId And ModalId <> 0 Then
         ModalId = 0
       If Visible Then Hide
-      ModalOff
     Else
+    mModalId = 0
         Unload Me
     End If
 End Sub
@@ -523,7 +592,7 @@ that.Move x, ScrY() - Height
 Else
 that.Move x, y
 End If
-var1(1) = 0
+var1(1) = 1
 Set var1(0) = Me
 that.IamPopUp = True
 CallByNameFixParamArray that, "Show", VbMethod, var1(), var2(), 2
@@ -554,7 +623,8 @@ Else
 that.Move x, y
 End If
 that.ShowmeALL
-If ModalId <> 0 Then PopupOn = True
+'If ModalId <> 0 Then
+PopupOn = True
 
 that.Show , Me
 
@@ -657,4 +727,7 @@ Sub GetFocus()
 On Error Resume Next
 Me.SetFocus
 End Sub
-
+Public Sub UNhookMe()
+Set LastGlist = Nothing
+UnHook hWnd
+End Sub

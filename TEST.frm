@@ -203,7 +203,7 @@ Dim MyBaseTask As New basetask
 Dim setupxy As Single
 Dim Lx As Long, ly As Long, dr As Boolean, drmove As Boolean
 Dim prevx As Long, prevy As Long
-Dim a$
+Dim A$
 Dim bordertop As Long, borderleft As Long
 Dim allheight As Long, allwidth As Long, itemWidth As Long, itemwidth3 As Long, itemwidth2 As Long
 Dim height1 As Long, width1 As Long
@@ -297,7 +297,7 @@ gList2.FloatList = True
 gList2.FloatLimitTop = ScrY() - players(0).Yt * 2
 gList2.FloatLimitLeft = ScrX() - players(0).Xt * 2
 gList2.MoveParent = True
-gList2.Enabled = True
+gList2.enabled = True
 gList1.DragEnabled = False
 gList1.AutoPanPos = True
 Set testpad = New TextViewer
@@ -309,12 +309,12 @@ testpad.NoMark = True
 testpad.NoColor = False
 testpad.EditDoc = False
 testpad.nowrap = False
-testpad.Enabled = True
+testpad.enabled = True
 Set compute = New myTextBox
 Set compute.Container = gList0
 compute.MaxCharLength = 500 ' as a limit
 compute.Locked = False
-compute.Enabled = True
+compute.enabled = True
 compute.Retired
 Set Label(0).Container = gList3(0)
 Set Label(1).Container = gList3(1)
@@ -347,7 +347,7 @@ gList2.PrepareToShow
 gList4.NoPanRight = False
 gList4.SingleLineSlide = True
 gList4.VerticalCenterText = True
-gList4.Enabled = True
+gList4.enabled = True
 gList4.ListindexPrivateUse = 0
 gList4.ShowMe
 End Sub
@@ -402,28 +402,28 @@ Public Property Let Label1(ByVal Index As Long, ByVal rhs As String)
 Label(Index) = rhs
 End Property
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT, b As Long
+Dim A As RECT, b As Long
 b = 2
-CopyFromLParamToRect a, thatRect
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), 0
+CopyFromLParamToRect A, thatRect
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), 0
 b = 5
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
 
 
 End Sub
 
 Private Sub FillThere(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT
-CopyFromLParamToRect a, thatRect
-FillBack thathDC, a, thatbgcolor
+Dim A As RECT
+CopyFromLParamToRect A, thatRect
+FillBack thathDC, A, thatbgcolor
 End Sub
 Private Sub FillBack(thathDC As Long, there As RECT, bgcolor As Long)
 ' create brush
@@ -463,13 +463,13 @@ End If
 End Sub
 
 Private Sub gList4_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
-Dim a As RECT, b As RECT
-CopyFromLParamToRect a, thisrect
+Dim A As RECT, b As RECT
+CopyFromLParamToRect A, thisrect
 CopyFromLParamToRect b, thisrect
-a.Left = a.Left + 1 * lastfactor
-a.Right = gList4.WidthPixels
+A.Left = A.Left + 1 * lastfactor
+A.Right = gList4.WidthPixels
 b.Right = gList4.WidthPixels
- If item = gList4.listindex Then
+ If item = gList4.ListIndex Then
    If EXECUTED Then
    FillBack thisHDC, b, &H77FF77
    Else
@@ -489,13 +489,13 @@ b.Right = gList4.WidthPixels
     b.top = b.Bottom - 1
     FillBack thisHDC, b, 0
     End If
-    If item = gList4.listindex Then
-  a.Left = a.Left + 1 * lastfactor + gList4.PanPosPixels
+    If item = gList4.ListIndex Then
+  A.Left = A.Left + 1 * lastfactor + gList4.PanPosPixels
   gList4.ForeColor = rgb(128, 0, 128)
   End If
    
    
-   PrintItem thisHDC, gList4.List(item), a
+   PrintItem thisHDC, gList4.List(item), A
     skip = True
 End Sub
  
@@ -516,7 +516,7 @@ Action
 End Sub
 Private Sub Action()
 EXECUTED = True ' SO CHANGE THE BACKGROUND COLOR COLOR
-Select Case gList4.listindex
+Select Case gList4.ListIndex
 Case 0
 trace = True
 STq = False
@@ -526,6 +526,7 @@ trace = True
 STq = True
 STbyST = False
 Case 2
+ModalId = 0
 NOEXECUTION = True
 trace = True
 STq = False
@@ -570,7 +571,7 @@ If Button = 1 Then
 End If
 End Sub
 Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
-Dim addX As Long, addy As Long, factor As Single, Once As Boolean
+Dim addx As Long, addy As Long, factor As Single, Once As Boolean
 If Once Then Exit Sub
 If Button = 0 Then dr = False: drmove = False
 If bordertop < 150 Then
@@ -585,16 +586,16 @@ If dr Then
 If bordertop < 150 Then
 
         If y < (Height - 150) Or y > Height Then addy = (y - ly)
-     If x < (Width - 150) Or x > Width Then addX = (x - Lx)
+     If x < (Width - 150) Or x > Width Then addx = (x - Lx)
      
 Else
     If y < (Height - bordertop) Or y > Height Then addy = (y - ly)
-        If x < (Width - borderleft) Or x > Width Then addX = (x - Lx)
+        If x < (Width - borderleft) Or x > Width Then addx = (x - Lx)
     End If
     
 
     
-  If Not ExpandWidth Then addX = 0
+  If Not ExpandWidth Then addx = 0
         If lastfactor = 0 Then lastfactor = 1
         factor = lastfactor
 
@@ -602,25 +603,25 @@ Else
   
         Once = True
         If Height > ScrY() Then addy = -(Height - ScrY()) + addy
-        If Width > ScrX() Then addX = -(Width - ScrX()) + addX
-        If (addy + Height) / height1 > 0.4 And ((Width + addX) / width1) > 0.4 Then
+        If Width > ScrX() Then addx = -(Width - ScrX()) + addx
+        If (addy + Height) / height1 > 0.4 And ((Width + addx) / width1) > 0.4 Then
    
         If addy <> 0 Then SizeDialog = ((addy + Height) / height1)
         lastfactor = ScaleDialogFix(SizeDialog)
 
 
-        If ((Width * lastfactor / factor + addX) / Height * lastfactor / factor) < (width1 / height1) Then
-        addX = -Width * lastfactor / factor - 1
+        If ((Width * lastfactor / factor + addx) / Height * lastfactor / factor) < (width1 / height1) Then
+        addx = -Width * lastfactor / factor - 1
       
            End If
 
-        If addX = 0 Then
+        If addx = 0 Then
         If lastfactor <> factor Then ScaleDialog lastfactor, Width
         Lx = x
         
         Else
         Lx = x * lastfactor / factor
-         ScaleDialog lastfactor, (Width + addX) * lastfactor / factor
+         ScaleDialog lastfactor, (Width + addx) * lastfactor / factor
          End If
 
         

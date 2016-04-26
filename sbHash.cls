@@ -25,7 +25,7 @@ Private PriveSpace() As item
 Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, RetVal As Integer)
 Private lastfind As String
 Private Hash() As Long
 Private Sub Class_Initialize()
@@ -180,6 +180,7 @@ End Function
 Friend Function Find2(Key As String, num As Long, internal As Long) As Boolean
 '' used with KeyType as Long not a flag
 Dim k As Long
+internal = 0
 num = 0
 If Len(Key) = 0 Then Exit Function
 k = Hash(HashFunc(Key)) - 1

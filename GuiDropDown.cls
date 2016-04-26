@@ -163,8 +163,8 @@ Private Sub glistN_MenuChecked(item As Long)
       Callback.Callback mesCtrlName + ".MenuChecked(" + Str(glistN.ListIndex) + ")"
       End If
 End Sub
-Property Let menuEnabled(item As Long, ByVal RHS As Boolean)
-glistN.menuEnabled(item) = RHS
+Property Let menuEnabled(item As Long, ByVal rhs As Boolean)
+glistN.menuEnabled(item) = rhs
 End Property
 
 Property Get menuEnabled(item As Long) As Boolean
@@ -294,9 +294,9 @@ Public Property Get List(Index) As Variant
 On Error Resume Next
 List = glistN.List(CLng(Index))
 End Property
-Public Property Let List(Index, RHS As Variant)
+Public Property Let List(Index, rhs As Variant)
 On Error Resume Next
-glistN.List(CLng(Index)) = CStr(RHS)
+glistN.List(CLng(Index)) = CStr(rhs)
 End Property
 
 Private Sub glistN_Selected(item As Long)
@@ -308,7 +308,16 @@ If glistN.PanPos <> 0 Then glistN.PanPos = 0
       End If
 End Sub
 
+Private Sub Pad_Activate()
+glistN.SetFocus
+End Sub
+
+Private Sub Pad_Deactivate()
+'Pad.UNhookMe
+End Sub
+
 Private Sub Textbox_DeployMenu()
+'UnHook Callback.hWnd
 Textbox.SetFocus
 ShowMenu
 End Sub
@@ -418,10 +427,11 @@ glistN.ShowPan
   
     End If
 End If
-
+'Hook Pad.hWnd, glistN
     If mMenuWidth <> 0 Then
     Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
     Else
+
 Callback.PopUpPos Pad, Left + Callback.Controls(CtrlName).Width - Pad.Width, top + Callback.Controls(CtrlName).Height
 End If
 
@@ -496,7 +506,7 @@ Else
 Textbox.vartext = glistN.List(item): Textbox.SelStart = Len(Textbox.Text) + 1
 End If
 
-
+Pad.UNhookMe
 Textbox.SetFocus
 
    If mIndex >= 0 Then
@@ -507,6 +517,7 @@ Textbox.SetFocus
        
 Else 'If item < -1 Then
 'glistN.Visible = False
+
 Pad.Visible = False
 End If
 End Sub
@@ -587,7 +598,7 @@ glistN.MoveTwips 0, 0, Pad.Width, Pad.Height
                 End If
     End If
     End If
-
+'Hook Pad.hWnd, glistN
     If mMenuWidth <> 0 Then
     Callback.PopUpPos Pad, Left, top + Callback.Controls(CtrlName).Height
     Else
@@ -661,18 +672,18 @@ Public Property Get Text() As String
 Text = Textbox.vartext + Textbox.glistN.LastLinePart
 End Property
 
-Public Property Let Text(ByVal RHS As String)
+Public Property Let Text(ByVal rhs As String)
  Textbox.glistN.LastLinePart = ""
-Textbox.vartext = RHS
+Textbox.vartext = rhs
 
 End Property
 Public Property Get Locked() As Boolean
 Locked = Textbox.Locked
 End Property
 
-Public Property Let Locked(ByVal RHS As Boolean)
-If RHS = Textbox.Locked Then Exit Property
-If RHS Then
+Public Property Let Locked(ByVal rhs As Boolean)
+If rhs = Textbox.Locked Then Exit Property
+If rhs Then
 If Not Textbox.Locked Then
 glistN.BypassLeaveonChoose = True
 
@@ -680,7 +691,7 @@ Textbox.SetFocus
 glistN.BypassLeaveonChoose = False
 End If
 End If
-Textbox.Locked = RHS
+Textbox.Locked = rhs
 End Property
 Public Sub additem(A$)
 glistN.additemFast A$
@@ -731,20 +742,20 @@ glistN.menuEnabled(CLng(item - 1)) = enabledthis
 End If
 End Sub
 
-Property Let ListRadioPrivate(item As Long, RHS As Boolean)
-glistN.ListSelectedNoRadioCare(item) = RHS
+Property Let ListRadioPrivate(item As Long, rhs As Boolean)
+glistN.ListSelectedNoRadioCare(item) = rhs
 End Property
 Property Get ListSelected(item As Long) As Boolean
 ListSelected = glistN.ListSelected(item)
 End Property
-Property Let ListSelected(item As Long, RHS As Boolean)
-glistN.ListSelected(item) = RHS
+Property Let ListSelected(item As Long, rhs As Boolean)
+glistN.ListSelected(item) = rhs
 End Property
 Property Get ListChecked(item As Long) As Boolean
 ListChecked = glistN.ListChecked(item)
 End Property
-Property Let ListChecked(item As Long, RHS As Boolean)
-LglistN.ListChecked(item) = RHS
+Property Let ListChecked(item As Long, rhs As Boolean)
+LglistN.ListChecked(item) = rhs
 End Property
 Property Get ListMenu(item As Long) As Boolean
 ListMenu = glistN.ListMenu(item)
@@ -753,14 +764,14 @@ End Property
 Property Get ListRadio(item As Long) As Boolean
 ListRadio = glistN.ListRadio(item)
 End Property
-Property Let ListRadio(item As Long, RHS As Boolean)
-glistN.ListRadio(item) = RHS
+Property Let ListRadio(item As Long, rhs As Boolean)
+glistN.ListRadio(item) = rhs
 End Property
 Property Get ListSep(item As Long) As Boolean
 ListSep = glistN.ListSep(item)
 End Property
-Property Let ListSep(item As Long, RHS As Boolean)
-glistN.ListSep(item) = RHS
+Property Let ListSep(item As Long, rhs As Boolean)
+glistN.ListSep(item) = rhs
 End Property
 Public Sub Shutdown()
 'new
@@ -824,32 +835,32 @@ Public Property Get enabled() As Boolean
 enabled = Textbox.glistN.enabled
 End Property
 
-Public Property Let enabled(ByVal RHS As Boolean)
-Textbox.glistN.enabled = RHS
+Public Property Let enabled(ByVal rhs As Boolean)
+Textbox.glistN.enabled = rhs
 End Property
 
 Public Property Get Edit() As Boolean
 Edit = Textbox.glistN.EditFlag
 End Property
 
-Public Property Let Edit(ByVal RHS As Boolean)
+Public Property Let Edit(ByVal rhs As Boolean)
 With Textbox
-.glistN.EditFlag = RHS
-.glistN.NoCaretShow = Not RHS
+.glistN.EditFlag = rhs
+.glistN.NoCaretShow = Not rhs
 End With
 End Property
 Public Property Get Left() As Variant
 Left = Callback.Controls(CtrlName).Left
 End Property
 
-Public Property Let Left(ByVal RHS As Variant)
-Callback.Controls(CtrlName).Left = RHS
+Public Property Let Left(ByVal rhs As Variant)
+Callback.Controls(CtrlName).Left = rhs
 End Property
 Public Property Get top() As Variant
 top = Callback.Controls(CtrlName).top
 End Property
-Public Property Let top(ByVal RHS As Variant)
-Callback.Controls(CtrlName).top = RHS
+Public Property Let top(ByVal rhs As Variant)
+Callback.Controls(CtrlName).top = rhs
 End Property
 Public Sub Sort(Optional SkipChar As Long = 1)
 If glistN.listcount < 2 Then Exit Sub
@@ -887,8 +898,8 @@ Public Property Get MaxCharLength() As Long
 MaxCharLength = Textbox.glistN.maxchar
 End Property
 
-Public Property Let MaxCharLength(ByVal RHS As Long)
-Textbox.glistN.maxchar = RHS
+Public Property Let MaxCharLength(ByVal rhs As Long)
+Textbox.glistN.maxchar = rhs
 End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)
@@ -962,8 +973,8 @@ Public Property Get MenuGroup() As Variant
 MenuGroup = Textbox.glistN.MenuGroup
 End Property
 
-Public Property Let MenuGroup(ByVal RHS As Variant)
-Textbox.glistN.MenuGroup = RHS
+Public Property Let MenuGroup(ByVal rhs As Variant)
+Textbox.glistN.MenuGroup = rhs
 End Property
 
 Public Property Get BorderStyle() As Variant

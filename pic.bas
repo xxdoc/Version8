@@ -18,10 +18,10 @@ Public sumhDC As Long  ' check it
 Public Rixecode As String
 Public MYSCRnum2stop As Long
 Public octava As Integer, NOTA As Integer, ENTASI As Long
-Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Private Declare Sub Sleep Lib "KERNEL32" (ByVal dwMilliseconds As Long)
 Const Face$ = "C C#D D#E F F#G G#A A#B  "
 Public CLICK_COUNT As Long
-Private Declare Function GetVersionExA Lib "kernel32" (lpVersionInformation As OSVERSIONINFO) As Long
+Private Declare Function GetVersionExA Lib "KERNEL32" (lpVersionInformation As OSVERSIONINFO) As Long
 Private Type OSVERSIONINFO
     dwOSVersionInfoSize As Long
     dwMajorVersion As Long
@@ -73,7 +73,7 @@ Private Type XFORM  ' used for stretching/skewing a region
 End Type
 Public Const RGN_OR = 2
 '**********************************
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
+Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Const Pi = 3.14159265359
 Private Type SAFEARRAYBOUND
@@ -135,12 +135,12 @@ Private Declare Function GetClipboardData Lib "user32" _
       ByVal bDaclPresent As Long, _
       ByVal pDacl As Long, _
       ByVal bDaclDefaulted As Long) As Long
- Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+ Declare Function GlobalAlloc Lib "KERNEL32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalFree Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalLock Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalReAlloc Lib "KERNEL32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
+Private Declare Function GlobalSize Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "KERNEL32" (ByVal hMem As Long) As Long
 Private Declare Function IsClipboardFormatAvailable Lib "user32" _
     (ByVal wFormat As Long) As Long
 
@@ -178,7 +178,7 @@ Private Type MEMORYSTATUS
     dwTotalVirtual As Long
     dwAvailVirtual As Long
 End Type
-Private Declare Sub GlobalMemoryStatus Lib "kernel32" (lpBuffer As MEMORYSTATUS)
+Private Declare Sub GlobalMemoryStatus Lib "KERNEL32" (lpBuffer As MEMORYSTATUS)
 Public Declare Function joyGetPosEx Lib "winmm.dll" (ByVal uJoyID As Long, pji As JOYINFOEX) As Long
 Public Declare Function joyGetDevCapsA Lib "winmm.dll" (ByVal uJoyID As Long, pjc As JOYCAPS, ByVal cjc As Long) As Long
 
@@ -2640,7 +2640,13 @@ Sub SwapVariant3(ByRef A As mArray, k As Long, ByRef b As mArray, i As Long)
    CopyMemory ByVal A.itemPtr(k), ByVal b.itemPtr(i), 16
    CopyMemory ByVal b.itemPtr(i), t(0), 16
 End Sub
-
+Sub EmptyVariantArrayItem(ByRef b As mArray, i As Long)
+Dim A As Variant
+   Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
+   CopyMemory t(0), ByVal VarPtr(A), 16
+   CopyMemory ByVal VarPtr(A), ByVal b.itemPtr(i), 16
+   CopyMemory ByVal b.itemPtr(i), t(0), 16
+End Sub
 Private Function c_CreatePartialRegion(rgnRects() As RECT, ByVal lIndex As Long, ByVal uIndex As Long, ByVal leftOffset As Long, ByVal cX As Long, Optional ByVal xFrmPtr As Long) As Long
 '' THIS IS Lavolpe ROUTINE
     ' Creates a region from a Rect() array and optionally stretches the region
@@ -3608,11 +3614,60 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 For i = 0 To UBound(mycommands())
 
 Select Case mycommands(i)
-
+Case "DRAWINGS", "сведиа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDrawings)
+Case "BITMAPS", "еийомес"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoBitmaps)
+Case "MOVIES", "таимиес"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoMovies)
+Case "SOUNDS", "гвои"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSounds)
+Case "FUNCTION", "сумаятгсг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoFunction)
+Case "STEP", "бгла"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoStep)
+Case "COPY", "амтецяаье", "амтицяаье"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCopy)
+Case "охомг", "CLS"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCls)
+Case "пема", "PEN"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPen)
+Case "WAIT", "амаломг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoWait)
+Case "EVENT", "цецомос"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoEvent)
+Case "SET", "хесе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSet)
+Case "INPUT", "еисацыцг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoInput)
+Case "CLEAR", "йахаяо"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoClear)
+Case "DECLARE", "ояисе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDeclare)
+Case "METHOD", "леходос"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoMethod)
+Case "WITH", "ле"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoWith)
+Case "DATA", "сеияа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoData)
+Case "PUSH", "баке"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPush)
+Case "SWAP", "аккане"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSwap)
+Case "COMMIT", "амехесе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoComm)
+Case "REFER", "апедысе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRef)
+Case "READ", "диабасе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRead)
+Case "LET", "стг", "стгм", "сто"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoLet)
 Case "PRINT", "тупысе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPrint)
 Case "CALL", "йакесе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCall)
+Case "CHOOSE.FONT", "епекене.цяаллатосеияа", "епикене.цяаллатосеияа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoChooseFont)
 Case "REM", "сгл"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRem)
 Case "LINESPACE", "диастиво"
@@ -3673,6 +3728,16 @@ Case "PLAYER", "паийтгс"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPlayer)
 Case "SPRITE", "диажамо", "диажамеиа"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSprite)
+Case "MODULES", "тлглата"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoModules)
+Case "паине", "PLAY"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPlayScore)
+Case "SCORE", "жымг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoScore)
+Case "REPORT", "амажояа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoReport)
+Case "BACK", "BACKGROUND", "пеяихыяио"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoBack)
 Case "IF", "ам"
     aHash.ItemCreator2 CStr(mycommands(i)), 0, 50
 Case "ELSE", "аккиыс"

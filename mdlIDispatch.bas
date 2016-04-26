@@ -185,9 +185,14 @@ jumphere:
             
            If items = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
+           ElseIf varArr(0) = 0 Then
+           CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
+           pobjTarget.Modal = 0
+           pobjTarget.Modal = 0
+
            Else
            
-               Dim oldmoldid As Variant, mycodeid As Variant
+               Dim oldmoldid As Double, mycodeid As Double
                oldmoldid = ModalId
                mycodeid = Rnd * 1000000
             
@@ -201,40 +206,47 @@ jumphere:
                             If x.Visible And x.name = "GuiM2000" Then
                             If Not x Is pobjTarget Then
                            
-                                If Not x.enabled = False Then
-                                x.Modal = mycodeid
-                                x.enabled = False
-                                End If
+                               If x.Enablecontrol Then
+             
+                               x.Modal = mycodeid
+                                x.Enablecontrol = False
+                        
+                               End If
 
                             End If
                             End If
                     Next x
                     End If
+                     
            If pobjTarget.NeverShow Then
            ModalId = mycodeid
       
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
-           
-                Do While ModalId <> 0
-                    'ProcTask2 basestack1
+           pobjTarget.Refresh
+                Do While ModalId <> 0 And pobjTarget.Visible
+                  '  ProcTask2 basestack1
                      mywait basestack1, 1, True
+                     Sleep 1
                      'SleepWaitEdit2 1
                 Loop
-                 ModalId = oldmoldid
+                 ModalId = mycodeid
               
-      
+      Else
+      ModalId = mycodeid
            End If
-
+        Set z = Nothing
            For Each x In Forms
             If x.Visible And x.name = "GuiM2000" Then
-            x.TestModal mycodeid
-            Set z = x
+           x.TestModal mycodeid
+          If x.Enablecontrol Then Set z = x
             End If
             Next x
-          If TypeOf z Is GuiM2000 Then
+          If Typename(z) = "GuiM2000" Then
+            z.ShowmeALL
             z.SetFocus
             Set z = Nothing
           End If
+          ModalId = oldmoldid
            End If
            
            ElseIf items = 0 Then
@@ -583,3 +595,4 @@ Set o = obj
 CallByNameFixParamArray o, strvar, VbGet, varg(), varg2(), 0, obj1
 Set MakeObjectFromString = obj1
 End Function
+

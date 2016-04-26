@@ -9,7 +9,7 @@ Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal 
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
-Private Declare Sub RtlMoveMemory Lib "kernel32" (Dst As Any, Src As Any, ByVal BLen As Long)
+Private Declare Sub RtlMoveMemory Lib "kernel32" (dst As Any, src As Any, ByVal BLen As Long)
 
 Private Enum CALLINGCONVENTION_ENUM
   CC_FASTCALL
@@ -132,7 +132,7 @@ Public Function GetFuncPtrOrd(sDll As String, sFunc As String) As Long
 Static hlib As Long, sLib As String
 Dim lfunc As Long
 On Error Resume Next
-lfunc = Val(Mid$(sFunc, 2))
+lfunc = val(Mid$(sFunc, 2))
 
   If sLib <> sDll Then 'just a bit of caching, to make resolving libHdls faster
     sLib = sDll
@@ -171,7 +171,7 @@ Function IsWine()
 Static www As Boolean, wwb As Boolean, hlib As Long
 If www Then
 Else
-Err.clear
+Err.Clear
 On Error Resume Next
 hlib = LoadLibrary("ntdll")
 wwb = GetProcByName(hlib, "wine_get_version") <> 0

@@ -996,14 +996,14 @@ glistN.HeadLine = ""
 onelineheight = 0
 glistN.HeadlineHeight = 0
 End If
-If KeyCode = vbKeyTab Then
-If shift = 2 Then
-        choosenext
-    KeyCode = 0
-    Exit Sub
-    End If
+'If KeyCode = vbKeyTab Then
+'If shift = 2 Then
+ '       choosenext
+  '  KeyCode = 0
+   ' Exit Sub
+    'End If
 
-End If
+'End If
 Dim selstart2 As Long, b As Boolean, Pad$, cc As Long
 Dim l1 As Long, c1 As Long
 If KeyCode = 18 Then
@@ -4081,6 +4081,7 @@ glistN.ShowMe
 KeyCode = 0
 Case vbKeyTab
 nochange = True
+shift = shift And &H1
 glistN.enabled = False
 
 If HaveMarkedText Then SelStartSilent = SelStart
@@ -4509,7 +4510,7 @@ Form1rthisEnabled = Form1mscatEnabled
 
 oldModalId = ModalId
 ModalId = Rnd * 113314324
-UnHook Callback.hWnd
+'UnHook Callback.hWnd
 MyPopUp.feedlabels Me, False
 MyPopUp.UpGui Callback, x, y, poptitle$
 MyPopUp.Visible = True
@@ -4520,7 +4521,7 @@ MyPopUp.ZOrder 0
                 '     mywait basestack1, 1
                 Loop
                 ModalId = oldModalId
-           Hook Callback.hWnd, Nothing
+         '  Hook Callback.hWnd, Nothing
 End Sub
 
 

@@ -79,32 +79,9 @@ Public defWndProc As Long, defWndProc2 As Long
 Public LastGlist As gList, LastGlist2 As gList
 Public defWndProc3 As Long
 Public LastGlist3 As gList
-Public defWndProc4 As Long
-Public LastGlist4 As gList
-Public Sub Hook4(hWnd As Long, A As gList)
-' work in IDE but for development and a fear...of a crash...
 
-If m_bInIDE Then Exit Sub
+Public HOOKTEST As Long
 
-   If defWndProc4 = 0 Then
-
-      defWndProc4 = SetWindowLong(hWnd, _
-                                 GWL_WNDPROC, _
-                                 AddressOf WindowProc4)
-                                 MyDoEvents
-         If defWndProc4 = 0 Then Set LastGlist4 = Nothing
-    End If
-           Set LastGlist4 = A
-End Sub
-Public Sub UnHook4(hWnd As Long)
-If m_bInIDE Then Exit Sub
-    If defWndProc4 > 0 Then
-    
-      Call SetWindowLong(hWnd, GWL_WNDPROC, defWndProc3)
-      defWndProc3 = 4
-   End If
-  
-End Sub
 Public Sub Hook3(hWnd As Long, A As gList)
 ' work in IDE but for development and a fear...of a crash...
 
@@ -121,6 +98,7 @@ If m_bInIDE Then Exit Sub
            Set LastGlist3 = A
 End Sub
 Public Sub UnHook3(hWnd As Long)
+
 If m_bInIDE Then Exit Sub
     If defWndProc3 > 0 Then
     
@@ -145,6 +123,7 @@ If m_bInIDE Then Exit Sub
            Set LastGlist2 = A
 End Sub
 Public Sub UnHook2(hWnd As Long)
+
 If m_bInIDE Then Exit Sub
     If defWndProc2 > 0 Then
     
@@ -154,9 +133,19 @@ If m_bInIDE Then Exit Sub
   
 End Sub
 
-Public Sub Hook(hWnd As Long, A As gList)
+Public Sub Hook(hWnd As Long, A As gList, Optional NoEvents As Boolean = False)
 ' work in IDE but for development and a fear...of a crash...
 
+If HOOKTEST <> 0 Then
+'Debug.Print "unhook now"
+UnHook HOOKTEST
+End If
+If HOOKTEST <> 0 Then
+'Debug.Print "Can't hook now..exit"
+Exit Sub
+End If
+'debug.Print "New Hook @" + CStr(hWnd)
+HOOKTEST = hWnd
 If m_bInIDE Then Exit Sub
 
    If defWndProc = 0 Then
@@ -164,13 +153,20 @@ If m_bInIDE Then Exit Sub
       defWndProc = SetWindowLong(hWnd, _
                                  GWL_WNDPROC, _
                                  AddressOf WindowProc)
-                                 MyDoEvents
+                             If Not NoEvents Then MyDoEvents
          If defWndProc = 0 Then Set LastGlist = Nothing
          
     End If
            Set LastGlist = A
 End Sub
 Public Sub UnHook(hWnd As Long)
+
+If HOOKTEST <> hWnd Then
+'Debug.Print "Can't delete hook hWnd isn't mine, exit now"
+Exit Sub
+End If
+HOOKTEST = 0
+'Debug.Print "Delete Hook @" + CStr(hWnd)
 If m_bInIDE Then Exit Sub
     If defWndProc > 0 Then
     
@@ -226,53 +222,7 @@ there3:
    End Select
     
 End Function
-Public Function WindowProc4(ByVal hWnd As Long, _
-                           ByVal uMsg As Long, _
-                           ByVal wParam As Long, _
-                           ByVal lParam As Long) As Long
-On Error GoTo there3:
-   Select Case uMsg
-         Case WM_MOUSEWHEEL
-        Select Case Sgn(wParam)
-        Case 1:
 
-        If Not LastGlist3 Is Nothing Then
-        
-        With LastGlist3
-        If .Spinner Then
-        .Value = .Value - .smallchange
-        Else
-        .LargeBar1KeyDown vbKeyPageUp, 0
-        .CalcAndShowBar
-        End If
-
-        End With
-        End If
-        
-        Case -1:
-      
-          If Not LastGlist3 Is Nothing Then
-        With LastGlist3
-        If .Spinner Then
-        .Value = .Value + .smallchange
-        Else
-        .LargeBar1KeyDown vbKeyPageDown, 0
-        .CalcAndShowBar
-        End If
-
-        End With
-        End If
-        End Select
-      Case Else
-there3:
-         WindowProc4 = CallWindowProc(defWndProc4, _
-                                     hWnd, _
-                                     uMsg, _
-                                     wParam, _
-                                     lParam)
-   End Select
-    
-End Function
 Public Function WindowProc2(ByVal hWnd As Long, _
                            ByVal uMsg As Long, _
                            ByVal wParam As Long, _
@@ -377,7 +327,7 @@ If ExistFileT Then FindClose fhandle: TIMESTAMP = uintnew(wfd.ftLastAccessTime.d
 Exit Function
 there2:
 End Function
-Public Sub ChangeScreenRes(x As Long, y As Long)
+Public Sub ChangeScreenRes(X As Long, Y As Long)
 ' this is a modified version that i found in internet
 Static Once As Boolean
 Dim DevM As DEVMODE, erg As Long, BITS As Long, nDc As Long
@@ -391,8 +341,8 @@ nDc = CreateDC("DISPLAY", vbNullString, vbNullString, ByVal 0&)
 BITS = GetDeviceCaps(nDc, BITSPIXEL)
 erg = EnumDisplaySettings(0&, 0&, DevM)
 DevM.dmFields = DM_PELSWIDTH Or DM_PELSHEIGHT Or DM_BITSPERPEL
-DevM.dmPelsWidth = x
-DevM.dmPelsHeight = y
+DevM.dmPelsWidth = X
+DevM.dmPelsHeight = Y
 DevM.dmBitsPerPel = BITS
 erg = ChangeDisplaySettings(DevM, CDS_TEST)
 DeleteDC nDc

@@ -147,7 +147,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -199,18 +199,18 @@ Attribute HTML.VB_VarHelpID = -1
 Private DisStack As New basetask
 Private MeStack As New basetask
 Dim lookfirst As Boolean, look1 As Boolean
-Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
+Private Declare Function GetLocaleInfo Lib "KERNEL32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
-Private Declare Function PeekMessageW Lib "user32" (lpMsg As msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessageW Lib "user32" (lpMsg As Msg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Const WM_KEYFIRST = &H100
  Const WM_KEYLAST = &H108
  Private Type POINTAPI
     x As Long
     y As Long
 End Type
- Private Type msg
+ Private Type Msg
     hWnd As Long
     Message As Long
     wParam As Long
@@ -220,7 +220,7 @@ End Type
 End Type
 Public Point2Me As Object
 
-Private Declare Function GetCommandLineW Lib "kernel32" () As Long
+Private Declare Function GetCommandLineW Lib "KERNEL32" () As Long
 
 Private Declare Sub PutMem4 Lib "msvbvm60" (ByVal Ptr As Long, ByVal Value As Long)
 Private Declare Function SysAllocStringLen Lib "oleaut32" (ByVal Ptr As Long, ByVal Length As Long) As Long
@@ -246,7 +246,7 @@ End Function
 
 
 Public Function GetLastKeyPressed() As Long
-Dim Message As msg
+Dim Message As Msg
     If mynum$ <> "" Then
         GetLastKeyPressed = -1
     ElseIf PeekMessageW(Message, 0, WM_KEYFIRST, WM_KEYLAST, 0) Then
@@ -1365,7 +1365,7 @@ mousepointer = 99
 End Sub
 
 Private Sub Form_Load()
-
+Debug.Assert (InIDECheck = True)
 Set TEXT1 = New TextViewer
 
 Set TEXT1.Container = gList1
@@ -1435,8 +1435,6 @@ MYFONT = .Font.name
 End With
 
 
-''DIS.Visible = False
-Debug.Assert (InIDECheck = True)
 s$ = CommandW
 If Not ISSTRINGA(s$, cLine) Then
 cLine = mylcasefILE(Trim(s$))

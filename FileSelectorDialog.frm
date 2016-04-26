@@ -31,16 +31,24 @@ Begin VB.Form LoadFile
       TabIndex        =   0
       Top             =   720
       Width           =   3420
-      _extentx        =   6033
-      _extenty        =   6350
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "FileSelectorDialog.frx":000C
-      enabled         =   -1  'True
+      _ExtentX        =   6033
+      _ExtentY        =   6350
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   161
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
       dcolor          =   65535
-      backcolor       =   3881787
-      forecolor       =   14737632
-      capcolor        =   9797738
+      Backcolor       =   3881787
+      ForeColor       =   14737632
+      CapColor        =   9797738
    End
    Begin M2000.gList gList2 
       Height          =   495
@@ -49,15 +57,23 @@ Begin VB.Form LoadFile
       TabStop         =   0   'False
       Top             =   180
       Width           =   3420
-      _extentx        =   6033
-      _extenty        =   873
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "FileSelectorDialog.frx":0030
-      enabled         =   -1  'True
-      backcolor       =   3881787
-      forecolor       =   16777215
-      capcolor        =   16777215
+      _ExtentX        =   6033
+      _ExtentY        =   873
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   161
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
+      Backcolor       =   3881787
+      ForeColor       =   16777215
+      CapColor        =   16777215
    End
    Begin M2000.gList glist3 
       Height          =   375
@@ -65,15 +81,23 @@ Begin VB.Form LoadFile
       TabIndex        =   2
       Top             =   7635
       Width           =   3420
-      _extentx        =   6033
-      _extenty        =   661
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "FileSelectorDialog.frx":0054
-      enabled         =   -1  'True
-      backcolor       =   8421504
-      forecolor       =   14737632
-      capcolor        =   49344
+      _ExtentX        =   6033
+      _ExtentY        =   661
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   161
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
+      Backcolor       =   8421504
+      ForeColor       =   14737632
+      CapColor        =   49344
    End
 End
 Attribute VB_Name = "LoadFile"
@@ -443,10 +467,10 @@ selectorLastY = top
 Sleep 200
 loadfileiamloaded = False
 End Sub
-Private Sub MakeFolder(ByVal a$)
-a$ = Left$(a$, Len(a$) - 1)
+Private Sub MakeFolder(ByVal A$)
+A$ = Left$(A$, Len(A$) - 1)
 On Error Resume Next
-MkDir a$
+MkDir A$
 Sleep 1
 End Sub
 
@@ -852,46 +876,46 @@ Beep
 End If
 End Sub
 Public Sub FillThereMyVersion2(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT, b As Long
+Dim A As RECT, b As Long
 b = CLng(Rnd * 3) + setupxy / 3
 
-CopyFromLParamToRect a, thatRect
-a.Left = a.Right - setupxy
-a.top = b
-a.Bottom = b + setupxy / 5
-mySelector.FillThere thathDC, VarPtr(a), thatbgcolor
-a.top = b + setupxy / 5 + setupxy / 10
-a.Bottom = b + setupxy \ 2
-mySelector.FillThere thathDC, VarPtr(a), thatbgcolor
+CopyFromLParamToRect A, thatRect
+A.Left = A.Right - setupxy
+A.top = b
+A.Bottom = b + setupxy / 5
+mySelector.FillThere thathDC, VarPtr(A), thatbgcolor
+A.top = b + setupxy / 5 + setupxy / 10
+A.Bottom = b + setupxy \ 2
+mySelector.FillThere thathDC, VarPtr(A), thatbgcolor
 
 End Sub
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
-Dim a As RECT, b As Long
+Dim A As RECT, b As Long
 b = 2
-CopyFromLParamToRect a, thatRect
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-mySelector.FillThere thathDC, VarPtr(a), 0
+CopyFromLParamToRect A, thatRect
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+mySelector.FillThere thathDC, VarPtr(A), 0
 b = 5
-a.Left = b
-a.Right = setupxy - b
-a.top = b
-a.Bottom = setupxy - b
-mySelector.FillThere thathDC, VarPtr(a), rgb(255, 160, 0)
+A.Left = b
+A.Right = setupxy - b
+A.top = b
+A.Bottom = setupxy - b
+mySelector.FillThere thathDC, VarPtr(A), rgb(255, 160, 0)
 
 
 End Sub
 Sub PlaceSettings()
 ' using global var settings
-Dim a() As String, i As Long, j As Long
-a() = Split(Settings, ",")
+Dim A() As String, i As Long, j As Long
+A() = Split(Settings, ",")
 For i = 0 To gList1.listcount - 1
 gList1.ListSelectedNoRadioCare(i) = False
 Next i
-For i = LBound(a()) To UBound(a())
-If gList1.GetMenuId(a(i), j) Then
+For i = LBound(A()) To UBound(A())
+If gList1.GetMenuId(A(i), j) Then
 gList1.ListSelectedNoRadioCare(j) = True
 End If
 Next i
@@ -899,15 +923,15 @@ End Sub
 Function ReadSettings() As Boolean
 ' using global var settings
 ' we have to read at NostateDir=true
-Dim a() As String, i As Long, j As Long
-a() = Split(Settings, ",")
+Dim A() As String, i As Long, j As Long
+A() = Split(Settings, ",")
 ' reset some flags
 gList1.StickBar = False
 mySelector.mselChecked = False
 multifileselection = False
 ExpandWidth = False
-For i = LBound(a()) To UBound(a())
-While gList1.Id(j) <> a(i)
+For i = LBound(A()) To UBound(A())
+While gList1.Id(j) <> A(i)
 j = j + 1
 Wend
 j = j + 1  ' now we are in base 1
@@ -1056,20 +1080,20 @@ Else
 ''Shape1.Visible = False
 End If
 End Sub
-Private Sub ImageMove(a As myImage, neoTop As Long, NeoLeft As Long, NeoWidth As Long, NeoHeight As Long)
-If a.image Is Nothing Then Exit Sub
+Private Sub ImageMove(A As myImage, neoTop As Long, NeoLeft As Long, NeoWidth As Long, NeoHeight As Long)
+If A.image Is Nothing Then Exit Sub
 
 
-If a.image.Width = 0 Then Exit Sub
-If a.image.Type = vbPicTypeIcon Then
+If A.image.Width = 0 Then Exit Sub
+If A.image.Type = vbPicTypeIcon Then
 
 Dim aa As New cDIBSection
 aa.BackColor = BackColor
-aa.CreateFromPicture a.image
+aa.CreateFromPicture A.image
 aa.ResetBitmapTypeToBITMAP
 PaintPicture aa.Picture, neoTop, NeoLeft, NeoWidth, NeoHeight
 Else
-PaintPicture a.image, neoTop, NeoLeft, NeoWidth, NeoHeight
+PaintPicture A.image, neoTop, NeoLeft, NeoWidth, NeoHeight
 End If
 Refresh
 End Sub

@@ -62,7 +62,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'m2000 ver 2.1
+'m2000 ver 8.0
 Option Explicit
 Dim waitforparent As Boolean
 Dim havefocus As Boolean, UKEY$
@@ -805,7 +805,12 @@ End Sub
 Private Sub timer2bar_Timer()
 If m_showbar Or Shape1.Visible Or Spinner Then Redraw
 End Sub
-
+Public Sub GiveSoftFocus()
+RaiseEvent CheckGotFocus
+havefocus = True
+SoftEnterFocus
+If Not NoWheel Then RaiseEvent RegisterGlist(Me)
+End Sub
 
 Private Sub UserControl_GotFocus()
 RaiseEvent CheckGotFocus
@@ -3852,7 +3857,7 @@ mpercent = rhs
 PropertyChanged "Percent"
 End Property
 Private Sub UserControl_KeyDown(KeyCode As Integer, shift As Integer)
-If KeyCode = vbKeyTab Then
+If KeyCode = vbKeyTab And Not mEditFlag Then
 If shift = 2 Then
         choosenext
     KeyCode = 0
@@ -4839,21 +4844,21 @@ If UserControl.Parent Is Nothing Then Exit Property
 Set Parent = UserControl.Parent
 there:
 End Property
-Public Sub Curve(Optional T As Boolean = False, Optional factor As Single = 1)
+Public Sub Curve(Optional t As Boolean = False, Optional factor As Single = 1)
 Dim hRgn As Long
 If Int(25 * factor) > 2 Then
 hRgn = CreateRoundRectRgn(0, 0, WidthPixels, HeightPixels, 25 * factor, 25 * factor)
-SetWindowRgn Me.hWnd, hRgn, T
+SetWindowRgn Me.hWnd, hRgn, t
 DeleteObject hRgn
 End If
 End Sub
 Public Sub ShowMenu()
     RaiseEvent DeployMenu
 End Sub
-Public Property Let BlinkTime(T As Variant)
+Public Property Let BlinkTime(t As Variant)
 BlinkON = True <> 0
-mBlinkTime = T
-Timer1.Interval = T
+mBlinkTime = t
+Timer1.Interval = t
 Timer1.enabled = True
 End Property
 Sub DestCaret()
