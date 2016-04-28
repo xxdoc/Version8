@@ -75,12 +75,12 @@ Private BlockStartPara As Long, BlockStartPos As Long, BlockStartLine As Long, B
 Private BlockStartCursor As Long, BlockEndCursor As Long
 Private BlockEndPara As Long, BlockEndPos As Long, BlockEndline As Long, BlockBottomline As Long
 Private Declare Function CopyFromLParamToRect Lib "user32" Alias "CopyRect" (lpDestRect As RECT, ByVal lpSourceRect As Long) As Long
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalAlloc Lib "KERNEL32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalFree Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalLock Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalReAlloc Lib "KERNEL32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
+Private Declare Function GlobalSize Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "KERNEL32" (ByVal hMem As Long) As Long
 Private Const GMEM_DDESHARE = &H2000
 Private Const GMEM_DISCARDABLE = &H100
 Private Const GMEM_DISCARDED = &H4000
@@ -98,7 +98,7 @@ Private Const GMEM_VALID_FLAGS = &H7F72
 Private Const GMEM_ZEROINIT = &H40
 Private Const GPTR = (GMEM_FIXED Or GMEM_ZEROINIT)
 Private Const GMEM_LOWER = GMEM_NOT_BANKED
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
+Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetClipboardData Lib "user32" _
     (ByVal wFormat As Long) As Long
@@ -110,7 +110,7 @@ Private Declare Function CloseClipboard Lib "user32" _
     () As Long
     Private Declare Function IsClipboardFormatAvailable Lib "user32" _
     (ByVal wFormat As Long) As Long
-    Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
+    Private Declare Function GetLocaleInfo Lib "KERNEL32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
@@ -2150,11 +2150,11 @@ A$ = NLtrim$(A$)
         Case "@"
         
             If Mid$(A$, 2, 1) <> "(" And r$ <> "" Then
-              where$ = r$
-            r$ = ""
-            A$ = Mid$(A$, 2)
+
+                r$ = r$ + "@"
+                A$ = Mid$(A$, 2)
             Else
-              IsLabelDot = 0: A$ = firstdot$ + A$: Exit Function
+                IsLabelDot = 0: A$ = firstdot$ + A$: Exit Function
             End If
         Case "?"
         If r$ = "" And firstdot$ = "" Then
@@ -3243,7 +3243,13 @@ On Error Resume Next
     CM = c
     For i = items& To 0 Step -1
         c = ww$(i)
+        If Len(CM) - Len(ww$(i)) >= 0 Then
         CM = Left$(CM, Len(CM) - Len(ww$(i)))
+        Else
+        'CM = CM + Mid$(ww$(i), Len(CM) + 1)
+        
+       Exit For
+        End If
         offset = glistN.UserControlTextWidthPixels(CM)
         ' for Kenring
         addthis = glistN.UserControlTextWidthPixels(CM + c) - offset - glistN.UserControlTextWidthPixels(c)

@@ -25,7 +25,7 @@ Private PriveSpace() As item
 Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, RetVal As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
 Private lastfind As String
 Private Hash() As Long
 Private Sub Class_Initialize()
@@ -255,22 +255,34 @@ Private Sub ab(ByVal A As Long, b As Long)
 b = (b + A + 1024 * A) Xor &H83F3CF
 End Sub
 Public Function HashFunc0(A$) As Long
-Dim i&, p2 As Long, P1 As Integer, p4 As Long, k As Long
-  p4 = Len(A$) * 2 - 2
+ Dim i&, p2 As Long, P1 As Integer, p4 As Long, k As Long, p3 As Long
+  p4 = Len(A$) * 2 '- 2
   p2 = StrPtr(A$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, P1
-  HashFunc0 = (HashFunc0 + P1 + 1024& * P1) Xor &H83F3CF
+  p3 = UINT(P1)
+  HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
   Next i
   k = 2
   For i = p4 - 8 To p2 Step -2
   GetMem2 i, P1
-  HashFunc0 = (HashFunc0 + P1 + 1024& * P1) Xor &H83F3CF
+  p3 = UINT(P1)
+  HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
  i = i - 2 * k
   k = k + 1
   Next i
  
 End Function
+Private Function UINT(ByVal A As Integer) As Long 'δίνει έναν integer σαν unsign integer σε long
+ Dim b As Integer
+ b = A And &HFFFF
+ If b < 0 Then
+ UINT = CLng(&H10000 + b)
+ Else
+ UINT = CLng(b)
+ End If
+ 
+ End Function
 Private Function HashFunc2(where As Long)
 HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFA000 + Len(PriveSpace(where).Key) + hashlen + 1), hashlen)
 End Function

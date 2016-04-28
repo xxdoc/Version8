@@ -2559,7 +2559,7 @@ End If
             If Not cc.Value = 0 Then funcdeep = cc.Value
             
         Else
-            funcdeep = 128
+            funcdeep = 300
         End If
              cc.ValueKey = "DEC"
              cc.ValueType = REG_DWORD

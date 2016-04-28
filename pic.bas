@@ -3614,6 +3614,38 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 For i = 0 To UBound(mycommands())
 
 Select Case mycommands(i)
+Case "NORMAL", "йамомийа"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoNormal)
+Case "DOUBLE", "дипка"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDouble)
+Case "CURSOR", "дяолеас"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoTextCursor)
+Case "MOUSE.ICON", "деийтг.лояжг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoMouseIcon)
+Case "FLOODFILL", "целисе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoFloodFill)
+Case "FILL", "баье"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoFill)
+Case "IMAGE", "еийома"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoImage)
+Case "RELEASE", "ажгсе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRelease)
+Case "HOLD", "йяатгсе"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoHold)
+Case "CLASS", "йкасг"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoClass)
+Case "DIM", "пимайас", "пимайес"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDIM)
+Case "PATH", "COLOR", "вяыла", "ивмос"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPathDraw)
+Case "TITLE", "титкос"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoTitle)
+Case "NEW", "мео"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoNew)
+Case "MODULE", "тлгла"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoModule)
+Case "GROUP", "олада"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoGroup)
 Case "DRAWINGS", "сведиа"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDrawings)
 Case "BITMAPS", "еийомес"
@@ -3662,7 +3694,7 @@ Case "READ", "диабасе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRead)
 Case "LET", "стг", "стгм", "сто"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoLet)
-Case "PRINT", "тупысе"
+Case "PRINT", "тупысе", "?"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPrint)
 Case "CALL", "йакесе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCall)

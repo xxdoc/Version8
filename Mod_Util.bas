@@ -707,6 +707,7 @@ Set p = Nothing
 End With
 End Sub
 Sub sprite(bstack As basetask, ByVal f As String, rst As String)
+
 On Error GoTo SPerror
 Dim d1 As Object, amask$
 Set d1 = bstack.Owner
@@ -3593,7 +3594,7 @@ End If
 Loop Until PP <= CDbl(timeGetTime) Or NOEXECUTION
 
                        If exWnd <> 0 Then
-                mytitle$ bstack
+                MyTitle$ bstack
                 End If
 End Sub
 Public Sub WaitDialog(bstack As basetask)
@@ -4635,8 +4636,8 @@ s$ = mylcasefILE(s$)
             ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
-                    cc.Value = 128
-                    funcdeep = 128
+                    cc.Value = 300
+                    funcdeep = 300
             Else
             s$ = "-" & d$ & s$
             Exit Do
@@ -5742,13 +5743,13 @@ Tcase = myUcase(Left$(s$, 1), True) + Mid$(myLcase(s$), 2)
 End Function
 Public Sub choosenext()
 Dim catchit As Boolean
-
+On Error Resume Next
 If Not Screen.ActiveForm Is Nothing Then
 
     Dim x As Form
      For Each x In Forms
      If x.name = "Form1" Or x.name = "GuiM2000" Or x.name = "Form2" Or x.name = "Form4" Then
-         If x.Visible Then
+         If x.Visible And x.enabled Then
              If catchit Then x.SetFocus: Exit Sub
              If x.hWnd = GetForegroundWindow Then
              catchit = True
@@ -5760,7 +5761,7 @@ If Not Screen.ActiveForm Is Nothing Then
      Set x = Nothing
      For Each x In Forms
      If x.name = "Form1" Or x.name = "GuiM2000" Or x.name = "Form2" Or x.name = "Form4" Then
-         If x.Visible Then x.SetFocus: Exit Sub
+         If x.Visible And x.enabled Then x.SetFocus: Exit Sub
              
              
          End If

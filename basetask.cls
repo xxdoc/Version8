@@ -18,7 +18,8 @@ Public addlen As Long
 Public nokillvars As Boolean
 Public IFCTRL As Boolean, jump As Boolean
 Public Vars As Long, vname As Long
-Public LastComm$
+'Public LastComm$
+Public connectnow As Boolean
 Public LastExecute As Long
 Public LastOnce As Boolean
 ''Public LastLoop As Boolean
