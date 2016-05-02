@@ -39,7 +39,7 @@ Private mtolayer As Long
 Private myRun As Boolean
 Private mprocess As TaskInterface ' reference to current process maybe same to parrent...
 Private mprocessOk As Boolean ' if i have a process class
-Private threadsnames As New Collection  ' äïõëåýåé
+Private threadsnames As New FastCollection  ' äïõëåýåé
 Public TaskMain As Boolean
 Public OriginalName$
 Private mGroupName$
@@ -47,7 +47,7 @@ Public UseGroupname$
 Public LastClick As Long
 Public Look2Parent As Boolean
 Private dotcollection As Collection
-Public StaticCollection As Collection
+Public StaticCollection As FastCollection
 Private topdotlevel As Long
 Public reflimit As Long
 Public IndexSub As Long
@@ -64,51 +64,51 @@ Public OriginalCode As Long
 Public StaticInUse$
 Private mIamAnEvent As Boolean
 Public Sub SetVar(ByVal name$, var As Variant)
-    On Error Resume Next
-    StaticCollection.Add var, name$
-    If Err.Number > 0 Then
-    StaticCollection.Remove name$
-    StaticCollection.Add var, name$
-    End If
-   
-   '' Debug.Print "Put to ", Me.StaticInUse, " Var ", NAME$, " type ", Typename$(VAR)
+    If Not StaticCollection.Find(name$) Then StaticCollection.AddKey name$
+   StaticCollection.Value = var
 End Sub
+Public Sub SetVarobJ(ByVal name$, var As Variant)
+If StaticCollection Is Nothing Then Set StaticCollection = New FastCollection
+    If Not StaticCollection.Find(name$) Then StaticCollection.AddKey name$
+    Set StaticCollection.ValueObj = var
+End Sub
+
 Function AlterVar(ByVal name$, p As Double, ss$, inttype As Boolean) As Boolean
-Dim var As Variant
-  var = StaticCollection(name$)
-    StaticCollection.Remove name$
+
+If Not StaticCollection.Find(name$) Then Exit Function
+  With StaticCollection
             Select Case ss$
             Case "!!"
-            var = -1 - (var <> 0)
+            .Value = -1 - (.Value <> 0)
             Case "++"
-            var = var + 1
+            .Value = .Value + 1
             Case "--"
-            var = var - 1
+            .Value = .Value - 1
             Case "-!"
-            var = -var
+            .Value = -.Value
             Case "=", "g"
-            var = p
+            .Value = p
             Case "+"
-            var = p + var
+            .Value = p + .Value
             Case "*"
-            var = p * var
+            .Value = p * .Value
             Case "-"
-            var = var - p
+            .Value = .Value - p
             Case "/"
             If p = 0 Then
             
              Exit Function
             End If
-            var = var / p
+            .Value = .Value / p
             Case "!"
-            var = -1 - (var <> 0)
+            .Value = -1 - (.Value <> 0)
             End Select
             If inttype Then
-            var = Int(var)
+            .Value = Int(.Value)
             Else
-            var = MyRound(var, 13)
+            .Value = MyRound(.Value, 13)
             End If
-   StaticCollection.Add var, name$
+            End With
    AlterVar = True
 End Function
 Function MyRound(ByVal x, Optional d As Double = 0) As Double
@@ -148,30 +148,21 @@ MyRound = Fix(x * 10000000000000# + n) / 10000000000000#
 End Select
 End Function
 Public Function ExistVar(ByVal name$) As Boolean
-    Dim i As Long
-    On Error Resume Next
-    If StaticCollection.Count = 0 Then Exit Function
-    If Err Then Exit Function
-    i = VarType(StaticCollection(name$))
-    If Err.Number > 0 Then Exit Function
-    ExistVar = True
+        ExistVar = StaticCollection.ExistKey(name$)
 End Function
 Public Sub ReadVar(ByVal name$, var As Variant)
     Dim i As Long, vv As Variant
     On Error Resume Next
-    i = VarType(StaticCollection(name$))
-    If Err.Number Then var = Empty: Exit Sub
-    ''Debug.Print NAME$, OriginalName, OriginalCode, HERE$, mGroupName
-    If i = vbObject Then
-            Set var = StaticCollection(name$)
-            StaticCollection.Remove name$  '' we do a remove
-            Set vv = Nothing
-            StaticCollection.Add vv, name$
-            ' objects are popped
-    Else
-            var = StaticCollection(name$)
-    End If
-
+    With StaticCollection
+        If .Find(name$) Then
+            If .IsObj Then
+                    Set var = .ValueObj
+                    Set .ValueObj = Nothing
+            Else
+                    var = .Value
+            End If
+        End If
+    End With
 End Sub
 Public Sub DropNdot(n As Long)
 ''On Error Resume Next
@@ -185,6 +176,7 @@ dotcollection.Remove dotcollection.Count
 Next i
 End If
 End Sub
+
 Public Sub MoveNameDot(A$)
 If A$ = "" Then Exit Sub
 If dotcollection.Count = 0 Then
@@ -219,17 +211,9 @@ If dotcollection.Count < dotnum Then
 If UseGroupname = "" Then
 
 Else
-           ' If InStr(A$, "(") > 0 Then
-            ' If AscW(Left$(A$, 1)) > 255 Then
- 'A$ = "ÁÕÔÏ." + A$
- 'Else
- 'A$ = "THIS." + A$
- 'End If
-  '          Else
+
             
             A$ = UseGroupname + A$
-   '         End If
-
  End If
 Else
 
@@ -255,6 +239,7 @@ Else
     End If
     GetDotNew = Err.Number = 0
 End Function
+
 Public Function GetDot(A$, st&) As Boolean
 On Error Resume Next
 Dim i&
@@ -275,44 +260,46 @@ A$ = Left$(A$, st& - 1) + dotcollection(i& - st& + 1) + Mid$(A$, i&)
 If Not Err Then GetDot = True
 End Function
 
-Public Property Let myitalic(ByVal rhs As Boolean)
-mitalic = rhs
+
+
+Public Property Let myitalic(ByVal RHS As Boolean)
+mitalic = RHS
 End Property
 
 Public Property Get myitalic() As Boolean
 myitalic = mitalic
 End Property
-Public Property Let myCharSet(ByVal rhs As Integer)
-mCharSet = rhs
+Public Property Let myCharSet(ByVal RHS As Integer)
+mCharSet = RHS
 End Property
 
 Public Property Get myCharSet() As Integer
 myCharSet = mCharSet
 End Property
-Public Property Let myBold(ByVal rhs As Boolean)
-mBold = rhs
+Public Property Let myBold(ByVal RHS As Boolean)
+mBold = RHS
 End Property
 
 Public Property Get myBold() As Boolean
 myBold = mBold
 End Property
-Public Property Let toprinter(ByVal rhs As Boolean)
-mtoprinter = rhs
+Public Property Let toprinter(ByVal RHS As Boolean)
+mtoprinter = RHS
 End Property
 
 Public Property Get toprinter() As Boolean
 toprinter = mtoprinter
 End Property
-Public Property Let tolayer(ByVal rhs As Long)
-mtolayer = rhs
+Public Property Let tolayer(ByVal RHS As Long)
+mtolayer = RHS
 End Property
 
 Public Property Get tolayer() As Long
 tolayer = mtolayer
 End Property
 
-Public Property Let toback(ByVal rhs As Boolean)
-mtoback = rhs
+Public Property Let toback(ByVal RHS As Boolean)
+mtoback = RHS
 End Property
 
 Public Property Get toback() As Boolean
@@ -394,9 +381,10 @@ Set Process = mprocess
 End Property
 Public Property Set LinkThread(Threadid As Long, A As TaskInterface)
 Dim aa As mThreadref
-Set aa = threadsnames(CStr(Threadid))
+If threadsnames.Find(Threadid) Then
+Set aa = threadsnames.ValueObj
 Set aa.thread = A
-
+End If
 End Property
 
 Public Sub PushThread(Threadid As Long, threadvar As String)
@@ -405,16 +393,16 @@ Dim aa As New mThreadref
 Set aa.thread = Nothing  ' no thread
 aa.Id = Threadid
 aa.VarName = threadvar
-threadsnames.Add aa, CStr(Threadid)
+If Not threadsnames.Find(Threadid) Then threadsnames.AddKey Threadid
+Set threadsnames.ValueObj = aa
 
 End Sub
 Public Function Exist(Threadid As Long, ThreadName As String) As Boolean
-Dim aa As mThreadref
-On Error Resume Next
-Exist = threadsnames(CStr(Threadid)).VarName = ThreadName
-If Err.Number > 0 Then
-Exist = False
-
+'Dim aa As mThreadref
+If threadsnames.Find(Threadid) Then
+ With threadsnames.ValueObj
+    Exist = .VarName = ThreadName
+End With
 End If
 
 End Function
@@ -427,27 +415,28 @@ If TaskMaster Is Nothing Then Exit Function
 If TaskMaster.ThrowOne(Threadid) Then ThrowOne = True
 If Err.Number > 0 Then Err.Clear: Exit Function
 ' maybe the task isn't on our list - because we send message from other thread!
-Set aa = threadsnames(CStr(Threadid))
-If Err.Number = 0 Then
-threadsnames.Remove CStr(Threadid)
-aa.thread.Dispose tmAllTasks
-ThrowOne = True
-Dim bb As basetask
-Set aa.thread = Nothing
-Else
-Err.Clear
-ThrowOne = Me.Parent.ThrowOne(Threadid)
+If threadsnames.Find(Threadid) Then
+    Set aa = threadsnames.ValueObj
 
+    threadsnames.Remove Threadid
+    threadsnames.PrevIndex
+    aa.thread.Dispose tmAllTasks
+    ThrowOne = True
+    Set aa.thread = Nothing
+Else
+    Err.Clear
+    ThrowOne = Me.Parent.ThrowOne(Threadid)
 End If
-Err.Clear
-'If Me.IamChild Then Me.Parent.ThrowOne Threadid
 Set aa = Nothing
 End Function
 Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 '' use threadsnames
 Dim aa As mThreadref, A$
 If threadsnames.Count > 0 Then
-For Each aa In threadsnames
+threadsnames.ToStart
+While threadsnames.Done
+' For Each aa In threadsnames
+Set aa = threadsnames.ValueObj
 If Left$(aa.VarName, 1) = "_" Then
 If lang = 0 Then
 A$ = A$ & "ÅÓÙÔÅÑÉÊÏ ÍÇÌÁ "
@@ -457,7 +446,10 @@ End If
 Else
 A$ = A$ & aa.VarName + Str$(aa.Id) & " "
 End If
-Next aa
+threadsnames.NextIndex
+Wend
+Set aa = Nothing
+'Next aa
 End If
 If Me.IamChild Then
 If Not Me.Parent Is Nothing Then
@@ -471,14 +463,17 @@ End If
 End Function
 Public Function ThreadsNumber() As Long
 '' use threadsnames
-Dim aa As mThreadref, KK
+Dim aa As mThreadref, kk
 If threadsnames.Count > 0 Then
-For Each aa In threadsnames
-If Left$(aa.VarName, 5) <> "_multi" Then KK = KK + 1
-Next aa
+threadsnames.ToStart
+While threadsnames.Done
+Set aa = threadsnames.ValueObj
+If Left$(aa.VarName, 5) <> "_multi" Then kk = kk + 1
+threadsnames.NextIndex
+Wend
+Set aa = Nothing
 End If
-
-ThreadsNumber = KK
+ThreadsNumber = kk
 End Function
 Public Sub ThrowThreads(Optional idexclude As Long = -1)
 
@@ -487,7 +482,9 @@ Dim thatProcess As TaskInterface
 Dim thatBasetask As basetask
 
 If threadsnames.Count > 0 Then
-For Each aa In threadsnames
+threadsnames.ToStart
+While threadsnames.Done
+Set aa = threadsnames.ValueObj
 If idexclude <> aa.Id Then
 If Not TaskMaster Is Nothing Then
 If TaskMaster.ThrowOne(aa.Id) Then
@@ -497,7 +494,9 @@ Else
 ThrowOne aa.Id
 End If
 End If
-Next aa
+threadsnames.NextIndex
+Wend
+Set aa = Nothing
 End If
 
 End Sub
@@ -505,7 +504,7 @@ End Sub
 Private Sub Class_Initialize()
 Set parentSoros = New mStiva ' maybe this will change
 Set dotcollection = New Collection
-Set StaticCollection = New Collection
+'Set StaticCollection = New FastCollection
 Set Owner = Nothing
 Set lastobj = Nothing
 Set FuncObj = Nothing

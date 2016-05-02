@@ -3,13 +3,13 @@ Attribute VB_Name = "Fcall"
 
 
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
-Private Declare Function GetProcByName Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function GetProcByOrdinal Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal nOrdinal As Long) As Long
-Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
-Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
-Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
-Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
-Private Declare Sub RtlMoveMemory Lib "kernel32" (dst As Any, src As Any, ByVal BLen As Long)
+Private Declare Function GetProcByName Lib "KERNEL32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GetProcByOrdinal Lib "KERNEL32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal nOrdinal As Long) As Long
+Private Declare Function LoadLibrary Lib "KERNEL32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
+Private Declare Function FreeLibrary Lib "KERNEL32" (ByVal hLibModule As Long) As Long
+Private Declare Function lstrlenA Lib "KERNEL32" (ByVal lpString As Long) As Long
+Private Declare Function lstrlenW Lib "KERNEL32" (ByVal lpString As Long) As Long
+Private Declare Sub RtlMoveMemory Lib "KERNEL32" (dst As Any, src As Any, ByVal BLen As Long)
 
 Private Enum CALLINGCONVENTION_ENUM
   CC_FASTCALL
@@ -23,7 +23,7 @@ Private Enum CALLINGCONVENTION_ENUM
   CC_MPWPASCAL
 End Enum
 
-Private LibHdls As New Collection, VType(0 To 63) As Integer, VPtr(0 To 63) As Long
+Private LibHdls As New FastCollection, VType(0 To 63) As Integer, VPtr(0 To 63) As Long
 
 Public Function stdCallW(sDll As String, sFunc As String, ByVal RetType As Variant, p() As Variant, j As Long)
 Dim v(), HRes As Long
@@ -115,14 +115,13 @@ Static hlib As Long, sLib As String
   If sLib <> sDll Then 'just a bit of caching, to make resolving libHdls faster
     sLib = sDll
     On Error Resume Next
-      hlib = 0
-      hlib = LibHdls(sLib)
-    On Error GoTo 0
-    
-    If hlib = 0 Then
+    If LibHdls.Find(sLib) Then
+        hlib = LibHdls.Value
+    Else
+     
       hlib = LoadLibrary(sLib)
       If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
-      LibHdls.Add hlib, sLib '<- cache it under the dll-name for the next call
+      LibHdls.AddKey sLib, hlib '<- cache it under the dll-name for the next call
     End If
   End If
   GetFuncPtr = GetProcByName(hlib, sFunc)
@@ -136,17 +135,14 @@ lfunc = val(Mid$(sFunc, 2))
 
   If sLib <> sDll Then 'just a bit of caching, to make resolving libHdls faster
     sLib = sDll
-    On Error Resume Next
-      hlib = 0
-      hlib = LibHdls(sLib)
-    On Error GoTo 0
-    
-    If hlib = 0 Then
+    If LibHdls.Find(sLib) Then
+        hlib = LibHdls.Value
+    Else
       hlib = LoadLibrary(sLib)
       If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
-      LibHdls.Add hlib, sLib '<- cache it under the dll-name for the next call
+      LibHdls.AddKey sLib, hlib '<- cache it under the dll-name for the next call
     End If
-  End If
+    End If
   GetFuncPtrOrd = GetProcByOrdinal(hlib, lfunc)
   If GetFuncPtrOrd = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
 End Function
@@ -164,7 +160,12 @@ End Function
 
 Public Sub CleanupLibHandles() 'not really needed - but callable (usually at process-shutdown) to clear things up
 Dim LibHdl
-  For Each LibHdl In LibHdls: FreeLibrary LibHdl: Next
+LibHdls.ToStart
+While LibHdls.Done
+    FreeLibrary LibHdls.Value
+    LibHdls.NextIndex
+Wend
+'  For Each LibHdl In LibHdls: FreeLibrary LibHdl: Next
   Set LibHdls = Nothing
 End Sub
 Function IsWine()

@@ -29,7 +29,7 @@ End Enum
 ' Maybe need this http://support2.microsoft.com/kb/2870467/
 'To update oleaut32
 Private Declare Sub VariantCopy Lib "oleaut32.dll" (ByRef pvargDest As Variant, ByRef pvargSrc As Variant)
-Private KnownProp As Collection
+Private KnownProp As FastCollection
 Private Init As Boolean
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long
 Public Function FindDISPID(pobjTarget As Object, ByVal pstrProcName As Variant) As Long
@@ -40,7 +40,7 @@ Public Function FindDISPID(pobjTarget As Object, ByVal pstrProcName As Variant) 
 
     Dim lngRet      As Long
     FindDISPID = -1
-    Dim A$(0 To 0), arrdispid(0 To 0) As Long, myptr() As Long
+    Dim a$(0 To 0), arrdispid(0 To 0) As Long, myptr() As Long
     ReDim myptr(0 To 0)
     myptr(0) = StrPtr(pstrProcName)
     
@@ -570,21 +570,22 @@ Public Sub ChangeOneIndexParameter(pobjTarget As Object, DISPID As Long, VAL1, E
 End Sub
 Private Sub PushOne(KnownPropName As String, ByVal v As Long)
 On Error Resume Next
-KnownProp.Add v, LCase$(KnownPropName)
+If Not KnownProp.Find(LCase(KnownPropName)) Then KnownProp.AddKey LCase$(KnownPropName)
+KnownProp.Value = v
+
 End Sub
 Private Function getone(KnownPropName As String, this As Long) As Boolean
 On Error Resume Next
 Dim v As Long
 InitMe
-Err.Clear
-v = KnownProp(LCase$(KnownPropName))
-If Err.Number = 0 Then getone = True: this = v
-Err.Clear
+If KnownProp.Find(LCase$(KnownPropName)) Then
+getone = True: this = KnownProp.Value
+End If
 End Function
 
 Private Sub InitMe()
 If Init Then Exit Sub
-Set KnownProp = New Collection
+Set KnownProp = New FastCollection
 ' from this collection we never delete items.
 Init = True
 End Sub

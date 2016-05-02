@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 0
-Global Const Revision = 224
+Global Const Revision = 225
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -12737,6 +12737,7 @@ If bstack.UseGroupname <> "" Then
 Exit Function
 End If
 Dim p As Double, ii As Long, ss$
+If bstack.StaticCollection Is Nothing Then Set bstack.StaticCollection = New FastCollection
 Do
     Select Case IsLabel(bstack, b$, w$)
     Case 1
@@ -13573,6 +13574,8 @@ nd& = x1
         
         If MaybeIsSymbol(b$, "<=") Then
          If FastSymbol(b$, "=") Then
+         If bstack.StaticCollection Is Nothing Then GoTo cont10456
+         
         If bstack.ExistVar(w$) Then
             x2 = -1
             x1 = nd&
@@ -13586,6 +13589,7 @@ nd& = x1
             Exit Function
             End If
             Else
+cont10456:
             x1 = Abs(GetlocalVar(w$, x2)) * x1
         End If
          ElseIf FastSymbol(b$, "<=", , 2) Then
@@ -15317,16 +15321,9 @@ varonly:
         End If
     End If
      If FastSymbol(b$, "=") Then
+     
             If Not VarStat Then
-
-                If bstack.ExistVar(w$) Then
-                If NewStat Then
-                MyEr "Only Static needed", "Μόνο το αναγνωριστικό Στατική χρειάζεται"
-                    Execute = 0: Exit Function
-                End If
-                If IsExp(bstack, b$, p) Then bstack.SetVar w$, p Else GoTo aproblem1
-                
-                ElseIf GetlocalVar(w$, v) And Not NewStat Then
+              If GetlocalVar(w$, v) And Not NewStat Then
    
                         If IsExp(bstack, b$, p) Then
                         If Typename$(var(v)) = "PropReference" Then
@@ -15401,11 +15398,25 @@ varonly:
                                 Else
 
                              var(v) = p
-      End If
+                                                 
+                    End If
                             End If
                         End If
                         End If
+                ElseIf Not bstack.StaticCollection Is Nothing Then
+                If bstack.ExistVar(w$) Then
+                If NewStat Then
+                
+                MyEr "Only Static needed", "Μόνο το αναγνωριστικό Στατική χρειάζεται"
+                    Execute = 0: Exit Function
+                End If
+                If IsExp(bstack, b$, p) Then bstack.SetVar w$, p Else GoTo aproblem1
                 ElseIf IsExp(bstack, b$, p) Then
+                GoTo cont5689
+                End If
+
+                ElseIf IsExp(bstack, b$, p) Then
+cont5689:
                             If Not bstack.lastobj Is Nothing Then
                                 If TypeOf bstack.lastobj Is Group Then
                                         If NewStat Then
@@ -15817,10 +15828,7 @@ If ss$ <> "" Then
             If NewStat Then
                     If IsStrExp(bstack, b$, ss$) Then GlobalVar w$, ss$, , VarStat
             Else
-            If bstack.ExistVar(w$) Then
-           If IsStrExp(bstack, b$, ss$) Then bstack.SetVar w$, ss$ Else GoTo aproblem1
-            
-            ElseIf GetlocalVar(w$, v) Then
+             If GetlocalVar(w$, v) Then
             
             
                 If IsStrExp(bstack, b$, ss$) Then
@@ -15841,7 +15849,15 @@ If ss$ <> "" Then
                 CheckVar var(v), ss$
                 End If
                 End If
+                ElseIf Not bstack.StaticCollection Is Nothing Then
+            If bstack.ExistVar(w$) Then
+           If IsStrExp(bstack, b$, ss$) Then bstack.SetVar w$, ss$ Else GoTo aproblem1
+            
             ElseIf IsStrExp(bstack, b$, ss$) Then
+            GoTo cont184575
+            End If
+            ElseIf IsStrExp(bstack, b$, ss$) Then
+cont184575:
             If bstack.lastobj Is Nothing Then
               GlobalVar w$, ss$, , VarStat
             Else
@@ -15946,10 +15962,7 @@ If MaybeIsSymbol(b$, "=-+*/<~") Then
             
             End If
     Else
-            If bstack.ExistVar(w$) Then
-            If IsExp(bstack, b$, p) Then bstack.SetVar w$, Int(p) Else GoTo aproblem1
-            
-            ElseIf GetlocalVar(w$, v) Then
+            If GetlocalVar(w$, v) Then
             
                 If IsExp(bstack, b$, p) Then
                 If Typename(var(v)) = "PropReference" Then
@@ -15978,7 +15991,16 @@ If MaybeIsSymbol(b$, "=-+*/<~") Then
                 If Err.Number = 6 Then Execute = 0: Exit Do
                 On Error GoTo 0
                 End If
+            ElseIf Not bstack.StaticCollection Is Nothing Then
+            If bstack.ExistVar(w$) Then
+            If IsExp(bstack, b$, p) Then bstack.SetVar w$, Int(p) Else GoTo aproblem1
+            
             ElseIf IsExp(bstack, b$, p) Then
+            GoTo abc2345
+            End If
+            
+            ElseIf IsExp(bstack, b$, p) Then
+abc2345:
             If Not bstack.lastobj Is Nothing Then
             If TypeOf bstack.lastobj Is lambda Then
                             v = GlobalVar(w$, p, , VarStat)
@@ -16584,7 +16606,7 @@ ElseIf GetlocalSub(what$, x1) Then
 End If
 End If
 End If
-If basestack.StaticCollection.Count > 0 Then
+If Not basestack.StaticCollection Is Nothing Then
 If what$ <> mystack.StaticInUse Then
 If StripRVAL(HERE$) & "." & mystack.StaticInUse = what$ Then
     Set mystack.StaticCollection = basestack.StaticCollection
@@ -16705,13 +16727,12 @@ there1234:
     GoFunc = False
   ' όλα αυτά θα πάνε στο Basestack
   If what$ <> mystack.StaticInUse Then
-  ElseIf mystack.StaticCollection.Count > 0 Then
-  Set vvv = mystack.StaticCollection
-   basestack.SetVar "%_" + mystack.StaticInUse, vvv
-   Set vvv = Nothing
+  ElseIf Not basestack.StaticCollection Is Nothing Then
+ ' Set vvv = mystack.StaticCollection
+   basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
+  ' Set vvv = Nothing
    End If
-   'Set mystack.StaticCollection = Nothing
-    'mystack.StaticInUse$ = ""
+
     HERE$ = ohere$
 
     var2used = Vars
@@ -16752,10 +16773,10 @@ Set mystack.FuncObj = Nothing
               vl = mystack.FuncValue
     End If
       If what$ <> mystack.StaticInUse Then
-  ElseIf mystack.StaticCollection.Count > 0 Then
-  Set vvv = mystack.StaticCollection
-   basestack.SetVar "%_" + mystack.StaticInUse, vvv
-   Set vvv = Nothing
+  ElseIf Not basestack.StaticCollection Is Nothing Then
+ '' Set vvv = mystack.StaticCollection
+   basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
+   ''Set vvv = Nothing
    End If
    'Set mystack.StaticCollection = Nothing
     'mystack.StaticInUse$ = ""
@@ -18658,9 +18679,9 @@ End Function
 
 Function GetVar(bstack As basetask, ByVal nm$, i As Long, Optional lookglobalonly As Boolean = False, Optional skip As Boolean, Optional looklocalonly As Boolean = False) As Boolean
 If skip Then Exit Function
+If bstack.StaticCollection Is Nothing Then GoTo cont134
 If bstack.ExistVar(nm$) Then i = -1: Exit Function
-''nm$ = myUcase(nm$)
-
+cont134:
 Dim n$, cc As Long
 
 If Len(nm$) > 5 Then
@@ -21044,7 +21065,7 @@ Loop
 there12345:
 If NocharsInLine(rest$) Then Exit Do
 v = IsLabelA(HERE$, rest$, w$)
-Debug.Print w$
+'Debug.Print w$
 
 If v = 0 Then Exit Do
 
@@ -24166,7 +24187,7 @@ End Function
 Function ProcAbout(basestack As basetask, rest$, lang As Long) As Boolean
 
 Dim par As Boolean, s$, ss$, x As Double, y As Double, i As Long
-Dim KK As New Document
+Dim kk As New Document
 Dim UAddPixelsTop As Long  ' just not used
 
 If FastSymbol(rest$, "!") Then
@@ -24189,15 +24210,15 @@ par = par And IsStrExp(basestack, rest$, ss$)
 
 If par Then
 abt = True
-KK.EmptyDoc
-KK.textDoc = s$
-s$ = KK.textFormat(vbCrLf)
-KK.EmptyDoc
-KK.textDoc = s$
-s$ = KK.TextParagraph(1)
-KK.EmptyDoc
-KK.textDoc = ss$
-sHelp s$, KK.textFormat(vbCrLf), CLng(x), CLng(y)
+kk.EmptyDoc
+kk.textDoc = s$
+s$ = kk.textFormat(vbCrLf)
+kk.EmptyDoc
+kk.textDoc = s$
+s$ = kk.TextParagraph(1)
+kk.EmptyDoc
+kk.textDoc = ss$
+sHelp s$, kk.textFormat(vbCrLf), CLng(x), CLng(y)
 End If
 End If
 End If
@@ -24205,19 +24226,19 @@ End If
 ElseIf IsLabelSymbolNew(rest$, "ΚΑΛΕΣΕ", "CALL", lang) Then
 
 If IsStrExp(basestack, rest$, ss$) Then
-KK.textDoc = ss$
-FeedbackExec$ = KK.textFormat(vbCrLf)
+kk.textDoc = ss$
+FeedbackExec$ = kk.textFormat(vbCrLf)
 Else
 
 End If
 Else
 If IsStrExp(basestack, rest$, s$) Then
-KK.EmptyDoc
-KK.textDoc = s$
-s$ = KK.textFormat(vbCrLf)
-KK.EmptyDoc
-KK.textDoc = s$
-s$ = KK.TextParagraph(1)
+kk.EmptyDoc
+kk.textDoc = s$
+s$ = kk.textFormat(vbCrLf)
+kk.EmptyDoc
+kk.textDoc = s$
+s$ = kk.TextParagraph(1)
         i = 0
         x = (ScrX() - 1) * 2 / 5
         y = (ScrY() - 1) / 7
@@ -24256,9 +24277,9 @@ s$ = KK.TextParagraph(1)
         Form4.MoveMe
         If FastSymbol(rest$, ",") Or Not par Then
         If IsStrExp(basestack, rest$, ss$) Then
-        KK.EmptyDoc
-        KK.textDoc = ss$
-        Form4.Label1.Text = KK.textFormat(vbCrLf)
+        kk.EmptyDoc
+        kk.textDoc = ss$
+        Form4.Label1.Text = kk.textFormat(vbCrLf)
         End If
         End If
         
@@ -25243,7 +25264,7 @@ i = 1
 
         .UseGroupname = sbf(x1).sbgroup
         .OriginalCode = x1
-        If basestack.StaticCollection.Count > 0 Then
+        If Not basestack.StaticCollection Is Nothing Then
            If basestack.ExistVar("%_" + HERE$) Then
                    basestack.ReadVar "%_" + HERE$, vvv
                    If IsObject(vvv) Then Set bs.StaticCollection = vvv
@@ -25356,9 +25377,10 @@ thh1:
                        End With
                    '   Set bs.StaticCollection = Nothing
                    With bs
-                   If .StaticCollection.Count > 0 Then
-                    Set vvv = .StaticCollection
-                   basestack.SetVar "%_" + .StaticInUse$, vvv
+                   
+                   If Not .StaticCollection Is Nothing Then
+                   '' Set vvv = .StaticCollection
+                   basestack.SetVarobJ "%_" + .StaticInUse$, .StaticCollection
                    End If
                    End With
                     Set bs = Nothing
@@ -29877,7 +29899,7 @@ again1234:
  If curbstack.IamChild Then
  If curbstack.IamThread Then Set curbstack = Nothing: Exit Function
  With curbstack
-   Set .StaticCollection = New Collection
+   Set .StaticCollection = Nothing
         If .Vars = 0 And .vname = 0 Then Set curbstack = Nothing: Exit Function
       
    End With
@@ -29887,7 +29909,7 @@ GoTo again1234
 End If
 Set curbstack = Nothing
 ' this command do nothing in a function.
-Set bstack.StaticCollection = New Collection
+Set bstack.StaticCollection = Nothing
 varhash.ReduceHash 0, var()
 var2used = 0
 ReDim var(3000) As Variant
@@ -34378,6 +34400,7 @@ End Function
 Function ProcGroup(entrypoint As Long, basestack As basetask, rest$, lang As Long) As Boolean
 Dim s$, x1 As Long, y1 As Long, what$, flag As Boolean, ss$, i As Long, par As Boolean
 Dim p As Double
+ProcGroup = True
 If entrypoint = 1 Then flag = True
 If IsLabelSymbolNew(rest$, "ΑΥΤΟ", "THIS", lang) Then
     If basestack.UseGroupname <> "" Then
@@ -35549,7 +35572,7 @@ End Function
 Function MyNew(basestack As basetask, rest$, lang As Long) As Boolean
 MyNew = True
 If (basestack.Process Is Nothing) And (basestack.Parent Is Nothing) Then
-Set basestack.StaticCollection = New Collection
+Set basestack.StaticCollection = Nothing 'New FastCollection
 abt = False
 LASTPROG$ = ""
 Randomize Timer
