@@ -103,7 +103,7 @@ If Done Then
     If Index = toplim Then
 
         ReduceHash top1
-
+       toplim = toplim - 1
     Else
         If ParentIndex > 0 Then
             PriveSpace(ParentIndex).Pleft = PriveSpace(Index).Pleft

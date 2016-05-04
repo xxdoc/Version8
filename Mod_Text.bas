@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 0
+Global Const Revision = 1
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -5410,7 +5410,7 @@ IsNumber = False
 Case "EXIST(", "ΥΠΑΡΧΕΙ("
 IsNumber = False
     If IsExp(bstack, n$, p) Then
-    If TypeOf bstack.lastobj Is mHandler Then
+    If Typename(bstack.lastobj) = "mHandler" Then
     Set anything = bstack.lastobj
     Set bstack.lastobj = Nothing
     With anything
@@ -5683,7 +5683,7 @@ jumphere:
 Case "EVAL(", "ΕΚΦΡ(", "ΕΚΦΡΑΣΗ("
 IsNumber = False
     If IsExp(bstack, n$, p) Then
-    If TypeOf bstack.lastobj Is mHandler Then
+    If Typename(bstack.lastobj) = "mHandler" Then
         Set anything = bstack.lastobj
         With anything
             If TypeOf .ObjRef Is FastCollection Then
@@ -5691,6 +5691,7 @@ IsNumber = False
                 If .ObjRef.Done Then
                       If FastSymbol(n$, "!") Then
                      r = SG * .ObjRef.Index
+                     Set bstack.lastobj = Nothing
                     Else
                     If .ObjRef.IsObj Then
                         r = SG * CDbl(rValue(bstack, .ObjRef.ValueObj))
@@ -6708,7 +6709,7 @@ Case "LEN.DISP(", "ΜΗΚΟΣ.ΕΜΦ("
 Case "LEN(", "ΜΗΚΟΣ("
  IsNumber = False
     If IsExp(bstack, n$, p) Then
-    If TypeOf bstack.lastobj Is mHandler Then
+    If Typename(bstack.lastobj) = "mHandler" Then
     With bstack.lastobj
     If TypeOf .ObjRef Is FastCollection Then
     r = SG * .ObjRef.Count
@@ -7405,7 +7406,7 @@ If FastSymbol(n$, ")") Then
 IsNumber = True
 
 If Not pppp.Arr Then
-If TypeOf pppp.GroupRef Is mHandler Then
+If Typename(pppp.GroupRef) = "mHandler" Then
 If Left$(n$, 1) = "." Then
 ' LOOK FOR GROUP
 
@@ -7537,7 +7538,7 @@ contlambdahere:
     
     r = SG * pppp.item(w2)
     Else
-     If TypeOf pppp.GroupRef Is mHandler Then
+     If Typename(pppp.GroupRef) = "mHandler" Then
                 If IsExp(bstack, n$, p) Then
                 If Not FastSymbol(n$, "!") Then s$ = CStr(p): GoTo contlabel
                  With pppp.GroupRef.ObjRef
@@ -7600,14 +7601,13 @@ contlabel:
                        End If
                        End If
                         If Not .IsObj Then
-                            If .Value = Empty Then
-                          r = SG * val(.KeyToString)
-                          Else
-                      r = SG * val(.Value)
-                      End If
+                                 If .Value = Empty Then
+                                     r = SG * val(.KeyToString)
+                                  Else
+                                    r = SG * val(.Value)
+                                 End If
                         Else
-                        Set bstack.lastobj = pppp.GroupRef
-                       r = 0
+                       r = SG * rValue(bstack, pppp.GroupRef.ObjRef.ValueObj)
                        End If
                        
                        
@@ -10162,6 +10162,7 @@ Case "EVAL$(", "ΕΚΦΡ$(", "ΕΚΦΡΑΣΗ$("
                 If .ObjRef.Done Then
                     If FastSymbol(A$, "!") Then
                      r$ = .ObjRef.KeyToString
+                     Set bstackstr.lastobj = Nothing
                     Else
                     If .ObjRef.IsObj Then
                         If TypeOf .ObjRef.ValueObj Is lambda Then CopyLambda .ObjRef.ValueObj, bstackstr
@@ -10782,7 +10783,7 @@ If Trim$(r$ + q2$) <> "" Then
                      End If
                      End If
                     Else
-                    If TypeOf pppp.GroupRef Is mHandler Then
+                    If Typename(pppp.GroupRef) = "mHandler" Then
                         Set bstackstr.lastobj = pppp.GroupRef.ObjRef
                         If pppp.GroupRef.ObjRef.IsObj Then
                             r$ = Typename(bstackstr.lastobj.ValueObj)
@@ -11713,7 +11714,7 @@ contlambdastr:
             IsString = True
         Exit Function
         Else
-        If TypeOf pppp.GroupRef Is mHandler Then
+        If Typename(pppp.GroupRef) = "mHandler" Then
         With pppp.GroupRef.ObjRef
             If IsExp(bstackstr, A$, p) Then
             If FastSymbol(A$, "!") Then
@@ -13939,7 +13940,7 @@ ContReturn:
           MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
        Execute = 0
        Exit Function
-       ElseIf TypeOf bstack.lastobj Is mHandler Then
+       ElseIf Typename(bstack.lastobj) = "mHandler" Then
        If bstack.lastobj.T1 = 1 Then If ChangeValues(bstack, b$) Then GoTo loopcontinue
        End If
        MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
@@ -15824,7 +15825,7 @@ varonly:
                         If bstack.lastobj Is Nothing Then
                          MyEr "Missing Object", "Δεν βρήκα αντικείμενο"
                         Execute = 0: Exit Function
-                        ElseIf TypeOf bstack.lastobj Is mHandler Then
+                        ElseIf Typename(bstack.lastobj) = "mHandler" Then
                             bstack.lastobj.CopyTo myobject
                              Set var(v) = myobject
                         Else
@@ -15950,7 +15951,7 @@ cont5689:
                                            
                                             
                                         End If
-                                ElseIf TypeOf bstack.lastobj Is mHandler Then
+                                ElseIf Typename(bstack.lastobj) = "mHandler" Then
                                  If NewStat Then
                                             MyEr "No New statement for inventory", "Όχι δήλωση νέου για κατάσταση"
                                             Exit Function
@@ -16755,7 +16756,7 @@ End If
      SpeedGroup bstack, pppp, "@READ", w$, "", v
      Set pppp.item(v).LinkRef = myobject
      Else
-     If TypeOf bstack.lastobj Is mHandler Then
+     If Typename(bstack.lastobj) = "mHandler" Then
      If bstack.lastobj.T1 = 1 Then
      If bstack.lastobj.ObjRef.IsObj Then
      Set pppp.item(v) = bstack.lastobj.ObjRef.ValueObj
@@ -34061,7 +34062,23 @@ Dim i As Long, s$, sx As Double, sy As Double, pppp As mArray
 Dim x1 As Long, y1 As Long, p As Double, ML As Long
 ProcSort = False
     y1 = Abs(IsLabel(basestack, rest$, s$))
-    If y1 = 6 Then
+    If y1 = 1 Then
+         If GetVar(basestack, s$, i) Then
+                If Typename(var(i)) = "mHandler" Then
+                            If var(i).T1 = 1 Then
+                            var(i).ObjRef.Sort
+                            ProcSort = True
+                            Else
+                            MyEr "Expected Inventory", "Περίμενα Κατάσταση"
+                            End If
+                Else
+                   MyEr "Expected Inventory", "Περίμενα Κατάσταση"
+                End If
+            Else
+                   MissFuncParameterStringVar
+            End If
+    Exit Function
+    ElseIf y1 = 6 Then
                 If neoGetArray(basestack, s$, pppp) Then
                  If Not NeoGetArrayItem(pppp, basestack, s$, i, rest$) Then Exit Function
                 Else
@@ -36565,7 +36582,7 @@ End Function
 Private Function AddInventory(bstack As basetask, rest$) As Boolean
 Dim p As Double, s$, pppp As mArray
 If Not bstack.lastobj Is Nothing Then
-If TypeOf bstack.lastobj Is mHandler Then
+If Typename(bstack.lastobj) = "mHandler" Then
 Dim aa As mHandler
 Set aa = bstack.lastobj
 Set bstack.lastobj = Nothing
