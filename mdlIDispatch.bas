@@ -40,7 +40,7 @@ Public Function FindDISPID(pobjTarget As Object, ByVal pstrProcName As Variant) 
 
     Dim lngRet      As Long
     FindDISPID = -1
-    Dim a$(0 To 0), arrdispid(0 To 0) As Long, myptr() As Long
+    Dim A$(0 To 0), arrdispid(0 To 0) As Long, myptr() As Long
     ReDim myptr(0 To 0)
     myptr(0) = StrPtr(pstrProcName)
     
@@ -94,7 +94,7 @@ Public Function CallByNameFixParamArray _
     ' are also defined in stdole
     Dim DISPID      As Long
     Dim lngArgErr   As Long
-    Dim varRet      As Variant
+    Dim VarRet      As Variant
     Dim varArr()    As Variant
     Dim varDISPID() As Long
     Dim lngRet      As Long
@@ -170,7 +170,7 @@ End With
 
         ' Invoke method/property
         
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
 
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then
@@ -297,19 +297,19 @@ jumphere:
     On Error Resume Next
 
     Set IDsp = Nothing
-    If IsObject(varRet) Then
-            Set robj = varRet
+    If IsObject(VarRet) Then
+            Set robj = VarRet
             CallByNameFixParamArray = CLng(0)
 Else
-            CallByNameFixParamArray = varRet
+            CallByNameFixParamArray = VarRet
 End If
 exithere:
-    If Err.Number <> 0 Then CallByNameFixParamArray = varRet
+    If Err.Number <> 0 Then CallByNameFixParamArray = VarRet
 Err.Clear
 End Function
 
 
-Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$) As Variant
+Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$, VarRet As Variant) As Boolean
     
     Dim CallType As cbnCallTypes
     
@@ -321,7 +321,6 @@ Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$) As
     ' Do not remove TLB because those types
     ' are also defined in stdole
         Dim lngArgErr   As Long
-    Dim varRet      As Variant
     Dim varArr()    As Variant
 
     Dim lngRet      As Long
@@ -352,7 +351,7 @@ Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$) As
         ' Invoke method/property
         Err.Clear
        On Error Resume Next
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
 If Err > 0 Then
 ERrR$ = Err.Description
 Exit Function
@@ -369,13 +368,13 @@ Else
     On Error Resume Next
 
     Set IDsp = Nothing
-    If IsObject(varRet) Then
+   'If IsObject(VarRet) Then
 
-    Set ReadOneParameter = varRet
-    Else
-    ReadOneParameter = varRet
-    End If
-
+    'Set ReadOneParameter = VarRet
+    'Else
+    'ReadOneParameter = VarRet
+    'End If
+ReadOneParameter = Err = 0
   ''  If Err.Number <> 0 Then ReadOneParameter = varRet
 Err.Clear
 End Function
@@ -391,7 +390,7 @@ Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR
     ' Do not remove TLB because those types
     ' are also defined in stdole
         Dim lngArgErr   As Long
-    Dim varRet      As Variant
+    Dim VarRet      As Variant
     Dim varArr()    As Variant
 
     Dim lngRet      As Long
@@ -422,7 +421,7 @@ Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR
   
         Err.Clear
         On Error Resume Next
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
 If Err > 0 Then
 ERrR$ = Err.Description
 Exit Function
@@ -439,11 +438,11 @@ Else
     On Error Resume Next
 
     Set IDsp = Nothing
-    If IsObject(varRet) Then
+    If IsObject(VarRet) Then
 
-    Set ReadOneIndexParameter = varRet
+    Set ReadOneIndexParameter = VarRet
     Else
-    ReadOneIndexParameter = varRet
+    ReadOneIndexParameter = VarRet
     End If
 
   ''  If Err.Number <> 0 Then ReadOneParameter = varRet
@@ -461,7 +460,7 @@ Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
     ' Do not remove TLB because those types
     ' are also defined in stdole
         Dim lngArgErr   As Long
-    Dim varRet      As Variant
+    Dim VarRet      As Variant
     Dim varArr()    As Variant
 
     Dim lngRet      As Long
@@ -491,7 +490,7 @@ Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
 
         ' Invoke method/property
         
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
 
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then
@@ -520,7 +519,7 @@ Public Sub ChangeOneIndexParameter(pobjTarget As Object, DISPID As Long, VAL1, E
     ' Do not remove TLB because those types
     ' are also defined in stdole
         Dim lngArgErr   As Long
-    Dim varRet      As Variant
+    Dim VarRet      As Variant
     Dim varArr()    As Variant
 
     Dim lngRet      As Long
@@ -551,7 +550,7 @@ Public Sub ChangeOneIndexParameter(pobjTarget As Object, DISPID As Long, VAL1, E
 
         ' Invoke method/property
         
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, varRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
 
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then

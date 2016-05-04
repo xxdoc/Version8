@@ -1782,7 +1782,7 @@ End If
 End Sub
 Sub SpriteControl(ByVal aPrior As Long, ByVal bPrior As Long) ' these are priorities
 'If aPrior = bPrior Then Exit Sub ' just done...
-Dim k As Long, m As Long, i As Long, LL As Long, KK As Long
+Dim k As Long, m As Long, i As Long, LL As Long, kk As Long
 k = FindSpriteByTag(aPrior)
 
 If k = 0 Then Exit Sub  ' there is no such a player
@@ -2705,8 +2705,8 @@ Function ismine2(ByVal A$) As Boolean  ' CAN START A BLOCK OR DO SOMETHING
 ismine2 = True
 A$ = myUcase(A$, True)
 Select Case A$
-Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "DECLARE", "ELSE", "EVENT", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "PATH", "PEN", "PRINTER", "PRINTING", "STACK", "START", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "WHILE"
-Case "аявг", "аккиыс", "цецомос", "цемийо", "цемийг", "цемийес", "циа", "дес", "ейтупытгс", "ейтупысг", "емы", "епипедо", "ивмос", "йахе", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "ояисе", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
+Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "DECLARE", "ELSE", "EVENT", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "INVENTORY", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "PATH", "PEN", "PRINTER", "PRINTING", "STACK", "START", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "WHILE"
+Case "аявг", "аккиыс", "цецомос", "цемийо", "цемийг", "цемийес", "циа", "дес", "ейтупытгс", "ейтупысг", "емы", "епипедо", "ивмос", "йахе", "йатастасг", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "ояисе", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
 Case "->"
 Case Else
 ismine2 = False
@@ -2752,7 +2752,7 @@ Case "GET", "GLOBAL", "GOSUB", "GOTO", "GRABFRAME$", "GRADIENT", "GREEK", "GROUP
 Case "GROUP.COUNT(", "HEIGHT", "HELP", "HEX", "HEX$(", "HIDE", "HIDE$(", "HIFI", "HIGHWORD("
 Case "HILOWWORD(", "HIWORD(", "HOLD", "HTML", "HWND", "ICON", "IF", "IMAGE", "IMAGE.X("
 Case "IMAGE.X.PIXELS(", "IMAGE.Y(", "IMAGE.Y.PIXELS(", "IN", "INKEY$", "INKEY(", "INLINE", "INPUT", "INPUT$("
-Case "INSERT", "INSTR(", "INT(", "INTEGER", "INTERVAL", "ISLET", "ISNUM", "ITALIC"
+Case "INSERT", "INSTR(", "INT(", "INTEGER", "INTERVAL", "INVENTORY", "ISLET", "ISNUM", "ITALIC"
 Case "JOYPAD", "JOYPAD(", "JOYPAD.ANALOG.X(", "JOYPAD.ANALOG.Y(", "JOYPAD.DIRECTION(", "JPG$(", "KEEP", "KEY$", "KEYBOARD"
 Case "KEYPRESS(", "LAMBDA", "LAMBDA$", "LAN$", "LATIN", "LAYER", "LAZY$(", "LCASE$(", "LEFT$(", "LEFTPART$(", "LEGEND", "LEN"
 Case "LEN(", "LEN.DISP(", "LET", "LETTER$", "LIB", "LICENCE", "LINE", "LINESPACE", "LINK", "LIST", "LN("
@@ -2814,7 +2814,7 @@ Case "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяеиа", "еуяесг", 
 Case "еыс", "г", "гл(", "глеяа$(", "глеяа(", "глеяолгмиа", "гво$(", "гвоцяажгсг"
 Case "гвои", "гвос", "хесе", "хесг", "хесг(", "хесг.у", "хесг.в", "хесгдениа("
 Case "идиотгтес", "идиотгтес$", "идиытийо", "исвмг", "исвмг$(", "ивмос", "йахаяг", "йахаяо", "йахе", "йаи", "йакесе", "йалпукг"
-Case "йаме", "йамомийа", "йат", "йат$", "йатакоцои", "йатакоцос", "йатастасг.таимиас$", "йатавыягсг", "йаты"
+Case "йаме", "йамомийа", "йат", "йат$", "йатакоцои", "йатакоцос", "йатастасг", "йатастасг.таимиас$", "йатавыягсг", "йаты"
 Case "йатылисо(", "йеилемо", "йемг", "йемо", "йемтяо", "йеж$(", "йимгсг", "йимгсг.п", "йимгсг.пу"
 Case "йимгсг.пв", "йимгсг.у", "йимгсг.уп", "йимгсг.в", "йимгсг.вп", "йкасг", "йкеиди", "йкеисе", "йкилан.у"
 Case "йкилан.в", "йол$", "йомсока", "йяата", "йяатгсе", "йяужо$(", "йяуье", "йуйкийа", "йуйкос"
@@ -3594,19 +3594,100 @@ End Function
 Public Function NLtrim$(A$)
 If Len(A$) > 0 Then NLtrim$ = Mid$(A$, MyTrimL(A$))
 End Function
+Public Function StringId(aHash As sbHash, bHash As sbHash) As Boolean
+Dim myid(), i As Long
+Dim myfun()
+myid() = Array("ABOUT$", "пеяи$", "CONTROL$", "THREADS$", "мглата$", "LAN$", "дийтуо$", "GRABFRAME$", "паяейаяе$" _
+, "емаомола$", "TEMPNAME$", "TEMPORARY$", "пяосыяимо$", "USER.NAME$", "омола.вягстг$" _
+, "COMPUTER$", "упокоцистгс$", "CLIPBOARD$", "пяовеияо$", "CLIPBOARD.IMAGE$", "пяовеияо.еийома$" _
+, "паяалетяои$", "PARAMETERS$", "OS$", "кс$", "емтокг$", "COMMAND$", "кахос$", "ERROR$", "MODULE$", "тлгла$" _
+, "PRINTERNAME$", "ейтупытгс$", "PROPERTIES$", "идиотгтес$", "MOVIE.STATUS$", "йатастасг.таимиас$" _
+, "MOVIE.DEVICE$", "сусйеуг.пяобокгс$", "MOVIE.ERROR$", "кахос.таимиас$", "PLATFORM$", "пкатжояла$" _
+, "FONTNAME$", "цяаллатосеияа$", "BROWSER$", "амакоцио$", "SPRITE$", "диажамеиа$" _
+, "APPDIR$", "ежаялоцг.йат$", "DIR$", "йат$", "KEY$", "йол$", "INKEY$", "емйол$", "LETTER$", "цяалла$", "LAMBDA$", "калда$")
+For i = 0 To UBound(myid())
+    aHash.ItemCreator CStr(myid(i)), i
+Next i
+myfun() = Array("FORMAT$(", "лояжг$(", "EVAL$(", "ейжя$(", "ейжяасг$(", "STACKTYPE$(", "сыяоутупос$(" _
+, "STACKITEM$(", "тилгсыяоу$(", "исвмг$(", "WEAK$(", "коцос$(", "SPEECH$(", "ASK$(", "яыта$(" _
+, "LOCALE$(", "топийо$(", "SHORTDIR$(", "лийяос.йатакоцос$(", "FILTER$(", "жиктяо$(", "коцос$(", "SPEECH$(" _
+, "аявеио$(", "FILE$(", "PARAM$(", "паяал$(", "LAZY$(", "ойм$(", "INPUT$(", "еисацыцг$(" _
+, "MEMBER.TYPE$(", "лекоус.тупос$(", "MEMBER$(", "лекос$(", "PIPENAME$(", "аукос$(", "FILE.TYPE$(", "тупос.аявеиоу$(", "FILE.NAME.ONLY$(", "омола.аявеиоу.ломо$(", "FILE.NAME$(", "омола.аявеиоу$(" _
+, "FILE.PATH$(", "топос.аявеиоу$(", "одгцос$(", "DRIVE$(", "тиктос.аявеиоу$(", "FILE.TITLE$(" _
+, "ежаялоцг.аявеиоу$(", "FILE.APP$(", "HIDE$(", "йяужо$(", "LEFTPART$(", "аяистеяолеяос$(" _
+, "RIGHTPART$(", "денилеяос$(", "ARRAY$(", "пимайас$(", "TYPE$(", "тупос$(", "PARAGRAPH$(", "паяацяажос$(" _
+, "UNION.DATA$(", "емысг.сеияас$(", "MAX.DATA$(", "лецако.сеияас$(", "MIN.DATA$(", "лийяо.сеияас$(" _
+, "FUNCTION$(", "сумаятгсг$(", "HEX$(", "дейаен$(", "SHOW$(", "жамеяо$(", "MENU$(", "епикоцг$(", "епикоцес$(" _
+, "REPLACE$(", "аккацг$(", "PATH$(", "топос$(", "UCASE$(", "йеж$(", "LCASE$(", "пеф$(", "STRING$(", "епам$(", "MID$(", "лес$(" _
+, "LEFT$(", "аяис$(", "RIGHT$(", "дени$(", "SND$(", "гво$(", "BMP$(", "еий$(", "JPG$(", "жыто$(" _
+, "TRIM$(", "апой$(", "QUOTE$(", "паяахесг$(", "сыяос$(", "STACK$(", "ADD.LICENCE$(", "баке.адеиа$(" _
+, "ENVELOPE$(", "жайекос$(", "FIELD$(", "педио$(", "DRW$(", "свд$(", "TIME$(", "вяомос$(", "DATE$(", "глеяа$(" _
+, "STR$(", "цяажг$(", "CHRCODE$(", "ваяйыд$(", "CHR$(", "вая$(")
+For i = 0 To UBound(myfun())
+    bHash.ItemCreator CStr(myfun(i)), i
+Next i
+StringId = True
+
+End Function
+Public Function NumberId(aHash As sbHash, bHash As sbHash) As Boolean
+Dim myid(), i As Long
+Dim myfun()
+myid() = Array("THIS", "ауто", "PEN", "пема", "HWND", "паяахуяо", "LOCALE", "топийо", "CODEPAGE", "йыдийосекида" _
+, "SPEECH", "коцос", "ERROR", "кахос", "SCREEN.Y", "амакусг.у", "SCREEN.X", "амакусг.в", "TWIPSY", "уьос.сглеиоу" _
+, "TWIPSX", "пкатос.сглеиоу", "REPORTLINES", "цяаллесамажояас", "LINESPACE", "диастиво", "MODE", "тупос" _
+, "MEMORY", "лмглг", "CHARSET", "ваяайтгяес", "ITALIC", "пкациа", "BOLD", "жаядиа", "COLORS", "вяылата" _
+, "ауноуса", "ASCENDING", "жхимоуса", "DESCENDING", "BOOLEAN", "коцийос", "BYTE", "ьгжио" _
+, "INTEGER", "айеяаиос", "LONG", "лайяус", "CURRENCY", "коцистийо", "SINGLE", "апкос", "DOUBLE", "дипкос" _
+, "DATEFIELD", "глеяолгмиа", "BINARY", "дуадийо", "TEXT", "йеилемо", "OLE", "MEMO", "уполмгла", "REVISION", "амахеыягсг", "BROWSER", "амакоцио", "VERSION", "ейдосг", "MOTION.X", "йимгсг.в", "MOTION.Y", "йимгсг.у", "MOTION.XW", "йимгсг.вп", "MOTION.WX", "йимгсг.пв", "MOTION.YW", "йимгсг.уп", "MOTION.WY", "йимгсг.пу" _
+, "FIELD", "педио", "MOUSE.KEY", "деийтгс.йол", "MOUSE", "деийтгс", "MOUSE.X", "деийтгс.в" _
+, "MOUSE.Y", "деийтгс.у", "MOUSEA.X", "деийтгса.в", "MOUSEA.Y", "деийтгса.у", "TRUE", "акгхес", "акгхгс" _
+, "FALSE", "ьеудес", "ьеудгс", "STACK.SIZE", "лецехос.сыяоу", "ISNUM", "еимая", "PI", "пи" _
+, "NOT", "ови", "дем", "ISLET", "еимця", "WIDTH", "пкатос", "POINT", "сглеио", "POS.X", "хесг.в", "POS.Y", "хесг.у" _
+, "SCALE.X", "йкилан.в", "в.сглеиа", "X.TWIPS", "SCALE.Y", "йкилан.у", "у.сглеиа", "Y.TWIPS", "EMPTY", "йемо" _
+, "MOVIE.COUNTER", "MEDIA.COUNTER", "MUSIC.COUNTER", "таимиа.летягтгс", "лоусийг.летягтгс" _
+, "PLAYSCORE", "паифеижымг", "MOVIE", "MEDIA", "MUSIC", "таимиа", "лоусийг", "DURATION", "диаяйеиа" _
+, "VOLUME", "емтасг", "TAB", "стгкг", "HEIGHT", "уьос", "POS", "хесг", "ROW", "цяаллг", "TIMECOUNT", "жоятос" _
+, "TICK", "тий", "TODAY", "сглеяа", "NOW", "тыяа", "MENU.VISIBLE", "епикоцес.жамеяес", "MENUITEMS", "епикоцес" _
+, "MENU", "епикоцг", "NUMBER", "аяихлос", "тилг", "LAMBDA", "калда")
+For i = 0 To UBound(myid())
+    aHash.ItemCreator CStr(myid(i)), i
+Next i
+myfun() = Array("PARAM(", "паяал(", "STACKITEM(", "тилгсыяоу(", "SGN(", "сгл(", "FRAC(", "дей(", "MATCH(", "таутисг(" _
+, "LOCALE(", "топийо(", "FILELEN(", "аявеиоу.лгйос(", "TAB(", "стгкг(", "KEYPRESS(", "патглемо(", "INKEY(", "емйол(" _
+, "тлгла(", "MODULE(", "басг(", "MDB(", "ASK(", "яыта(", "суцйяоусг(", "COLLIDE(", "лецехос.у(", "SIZE.Y(", "лецехос.в(", "SIZE.X(" _
+, "WRITABLE(", "еццяаьило(", "COLOR(", "COLOUR(", "вяыла(", "DIMENSION(", "диастасг(", "ARRAY(", "пимайас(" _
+, "FUNCTION(", "сумаятгсг(", "DRIVE.SERIAL(", "сеияиайос.дисйоу(", "FILE.STAMP(", "аявеиоу.сталпа(", "EXIST.DIR(", "упаявеи.йатакоцос(" _
+, "EXIST(", "упаявеи(", "JOYPAD(", "кабг(", "JOYPAD.DIRECTION(", "кабг.йатеухумсг(", "JOYPAD.ANALOG.X(", "кабг.амакоцийо.в(" _
+, "JOYPAD.ANALOG.Y(", "кабг.амакоцийо.у(", "IMAGE.X(", "еийома.в(", "IMAGE.Y(", "еийома.у(", "IMAGE.X.PIXELS(", "еийома.в.сглеиа(" _
+, "IMAGE.Y.PIXELS(", "еийома.у.сглеиа(", "VALID(", "ецйуяо(", "EVAL(", "ейжя(", "ейжяасг(", "POINT(", "сглеио(" _
+, "CTIME(", "упыяа(", "CDATE(", "уплея(", "TIME(", "вяомос(", "DATE(", "глеяа(", "VAL(", "тилг(", "аниа(", "RINSTR(", "хесгдениа(" _
+, "INSTR(", "хесг(", "RECORDS(", "еццяажес(", "GROUP.COUNT(", "олада.сумоко(", "PARAGRAPH(", "паяацяажос(", "PARAGRAPH.INDEX(", "аяихлос.паяацяажоу(" _
+, "BACKWARD(", "писы(", "FORWARD(", "лпяоста(", "DOC.PAR(", "еццяажоу.пая(", "MAX.DATA(", "лецако.сеияас(", "MIN.DATA(", "лийяо.сеияас(" _
+, "MAX(", "лецако(", "MIN(", "лийяо(", "COMPARE(", "суцйяиме(", "DOC.UNIQUE.WORDS(", "еццяажоу.ломадийес.кенеис(", "DOC.WORDS(", "еццяажоу.кенеис(" _
+, "DOC.LEN(", "еццяажоу.лгйос(", "LEN.DISP(", "лгйос.елж(", "LEN(", "лгйос(", "SQRT(", "яифа(", "FREQUENCY(", "сувмотгта(" _
+, "LOG(", "коц(", "LN(", "кж(", "ATN(", "тон.еж(", "TAN(", "ежап(", "COS(", "сум(", "SIN(", "гл(", "ABS(", "апок(", "LOWORD(", "LOWWORD(", "йатылисо(" _
+, "HIWORD(", "HIGHWORD(", "памылисо(", "BINARY.NEG(", "дуадийо.амти(", "дуадийо.амтистяожо(", "BINARY.OR(", "дуадийо.г(" _
+, "BINARY.AND(", "дуадийо.йаи(", "BINARY.XOR(", "дуадийо.апо(", "HILOWWORD(", "дуолиса(", "BINARY.SHIFT(", "дуадийо.окисхгсг(" _
+, "BINARY.ROTATE(", "дуадийг.пеяистяожг(", "SINT(", "айеяаио.дуадийо(", "USGN(", "дуадийо(", "UINT(", "дуадийо.айеяаио(", "ROUND(", "стяоцц(" _
+, "INT(", "ай(", "SEEK(", "летахесг(", "EOF(", "текос(", "RANDOM(", "туваиос(", "CHRCODE(", "ваяйыд(", "ASC(", "йыд(")
+For i = 0 To UBound(myfun())
+    bHash.ItemCreator CStr(myfun(i)), i
+Next i
+NumberId = True
+End Function
 
 Public Function allcommands(aHash As sbHash) As Boolean
 Dim mycommands(), i As Long
 mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROUND", "BASE", "BEEP", "BITMAPS", "BOLD", "BREAK", "BROWSER", "CALL", "CASE", "CAT", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.ORGAN", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLOSE", "CLS", "CODEPAGE", "COLOR", "COMMIT", "COMPRESS", "CONTINUE", "COPY", "CURSOR", "CURVE", "DATA", "DB.PROVIDER", "DB.USER" _
 , "DECLARE", "DEF", "DELETE", "DESKTOP", "DIM", "DIR", "DIV", "DO", "DOCUMENT", "DOS", "DOUBLE", "DRAW", "DRAWINGS", "DROP", "DURATION", "EDIT", "EDIT.DOC", "ELSE", "ELSE.IF", "EMPTY", "END", "ERASE", "ERROR", "ESCAPE", "EVENT", "EVERY", "EXECUTE", "EXIT", "EXPORT", "FAST", "FIELD", "FILES", "FILL", "FIND", "FKEY", "FLOODFILL", "FLUSH", "FONT", "FOR", "FORM", "FORMLABEL", "FRAME", "FUNCTION", "GET", "GLOBAL" _
-, "GOSUB", "GOTO", "GRADIENT", "GREEK", "GROUP", "HEIGHT", "HELP", "HEX", "HIDE", "HOLD", "HTML", "ICON", "IF", "IMAGE", "INLINE", "INPUT", "INSERT", "ITALIC", "JOYPAD", "KEYBOARD", "LATIN", "LAYER", "LEGEND", "LET", "LINE", "LINESPACE", "LINK", "LIST", "LOAD", "LOAD.DOC", "LOCAL", "LOCALE", "LONG", "LOOP", "MAIN.TASK", "MARK", "MEDIA", "MENU", "MERGE.DOC", "METHOD", "MODE", "MODULE" _
+, "GOSUB", "GOTO", "GRADIENT", "GREEK", "GROUP", "HEIGHT", "HELP", "HEX", "HIDE", "HOLD", "HTML", "ICON", "IF", "IMAGE", "INLINE", "INPUT", "INSERT", "INVENTORY", "ITALIC", "JOYPAD", "KEYBOARD", "LATIN", "LAYER", "LEGEND", "LET", "LINE", "LINESPACE", "LINK", "LIST", "LOAD", "LOAD.DOC", "LOCAL", "LOCALE", "LONG", "LOOP", "MAIN.TASK", "MARK", "MEDIA", "MENU", "MERGE.DOC", "METHOD", "MODE", "MODULE" _
 , "MODULES", "MONITOR", "MOTION", "MOTION.W", "MOUSE.ICON", "MOVE", "MOVIE", "MOVIES", "MUSIC", "NAME", "NEW", "NEXT", "NORMAL", "ON", "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPTIMIZATION", "ORDER", "OVER", "OVERWRITE", "PAGE", "PART", "PATH", "PEN", "PIPE", "PLAY", "PLAYER", "POLYGON", "PRINT", "PRINTER", "PRINTING", "PROFILER", "PROPERTIES", "PUSH", "PUT", "READ", "RECURSION.LIMIT" _
 , "REFER", "REFRESH", "RELEASE", "REM", "REMOVE", "REPEAT", "REPORT", "RESTART", "RETRIEVE", "RETURN", "SAVE", "SAVE.AS", "SAVE.DOC", "SCAN", "SCORE", "SCREEN.PIXELS", "SCRIPT", "SCROLL", "SEARCH", "SEEK", "SELECT", "SET", "SETTINGS", "SHIFT", "SHIFTBACK", "SHOW", "SLOW", "SORT", "SOUND", "SOUNDREC", "SOUNDS", "SPEECH", "SPLIT", "SPRITE", "STACK", "START", "STATIC", "STEP", "STOCK", "STOP", "STRUCTURE" _
 , "SUB", "SUBDIR", "SWAP", "SWEEP", "SWITCHES", "TAB", "TABLE", "TARGET", "TARGETS", "TASK.MAIN", "TEST", "TEXT", "THEN", "THREAD", "THREAD.PLAN", "THREADS", "TITLE", "TONE", "TRY", "TUNE", "UPDATE", "USE", "USER", "VERSION", "VIEW", "VOLUME", "WAIT", "WHILE", "WIDTH", "WIN", "WINDOW", "WITH", "WORDS", "WRITE", "WRITER", "адеиасе", "аккацг", "аккане", "аккиыс", "аккиыс.ам", "ам", "амафгтгсг" _
 , "амахеыягсг", "амайтгсг", "амакоцио", "амакусг.охомгс", "амакутгс", "амаломг", "амамеысг", "амажояа", "амаье", "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "апедысе", "апо", "апохгйеусг.ыс", "апойопг", "аяца", "аявеиа", "аявеио", "аявг", "аукос", "ауноуса", "ажаияесг", "ажгсе", "баке", "басг", "басг.паяовос", "басг.вягстгс", "баье", "бектистопоигсг" _
 , "бгла", "богхеиа", "цецомос", "целисе", "цемийес", "цемийг", "цемийо", "циа", "цяаллатосеияа", "цяаллг", "цяаье", "цягцояа", "деийтг.лояжг", "деине", "дейаен", "дес", "диабасе", "диацяажг", "диайопг", "диайоптес", "диалесоу", "диаяйеиа", "диастиво", "диажамеиа", "диажамо", "диажуцг", "диейоье", "диояхысе", "дипка", "дипкос", "дойилг", "долг", "дяолеас", "дысе", "еццяажо", "еийома", "еийомес", "еийомидио" _
 , "еисацыцг", "ейдосг", "ейтекесг", "ейтупысг", "ейтупытгс", "екецвос", "еккгмийа", "емхесг", "емтасг", "емы", "емысе", "енацыцг", "енодос", "епамакабе", "епамекабе", "епекене", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.цяаллатосеияа", "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцг", "епикоцгс" _
-, "епипедо", "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяесг", "глеяолгмиа", "гвоцяажгсг", "гвои", "гвос", "хесе", "хесг", "идиотгтес", "исвмг", "ивмос", "йахаяг", "йахаяо", "йахе", "йакесе", "йалпукг", "йаме", "йамомийа", "йат", "йатакоцои", "йатакоцос", "йатавыягсг", "йеилемо", "йемг", "йимгсг", "йимгсг.п", "йкасг", "йкеиди", "йкеисе", "йомсока", "йяата", "йяатгсе", "йяуье" _
+, "епипедо", "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяесг", "глеяолгмиа", "гвоцяажгсг", "гвои", "гвос", "хесе", "хесг", "идиотгтес", "исвмг", "ивмос", "йахаяг", "йахаяо", "йахе", "йакесе", "йалпукг", "йаме", "йамомийа", "йат", "йатакоцои", "йатакоцос", "йатастасг", "йатавыягсг", "йеилемо", "йемг", "йимгсг", "йимгсг.п", "йкасг", "йкеиди", "йкеисе", "йомсока", "йяата", "йяатгсе", "йяуье" _
 , "йуйкийа", "йуйкос", "йукисг", "йуяио.еяцо", "кабг", "кахос", "катимийа", "кенеис", "киста", "коцос", "лайяус", "ле", "леходос", "лекыдиа", "леяос", "лета", "летахесг", "лмглг", "лоусийг", "лпип", "мео", "мгла", "мглата", "нейима", "охомг", "олада", "омола", "ояио.амадяолгс", "ояисе", "паийтгс", "паине", "памы", "паяахуяо", "паяе", "паяелбокг", "павос", "педио", "пема", "пеяи" _
 , "пеяихыяио", "пета", "пимайас", "пимайес", "пкациа", "пкаисио", "пкгйтяокоцио", "покуцымо", "пяос", "пяосхесе.еццяажо", "пяосхгйг", "пяовеияо", "яоутима", "яухлисеис", "с", "саяысе", "сбгсе", "сеияа", "секида", "семаяио", "сгл", "сглади", "сглеио", "статийг", "статийес", "стг", "стгм", "сто", "стой", "стовои", "стовос", "суццяажеас", "суццяажг", "суцвымеусе.еццяажо", "сулпиесг" _
 , "сулпкгяысг", "сумаятгсг", "сумевисе", "сумхгла", "сус", "сустгла", "сведиа", "сведио.мглатым", "сыяос", "сысе", "сысе.еццяажо", "таимиа", "таимиес", "танг", "танимолгсг", "текос", "титкос", "тлгла", "тлглата", "томос", "топийа", "топийес", "топийг", "топийо", "тоте", "тупос", "тупысе", "упойатакоцос", "упокоцистг", "жаядиа", "жеяе", "жеяеписы", "жомто", "жояла", "жоятос", "жоятысе" _

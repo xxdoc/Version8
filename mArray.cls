@@ -196,6 +196,7 @@ itemPtr = VarPtr(actualdata(curitem))
 End Property
 Public Property Get item(curitem As Long) As Variant
 On Error GoTo there1
+If Arr Then
 If maxitems1 >= curitem Then
 If IsObject(actualdata(curitem)) Then
 If Typename(actualdata(curitem)) = "PropReference" Then
@@ -209,6 +210,18 @@ End If
 Exit Property
 Else
 ''Stop
+End If
+Else
+If curitem < 0 Then
+If GroupRef.ObjRef.Done Then
+If GroupRef.ObjRef.IsObj Then
+Set item = GroupRef.ObjRef.ValueObj
+Else
+item = GroupRef.ObjRef.Value
+End If
+
+End If
+End If
 End If
 there1:
 
@@ -224,8 +237,21 @@ End If
 End Property
 Public Property Set item(curitem As Long, item As Variant)
 On Error Resume Next
+If curitem < 0 Then
+If Not GroupRef Is Nothing Then
+If TypeOf GroupRef Is mHandler Then
+If GroupRef.T1 = 1 Then
+If GroupRef.ObjRef.Done Then
+Set GroupRef.ObjRef.ValueObj = item
+Exit Property
+End If
+End If
+End If
+End If
+MyEr "Wrong setting", "Λάθος όρισμα"
+Else
 Set actualdata(curitem) = item
-
+End If
 End Property
 
 Private Sub Fill(item As Variant)

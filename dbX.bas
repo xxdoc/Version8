@@ -564,7 +564,7 @@ g102:
 End Sub
 
 Public Sub append_table(bstackstr As basetask, base As String, r$, ED As Boolean, Optional lang As Long = -1)
-Dim table$, i&, par$, ok As Boolean, T As Double, j&
+Dim table$, i&, par$, ok As Boolean, t As Double, j&
 Dim gindex As Long
 ok = False
 
@@ -573,7 +573,7 @@ If IsStrExp(bstackstr, r$, table$) Then
 ok = True
 End If
 End If
-If lang <> -1 Then If IsLabelSymbolNew(r$, "ΣΤΟ", "TO", lang) Then If IsExp(bstackstr, r$, T) Then gindex = CLng(T) Else SyntaxError
+If lang <> -1 Then If IsLabelSymbolNew(r$, "ΣΤΟ", "TO", lang) Then If IsExp(bstackstr, r$, t) Then gindex = CLng(t) Else SyntaxError
 Dim Id$
   If InStr(UCase(Trim$(table$)) + " ", "SELECT") = 1 Then
 Id$ = table$
@@ -668,8 +668,8 @@ If ED Then
 End If
 If IsStrExp(bstackstr, r$, par$) Then
     rec.FIELDS(i&) = par$
-ElseIf IsExp(bstackstr, r$, T) Then
-    rec.FIELDS(i&) = CStr(T)   '??? convert to a standard format
+ElseIf IsExp(bstackstr, r$, t) Then
+    rec.FIELDS(i&) = CStr(t)   '??? convert to a standard format
 End If
 
 i& = i& + 1
@@ -1475,7 +1475,40 @@ End Sub
 Public Function DELfields(bstackstr As basetask, r$) As Boolean
 Dim base$, table$, first$, Second$, ok As Boolean, p As Double
 ok = False
-If IsStrExp(bstackstr, r$, base$) Then
+If IsExp(bstackstr, r$, p) Then
+If bstackstr.lastobj Is Nothing Then
+MyEr "Expected Inventory", "Περίμενα Κατάσταση"
+Exit Function
+End If
+If Not TypeOf bstackstr.lastobj Is mHandler Then
+MyEr "Expected Inventory", "Περίμενα Κατάσταση"
+Exit Function
+ElseIf Not bstackstr.lastobj.T1 = 1 Then
+MyEr "Expected Inventory", "Περίμενα Κατάσταση"
+Exit Function
+End If
+Dim aa As FastCollection
+Set aa = bstackstr.lastobj.ObjRef
+Set bstackstr.lastobj = Nothing
+Do While FastSymbol(r$, ",")
+ok = False
+If IsExp(bstackstr, r$, p) Then
+aa.Remove p
+If Not aa.Done Then MyEr "Key not exist", "Δεν υπάρχει τέτοιο κλειδί": Exit Do
+ok = True
+ElseIf IsStrExp(bstackstr, r$, first$) Then
+aa.Remove first$
+If Not aa.Done Then MyEr "Key not exist", "Δεν υπάρχει τέτοιο κλειδί": Exit Do
+ok = True
+Else
+    Exit Do
+End If
+Loop
+DELfields = ok
+Set aa = Nothing
+Exit Function
+
+ElseIf IsStrExp(bstackstr, r$, base$) Then
 If FastSymbol(r$, ",") Then
 If IsStrExp(bstackstr, r$, table$) Then
 If FastSymbol(r$, ",") Then

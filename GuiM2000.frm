@@ -109,31 +109,31 @@ End Sub
 Property Get Modal() As Double
     Modal = mModalId
 End Property
-Property Let Modal(rhs As Double)
+Property Let Modal(RHS As Double)
 mModalIdPrev = mModalId
-mModalId = rhs
+mModalId = RHS
 End Property
 
-Public Property Let Enablecontrol(rhs As Boolean)
-If rhs = False Then UnHook hWnd '  And Not Me Is Screen.ActiveForm Then UnHook hWnd
+Public Property Let Enablecontrol(RHS As Boolean)
+If RHS = False Then UnHook hWnd '  And Not Me Is Screen.ActiveForm Then UnHook hWnd
 If Len(MyName$) = 0 Then Exit Property
 'If rhs = Fals Then UnHook hWnd
-If mEnabled = False And rhs = True Then Me.enabled = True
-mEnabled = rhs
+If mEnabled = False And RHS = True Then Me.enabled = True
+mEnabled = RHS
 
 Dim w As Object
 If Controls.Count > 0 Then
 For Each w In Me.Controls
 If w Is gList2 Then
-gList2.enabled = rhs
+gList2.enabled = RHS
 gList2.mousepointer = 0
 ElseIf w.Visible Then
-w.enabled = rhs
-If TypeOf w Is gList Then w.TabStop = rhs
+w.enabled = RHS
+If TypeOf w Is gList Then w.TabStop = RHS
 End If
 Next w
 End If
-Me.enabled = rhs
+Me.enabled = RHS
 End Property
 Public Property Get Enablecontrol() As Boolean
 If Len(MyName$) = 0 Then Enablecontrol = False: Exit Property
@@ -473,17 +473,24 @@ TITLE = gList2.HeadLine
 End Property
 
 Public Property Let TITLE(ByVal vNewValue As Variant)
+' A WORKAROUND TO CHANGE TITLE WHEN FORM IS DISABLED BY A MODAL FORM
+On Error Resume Next
+Dim oldenable As Boolean
+oldenable = gList2.enabled
+gList2.enabled = True
 gList2.HeadLine = ""
 If Trim(vNewValue) = "" Then vNewValue = " "
 gList2.HeadLine = vNewValue
 gList2.HeadlineHeight = gList2.HeightPixels
+If oldenable = False Then gList2.ShowMe
+gList2.enabled = oldenable
 End Property
 Public Property Get Index() As Long
 Index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
-mIndex = rhs
+Public Property Let Index(ByVal RHS As Long)
+mIndex = RHS
 End Property
 Public Sub CloseNow()
     If mModalId = ModalId And ModalId <> 0 Then

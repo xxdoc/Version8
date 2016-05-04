@@ -86,6 +86,11 @@ Public Sub AddKey(RHS, Optional aValue As Variant)
         Value = aValue
     End If
 End Sub
+Public Sub Sort()
+QuickSortItems PriveSpace(), LBound(PriveSpace()), toplim
+ReHash
+End Sub
+
 Public Sub ToKey(RHS)
     Done = Find(RHS)
     If Done Then lastkey = CStr(RHS)
@@ -135,7 +140,6 @@ If Index = -1 Then
 ItemCreator lastkey, RHS
 
 Else
-'PriveSpace(Index).iValue = -1
     PriveSpace(Index).iValue = RHS
 End If
 Done = True
@@ -154,7 +158,12 @@ Property Get Value() As Variant
 Done = False
 If Index = -1 Then
 ElseIf Not IsObject(PriveSpace(Index).iValue) Then
+    Done = True
     Value = PriveSpace(Index).iValue
+    
+    If Typename(Value) = "Error" Then
+    Value = KeyToString
+    End If
 End If
 End Property
 Property Get ValueObj() As Variant
@@ -168,7 +177,6 @@ End If
 End Property
 Private Sub ExpandHash()
     hashlen = hashlen * 2 + 3
-    Debug.Print "ReHash"
     ReHash
 End Sub
 Private Sub ReHash()
@@ -227,7 +235,18 @@ Function ChangeKey(key1, key2)
     Loop Until k < 0
     End If
 End Function
+Sub Swap(key1, key2)
+Dim k As Long, c As item
+If Find(key1) Then
+k = Index
+If Find(key2) Then
 
+    c = PriveSpace(k): PriveSpace(k) = PriveSpace(Index): PriveSpace(Index) = c
+    Index = k
+    ReHash
+End If
+End If
+End Sub
 Sub SwapValues(key1, key2)
 Dim k As Long
 If Find(key1) Then
@@ -277,24 +296,25 @@ Else
 IsObj = IsObject(PriveSpace(Index).iValue)
 End If
 End Function
-Friend Function Find(RHS) As Boolean
+Function Find(RHS) As Boolean
 Dim k As Long, Key As String
 Key = CStr(RHS)
 ParentIndex = 0
+Done = False
 If Len(Key) = 0 Then Exit Function
 k = Hash(HashFunc(Key)) - 1
 
 If k >= 0 Then
 Do
     If PriveSpace(k).Key = Key Then
-    Find = True: lastfind = Key: Index = k:  Exit Function
+    Find = True: lastfind = Key: Index = k: Done = True: Exit Function
     End If
      ParentIndex = k
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
 End Function
-Friend Function ExistKey(RHS) As Boolean
+Function ExistKey(RHS) As Boolean
 Dim k As Long, Key As String
 Key = CStr(RHS)
 If Len(Key) = 0 Then Exit Function
@@ -459,3 +479,37 @@ Private Sub Class_Terminate()
 
 Erase PriveSpace()
 End Sub
+Private Sub QuickSortItems(Arr() As item, ByVal LB As Long, ByVal UB As Long)
+Dim M1 As Long, M2 As Long
+Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
+  If UB - LB = 1 Then
+     M1 = LB
+
+     If StrComp(Arr(M1).Key, Arr(UB).Key, vbBinaryCompare) = 1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
+     Exit Sub
+  Else
+  ' we have unique names
+    M1 = (LB + UB) \ 2
+    Piv = Arr(M1)
+    M1 = LB
+   Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = -1: M1 = M1 + 1: Loop
+    
+  End If
+  
+  M2 = UB
+  Do
+    Do While StrComp(Arr(M2).Key, Piv.Key, vbBinaryCompare) = 1: M2 = M2 - 1: Loop
+
+    If M1 <= M2 Then
+      Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
+      M1 = M1 + 1
+      M2 = M2 - 1
+    End If
+    If M1 > M2 Then Exit Do
+    Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = -1: M1 = M1 + 1: Loop
+
+  Loop
+  If LB < M2 Then QuickSortItems Arr, LB, M2
+  If M1 < UB Then QuickSortItems Arr, M1, UB
+End Sub
+

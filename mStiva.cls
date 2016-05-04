@@ -48,7 +48,7 @@ Dim aa As VarItem
 On Error Resume Next
 If where > 1 Then
 Set aa = mstack.item(1)
-mstack.remove 1
+mstack.Remove 1
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -62,7 +62,7 @@ Dim aa As VarItem
 On Error Resume Next
 If where > 1 Then
 Set aa = mstack.item(where)
-mstack.remove where
+mstack.Remove where
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -134,12 +134,12 @@ Inc
 Next many
 End Sub
 Public Property Get StackPick(where As Long) As VarItem
-Dim a As VarItem
+Dim A As VarItem
 dec
-Set a = mstack.item(where)
-mstack.remove where
+Set A = mstack.item(where)
+mstack.Remove where
 
-Set StackPick = a
+Set StackPick = A
 End Property
 Public Property Get StackPickRef(where As Long) As VarItem
 Set StackPickRef = mstack.item(where)
@@ -162,6 +162,7 @@ StackItemTypeObjectType = ""
 Case Else
 Set bb = aa.ObjectRef
 StackItemTypeObjectType = Typename(bb)
+Set bb = Nothing
 End Select
 End Property
 Public Property Get Total() As Long
@@ -182,14 +183,14 @@ On Error Resume Next
 mMany = mMany - items
 If mMany < 0 Then mMany = 0: Set mstack = New Collection: Exit Sub
 For num = 1 To items
-    mstack.remove 1
+    mstack.Remove 1
 Next num
 End Sub
 Public Sub Flush()
 
 Dim num As Long
 For num = 1 To mstack.Count
-  mstack.remove 1
+  mstack.Remove 1
  dec
 Next num
 mMany = 0
@@ -205,10 +206,10 @@ End If
 Inc
 End Sub
 
-Public Sub PushVal(a As Double)
+Public Sub PushVal(A As Double)
 Dim aa As New VarItem
 aa.Typename = "N"
-aa.ItemDouble = a
+aa.ItemDouble = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -216,11 +217,11 @@ mstack.Add aa, , 1
 End If
 Inc
 End Sub
-Public Sub PushObj(rhs As Object)
+Public Sub PushObj(RHS As Object)
 Dim aa As New VarItem
 aa.Typename = "*"  'something
-Set aa.ObjectRef = rhs
-Set rhs = Nothing
+Set aa.ObjectRef = RHS
+Set RHS = Nothing
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -233,16 +234,16 @@ Public Property Get PopObj() As Object
 On Error Resume Next
 dec
 Set PopObj = mstack.item(1).ObjectRef
-mstack.remove 1   '
+mstack.Remove 1   '
 End Property
 Public Property Get ObjRef(where As Long) As Object
 On Error Resume Next
 Set ObjRef = mstack.item(where).ObjectRef
 End Property
-Public Sub PushStr(ByRef a As String)
+Public Sub PushStr(ByRef A As String)
 Dim aa As New VarItem
 aa.Typename = "S"
-aa.ItemStr = a
+aa.ItemStr = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -282,25 +283,25 @@ Public Property Get PopVal() As Double
 On Error Resume Next
 dec
 PopVal = mstack.item(1).ItemDouble
-mstack.remove 1
+mstack.Remove 1
 End Property
 Public Property Get PopValLong() As Long
 On Error Resume Next
 dec
 PopValLong = CLng(mstack.item(1).ItemDouble)
-mstack.remove 1
+mstack.Remove 1
 End Property
 Public Property Get PopStr() As String
 On Error Resume Next
 dec
 PopStr = mstack.item(1).ItemStr
-mstack.remove 1
+mstack.Remove 1
 
 End Property
-Public Sub DataValLong(a As Double)
+Public Sub DataValLong(A As Double)
 Dim aa As New VarItem
 aa.Typename = "L"
-aa.ItemDouble = a
+aa.ItemDouble = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -308,10 +309,10 @@ mstack.Add aa, , , mstack.Count
 End If
 Inc
 End Sub
-Public Sub DataVal(a As Double)
+Public Sub DataVal(A As Double)
 Dim aa As New VarItem
 aa.Typename = "N"
-aa.ItemDouble = a
+aa.ItemDouble = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -319,10 +320,10 @@ mstack.Add aa, , , mstack.Count
 End If
 Inc
 End Sub
-Public Sub DataStr(ByRef a As String)
+Public Sub DataStr(ByRef A As String)
 Dim aa As New VarItem
 aa.Typename = "S"
-aa.ItemStr = a$
+aa.ItemStr = A$
 
 
 If mstack.Count = 0 Then
@@ -332,18 +333,18 @@ mstack.Add aa, , , mstack.Count
 End If
 Inc
 End Sub
-Public Sub DataStrUn(a As String)
+Public Sub DataStrUn(A As String)
 Dim aa As New VarItem, i As Long, b As String
-b = Split(a)(0)
+b = Split(A)(0)
 aa.Typename = "S"
-aa.ItemStr = a
+aa.ItemStr = A
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
 For i = 1 To Total
 If Split(StackItem(i))(0) = b Then
 
-mstack.remove i
+mstack.Remove i
 If mstack.Count = 0 Then
 mstack.Add aa
 ElseIf i = 1 Then
@@ -359,11 +360,11 @@ End If
 Inc
 End Sub
 
-Public Sub DataObj(rhs As Object)
+Public Sub DataObj(RHS As Object)
 Dim aa As New VarItem
 aa.Typename = "*"  'something
-Set aa.ObjectRef = rhs
-Set rhs = Nothing
+Set aa.ObjectRef = RHS
+Set RHS = Nothing
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -374,10 +375,10 @@ End Sub
 Public Sub Begin(from As Long)
 BeginFrom = from
 End Sub
-Public Sub additem(ByRef a As String)
+Public Sub additem(ByRef A As String)
 Dim aa As New VarItem
     aa.Typename = "S"
-    aa.ItemStr = a$
+    aa.ItemStr = A$
     If mstack.Count = 0 Then
         BeginFrom = 1
         mstack.Add aa
@@ -394,13 +395,13 @@ Dim aa As New VarItem
 
 Inc
 End Sub
-Public Sub MergeTop(a As mStiva)
-If Me Is a Then Exit Sub
+Public Sub MergeTop(A As mStiva)
+If Me Is A Then Exit Sub
 Dim i As Long, aa As VarItem
-If a.Total > 0 Then
+If A.Total > 0 Then
 Do
-i = a.Total
-Set aa = a.StackPick(i)
+i = A.Total
+Set aa = A.StackPick(i)
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
@@ -410,19 +411,19 @@ Inc
 Loop Until i <= 1
 End If
 End Sub
-Public Sub MergeBottom(a As mStiva)
-If Me Is a Then Exit Sub
+Public Sub MergeBottom(A As mStiva)
+If Me Is A Then Exit Sub
 Dim i As Long, aa As VarItem
-If a.Total > 0 Then
+If A.Total > 0 Then
 Do
-Set aa = a.StackPick(1)
+Set aa = A.StackPick(1)
 If mstack.Count = 0 Then
 mstack.Add aa
 Else
 mstack.Add aa, , , mstack.Count    'push so first of a is first on mstack
 End If
 Inc
-Loop Until a.Total < 1
+Loop Until A.Total < 1
 End If
 End Sub
 Private Sub Class_Terminate()

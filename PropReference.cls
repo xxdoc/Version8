@@ -23,11 +23,16 @@ Public Arr As Boolean
 Function IsObj()
     IsObj = useobj
 End Function
-Sub Construct(ref As Long, vtrefnumber As Long)
+Sub Construct(ref As Long, vtrefnumber As Long, Optional indirect As Boolean = False)
 If useobj Then Exit Sub
 Init = True
+
 ObjectRef = ref
+If indirect Then
+vtref = -vtrefnumber
+Else
 vtref = vtrefnumber
+End If
 End Sub
 Sub ConstructObj(obj As Object, vtrefnumber As Long)
 Init = True
@@ -39,6 +44,7 @@ End Sub
 
 Public Property Get Value() As Variant
 Attribute Value.VB_UserMemId = 0
+Dim RETVAR As Variant
 If Init Then
 If UseIndex Then
 If useobj Then
@@ -49,9 +55,21 @@ Else
 
 Else
 If useobj Then
- Value = ReadPropObj(hardlink, vtref)
+If ReadPropObj(hardlink, vtref, RETVAR) Then
+If IsObject(RETVAR) Then
+Set Value = RETVAR
 Else
- Value = ReadProp(ObjectRef, vtref)
+Value = RETVAR
+End If
+End If
+Else
+ If ReadProp(ObjectRef, vtref, RETVAR) Then
+ If IsObject(RETVAR) Then
+Set Value = RETVAR
+Else
+Value = RETVAR
+End If
+ End If
  End If
  End If
 Else
@@ -92,6 +110,6 @@ Public Property Get Index() As Variant
 Index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Variant)
-mIndex = rhs
+Public Property Let Index(ByVal RHS As Variant)
+mIndex = RHS
 End Property
