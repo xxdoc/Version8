@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 2
+Global Const Revision = 3
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2046,11 +2046,7 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
        Dim r As Double, bs As New basetask
         b$ = w$ + b$
        If IsNumber(bstack, b$, r) Then
-                If bstack.lastobj Is Nothing Then
-                        bstack.LastValue = r
-                Else
-                        bstack.LastValue = 0
-                End If
+         
             SpeedGroup = 1
             
             CopyGroup var(y1), bs
@@ -2059,9 +2055,12 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
             Set pppp.item(v) = bs.lastobj
             Set pppp.item(v).LinkRef = tempRef
             Set bs.lastobj = Nothing
-        Else
-    '    CopyGroup var(y1), bstack
-        
+                   If bstack.lastobj Is Nothing Then
+                        bstack.LastValue = r
+                Else
+                        bstack.LastValue = CDbl(0)
+                    GoTo fastexit
+                End If
         End If
      Set bstack.lastobj = Nothing
          GoTo fastexit
@@ -5242,10 +5241,32 @@ IsNumber = False
 A$ = n$
 
 If Abs(IsLabel(bstack, n$, s$)) > 4 Then
-''  If Right$(s$, 1) = "(" Then s$ = s$ + ")"
-  
- If FastSymbol(n$, ")", True) And neoGetArray(bstack, s$, pppp) Then
- If Not pppp.Arr Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
+
+If neoGetArray(bstack, s$, pppp) Then
+If pppp.Arr Then
+n$ = A$
+If IsExp(bstack, n$, p) Then
+
+ElseIf IsStrExp(bstack, n$, s$) Then
+End If
+If Not bstack.lastobj Is Nothing Then
+If Not (TypeOf bstack.lastobj Is mArray) Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
+Set pppp = bstack.lastobj
+Else
+A$ = n$
+IsNumber = False
+End If
+Else
+   If NeoGetArrayItem(pppp, bstack, s$, w1, n$) Then
+    Set pppp = pppp.GroupRef.ObjRef.ValueObj
+  End If
+End If
+Else
+      MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
+End If
+
+ If pppp.Arr Then  '
+
     If FastSymbol(n$, ",") Then
           If IsExp(bstack, n$, p) Then
           
@@ -5274,7 +5295,16 @@ If Abs(IsLabel(bstack, n$, s$)) > 4 Then
 If IsStrExp(bstack, n$, s$) Then
     s$ = s$ & "("
     If neoGetArray(bstack, s$, pppp) Then
-    If Not pppp.Arr Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
+    
+      If Not pppp.Arr Then
+    
+  If NeoGetArrayItem(pppp, bstack, s$, w1, n$, , False) Then
+  Set pppp = pppp.GroupRef.ObjRef.ValueObj
+  End If
+  
+   
+  End If
+  If Not pppp.Arr Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
         If FastSymbol(n$, ",") Then
           If IsExp(bstack, n$, p) Then
             pppp.SerialItem PP, CLng(p - 1), 6
@@ -5295,6 +5325,8 @@ If IsStrExp(bstack, n$, s$) Then
         Else
         MyErMacro A$, "Can't find array " & s$, "Δεν βρίσκω πίνακα " & s$
     End If
+Else
+        MyErMacro A$, "Can't find array " & s$, "Δεν βρίσκω πίνακα " & s$
 End If
     Exit Function
 Case "ARRAY(", "ΠΙΝΑΚΑΣ("
@@ -7485,10 +7517,10 @@ PP = 0
 contgroup:
                                 
                               IsNumber = SpeedGroup(bstack, pppp, "VAL", v$, n$, w2) = 1
-                          If Not bstack.lastobj Is Nothing Then
-                          Set bstack.lastobj = Nothing
-                         ' Form1.Refresh
-                          End If
+                      ' If Not bstack.lastobj Is Nothing Then
+                       '  If Not Typename(bstack.lastobj) = "mHandler" Then Set bstack.lastobj = Nothing
+                         
+                        '  End If
                                  r = SG * bstack.LastValue
             
             Else
@@ -20689,7 +20721,7 @@ Loop
       End With
 End Sub
 
-Function NeoGetArrayItem(PP As mArray, bstack As basetask, v$, offset As Long, rst$, Optional noObject As Boolean = False) As Boolean
+Function NeoGetArrayItem(PP As mArray, bstack As basetask, v$, offset As Long, rst$, Optional noObject As Boolean = False, Optional closepar As Boolean = True) As Boolean
 If noObject And PP.IHaveClass Then Exit Function
 Dim dn As Long, dd As Long, W3 As Long
 Dim p As Double
@@ -20731,7 +20763,10 @@ contlabel1:
     aprop.UseIndex = True
      Set aprop = Nothing
      End If
-    If Not FastSymbol(rst$, ")") Then MyEr "missing )", "λείπει )": Exit Function
+     
+     
+    If closepar Then If Not FastSymbol(rst$, ")") Then MyEr "missing )", "λείπει )": Exit Function
+    
     NeoGetArrayItem = True
 ElseIf PP.SerialItem((0), dd, 5) Then
 dd = dd - 1
@@ -23181,7 +23216,7 @@ Function ReadProp(fromIndex As Long, ByVal propIndex As Long, RETVAR As Variant)
 Dim o As Object, er$
 On Error GoTo there
 Set o = var(fromIndex)
-If propIndex < 0 Then
+If TypeOf o Is mHandler Then
 propIndex = -propIndex
 Set o = o.ObjRef
 End If
@@ -23196,7 +23231,7 @@ Function ReadPropIndex(fromIndex As Long, ByVal propIndex As Long, myIndex As Va
 Dim o As Object, er$
 On Error GoTo there
 Set o = var(fromIndex)
-If propIndex < 0 Then
+If TypeOf o Is mHandler Then
 propIndex = -propIndex
 Set o = o.ObjRef
 End If
@@ -23210,7 +23245,7 @@ End Function
 Sub WriteProp(fromIndex As Long, ByVal propIndex As Long, Anyval As Variant)
 Dim o As Object, er$
 Set o = var(fromIndex)
-If propIndex < 0 Then
+If TypeOf o Is mHandler Then
 propIndex = -propIndex
 Set o = o.ObjRef
 End If
@@ -23223,7 +23258,7 @@ End Sub
 Sub WritePropIndex(fromIndex As Long, ByVal propIndex As Long, Anyval As Variant, myIndex)
 Dim o As Object, er$
 Set o = var(fromIndex)
-If propIndex < 0 Then
+If TypeOf o Is mHandler Then
 propIndex = -propIndex
 Set o = o.ObjRef
 End If

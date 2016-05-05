@@ -437,7 +437,9 @@ Private Function GetRefCount(ByRef vvv) As Long
     GetRefCount = GetRefCount - 3
     Set obj = Nothing
 End Function
-
+Public Property Get ReferCount() As Long
+ReferCount = GetRefCount(Me)
+End Property
 Public Property Get KeyToString2() As Variant
 If Index > -1 Then
     KeyToString2 = PriveSpace(Index).Key + Str$(PriveSpace(Index).lastpos) + Str$(Int(Percent * 1000) / 100) + Str$(hashlen) + Str$(Count)

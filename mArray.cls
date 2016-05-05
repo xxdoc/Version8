@@ -109,9 +109,9 @@ On Error GoTo there11
 If dnum = 0 Then
 maxitems = 1
 maxitems1 = 0
-ReDim actualdata(maxitems) As Variant
+ReDim actualdata(maxitems1) As Variant
 Else
-ReDim Preserve actualdata(maxitems) As Variant
+ReDim Preserve actualdata(maxitems1) As Variant
 Dim i As Long, mx As Long
 mx = maxitems
 If limit(i) > 0 Then
