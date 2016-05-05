@@ -24,9 +24,9 @@ Begin VB.Form NeoMsgBox
       _extentx        =   6033
       _extenty        =   873
       max             =   1
-      vertical        =   -1
+      vertical        =   -1  'True
       font            =   "NeoMsgBox.frx":000C
-      enabled         =   -1
+      enabled         =   -1  'True
       backcolor       =   3881787
       forecolor       =   16777215
       capcolor        =   16777215
@@ -41,9 +41,9 @@ Begin VB.Form NeoMsgBox
       _extentx        =   5689
       _extenty        =   926
       max             =   1
-      vertical        =   -1
+      vertical        =   -1  'True
       font            =   "NeoMsgBox.frx":0030
-      showbar         =   0
+      showbar         =   0   'False
       forecolor       =   16777215
    End
    Begin M2000.gList command1 
@@ -56,9 +56,9 @@ Begin VB.Form NeoMsgBox
       _extentx        =   5874
       _extenty        =   926
       max             =   1
-      vertical        =   -1
+      vertical        =   -1  'True
       font            =   "NeoMsgBox.frx":0054
-      showbar         =   0
+      showbar         =   0   'False
       forecolor       =   16777215
    End
    Begin M2000.gList gList1 
@@ -70,9 +70,9 @@ Begin VB.Form NeoMsgBox
       _extentx        =   8387
       _extenty        =   3519
       max             =   1
-      vertical        =   -1
+      vertical        =   -1  'True
       font            =   "NeoMsgBox.frx":0078
-      showbar         =   0
+      showbar         =   0   'False
       backcolor       =   3881787
       forecolor       =   16777215
    End
@@ -85,9 +85,9 @@ Begin VB.Form NeoMsgBox
       _extentx        =   8096
       _extenty        =   556
       max             =   1
-      vertical        =   -1
+      vertical        =   -1  'True
       font            =   "NeoMsgBox.frx":009C
-      showbar         =   0
+      showbar         =   0   'False
    End
 End
 Attribute VB_Name = "NeoMsgBox"
@@ -134,19 +134,11 @@ End Property
 
 
 
-Private Sub Form_Activate()
-If Screen.ActiveForm Is Me Then
-If Typename(ActiveControl) = "gList" Then
-Hook hWnd, ActiveControl
-Else
-Hook hWnd, Nothing
-End If
-End If
-End Sub
+
 
 Private Sub Form_Deactivate()
-Set LastGlist = Nothing
-UnHook hWnd
+'Set LastGlist = Nothing
+
   If ASKINUSE And Not Form2.Visible Then
     If Visible Then
     Me.SetFocus
@@ -164,7 +156,7 @@ Private Sub Form_Load()
 Dim photo As Object
 
 novisible = True
-Set LastGlist = Nothing
+''Set LastGlist = Nothing
 
 If AskCancel$ = "" Then command1(1).Visible = False
 gList2.enabled = True
@@ -278,7 +270,6 @@ End If
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-'UnHook3 hWnd
 textbox1.Dereference
 myOk.Shutdown
 myCancel.Shutdown
@@ -599,15 +590,7 @@ Content = ListPad.TextLine(item + 1)
 End If
 End Sub
 Private Sub ListPad_BreakLine(data As String, datanext As String)
-' ??
     gList1.BreakLine data, datanext
-
-End Sub
-Private Sub gList1_RegisterGlist(this As gList)
-Set LastGlist3 = this
-End Sub
-Public Sub hookme(this As gList)
-Set LastGlist3 = this
 End Sub
 
 

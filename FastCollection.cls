@@ -97,14 +97,11 @@ Public Sub ToKey(RHS)
 End Sub
 Public Sub Remove(RHS)
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
+If toplim < 0 Then Stop
 top1 = toplim
 Done = Find(RHS)
 If Done Then
-    If Index = toplim Then
 
-        ReduceHash top1
-       toplim = toplim - 1
-    Else
         If ParentIndex > 0 Then
             PriveSpace(ParentIndex).Pleft = PriveSpace(Index).Pleft
         Else
@@ -131,7 +128,7 @@ If Done Then
             End If
         End If
         toplim = toplim - 1
-       End If
+      ReduceHash toplim
 End If
 End Sub
 Property Let Value(RHS As Variant)

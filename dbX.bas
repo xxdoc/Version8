@@ -2,7 +2,7 @@ Attribute VB_Name = "databaseX"
 'This is the new version for ADO.
 Option Explicit
 Dim AABB As Long
-Dim conCollection As Collection
+Dim conCollection As FastCollection
 Dim Init As Boolean
 '  to be changed User and UserPassword
 Public JetPrefixUser As String
@@ -1639,8 +1639,8 @@ End Function
 
 Private Sub PushOne(conname As String, v As Variant)
 On Error Resume Next
-conCollection.Add v, conname
-Set v = conCollection(conname)
+conCollection.AddKey conname, v
+'Set v = conCollection(conname)
 End Sub
 Sub CloseAllConnections()
 Dim v As Variant, bb As Boolean
@@ -1649,26 +1649,43 @@ If Not Init Then Exit Sub
 If conCollection.Count > 0 Then
 Dim i As Long
 Err.Clear
-For i = conCollection.Count To 1 Step -1
+For i = conCollection.Count - 1 To 0 Step -1
 On Error Resume Next
-bb = conCollection(i).connectionstring <> ""
+conCollection.Index = i
+If conCollection.IsObj Then
+With conCollection.ValueObj
+bb = .connectionstring <> ""
 If Err.Number = 0 Then
-
-  If conCollection(i).activeconnection <> "" Then conCollection(i).Close
-     ''   If conCollection(I) <> "" Then conCollection(I).Close
+If .Mode > 0 Then
+If .state = 1 Then
+   .Close
+ElseIf .state = 2 Then
+    .Close
+ElseIf .state > 2 Then
+Call .Cancel
+.Close
 End If
-conCollection.Remove i
+    
+End If
+End If
+End With
+End If
+conCollection.Remove conCollection.KeyToString
 Err.Clear
+
 Next i
-Set conCollection = New Collection
+Set conCollection = New FastCollection
 End If
 Err.Clear
 End Sub
 Public Sub RemoveOneConn(conname)
 On Error Resume Next
 Dim vv
-Set vv = conCollection(conname)
+If Not conCollection.ExistKey(conname) Then Exit Sub
+
+Set vv = conCollection.ValueObj
 If Typename$(vv) = "Empty" Then
+' old code here
 Err.Clear
     vv = conCollection(conname)
     If Not Err.Number <> 0 Then
@@ -1698,15 +1715,15 @@ Private Function getone(conname As String, this As Variant) As Boolean
 On Error Resume Next
 Dim v As Variant
 InitMe
-Err.Clear
-Set v = conCollection(conname)
-If Err.Number = 0 Then getone = True: Set this = v
-Err.Clear
+
+If conCollection.ExistKey(conname) Then
+Set this = conCollection.ValueObj
+End If
 End Function
 
 Private Sub InitMe()
 If Init Then Exit Sub
-Set conCollection = New Collection
+Set conCollection = New FastCollection
 Init = True
 End Sub
 Function ftype(ByVal A As Long, lang As Long) As String

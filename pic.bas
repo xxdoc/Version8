@@ -3819,7 +3819,7 @@ Case "¡—◊≈…œ", "TABLE"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoTable)
 Case "≈ ‘≈À≈”«", "EXECUTE"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoExecute)
-Case "¡Õ¡∆«‘«”«", "SEARCH"
+Case "¡Õ¡ ‘«”«", "RETRIEVE"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoRetr)
 Case "¡Õ¡∆«‘«”«", "SEARCH"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSearch)
