@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 4
+Global Const Revision = 5
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -7586,6 +7586,18 @@ contlambdahere:
                        
                        w2 = -p - 2
                        GoTo contgroup
+                       ElseIf FastSymbol(n$, "(") Then
+                       If .IsObj Then
+                       
+                       w2 = -.Index - 2
+                       If TypeOf .ValueObj Is lambda Then GoTo contlambdahere
+                       If TypeOf .ValueObj Is mArray Then
+                        Set pppp = .ValueObj
+                        GoTo contAr2
+                       End If
+                       Else
+                       MyEr "No Object found", "Δεν βρήκα αντικείμενο"
+                       End If
                        End If
                        
                           If Not .IsObj Then
@@ -7595,7 +7607,7 @@ contlambdahere:
                       r = SG * val(.Value)
                       End If
                         Else
-                        Set bstack.lastobj = pppp.GroupRef
+                        Set bstack.lastobj = pppp.GroupRef.ObjRef.ValueObj
                        r = 0
                        End If
                        
@@ -36814,6 +36826,9 @@ Dim v$
     ElseIf v$ = "mHandler" Then
     
     CopyHandler ob, bstack
+    rValue = 0
+    ElseIf v$ = "mArray" Then
+    Set bstack.lastobj = CopyArray(ob)
     rValue = 0
     Else
     Set bstack.lastobj = Nothing
