@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 1
+Global Const Revision = 2
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -19016,6 +19016,40 @@ If Left$(nm$, 5) = "ауто." Or Left$(nm$, 5) = "THIS." Then
      If Not varhash.Find(n$, k) Then
      n$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, 6)
      varhash.Find n$, k
+     End If
+     If k = 0 Then
+     ' check for inventory
+     n$ = bstack.UseGroupname + Mid$(nm$, 6)
+      If n$ Like "*[$%](" Then
+            n$ = Mid$(n$, 1, Len(n$) - 2)
+            Else
+            n$ = Mid$(n$, 1, Len(n$) - 1)
+            End If
+        If varhash.Find(n$, k) Then
+            If TypeOf var(k) Is mHandler Then
+                Set ga = New mArray
+                Set ga.GroupRef = var(k)
+                ga.Arr = False
+                neoGetArray = True
+            End If
+            Exit Function
+        End If
+        n$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(nm$, 6)
+              If n$ Like "*[$%](" Then
+            n$ = Mid$(n$, 1, Len(n$) - 2)
+            Else
+            n$ = Mid$(n$, 1, Len(n$) - 1)
+            End If
+        If varhash.Find(n$, k) Then
+            If TypeOf var(k) Is mHandler Then
+                Set ga = New mArray
+                Set ga.GroupRef = var(k)
+                ga.Arr = False
+                neoGetArray = True
+            End If
+            Exit Function
+        End If
+     
      End If
     Else
     n$ = Mid$(nm$, 5)
