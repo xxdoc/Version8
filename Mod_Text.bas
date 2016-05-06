@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 5
+Global Const Revision = 6
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -5252,6 +5252,7 @@ End If
 If Not bstack.lastobj Is Nothing Then
 If Not (TypeOf bstack.lastobj Is mArray) Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
 Set pppp = bstack.lastobj
+Set bstack.lastobj = Nothing
 Else
 A$ = n$
 IsNumber = False
@@ -7604,7 +7605,12 @@ contlambdahere:
                           If .Value = Empty Then
                           r = SG * val(.KeyToString)
                           Else
-                      r = SG * val(.Value)
+                                  If Typename(.Value) = "String" Then
+                                  If IsNumberCheck(.Value, r) Then r = SG * r Else r = 0
+                                  Else
+                                    r = SG * .Value
+                                  End If
+                               
                       End If
                         Else
                         Set bstack.lastobj = pppp.GroupRef.ObjRef.ValueObj
@@ -7648,7 +7654,11 @@ contlabel:
                                  If .Value = Empty Then
                                      r = SG * val(.KeyToString)
                                   Else
-                                    r = SG * val(.Value)
+                                 If Typename(.Value) = "String" Then
+                                  If IsNumberCheck(.Value, r) Then r = SG * r Else r = 0
+                                  Else
+                                    r = SG * .Value
+                                  End If
                                  End If
                         Else
                        r = SG * rValue(bstack, pppp.GroupRef.ObjRef.ValueObj)
@@ -23481,13 +23491,15 @@ Set vvl = New mArray
 ElseIf Typename$(var(val(b$(1)))) = "Empty" Then
 
 Else
-Set myArray = var(val(b$(1)))
+'Set myArray = var(val(b$(1)))
 
-Set mySecondArray = New mArray
-myArray.CopyArray mySecondArray
-mySecondArray.arrname = myArray.arrname
-Set vvl = mySecondArray
-Set myArray = Nothing
+'Set mySecondArray = New mArray
+'myArray.CopyArray mySecondArray
+'mySecondArray.arrname = myArray.arrname
+'Set vvl = mySecondArray
+'Set myArray = Nothing
+Set vvl = var(val(b$(1)))
+
 End If
 k.PokeItem j, b$(0) + ")"
  k.PokeItem j + 1, vvl
@@ -36738,7 +36750,7 @@ If Left$(ah, 1) = "N" Or InStr(ah, "l") > 0 Then
     End If
         Set bstack.lastobj = Nothing
     Else
-        bb.Value = p
+        bb.Value = CDbl(p)
     End If
     
 ElseIf Left$(ah, 1) = "S" Then
@@ -36815,7 +36827,8 @@ Dim v$
         End If
     ElseIf v$ Like "Gr*" Then
         rValue = 0
-        CopyGroup ob, bstack
+        Set bstack.lastobj = ob
+       
     ElseIf v$ Like "mE*" Then
         CopyEvent ob, bstack
         rValue = 0
