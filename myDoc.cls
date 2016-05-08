@@ -942,7 +942,7 @@ For i = 1 To UBound(aa()) - 1 Step 2
 If aa(i) > offset Then Exit For
 Next i
 If i > UBound(aa()) Then GoTo there:
-    If aa(i) < offset Then
+    If aa(i) <= offset Then
 there:
         ReDim bbb(2)
         bbb(0) = aa(UBound(aa()) - 1)
