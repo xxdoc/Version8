@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 10
+Global Const Revision = 11
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -1052,7 +1052,7 @@ Dim s$, ss$, f As Long, col As Long, x1 As Long, i As Long, pppp As mArray, pppp
 
 End Function
 
-Sub PushStage(basestack As basetask, dummy As Boolean)
+Public Sub PushStage(basestack As basetask, dummy As Boolean)
         With basestack.RetStack
                 basestack.SubLevel = basestack.SubLevel + 1
 
@@ -1075,7 +1075,7 @@ Sub PushStage(basestack As basetask, dummy As Boolean)
 End If
         End With
 End Sub
-Sub PopStage(basestack As basetask)
+Public Sub PopStage(basestack As basetask)
 Dim kolpo As Boolean, bb$, Once As Boolean, dd As Variant
         With basestack.RetStack
         If .LookTopVal = -1 Then
@@ -15801,6 +15801,12 @@ ContGoto:
               End If
               Case "LOCAL", "топийа", "топийг", "топийес"
 contNegLocal:
+                    If Not Interrupted Then
+                    If bstack.IamThread And Not bstack.RemoveLocal Then
+                    PushStage bstack, False
+                    bstack.RemoveLocal = True
+                    End If
+                    End If
                     NewStat = True
                     sss = Len(b$)
                 GoTo again1
@@ -26246,7 +26252,6 @@ thh1:
                                ReDim Preserve sbf(UBound(sbf()) / 2 + 1) As modfun
                        End If
                        End With
-                   '   Set bs.StaticCollection = Nothing
                    With bs
                    
                    If Not .StaticCollection Is Nothing Then

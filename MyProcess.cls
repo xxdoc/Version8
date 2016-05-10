@@ -84,8 +84,8 @@ myProcess.ThrowOne myid
     Set myProcessPureParent = Nothing
 End Sub
 
-Private Property Let TaskInterface_interval(ByVal rhs As Double)
-mYspace = rhs
+Private Property Let TaskInterface_interval(ByVal RHS As Double)
+mYspace = RHS
 m_duration = 0
 If mYspace = 0 Then
 
@@ -102,9 +102,9 @@ End Property
 
 ' IMPLEMENTED PROPERTIES
 
-Private Property Set TaskInterface_Owner(rhs As Object)
+Private Property Set TaskInterface_Owner(RHS As Object)
 
-  Set myOwner = rhs
+  Set myOwner = RHS
 End Property
 
 ' IMPLEMENTED METHODS
@@ -257,7 +257,16 @@ End If
             look = True
             
 Set NowProcess.Owner = myOwner
-If Interrupted Then SetTextBasketBack myOwner, players(GetCode(myOwner))
+If Interrupted Then
+SetTextBasketBack myOwner, players(GetCode(myOwner))
+Else
+    If NowProcess.RemoveLocal Then
+     ' do the bad action...
+     PopStage NowProcess
+     NowProcess.RemoveLocal = False
+     End If
+
+End If
  Call executeblock(x, NowProcess, mybuf$, False, look, Interrupted)
   If Not (NowProcess Is Nothing) Then Set myOwner = NowProcess.Owner
         If Len(mybuf$) < 3 Then
@@ -270,7 +279,16 @@ If Interrupted Then SetTextBasketBack myOwner, players(GetCode(myOwner))
    ''  End If
         Else
       
-     If Interrupted Then m_duration = 0      ' do it in past;;
+     If Interrupted Then
+     m_duration = 0      ' do it in past;;
+     
+     Else
+     If NowProcess.RemoveLocal Then
+     ' do the bad action...
+     PopStage NowProcess
+     NowProcess.RemoveLocal = False
+     End If
+     End If
     If Not look Then GoTo conthere
      End If
        '' If Not NowProcess.Parent.IamRunning Then
@@ -310,9 +328,14 @@ If MOUT Then GoTo there
 
    End If
     If myDone Then GoTo there
+    
    Exit Sub
 there:
-
+    If NowProcess.RemoveLocal Then
+     ' do the bad action...
+     PopStage NowProcess
+     NowProcess.RemoveLocal = False
+     End If
 On Error GoTo 0
 
     Set myOwner = Nothing
@@ -323,8 +346,8 @@ End Sub
 
 
 ' DELEGATED PROPERTIES
-Private Property Let TaskInterface_Done(ByVal rhs As Boolean)
-myDone = rhs
+Private Property Let TaskInterface_Done(ByVal RHS As Boolean)
+myDone = RHS
 If MyMode > 0 Then
 If Not myProcess.IamRunning Then TaskInterface_Dispose tmAllTasks
 End If
@@ -348,8 +371,8 @@ End Property
 Public Property Get TaskInterface_Priority() As PriorityLevel
   TaskInterface_Priority = myPriority
 End Property
-Private Property Let TaskInterface_ID(ByVal rhs As Long)
-If rhs = myid Then
+Private Property Let TaskInterface_ID(ByVal RHS As Long)
+If RHS = myid Then
 myDone = True
 Else
 ' ден блл№жей
@@ -359,8 +382,8 @@ End Property
 Private Property Get TaskInterface_ID() As Long
 TaskInterface_ID = myid
 End Property
-Private Property Let TaskInterface_busy(ByVal rhs As Boolean)
-mybusy = rhs
+Private Property Let TaskInterface_busy(ByVal RHS As Boolean)
+mybusy = RHS
 End Property
 
 Private Property Get TaskInterface_busy() As Boolean

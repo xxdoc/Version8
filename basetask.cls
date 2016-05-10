@@ -24,6 +24,7 @@ Public LastExecute As Long
 Public LastOnce As Boolean
 ''Public LastLoop As Boolean
 Public priveflag As Boolean
+Public RemoveLocal As Boolean
 Private parentSoros As mStiva ' reference to parent..stiva
 Private MyParent As basetask  'reference to parent
 Private myOwner As Object
