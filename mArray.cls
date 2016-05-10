@@ -111,7 +111,11 @@ maxitems = 1
 maxitems1 = 0
 ReDim actualdata(maxitems1) As Variant
 Else
+If maxitems1 < 0 Then
+ReDim actualdata(1) As Variant
+Else
 ReDim Preserve actualdata(maxitems1) As Variant
+End If
 Dim i As Long, mx As Long
 mx = maxitems
 If limit(i) > 0 Then

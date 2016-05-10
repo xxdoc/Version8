@@ -3439,7 +3439,7 @@ p2 = StrPtr(A$): l = l - 1
             If i < p4 And r$ <> "" Then
             GetMem2 i + 2, P1
             If ChrW(P1) <> "(" Then
-              where$ = r$
+              where$ = myUcase(r$, gr)
             r$ = ""
             rrr$ = ""
             Else

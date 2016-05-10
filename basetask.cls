@@ -64,11 +64,15 @@ Public OriginalCode As Long
 Public StaticInUse$
 Private mIamAnEvent As Boolean
 Public Sub SetVar(ByVal name$, var As Variant)
-    If Not StaticCollection.Find(name$) Then StaticCollection.AddKey name$
+
+    If Not StaticCollection.Find(name$) Then
+   ' If StaticCollection.Count = 1 Then Stop
+    StaticCollection.AddKey name$
+    End If
    StaticCollection.Value = var
 End Sub
 Public Sub SetVarobJ(ByVal name$, var As Variant)
-If StaticCollection Is Nothing Then Set StaticCollection = New FastCollection
+    If StaticCollection Is Nothing Then Set StaticCollection = New FastCollection
     If Not StaticCollection.Find(name$) Then StaticCollection.AddKey name$
     Set StaticCollection.ValueObj = var
 End Sub

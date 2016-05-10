@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 9
+Global Const Revision = 10
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -7416,9 +7416,12 @@ If bstack.IamThread Then Set nBstack.Process = bstack.Process
 Set nBstack.Owner = bstack.Owner
 nBstack.OriginalCode = V1&
 nBstack.UseGroupname = sbf(V1&).sbgroup
-
     If GoFunc(nBstack, s1$, n$, p) Then
+        If Not nBstack.StaticCollection Is Nothing Then
+        bstack.SetVarobJ "%_" + s1$, nBstack.StaticCollection
+        End If
     Set bstack.lastobj = nBstack.lastobj
+    Set nBstack = Nothing
         If InStr(v$, "%") > 0 Then
         
         r = SG * Int(p)
@@ -10475,14 +10478,22 @@ End If
     Exit Function
 Case "LAZY$(", "ΟΚΝ$("
    If FastSymbol(A$, "&") Then
-   
-            If IsLabelDot(HERE$, A$, q2$) < 5 Then
+           
+
+            If Abs(IsLabelBig(bstackstr, A$, q2$, par)) < 5 Then    ''IsLabelDot(HERE$, A$, q2$)
             
             Exit Function
             End If
+            par = False
+         '   MakeThisSubNum bstackstr, q2$
              If GetSub(q2$ + ")", w1) Then
-                    r$ = sbf(w1).sb + "} "
-                    Else
+             If sbf(w1).sbgroup = "" Then
+             r$ = sbf(w1).sb + "}"
+             Else
+                    r$ = sbf(w1).sb + "}" + sbf(w1).sbgroup
+                    
+                    par = True
+                    End If
                     End If
                 
             If Not FastSymbol(A$, ")") Then
@@ -10495,7 +10506,9 @@ Case "LAZY$(", "ΟΚΝ$("
             Else
                 s$ = ""
             End If
+            q2$ = ""
     Else
+    par = False
          w = 1
          q1$ = aheadstatus(A$, , w)
          If w > 0 Then q2$ = Left$(A$, w - 1) Else q2$ = "0"
@@ -10506,13 +10519,20 @@ Case "LAZY$(", "ΟΚΝ$("
             If w > 0 Then q2$ = q2$ + "," + Left$(A$, w - 1) Else q2$ = q2$ + ",0"
             A$ = Mid$(A$, w)
          Wend
+         
          r$ = "=" + q2$: q2$ = "}" + bstackstr.UseGroupname
          s$ = ""
    End If
  
 If Trim$(r$ + q2$) <> "" Then
    ' r$ = "{ΤΜΗΜΑ " + Chr(34) + HERE$ & Chr(34) + vbCrLf + r$ + q2$
+          If par Then
+    
+            r$ = "{" + s$ + r$ + q2$
+    
+       Else
    If q$ = "ΟΚΝ$(" Then
+
    If HERE$ = "" Then
     r$ = "{" + s$ + "ΤΜΗΜΑ {}" + vbCrLf + r$ + q2$
    Else
@@ -10523,6 +10543,7 @@ If Trim$(r$ + q2$) <> "" Then
     r$ = "{" + s$ + "MODULE {}" + vbCrLf + r$ + q2$
    Else
     r$ = "{" + s$ + "MODULE " + HERE$ + vbCrLf + r$ + q2$
+    End If
     End If
     End If
     Else
@@ -11683,6 +11704,9 @@ contStrFun:
             nBstack.UseGroupname = sbf(w1&).sbgroup
             nBstack.OriginalCode = w1&
             If GoFunc(nBstack, q1$, A$, s$) Then
+              If Not nBstack.StaticCollection Is Nothing Then
+        bstackstr.SetVarobJ "%_" + q1$, nBstack.StaticCollection
+        End If
                 Set bstackstr.lastobj = nBstack.lastobj
                 r$ = s$
                 IsString = True
@@ -13226,12 +13250,15 @@ End If
 interpret = b$ = ""
 End Function
 Function StaticNew(bstack As basetask, b$, w$) As Boolean
-If bstack.UseGroupname <> "" Then
-        MyErMacro b$, "No static variable for group module " + w$, "Όχι στατική μεταβλητή για τμήμα ομάδας"
-Exit Function
-End If
+'If bstack.UseGroupname <> "" Then
+ '       MyErMacro b$, "No static variable for group module " + w$, "Όχι στατική μεταβλητή για τμήμα ομάδας"
+'Exit Function
+'End If
 Dim p As Double, ii As Long, ss$
-If bstack.StaticCollection Is Nothing Then Set bstack.StaticCollection = New FastCollection
+If bstack.StaticCollection Is Nothing Then
+
+Set bstack.StaticCollection = New FastCollection
+End If
 Do
     Select Case IsLabel(bstack, b$, w$)
     Case 1
@@ -13460,6 +13487,7 @@ If NocharsInLine(b$) Then Exit Function
 sss = LLL  'basic...
 
 
+    
     End If
 contVarNew:
 If MaybeIsSymbol(b$, "\'") Then
@@ -16279,7 +16307,7 @@ conthere111:
 conthere222:
           If bstack.connectnow Then
             ohere$ = HERE$
-            ConnectStatic bstack, HERE$
+           ' ConnectStatic bstack, HERE$
              bstack.connectnow = False
           End If
           If NocharsInLine(b$) Then Exit Do Else lbl = AscW(b$) = 13
@@ -16802,47 +16830,48 @@ End If
      If Not bstack.lastobj Is Nothing Then
      Set myobject = pppp.GroupRef
      If pppp.IHaveClass Then
-     bstack.soros.PushObj bstack.lastobj
-     If Typename(pppp.item(v)) = "Empty" Then
-     Set pppp.item(v) = New Group
-     End If
+             bstack.soros.PushObj bstack.lastobj
+            If Typename(pppp.item(v)) = "Empty" Then
+            Set pppp.item(v) = New Group
+            End If
+            
+            SpeedGroup bstack, pppp, "@READ", w$, "", v
+            Set pppp.item(v).LinkRef = myobject
+     Else
+            If Typename(bstack.lastobj) = "mHandler" Then
+                   If bstack.lastobj.T1 = 1 Then
+                          If bstack.lastobj.ObjRef.IsObj Then
+                          Set pppp.item(v) = bstack.lastobj.ObjRef.ValueObj
+                          Else
+                          pppp.item(v) = bstack.lastobj.ObjRef.Value
+                          End If
+                   Else
+                          Set pppp.item(v) = bstack.lastobj.ObjRef
+                   End If
+            Else
+                   If Not bstack.lastobj Is Nothing Then
+                          If TypeOf bstack.lastobj Is mArray Then
+                                 If bstack.lastobj.Arr Then
+                                         Set pppp.item(v) = CopyArray(bstack.lastobj)
+                                         
+                                         'Dim pppp1 As mArray
+                                         'Set pppp1 = New mArray
+                                         'bstack.lastobj.copyarray pppp1
+                                        ' Set bstack.lastobj = Nothing
+                                         'Set pppp.item(v) = pppp1
+                                         'Set pppp1 = Nothing
+                                 Else
+                                            Set pppp.item(v) = bstack.lastobj
+                                 End If
+                          Else
+                                  Set pppp.item(v) = bstack.lastobj
+                          End If
+                   Else
+                          Set pppp.item(v) = bstack.lastobj
+                   End If
+            End If
      
-     SpeedGroup bstack, pppp, "@READ", w$, "", v
-     Set pppp.item(v).LinkRef = myobject
-     Else
-     If Typename(bstack.lastobj) = "mHandler" Then
-     If bstack.lastobj.T1 = 1 Then
-     If bstack.lastobj.ObjRef.IsObj Then
-     Set pppp.item(v) = bstack.lastobj.ObjRef.ValueObj
-     Else
-     pppp.item(v) = bstack.lastobj.ObjRef.Value
-     End If
-     Else
-     Set pppp.item(v) = bstack.lastobj.ObjRef
-     End If
-     Else
-     If Not bstack.lastobj Is Nothing Then
-     If TypeOf bstack.lastobj Is mArray Then
-     If bstack.lastobj.Arr Then
-     Set pppp.item(v) = CopyArray(bstack.lastobj)
-     
-     'Dim pppp1 As mArray
-     'Set pppp1 = New mArray
-     'bstack.lastobj.copyarray pppp1
-    ' Set bstack.lastobj = Nothing
-     'Set pppp.item(v) = pppp1
-     'Set pppp1 = Nothing
-     Else
-     Set pppp.item(v) = bstack.lastobj
-     End If
-     Else
-     Set pppp.item(v) = bstack.lastobj
-     End If
-     Else
-     Set pppp.item(v) = bstack.lastobj
-     End If
-     End If
-     Set pppp.item(v).LinkRef = myobject
+        If Typename(pppp.item(v)) = "Group" Then Set pppp.item(v).LinkRef = myobject
      End If
      
      Set bstack.lastobj = Nothing
@@ -17198,17 +17227,33 @@ If Not basestack.StaticCollection Is Nothing Then
 If what$ <> mystack.StaticInUse Then
 If StripRVAL(HERE$) & "." & mystack.StaticInUse = what$ Then
     Set mystack.StaticCollection = basestack.StaticCollection
+     mystack.StaticInUse$ = what$
     
 Else
+    Set mystack.StaticCollection = Nothing
             If basestack.ExistVar("%_" + what$) Then
-                   basestack.ReadVar "%_" + what$, vvv
-                   If IsObject(vvv) Then Set mystack.StaticCollection = vvv
-                    Set vvv = Nothing
-                 End If
-        mystack.StaticInUse$ = what$
+            If basestack.StaticCollection.IsObj Then
+                Set mystack.StaticCollection = basestack.StaticCollection.ValueObj
+                   
+             End If
+             
+            
+        End If
+       
+                mystack.StaticInUse$ = what$
 End If
 Else
-            mystack.StaticInUse$ = what$
+    Set mystack.StaticCollection = Nothing
+            If basestack.ExistVar("%_" + what$) Then
+            If basestack.StaticCollection.IsObj Then
+                Set mystack.StaticCollection = basestack.StaticCollection.ValueObj
+                   
+             End If
+             
+            
+        End If
+       
+                mystack.StaticInUse$ = what$
 End If
  End If
 If HERE$ <> ohere$ Or mystack.IamChild Then     ' so now we check that we are in an new namespace...
@@ -17238,6 +17283,7 @@ Else
     End If
     frm$ = Mid$(sbf(x1).sb, i)
     it = 1
+
 Call executeblock(it, mystack, frm$, False, ok)
     Select Case it ''Execute(mystack, frm$, False)
     Case 0
@@ -17313,12 +17359,9 @@ there1234:
        If LastErNum = 0 Then MyErMacro rest$, "", ""
     End If
     GoFunc = False
-  ' όλα αυτά θα πάνε στο Basestack
   If what$ <> mystack.StaticInUse Then
-  ElseIf Not basestack.StaticCollection Is Nothing Then
- ' Set vvv = mystack.StaticCollection
+  ElseIf Not mystack.StaticCollection Is Nothing Then
    basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
-  ' Set vvv = Nothing
    End If
 
     HERE$ = ohere$
@@ -17360,14 +17403,18 @@ Set mystack.FuncObj = Nothing
     Else
               vl = mystack.FuncValue
     End If
-      If what$ <> mystack.StaticInUse Then
-  ElseIf Not basestack.StaticCollection Is Nothing Then
- '' Set vvv = mystack.StaticCollection
-   basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
-   ''Set vvv = Nothing
-   End If
-   'Set mystack.StaticCollection = Nothing
-    'mystack.StaticInUse$ = ""
+   ' If Not mystack.StaticCollection Is Nothing Then
+    '  If what$ <> mystack.StaticInUse Then
+      
+      
+      
+     ' basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
+      
+ ' Else
+
+  ' basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
+  ' End If
+ '  End If
     HERE$ = ohere$
     If FastSymbol(rest$, ")") Then GoFunc = True
      If Not nokillvars Then
@@ -26203,7 +26250,7 @@ thh1:
                    With bs
                    
                    If Not .StaticCollection Is Nothing Then
-                   '' Set vvv = .StaticCollection
+                   
                    basestack.SetVarobJ "%_" + .StaticInUse$, .StaticCollection
                    End If
                    End With
@@ -28915,7 +28962,9 @@ If i = 1 Then
         bs.UseGroupname = sbf(x1).sbgroup
         bs.OriginalCode = x1
        Call GoFunc(bs, what$, rest$, vvl, x1)
-               
+        If Not bs.StaticCollection Is Nothing Then
+        basestack.SetVarobJ "%_" + what$, bs.StaticCollection
+        End If
         Set bs = Nothing
         basestack.nokillvars = False
         If LastErNum = -1 Then
@@ -28926,7 +28975,6 @@ If i = 1 Then
          rest$ = ":" & what$ & " " & rest$
     End If
     resp = True
-  Set basestack = Nothing
 
   Set basestack = Nothing:  Exit Sub
 ElseIf i = 3 Then
@@ -28987,6 +29035,9 @@ ElseIf i > 3 Then
              Else
              bs.UseGroupname = sbf(x1).sbgroup
         Call GoFunc(bs, ss$, rest$, vvl)
+        End If
+            If Not bs.StaticCollection Is Nothing Then
+        basestack.SetVarobJ "%_" + ss$, bs.StaticCollection
         End If
         Set bs = Nothing
         If Not par Then
@@ -30284,18 +30335,21 @@ If bs.IsString(s$) Then
     If Not FastSymbol(rest$, ")") Then
      MyEr "Syntax error, use )", "Συντακτικό λάθος βάλε )": Exit Do
     Else
+   
+    
     s$ = Left$(what$, Len(what$) - 1) + " " + s$
     If f Then
-    ss$ = ohere$
-    ohere$ = ""
+    ss$ = HERE$
+    HERE$ = ""
                 If Not MyFunction(0, bstack, s$, 1) Then
+                
             MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
             Else
             sbf(bstack.IndexSub).sbgroup = s$
         
             End If
             MyRead = True
-     ohere$ = ss$
+     HERE$ = ss$
     
     Else
 
@@ -30492,17 +30546,17 @@ Case 5
             Exit Do
         End If
         If IsOperator(rest$, ".") Then
-        If Not Typename(pppp.item(it)) = "Group" Then
-        MyEr "Expected group", "Περίμενα ομάδα"
-        MyRead = False: Exit Function
-        Else
-         i = 1
-        aheadstatus rest$, False, i
-        ss$ = Left$(rest$, i - 1)
-        MyRead = SpeedGroup(bstack, pppp, "@READ", ".", ss$, it) <> 0
-        rest$ = Mid$(rest$, i)
-        GoTo loopcont123
-        End If
+            If Not Typename(pppp.item(it)) = "Group" Then
+                MyEr "Expected group", "Περίμενα ομάδα"
+                MyRead = False: Exit Function
+            Else
+                 i = 1
+                aheadstatus rest$, False, i
+                ss$ = Left$(rest$, i - 1)
+                MyRead = SpeedGroup(bstack, pppp, "@READ", ".", ss$, it) <> 0
+                rest$ = Mid$(rest$, i)
+                GoTo loopcont123
+            End If
         End If
        If bs.IsObjectRef(myobject) Then
                     If Typename$(myobject) = "Group" Then
@@ -30512,15 +30566,17 @@ Case 5
                              Else
                                           BadGroupHandle
                                           MyRead = False
+                                          Set myobject = Nothing
                                           Exit Function
                              End If
-                             Set myobject = Nothing
+                             
+                             GoTo loopcont123
                    ElseIf Typename$(myobject) = "lambda" Then
        
         Set pppp.item(it) = myobject
    Set myobject = Nothing
-                
-                             
+            MyRead = True
+       GoTo loopcont123
                     End If
         ElseIf Not bs.IsNumber(p) Then
                         MissStackNumber
@@ -35518,13 +35574,16 @@ JUMP0:
                         If Not FastSymbol(rest$, "}") Then MyModule = False
                         Exit Function
                 Else
-                    basestack.connectnow = True
+                If basestack.StaticCollection Is Nothing Then ConnectStatic basestack, myUcase(what$)
+                   basestack.connectnow = True
                         HERE$ = what$
                 End If
         End If
 Else
         If what$ <> "" Then rest$ = what$ & " :" & rest$
         If IsStrExp(basestack, rest$, s$) Then
+         
+                If basestack.StaticCollection Is Nothing Then ConnectStatic basestack, myUcase(s$)
                  basestack.connectnow = True
                 HERE$ = myUcase(s$)
         Else
@@ -36314,7 +36373,7 @@ Do
             aheadstatus rest$, False, x1
             s$ = "&" + ss$ + Mid$(rest$, 1, x1 - 1)
             If x1 > 1 Then rest$ = Mid$(rest$, x1)
-            If Execute(basestack, s$, True) <> 1 Then
+            If Not MyData(basestack, s$) Then
             Set basestack.Sorosref = myobject
             Exit Function
         End If
