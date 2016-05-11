@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 12
+Global Const Revision = 13
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -28957,7 +28957,9 @@ s$ = what$
 i = Abs(IsLabel(basestack, s$, what$))
 
 If i = 0 Then
+
 If FastSymbol(s$, "{") Then
+reenter2:
  ss$ = block(s$)
  If FastSymbol(s$, "}") And ss$ <> "" Then
 PushStage basestack, False
@@ -29066,12 +29068,21 @@ If i = 1 Then
 
   Set basestack = Nothing:  Exit Sub
 ElseIf i = 3 Then
-    If FastSymbol(rest$, ",") Then
+    'If FastSymbol(rest$, ",") Then
     
-    End If
+   ' End If
     If IsStrExp(basestack, what$, s$) Then
-     rest$ = s$ & " " & rest$
+    If Len(s$) > 0 Then
+    If FastSymbol(s$, "{") Then GoTo reenter2
+     rest$ = s$ & rest$
+    
       GoTo reenter1
+      Else
+      basestack.nokillvars = False
+        resp = False
+
+       Set basestack = Nothing:  Exit Sub
+      End If
         'If flag Then
         'If par Then
         'rest$ = ": Call Void Local " & s$ & " " & rest$
@@ -30536,7 +30547,6 @@ Case 3
     If bs.IsString(s$) Then
         MyRead = True
         If flag2 Then
-            s$ = ""
             GlobalVar what$, s$
         ElseIf GetVar(bstack, what$, i, , , flag) Then
             CheckVar var(i), s$
