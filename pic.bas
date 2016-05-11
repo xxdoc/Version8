@@ -3695,6 +3695,8 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 For i = 0 To UBound(mycommands())
 
 Select Case mycommands(i)
+Case "SORT", "танимолгсг"
+aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoSort)
 Case "NORMAL", "йамомийа"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoNormal)
 Case "DOUBLE", "дипка"
@@ -3851,6 +3853,14 @@ Case "REPORT", "амажояа"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoReport)
 Case "BACK", "BACKGROUND", "пеяихыяио"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoBack)
+Case "OVER", "памы"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoOver)
+Case "SHIFTBACK", "жеяеписы"
+aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoShiftBack)
+Case "SHIFT", "жеяе"
+aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoShift)
+Case "DROP", "пета"
+aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDrop)
 Case "IF", "ам"
     aHash.ItemCreator2 CStr(mycommands(i)), 0, 50
 Case "ELSE", "аккиыс"

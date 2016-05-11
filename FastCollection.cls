@@ -90,6 +90,11 @@ Public Sub Sort()
 QuickSortItems PriveSpace(), LBound(PriveSpace()), toplim
 ReHash
 End Sub
+Public Sub SortDes()
+QuickSortItemsRev PriveSpace(), LBound(PriveSpace()), toplim
+ReHash
+End Sub
+
 
 Public Sub ToKey(RHS)
     Done = Find(RHS)
@@ -511,4 +516,36 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
   If LB < M2 Then QuickSortItems Arr, LB, M2
   If M1 < UB Then QuickSortItems Arr, M1, UB
 End Sub
+Private Sub QuickSortItemsRev(Arr() As item, ByVal LB As Long, ByVal UB As Long)
+Dim M1 As Long, M2 As Long
+Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
+  If UB - LB = 1 Then
+     M1 = LB
 
+     If StrComp(Arr(M1).Key, Arr(UB).Key, vbBinaryCompare) = -1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
+     Exit Sub
+  Else
+  ' we have unique names
+    M1 = (LB + UB) \ 2
+    Piv = Arr(M1)
+    M1 = LB
+   Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = 1: M1 = M1 + 1: Loop
+    
+  End If
+  
+  M2 = UB
+  Do
+    Do While StrComp(Arr(M2).Key, Piv.Key, vbBinaryCompare) = -1: M2 = M2 - 1: Loop
+
+    If M1 <= M2 Then
+      Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
+      M1 = M1 + 1
+      M2 = M2 - 1
+    End If
+    If M1 > M2 Then Exit Do
+    Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = 1: M1 = M1 + 1: Loop
+
+  Loop
+  If LB < M2 Then QuickSortItemsRev Arr, LB, M2
+  If M1 < UB Then QuickSortItemsRev Arr, M1, UB
+End Sub

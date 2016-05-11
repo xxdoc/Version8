@@ -1673,6 +1673,53 @@ abc1:
     
     
 End Sub
+Private Sub QuickSortExtendedDes(Arr() As Long, ByVal LB As Long, ByVal UB As Long)
+Dim M1 As Long, M2 As Long
+On Error GoTo abc1
+Dim Piv As String, Tmp As String '<- adjust types here, when switching to something different than Long
+     If UB - LB = 1 Then
+     M1 = LB
+      If StrComp(TextParagraphKey(Arr(M1)), TextParagraphKey(Arr(UB)), vbTextCompare) = -1 Then SwapPara M1, UB, Arr
+      Exit Sub
+     Else
+       M1 = (LB + UB) \ 2
+             If StrComp(TextParagraphKey(Arr(M1)), TextParagraphKey(Arr(LB)), vbTextCompare) = 0 Then
+                M2 = UB - 1
+                M1 = LB
+                Piv = TextParagraphKey(Arr(LB))
+                Do
+                    M1 = M1 + 1
+                    If M1 > M2 Then
+                        If StrComp(TextParagraphKey(Arr(UB)), Piv, vbTextCompare) = 1 Then SwapPara LB, UB, Arr
+                        Exit Sub
+                    End If
+                Loop Until StrComp(TextParagraphKey(Arr(M1)), Piv, vbTextCompare) <> 0
+                Piv = TextParagraphKey(Arr(M1))
+                If M1 > LB Then If StrComp(TextParagraphKey(Arr(LB)), Piv, vbTextCompare) = -1 Then SwapPara M1, LB, Arr: Piv = TextParagraphKey(Arr(M1))
+            Else
+                Piv = TextParagraphKey(Arr(M1))
+                M1 = LB
+                Do While StrComp(TextParagraphKey(Arr(M1)), Piv, vbTextCompare) = 1: M1 = M1 + 1: Loop
+            End If
+    End If
+    M2 = UB
+    Do
+      Do While StrComp(TextParagraphKey(Arr(M2)), Piv, vbTextCompare) = -1: M2 = M2 - 1: Loop
+      If M1 <= M2 Then
+       If M1 <> M2 Then SwapPara M1, M2, Arr
+        M1 = M1 + 1
+        M2 = M2 - 1
+      End If
+      If M1 > M2 Then Exit Do
+      Do While StrComp(TextParagraphKey(Arr(M1)), Piv, vbTextCompare) = 1: M1 = M1 + 1: Loop
+    Loop
+    If LB < M2 Then QuickSortExtendedDes Arr, LB, M2
+    If M1 < UB Then QuickSortExtendedDes Arr, M1, UB
+    Exit Sub
+abc1:
+    
+    
+End Sub
 Sub SwapPara(ByVal order1 As Long, ByVal order2 As Long, Arr() As Long)
 Dim paranum1 As Long, paranum2 As Long
 If order1 = order2 Then Exit Sub
@@ -1709,6 +1756,23 @@ Next i
 If order1 <= 0 Then order1 = 1
 If order2 <= 0 Then order2 = i - 1
 QuickSortExtended NDX, order1, order2
+
+End Sub
+Sub SortDocDes(KeyStart As Long, order1 As Long, order2 As Long)
+Dim NDX() As Long, i As Long
+ReDim NDX(DocParagraphs) As Long
+If KeyStart < 0 Then
+mKeystart = 1
+Else
+mKeystart = KeyStart
+End If
+NDX(0) = 0
+For i = 1 To UBound(NDX())
+NDX(i) = DocParaNext(NDX(i - 1))
+Next i
+If order1 <= 0 Then order1 = 1
+If order2 <= 0 Then order2 = i - 1
+QuickSortExtendedDes NDX, order1, order2
 
 End Sub
 Public Function Advance(cursor As Long)

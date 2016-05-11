@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 11
+Global Const Revision = 12
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -13766,6 +13766,7 @@ If Not comhash.Find2(w$, i, v) Then
              ElseIf i <> 0 Then
              If Not IsBadCodePtr(i) Then
                         If CallByPtr(i, bstack, b$, lang) Then
+                            LLL = 0 ' maybe b$ changed inside the call if LLL=len(b$) then we exit from loop
                             GoTo conthere222
                         Else
                              If LastErNum1 = -1 And bstack.IamThread Then Execute = 1 Else Execute = 0
@@ -17200,7 +17201,8 @@ mystack.Look2Parent = True  ' new workaround for passing &this to function
   mystack.UseGroupname = pa$
 If choosethis >= 0 Then
 x1 = choosethis
-ohere$ = HERE$
+'ohere$ = HERE$
+If what$ = "" Then HERE$ = RVAL(HERE$, 1) + mystack.OriginalName
 Else
 If InStr(what$, "(") > 0 Then
 If GetSub(what$, x1) Then  'get the reference x1 for function (functions and modules are in an array)
@@ -18289,7 +18291,7 @@ Case "WORDS", "ΛΕΞΕΙΣ"
     Identifier = ProcWords(basestack, rest$)
     Exit Function
 Case "SORT", "ΤΑΞΙΝΟΜΗΣΗ"
-    Identifier = ProcSort(basestack, rest$)
+    Identifier = ProcSort(basestack, rest$, lang)
     Exit Function
 Case "OVER", "ΠΑΝΩ"  'ΑΝΤΙΓΡΑΦΕΙ ΤΗΝ ΚΟΡΥΦΗ
     Identifier = ProcOver(basestack, rest$)
@@ -28842,6 +28844,20 @@ End Sub
 Sub NeoBack(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 ProcBackGround ObjFromPtr(basestackLP), rest$, lang, resp
 End Sub
+Sub NeoOver(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcOver(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoDrop(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcDrop(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoShift(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcShift(ObjFromPtr(basestackLP), rest$)
+End Sub
+Sub NeoShiftBack(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcShiftBack(ObjFromPtr(basestackLP), rest$)
+End Sub
+
+
 Sub NeoCall(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 Dim basestack As basetask, i As Long, p As Double, par As Boolean, f As Long
 Dim flag As Boolean, it As Long, what$, s$, x1 As Long, ss$, bs As basetask, vvl As Variant, x As Double
@@ -28926,9 +28942,76 @@ If IsLabelSymbolNew(rest$, "ΣΥΝΑΡΤΗΣΗ", "FUNCTION", lang) Then f = 3
 reenter1:
 
 i = Abs(IsLabel(basestack, rest$, what$))
+If i = 3 And Len(rest$) > 0 Then
+If AscW(rest$) = 46 Then
+If Not IsStrExp(basestack, (what$), what$) Then MissPar: Set basestack = Nothing:  Exit Sub
+rest$ = what$ + rest$
+GoTo reenter1
+End If
+End If
+If i = 0 Or i = 2 Then
 If i = 0 Then
 If Not IsStrExp(basestack, rest$, what$) Then MissPar: Set basestack = Nothing:  Exit Sub
-i = Abs(IsLabel(basestack, (what$), what$))
+End If
+s$ = what$
+i = Abs(IsLabel(basestack, s$, what$))
+
+If i = 0 Then
+If FastSymbol(s$, "{") Then
+ ss$ = block(s$)
+ If FastSymbol(s$, "}") And ss$ <> "" Then
+PushStage basestack, False
+x1 = GlobalSub("A_()", ss$, Trim$(s$))
+ Set bs = New basetask
+     bs.reflimit = varhash.Count
+        Set bs.Parent = basestack
+        If basestack.IamThread Then Set bs.Process = basestack.Process
+        Set bs.Sorosref = basestack.soros  ' same stack
+        Set bs.Owner = basestack.Owner
+        bs.UseGroupname = sbf(x1).sbgroup
+        bs.OriginalCode = x1
+    If par Then
+       Call GoFunc(bs, what$, rest$, vvl, , x1)
+       Else
+       '' no static for this type of call
+       
+       bs.OriginalName = "()"
+       Call GoFunc(bs, what$, rest$, vvl, , x1)
+       If Not vvl = Empty Then
+       vvl = CStr(vvl)
+       x = InStr(vvl, "|")
+            If x = 0 Then
+                MyEr "ERROR " & vvl, "ΛΑΘΟΣ " & vvl
+            Else
+                MyEr "ERROR " & Left$(vvl, x - 1), "ΛΑΘΟΣ " & Mid$(vvl, x + 1)
+            End If
+            resp = False
+            PopStage basestack   ' this always kill vars
+       Set basestack = Nothing:  Exit Sub
+       End If
+       End If
+        If Not bs.StaticCollection Is Nothing Then
+        basestack.SetVarobJ "%_" + what$, bs.StaticCollection
+        End If
+        ''
+        Set bs = Nothing
+        basestack.nokillvars = False
+        If LastErNum = -1 Then
+            Set basestack = Nothing
+            resp = False: Set basestack = Nothing: Exit Sub
+        End If
+        
+    resp = True
+PopStage basestack   ' this always kill vars
+       Set basestack = Nothing:  Exit Sub
+Else
+s$ = "Error" + "{Bad Call}, {στη κλήση}"
+End If
+Else
+s$ = "Error" + "{Bad Call}, {στη κλήση}"
+End If
+End If
+rest$ = s$ + rest$
 End If
 If f > 0 And i < 5 Then i = i + 4: what$ = what$ & "("
 If i = 1 Then
@@ -28966,7 +29049,7 @@ If i = 1 Then
         Set bs.Owner = basestack.Owner
         bs.UseGroupname = sbf(x1).sbgroup
         bs.OriginalCode = x1
-       Call GoFunc(bs, what$, rest$, vvl, x1)
+       Call GoFunc(bs, what$, rest$, vvl, , x1)
         If Not bs.StaticCollection Is Nothing Then
         basestack.SetVarobJ "%_" + what$, bs.StaticCollection
         End If
@@ -28987,24 +29070,27 @@ ElseIf i = 3 Then
     
     End If
     If IsStrExp(basestack, what$, s$) Then
-        If flag Then
-        If par Then
-        rest$ = ": Call Void Local " & s$ & " " & rest$
-        Else
-        rest$ = ": Call Local " & s$ & " " & rest$
-        End If
-        Else
-        If par Then
-        rest$ = ": Call void " & s$ & " " & rest$
-        Else
-        rest$ = ": Call " & s$ & " " & rest$
-        End If
-        End If
+     rest$ = s$ & " " & rest$
+      GoTo reenter1
+        'If flag Then
+        'If par Then
+        'rest$ = ": Call Void Local " & s$ & " " & rest$
+       
+        'Else
+       ' rest$ = ": Call Local " & s$ & " " & rest$
+        'End If
+        'Else
+        'If par Then
+        'rest$ = ": Call void " & s$ & " " & rest$
+        'Else
+       ' rest$ = ": Call " & s$ & " " & rest$
+       
+        'End If
+        'End If
     Else
         ' error
         basestack.nokillvars = False
         resp = False
-        Set basestack = Nothing
 
        Set basestack = Nothing:  Exit Sub
     End If
@@ -29013,6 +29099,7 @@ ElseIf i > 3 Then
 
 
     ss$ = what$ & ")"
+    
      If FastSymbol(rest$, ",") Then
     
     End If
@@ -29056,7 +29143,7 @@ ElseIf i > 3 Then
             End If
             resp = False
             basestack.nokillvars = False
-            Set basestack = Nothing
+            
 
             Set basestack = Nothing: Exit Sub
             End If
@@ -29246,8 +29333,9 @@ SetNormal bstack.Owner
 Set bstack = Nothing
 resp = True
 End Sub
-
-
+Sub NeoSort(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+resp = ProcSort(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
 
 Sub NeoImage(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 resp = ProcImage(ObjFromPtr(basestackLP), rest$, lang)
@@ -30103,6 +30191,7 @@ End Function
 Function MyRead(jump As Long, bstack As basetask, rest$, lang As Long) As Boolean
 Dim ps As mStiva, bs As basetask, f As Long, ohere$, par As Boolean, flag As Boolean, flag2 As Boolean
 Dim s$, ss$, pa$, what$, x1 As Long, y1 As Long, i As Long, myobject As Object, it As Long
+MyRead = True
 Dim p As Double, x As Double
 Dim pppp As mArray
 ohere$ = HERE$
@@ -30216,7 +30305,7 @@ Set bs.Sorosref = ps
     End If
 End If
 End If
-
+' from here is not MyRead = True
 Do
 again1:
 MyRead = False
@@ -30255,36 +30344,33 @@ conthereifglobal:
    
    Else
 contpush12:
-   what$ = myUcase$(what$)
-   
-   If Not LinkGroup(what$, var(i)) Then
-   
+       what$ = myUcase$(what$)
+       
+       If Not LinkGroup(what$, var(i)) Then
             If f Then
-             If Not ReboundVar(bstack, what$, i) Then GlobalVar what$, i, True
+                If Not ReboundVar(bstack, what$, i) Then GlobalVar what$, i, True
             Else
-             GlobalVar what$, i, True
-             If Typename(var(i)) = "lambda" Then
-              If ohere$ = "" Then
+                GlobalVar what$, i, True
+                If Typename(var(i)) = "lambda" Then
+                    If ohere$ = "" Then
                         GlobalSub what$ + "()", "CALL EXTERN " & CStr(i)
                     Else
                         GlobalSub ohere$ & "." & bstack.GroupName & what$ + "()", "CALL EXTERN " & CStr(i)
+                    End If
                 End If
-             End If
             End If
-     Else
-
-     it = GlobalVar(what$, it)
-     MakeitObject2 var(it)
-    With var(i)
-      var(it).edittag = .edittag
-     var(it).FuncList = .FuncList
-    var(it).GroupName = myUcase(what$) + "."
-    Set var(it).Sorosref = .soros.Copy
-    End With
-     End If
-     MyRead = True
-     
-     End If
+        Else
+            it = GlobalVar(what$, it)
+            MakeitObject2 var(it)
+            With var(i)
+                var(it).edittag = .edittag
+                var(it).FuncList = .FuncList
+                var(it).GroupName = myUcase(what$) + "."
+                Set var(it).Sorosref = .soros.Copy
+            End With
+        End If
+        MyRead = True
+    End If
      Else
         If GetVar(bstack, s$, i, True) Then GoTo conthereifglobal
 
@@ -30307,243 +30393,203 @@ Else
     End If
 
 Case 3, 4
-If bs.IsString(s$) Then
-     
-          
-    
-    If GetGlobalVar(s$, i) Then
-    If GetVar(bstack, what$, it, , , flag) And Not f Then '' GetlocalVar(what$, it)
-    NoSecReF
-   Exit Do
-   Else
-     If f Then
-   If Not ReboundVar(bstack, what$, i) Then GlobalVar what$, i, True
-   Else
-   GlobalVar what$, i, True
-   End If
-     MyRead = True
-     
-     End If
-     Else
-    NoReference
-    MyRead = False
-    Exit Function
-    End If
-    Else
-    NoReference
-    MyRead = False
-    Exit Function
-    End If
-    Case 5, 6, 7
-    If bs.IsString(s$) Then  ' get the pointer!!!!!
-    If MaybeIsSymbol(s$, "{") Then
-    If Not FastSymbol(rest$, ")") Then
-     MyEr "Syntax error, use )", "Συντακτικό λάθος βάλε )": Exit Do
-    Else
-   
-    
-    s$ = Left$(what$, Len(what$) - 1) + " " + s$
-    If f Then
-    ss$ = HERE$
-    HERE$ = ""
-                If Not MyFunction(0, bstack, s$, 1) Then
-                
-            MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
-            Else
-            sbf(bstack.IndexSub).sbgroup = s$
-        
-            End If
-            MyRead = True
-     HERE$ = ss$
-    
-    Else
-
-            If Not MyFunction(0, bstack, s$, 1) Then
-            MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
-            Else
-            sbf(bstack.IndexSub).sbgroup = s$
-        
-            End If
-            End If
-            MyRead = True
-            End If
-   ' End If
-    Else
-    i = CopyArrayItemsNoFormated(bstack, s$)
-    If i > 0 Then
-    If Not FastSymbol(rest$, ")") Then MyEr "Syntax error, use )", "Συντακτικό λάθος βάλε )": Exit Do
-   If f Then   '' look about f - work for refer but no refer can't be done...why???
-   If Not ReboundArr(bstack, what$, i) Then GoTo arrconthere
-   
-   Else
-arrconthere:
-what$ = myUcase(what$)
-        If ohere$ = "" Then
-            If varhash.ExistKey(what$) Then
-                    MyEr "Try other array name", "Δοκίμασε άλλο όνομα πίνακα"
-                    Exit Do
-            Else
-             varhash.ItemCreator what$, i
-            End If
-        Else
-            If varhash.ExistKey(ohere$ & "." & what$) Then
-                MyEr "Try other array name", "Δοκίμασε άλλο όνομα πίνακα"
+    If bs.IsString(s$) Then
+        If GetGlobalVar(s$, i) Then
+            If GetVar(bstack, what$, it, , , flag) And Not f Then '' GetlocalVar(what$, it)
+                NoSecReF
                 Exit Do
             Else
-   
-              varhash.ItemCreator ohere$ & "." & what$, i, True
+                If f Then
+                    If Not ReboundVar(bstack, what$, i) Then GlobalVar what$, i, True
+                Else
+                    GlobalVar what$, i, True
+                End If
+                MyRead = True
             End If
+        Else
+            NoReference
+            MyRead = False
+            Exit Function
         End If
+    Else
+        NoReference
+        MyRead = False
+        Exit Function
     End If
-MyRead = True
-    End If
+Case 5, 6, 7
+    If bs.IsString(s$) Then  ' get the pointer!!!!!
+        If MaybeIsSymbol(s$, "{") Then
+            If Not FastSymbol(rest$, ")") Then
+                MyEr "Syntax error, use )", "Συντακτικό λάθος βάλε )": Exit Do
+            Else
+                s$ = Left$(what$, Len(what$) - 1) + " " + s$
+                If f Then
+                    ss$ = HERE$
+                    HERE$ = ""
+                    If Not MyFunction(0, bstack, s$, 1) Then
+                        MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
+                        Exit Do
+                    Else
+                        sbf(bstack.IndexSub).sbgroup = s$
+                    End If
+                    HERE$ = ss$
+                Else
+                    If Not MyFunction(0, bstack, s$, 1) Then
+                        MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
+                        Exit Do
+                    Else
+                        sbf(bstack.IndexSub).sbgroup = s$
+                    End If
+                End If
+                MyRead = True
+            End If
+        Else
+            i = CopyArrayItemsNoFormated(bstack, s$)
+            If i > 0 Then
+                If Not FastSymbol(rest$, ")") Then MyEr "Syntax error, use )", "Συντακτικό λάθος βάλε )": Exit Do
+                If f Then   '' look about f - work for refer but no refer can't be done...why???
+                    If Not ReboundArr(bstack, what$, i) Then GoTo arrconthere
+                Else
+arrconthere:
+                what$ = myUcase(what$)
+                If ohere$ = "" Then
+                    If varhash.ExistKey(what$) Then
+                        MyEr "Try other array name", "Δοκίμασε άλλο όνομα πίνακα"
+                        Exit Do
+                    Else
+                        varhash.ItemCreator what$, i
+                    End If
+                Else
+                    If varhash.ExistKey(ohere$ & "." & what$) Then
+                        MyEr "Try other array name", "Δοκίμασε άλλο όνομα πίνακα"
+                        Exit Do
+                    Else
+                        varhash.ItemCreator ohere$ & "." & what$, i, True
+                    End If
+                End If
+            End If
+            MyRead = True
+        End If
     End If
 End If
 Case Else
-
-Exit Do
+    Exit Do
 End Select
 Else
 x1 = Abs(IsLabel(bstack, rest$, what$))
 what$ = myUcase(what$)
 Select Case x1
 Case 1
-If bs.IsObjectRef(myobject) Then
-   MyRead = True
-   If flag Then
-p = 0
-GlobalVar what$, p
-End If
-If GetVar(bstack, what$, i, , , flag) Then
-            '' we can throw a pointer
+    If bs.IsObjectRef(myobject) Then
+        MyRead = True
+        If flag Then
+            p = 0
+            GlobalVar what$, p
+        End If
+        If GetVar(bstack, what$, i, , , flag) Then
             If Typename$(var(i)) = "Group" Then
             '' we cannot place a group over another group
             '' once we read it we make it..in that place
-
-            UnFloatGroupReWriteVars bstack, what$, i, myobject
-            ''BadGroupHandle
-
+                UnFloatGroupReWriteVars bstack, what$, i, myobject
             Else
-          Set var(i) = myobject
-          End If
-          
-   Else
-           i = GlobalVar(what$, 0)
-            ''GetVar bstack, what$, i
-    
-            
-            
-            
-            
-             If Typename$(myobject) = "Group" Then
-                
-        UnFloatGroup bstack, what$, i, myobject
-        
-        ElseIf Typename$(myobject) = "mEvent" Then
-    
-       
-        Set var(i) = myobject
-        
-        ElseIf Typename$(myobject) = "lambda" Then
-       
-        Set var(i) = myobject
-                   If ohere$ = "" Then
-                        GlobalSub what$ + "()", "CALL EXTERN " & CStr(i)
-                    Else
-                        GlobalSub ohere$ & "." & bstack.GroupName & what$ + "()", "CALL EXTERN " & CStr(i)
-                End If
-  ElseIf Typename$(myobject) = "mHandler" Then
-  Set var(i) = myobject
-        
-    End If
-            Set myobject = Nothing
-    End If
-    
-ElseIf bs.IsNumber(p) Then
-MyRead = True
-If flag2 Then
-GlobalVar what$, p
-ElseIf GetVar(bstack, what$, i, , , flag) Then
-            If VarType(var(i)) <> vbLong Then
-            var(i) = p
-            Else
-             var(i) = CLng(p)
+                Set var(i) = myobject
             End If
-   ElseIf i = -1 Then
-             bstack.SetVar what$, p
-   Else
-            GlobalVar what$, p
-            
-    End If
-    Else
-     MissStackNumber
-MyRead = False
-    Exit Do
-End If
-Case 3
-If bs.IsString(s$) Then
-    MyRead = True
-    If flag2 Then
-    GlobalVar what$, s$
-    ElseIf GetVar(bstack, what$, i, , , flag) Then
-    CheckVar var(i), s$
-    ElseIf i = -1 Then
-    bstack.SetVar what$, s$
-    Else
-    GlobalVar what$, s$
-    End If
-ElseIf bs.IsObjectRef(myobject) Then
-If Typename$(myobject) = "lambda" Then
-       If flag2 Then
-    GlobalVar what$, s$
-    ElseIf GetVar(bstack, what$, i, , , flag) Then
-    CheckVar var(i), s$
-    Else
-    GlobalVar what$, s$
-    End If
-        Set var(i) = myobject
-                   If ohere$ = "" Then
-                        GlobalSub what$ + "()", "CALL EXTERN " & CStr(i)
-                    Else
-                        GlobalSub ohere$ & "." & bstack.GroupName & what$ + "()", "CALL EXTERN " & CStr(i)
+        Else
+            i = GlobalVar(what$, 0)
+            If Typename$(myobject) = "Group" Then
+                UnFloatGroup bstack, what$, i, myobject
+            ElseIf Typename$(myobject) = "mEvent" Then
+                Set var(i) = myobject
+            ElseIf Typename$(myobject) = "lambda" Then
+                Set var(i) = myobject
+                If ohere$ = "" Then
+                    GlobalSub what$ + "()", "CALL EXTERN " & CStr(i)
+                Else
+                    GlobalSub ohere$ & "." & bstack.GroupName & what$ + "()", "CALL EXTERN " & CStr(i)
                 End If
-                MyRead = True
-        ' make function
-Else
-MyRead = False
-End If
-Else
-MissStackStr
-MyRead = False
-
-    Exit Function
-End If
-Case 4
-
-If bs.IsNumber(p) Then
-
-    MyRead = True
-    If flag2 Then
-GlobalVar what$, Int(p)
-ElseIf GetVar(bstack, what$, i, , , flag) Then
-    var(i) = Int(p)
-    
-   ElseIf i = -1 Then
-             bstack.SetVar what$, p
-     Else
-    GlobalVar what$, Int(p)
+            ElseIf Typename$(myobject) = "mHandler" Then
+                Set var(i) = myobject
+            End If
+            Set myobject = Nothing
+        End If
+    ElseIf bs.IsNumber(p) Then
+        MyRead = True
+        If flag2 Then
+            GlobalVar what$, p
+        ElseIf GetVar(bstack, what$, i, , , flag) Then
+                If VarType(var(i)) <> vbLong Then
+                    var(i) = p
+                Else
+                    var(i) = CLng(p)
+                End If
+        ElseIf i = -1 Then
+                bstack.SetVar what$, p
+        Else
+                GlobalVar what$, p
+        End If
+    Else
+        MissStackNumber
+        MyRead = False
+        Exit Do
     End If
-Else
-     MissStackNumber
-MyRead = False
-    Exit Do
-End If
+Case 3
+    If bs.IsString(s$) Then
+        MyRead = True
+        If flag2 Then
+            s$ = ""
+            GlobalVar what$, s$
+        ElseIf GetVar(bstack, what$, i, , , flag) Then
+            CheckVar var(i), s$
+        ElseIf i = -1 Then
+            bstack.SetVar what$, s$
+        Else
+            GlobalVar what$, s$
+        End If
+    ElseIf bs.IsObjectRef(myobject) Then
+        If Typename$(myobject) = "lambda" Then
+            If flag2 Then
+                GlobalVar what$, s$
+            ElseIf GetVar(bstack, what$, i, , , flag) Then
+                CheckVar var(i), s$
+            Else
+                GlobalVar what$, s$
+            End If
+            Set var(i) = myobject
+            If ohere$ = "" Then
+                GlobalSub what$ + "()", "CALL EXTERN " & CStr(i)
+            Else
+                GlobalSub ohere$ & "." & bstack.GroupName & what$ + "()", "CALL EXTERN " & CStr(i)
+            End If
+            MyRead = True
+        Else
+            MyRead = False
+        End If
+    Else
+        MissStackStr
+        MyRead = False
+        Exit Do
+    End If
+Case 4
+    If bs.IsNumber(p) Then
+        MyRead = True
+        If flag2 Then
+            GlobalVar what$, Int(p)
+        ElseIf GetVar(bstack, what$, i, , , flag) Then
+            var(i) = Int(p)
+        ElseIf i = -1 Then
+            bstack.SetVar what$, p
+        Else
+            GlobalVar what$, Int(p)
+        End If
+    Else
+        MissStackNumber
+        MyRead = False
+        Exit Do
+    End If
 Case 5
     MyRead = False
     If FastSymbol(rest$, ")") Then
        MyRead = globalArrByPointer(bs, bstack, what$, flag2): If Not MyRead Then SyntaxError: Exit Do
-       
-       
     Else
         If neoGetArray(bstack, what$, pppp) And Not flag2 Then
             If Not NeoGetArrayItem(pppp, bs, what$, it, rest$) Then Exit Do
@@ -30563,11 +30609,12 @@ Case 5
                 GoTo loopcont123
             End If
         End If
-       If bs.IsObjectRef(myobject) Then
-                    If Typename$(myobject) = "Group" Then
-                             If myobject.IamFloatGroup Then
-                                          Set pppp.item(it) = myobject
-                                          Set myobject = Nothing
+        If bs.IsObjectRef(myobject) Then
+                If Typename$(myobject) = "Group" Then
+                         If myobject.IamFloatGroup Then
+                                    Set pppp.item(it) = myobject
+                                    Set myobject = Nothing
+                                    MyRead = True
                              Else
                                           BadGroupHandle
                                           MyRead = False
@@ -30577,16 +30624,15 @@ Case 5
                              
                              GoTo loopcont123
                    ElseIf Typename$(myobject) = "lambda" Then
-       
-        Set pppp.item(it) = myobject
-   Set myobject = Nothing
-            MyRead = True
-       GoTo loopcont123
+                            Set pppp.item(it) = myobject
+                            Set myobject = Nothing
+                            MyRead = True
+                            GoTo loopcont123
                     End If
         ElseIf Not bs.IsNumber(p) Then
-                        MissStackNumber
-                        MyRead = False
-                        Exit Do
+            MissStackNumber
+            MyRead = False
+            Exit Do
         End If
         MyRead = True
         pppp.item(it) = p
@@ -30602,33 +30648,27 @@ Case 5
             Exit Do
         End If
         If Not bs.IsString(s$) Then
-        If bs.IsObjectRef(myobject) Then
-          If Typename$(myobject) = "lambda" Then
-       
-        Set pppp.item(it) = myobject
-   Set myobject = Nothing
+            If bs.IsObjectRef(myobject) Then
+                If Typename$(myobject) = "lambda" Then
+                    Set pppp.item(it) = myobject
+                    Set myobject = Nothing
+                Else
+                    MissStackStr
+                    Exit Do
+                End If
+            Else
+                MissStackStr
+                Exit Do
+            End If
         Else
-        MissStackStr
-         Exit Do
-        
+            If Not IsObject(pppp.item(it)) Then
+                pppp.item(it) = s$
+            Else
+                Set pppp.item(it) = New Document
+                CheckVar pppp.item(it), s$
+            End If
         End If
-        Else
-        MissStackStr
-         Exit Do
-        
-                    End If
-                    Else
-                    
-                 If Not IsObject(pppp.item(it)) Then
-            pppp.item(it) = s$
-        Else
-            Set pppp.item(it) = New Document
-            CheckVar pppp.item(it), s$
-
-        End If
-         End If
         MyRead = True
-      
     End If
 Case 7
     MyRead = False
@@ -34211,16 +34251,34 @@ If Not IsExp(basestack, rest$, x) Then x = 1
     End If
 
 End Function
-Function ProcSort(basestack As basetask, rest$) As Boolean
+Function ProcSort(basestack As basetask, rest$, lang As Long) As Boolean
 Dim i As Long, s$, sx As Double, sy As Double, pppp As mArray
-Dim x1 As Long, y1 As Long, p As Double, ML As Long
+Dim x1 As Long, y1 As Long, p As Double, ML As Long, desc As Boolean
 ProcSort = False
+desc = IsLabelSymbolNew(rest$, "ΦΘΙΝΟΥΣΑ", "DESCENDING", lang)
     y1 = Abs(IsLabel(basestack, rest$, s$))
     If y1 = 1 Then
          If GetVar(basestack, s$, i) Then
                 If Typename(var(i)) = "mHandler" Then
                             If var(i).T1 = 1 Then
-                            var(i).ObjRef.Sort
+                            If FastSymbol(rest$, ",") Then
+                                If IsExp(basestack, rest$, p) Then
+                                    If p <> 0 Then
+                                        var(i).ObjRef.Sort
+                                    Else
+                                        var(i).ObjRef.SortDes
+                                    End If
+                                Else
+                                    MissPar
+                                    Exit Function
+                                End If
+                            Else
+                                If desc Then
+                                 var(i).ObjRef.SortDes
+                                Else
+                                    var(i).ObjRef.Sort
+                                End If
+                            End If
                             ProcSort = True
                             Else
                             MyEr "Expected Inventory", "Περίμενα Κατάσταση"
@@ -34282,7 +34340,11 @@ sort3:
         If y1 = 3 Then
             If GetVar(basestack, s$, i) Then
                 If Typename(var(i)) = doc Then
+                            If desc Then
+                            var(i).SortDocDes ML, CLng(sx), x1
+                            Else
                             var(i).SortDoc ML, CLng(sx), x1
+                            End If
                             ProcSort = True '*******************************************
                 Else
                    MissingDoc
@@ -34292,7 +34354,11 @@ sort3:
             End If
         ElseIf y1 = 6 Then
                     If Typename(pppp.item(i)) = doc Then
+                                If desc Then
+                                pppp.item(i).SortDocDes ML, CLng(sx), x1
+                                Else
                                 pppp.item(i).SortDoc ML, CLng(sx), x1
+                                End If
                                 ProcSort = True  '*****************************************
                       Else
                                 MissingDoc
