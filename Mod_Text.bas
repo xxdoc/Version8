@@ -1,7 +1,7 @@
 Attribute VB_Name = "Module1"
 Option Explicit
 Private Declare Function ObjSetAddRef Lib "msvbvm60.dll" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
-Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Long
+Private Declare Function IsBadCodePtr Lib "KERNEL32" (ByVal lpfn As Long) As Long
 Private Declare Function CallWindowProc _
  Lib "user32.dll" Alias "CallWindowProcW" ( _
  ByVal lpPrevWndFunc As Long, _
@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 14
+Global Const Revision = 15
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -69,10 +69,10 @@ Private Const LOCALE_SLANGUAGE& = &H2 '  localized name of language
 Public shortlang As Boolean
 Public LEVCOLMENU As Long
  Declare Function ExpandEnvironmentStrings _
-   Lib "kernel32" Alias "ExpandEnvironmentStringsW" _
+   Lib "KERNEL32" Alias "ExpandEnvironmentStringsW" _
    (ByVal lpSrc As Long, ByVal lpDst As Long, _
    ByVal nsize As Long) As Long
-Private Declare Function GetTempFileNameW Lib "kernel32" _
+Private Declare Function GetTempFileNameW Lib "KERNEL32" _
     (ByVal lpszPath As Long, ByVal lpPrefixString As Long, _
      ByVal wUnique As Long, ByVal lpTempFileName As Long) _
      As Long
@@ -84,7 +84,7 @@ Public sRec As Object
 Public defFontname As String
 Private pnum As Long
 Public my_system As Enum_OperatingPlatform
-Public Declare Function Beeper Lib "kernel32" Alias "Beep" _
+Public Declare Function Beeper Lib "KERNEL32" Alias "Beep" _
   (ByVal dwFreq As Long, ByVal dwDuration As Long) As Long
 Private oprinter As New cDIBSection
 Const MAX_FILENAME_LEN As Long = 260 * 2 - 1
@@ -92,7 +92,7 @@ Public beeperBEAT As Long
 Public funcdeep As Double
 Private deep As Double
 Private mys As String
-Private Declare Function WinExec Lib "kernel32" (ByVal lpCmdLine As String, ByVal nCmdShow As Long) As Long
+Private Declare Function WinExec Lib "KERNEL32" (ByVal lpCmdLine As String, ByVal nCmdShow As Long) As Long
 Public needset As Boolean
 Public cnt As Boolean
 Public exWnd As Long
@@ -165,10 +165,10 @@ Const GFSR_USERRESOURCES = 2
 Declare Function MessageBeep Lib "user32" (ByVal wType As Long) As Long
 
 
-Declare Function SetLocaleInfo Lib "kernel32" Alias "SetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String) As Long
-Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, lpLCData As String, ByVal cchData As Long) As Long
-Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathW" (ByVal nBufferLength As Long, ByVal lpBuffer As Long) As Long
-Public Declare Function GetWindowsDirectory Lib "kernel32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nsize As Long) As Long
+Declare Function SetLocaleInfo Lib "KERNEL32" Alias "SetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String) As Long
+Declare Function GetLocaleInfo Lib "KERNEL32" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, lpLCData As String, ByVal cchData As Long) As Long
+Declare Function GetTempPath Lib "KERNEL32" Alias "GetTempPathW" (ByVal nBufferLength As Long, ByVal lpBuffer As Long) As Long
+Public Declare Function GetWindowsDirectory Lib "KERNEL32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nsize As Long) As Long
 
 
 Private Const LOCALE_USER_DEFAULT = 0
@@ -209,7 +209,7 @@ End Type
 Private Declare Function SHGetSpecialFolderLocation Lib "shell32.dll" (ByVal hWndOwner As Long, ByVal nFolder As Long, pidl As ITEMIDLIST) As Long
 Private Declare Function SHGetPathFromIDList Lib "shell32.dll" Alias "SHGetPathFromIDListA" (ByVal pidl As Long, ByVal pszPath As String) As Long
 
-Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Public Declare Sub Sleep Lib "KERNEL32" (ByVal dwMilliseconds As Long)
 
 Public Declare Function SetTimer Lib "user32" _
        (ByVal hWnd As Long, ByVal nIDEvent As Long, _
@@ -235,15 +235,15 @@ Public beat As Long
 Public baseNote As Long
 Public prof As New clsProfiler
 Public grandscr As Collection
-Public Declare Function GetACP Lib "kernel32" () As Long  ' 1253 in my computer
+Public Declare Function GetACP Lib "KERNEL32" () As Long  ' 1253 in my computer
 
-Public Declare Function GetLocaleInfoW Lib "kernel32" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
+Public Declare Function GetLocaleInfoW Lib "KERNEL32" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
 'Valid dwCmpFlags
 Private Declare Function LCMapStringW Lib "kernel32.dll" (ByVal Locale As Long, ByVal dwMapFlags As Long, ByVal lpSrcStr As Long, ByVal cchSrc As Long, Optional ByVal lpDestStr As Long, Optional ByVal cchDest As Long) As Long
-Private Declare Function SysReAllocStringLen Lib "oleaut32.dll" (ByVal pBSTR As Long, Optional ByVal pszStrPtr As Long, Optional ByVal Length As Long) As Long
+Private Declare Function SysReAllocStringLen Lib "OleAut32.dll" (ByVal pBSTR As Long, Optional ByVal pszStrPtr As Long, Optional ByVal Length As Long) As Long
 
 Function ChangeValues(bstack As basetask, rest$) As Boolean
 Dim aa As mHandler, bb As FastCollection, ah As String, p As Double, s$
@@ -17942,7 +17942,13 @@ If IsLabelSymbolNew(rest$, "сто", "TO", lang) Then
                                         If s$ = "" Then
                                         var(i) = Left$(var(i), x - 1) & Mid$(var(i), x + y)
                                         Else
+                                        If Len(s$) = y Then
                                         Mid$(var(i), x, y) = s$
+                                        ElseIf Len(s$) < y Then
+                                        Mid$(var(i), x, y) = s$ + Space$(y - Len(s$))
+                                        Else
+                                        var(i) = Left$(var(i), x - 1) & s$ & Mid$(var(i), x + y)
+                                        End If
                                         End If
                                     End If
                             End If
@@ -17990,7 +17996,14 @@ If IsLabelSymbolNew(rest$, "сто", "TO", lang) Then
                                         pppp.item(it) = Left$(pppp.item(it), x - 1) & Mid$(pppp.item(it), x + y)
                                         Else
                                       vvl = pppp.item(it)
+                                       If Len(vvl) = y Then
+                                      
                                         Mid$(vvl, x, y) = s$
+                                        ElseIf Len(s$) < y Then
+                                            Mid$(vvl, x, y) = s$ + Space$(y - Len(s$))
+                                        Else
+                                        vvl = Left$(vvl, x - 1) & s$ & Mid$(vvl, x + y)
+                                        End If
                                         pppp.item(it) = vvl
                                         End If
                 End If
@@ -28811,7 +28824,6 @@ If TaskMaster.PlayMusic Then
                         TaskMaster.TimerTick
                         TaskMaster.OnlyMusic = False
 End If
-
 CallWindowProc nSubAddress, VarPtr(basestack), VarPtr(rest$), VarPtr(lang), VarPtr(resp)
 CallByPtr = resp
 End Function
@@ -30190,6 +30202,13 @@ If IsExp(bstack, rest$, p) Then
         ElseIf IsLabelSymbolNew(rest$, "аккане", "SWAP", lang) Then       ' SWAP
             If IsExp(bstack, rest$, x) Then
                 SpriteControl CLng(p), CLng(x)
+                Dim bb As basket, bl As Long, br As Long
+                bl = FindSpriteByTag(CLng(p))
+                br = FindSpriteByTag(CLng(x))
+                bb = players(bl)
+                players(bl) = players(br)
+                players(br) = bb
+                
             Else
                 ProcPlayer = False
             End If
@@ -30900,7 +30919,7 @@ x1 = Abs(IsLabel(bstack, rest$, what$, , True))
 
 w$ = myUcase$(what$)
 gohere:
-    If x1 = 1 Then   '' Or X1 = 3 Then  '' not yet for string
+    If x1 = 1 Or x1 = 3 Then
         If x1 = 1 Then
             If GetVar(bstack, w$, i) Then
             ss$ = ""
@@ -30944,6 +30963,7 @@ goNothing:
                End If
                      
             End If
+   
          End If
          ss$ = ""
         If IsLabelSymbolNewExp(rest$, "апо", "LIB", lang, ss$) Then
@@ -30958,6 +30978,7 @@ goNothing:
                 If Not IsExp(bstack, rest$, p) Then
                 BadObjectDecl
                 MyDeclare = False
+                Set photo = Nothing
                 Exit Function
                 Else
             photo.RetType = CLng(p)
@@ -30969,18 +30990,25 @@ goNothing:
                 Set var(i) = photo
                 
                 s$ = w$
-                
-                If HERE$ = "" Or y1 Then
-                    GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
+                If x1 = 3 Then
+                    If HERE$ = "" Or y1 Then
+                        GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = LETTER$"
+                    Else
+                        GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = LETTER$"
+                    End If
                 Else
-                    GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
+                    If HERE$ = "" Or y1 Then
+                        GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = STRING"
+                    Else
+                        GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
+                    End If
                 End If
-
-               
+               Set photo = Nothing
                 Exit Function
             Else
                 BadObjectDecl
                  MyDeclare = False
+                 Set photo = Nothing
                 Exit Function
             End If
         ElseIf IsLabelSymbolNewExp(rest$, "ле", "USE", lang, ss$) Then
@@ -31150,7 +31178,8 @@ End If
     
     End If
      MyDeclare = True
-    Exit Function
+     Set photo = Nothing
+    
 
 End Function
 Function MyWith(bstack As basetask, rest$, lang As Long) As Boolean
