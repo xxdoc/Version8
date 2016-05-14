@@ -40,7 +40,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 15
+Global Const Revision = 16
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -3044,6 +3044,13 @@ MsgBox "Language can't go Up"
 End
 End If
 End If
+' for any reason
+    Dim tmpForm As Form
+    For Each tmpForm In Forms
+            Unload tmpForm
+            Set tmpForm = Nothing
+    Next
+    End
 End Sub
 
 
@@ -30425,7 +30432,21 @@ Else
 Case 3, 4
     If bs.IsString(s$) Then
         If GetGlobalVar(s$, i) Then
-            If GetVar(bstack, what$, it, , , flag) And Not f Then '' GetlocalVar(what$, it)
+            If flag2 Then
+            If Not f Then
+                If Not flag Then
+                    If ohere$ <> "" Then
+       
+                GlobalVar what$, i, True
+               MyRead = True
+       
+                    Else
+                        NoSecReF
+                        Exit Do
+                    End If
+                End If
+            End If
+        ElseIf GetVar(bstack, what$, it, , , flag) And Not f Then '' GetlocalVar(what$, it)
                 NoSecReF
                 Exit Do
             Else
@@ -30484,15 +30505,24 @@ arrconthere:
                 what$ = myUcase(what$)
                 If ohere$ = "" Then
                     If varhash.ExistKey(what$) Then
+                      If flag2 And Not f And Not flag Then
+                           varhash.ItemCreator what$, i
+                           
+                    Else
                         MyEr "Try other array name", "Δοκίμασε άλλο όνομα πίνακα"
                         Exit Do
+                        End If
                     Else
                         varhash.ItemCreator what$, i
                     End If
                 Else
                     If varhash.ExistKey(ohere$ & "." & what$) Then
+                    If flag2 And Not f And Not flag Then
+                           varhash.ItemCreator ohere$ & "." & what$, i, True
+                    Else
                         MyEr "Try other array name", "Δοκίμασε άλλο όνομα πίνακα"
                         Exit Do
+                    End If
                     Else
                         varhash.ItemCreator ohere$ & "." & what$, i, True
                     End If

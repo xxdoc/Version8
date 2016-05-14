@@ -412,22 +412,14 @@ gList2.FloatLimitLeft = ScrX() - 450
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
- UNhookMe
-' If mModalId Then
-'If Visible Then Hide
- 'Cancel = True
-' Exit Sub
-' End If
+UNhookMe
 Set myEvent = Nothing
-'If Not IamPopUp Then ModalId = 0
 
 If prive <> 0 Then
 players(prive).used = False
 players(prive).MAXXGRAPH = 0  '' as a flag
 prive = 0
 End If
-'ModalId = 0
-
 Dim w As Object
 If GuiControls.Count > 0 Then
 For Each w In GuiControls
