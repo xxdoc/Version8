@@ -49,7 +49,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 17
+Global Const Revision = 18
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -652,7 +652,7 @@ AGAIN0:
           End If
             If Not FastSymbol(rest$, ",") Then Exit Do
         ElseIf IsExp(bstack, rest$, p) Then
-again1:
+AGAIN1:
         pl2 = InStr(pl2, final$, pat1$)
         If pl2 > 0 Then
         pl1 = InStr(pl2, final$, "}")
@@ -699,7 +699,7 @@ again1:
             End If
       End If
             final$ = Replace$(final$, Mid$(final$, pl2, pl1 - pl2 + 1), pd$)
-            GoTo again1
+            GoTo AGAIN1
         Else
         If NoUseDec Then
             final$ = Replace$(final$, pat$, CStr(p))
@@ -6027,14 +6027,15 @@ firstpram:
                                                            If Not IsExp(bstack, n$, r) Then
                                                                     GoTo errortext1
                                                            ElseIf r >= 0 Then
-                                                                    w2 = .GetPtr(p) + .structref.Value + Int(r) * PP
+                                                           
+                                                                    w2 = cUlng(uintnew(.GetPtr(p)) + .structref.Value + Int(r) * PP)
                                                                     GoTo absolute
                                                            Else
                                                                     MyEr "negative index", "·ÒÌÁÙÈÍ¸Ú ‰ÂﬂÍÙÁ"
                                                                    GoTo errortext1
                                                            End If
                                                        Else
-                                                           w2 = .GetPtr(p) + .structref.Value
+                                                           w2 = cUlng(uintnew(.GetPtr(p)) + .structref.Value)
                                                            GoTo absolute
                                                        End If
                                                  Else
@@ -8336,7 +8337,7 @@ Function ProcLambda(bstack As basetask, rest$) As Object
 Dim body As New lambda, k As Long, n$, dummy As Variant, er As Boolean, pos1 As Long, p As Double, s$
 Dim pppp As mArray, pppp2 As mArray
 ' need fixed param...with &
-again1:
+AGAIN1:
 If Not FastSymbol(rest$, "->", , 2) Then
 ' put here description for error
 If er Then Exit Function
@@ -8451,7 +8452,7 @@ Else
     End If
 Loop Until Not FastSymbol(rest$, ",")
 er = True
-GoTo again1
+GoTo AGAIN1
 ElseIf FastSymbol(rest$, "{") Then
 ' get block
 body.code = block(rest$)
@@ -10746,11 +10747,11 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
                             If .ObjRef.UseStruct Then
                                 If .ObjRef.structref.Find(myUcase(s$, True)) Then
                                 PP = .ObjRef.structref.sValue
-                                    w2 = .ObjRef.GetPtr(p) + .ObjRef.structref.Value
+                                    w2 = cUlng(uintnew(.ObjRef.GetPtr(p)) + .ObjRef.structref.Value)
                                     If FastSymbol(A$, "!") Then
                                      If IsExp(bstackstr, A$, p) Then
-                                       w2 = w2 + Int(p) * PP
-                                     
+                                      ' w2 = w2 + Int(p) * PP
+                                     w2 = cUlng(uintnew(w2) + Int(p) * PP)
                                      End If
                                     End If
                                 Else
@@ -14023,7 +14024,7 @@ MyDoEvents1 di
 End If
 
 End If
-again1:
+AGAIN1:
 LLL = Len(b$)
 If MaybeIsSymbol(b$, "=") Then
 b$ = Mid$(Trim$(b$), 2)
@@ -14105,7 +14106,7 @@ b$ = Mid$(Trim$(b$), 2)
 If MaybeIsSymbol(b$, "}") Then
 b$ = Mid$(Trim$(b$), 2)
 sss = Len(b$)
- GoTo again1
+ GoTo AGAIN1
 ''GoTo loopcontinue
 End If
 If executeblock(Execute, bstack, b$, Once, kolpo) Then Exit Function
@@ -14128,7 +14129,7 @@ If MaybeIsSymbol(b$, "\'") Then
 SetNextLine b$
  sss = Len(b$)
 lbl = True
- GoTo again1
+ GoTo AGAIN1
 End If
 jumpforCR:
 
@@ -14202,12 +14203,12 @@ If lbl And IsOperator(b$, ":") Then
 sw$ = GetNextLine(b$)
 If Trim$(sw$) <> "" Then
 If MaybeIsSymbol(sw$, "\'") Then
-LLL = Len(b$): sss = LLL: GoTo again1
+LLL = Len(b$): sss = LLL: GoTo AGAIN1
 Else
 b$ = ": " + sw$ + vbCrLf + b$
 End If
 Else
-LLL = Len(b$): sss = LLL: GoTo again1
+LLL = Len(b$): sss = LLL: GoTo AGAIN1
 End If
 
 End If
@@ -14905,7 +14906,7 @@ If x1 = 1 Then
                                                           y1 = 0
                                                           v = -1
                                                         ''  Set pppp = Nothing'     '''why
-                                                          GoTo again1
+                                                          GoTo AGAIN1
                                              ElseIf Not lang Then ss$ = "≈–œÃ≈Õœ " + sbb$
                                                     If search2KIND(b$, ss$, x1, True) Then
                                                           b$ = Mid$(b$, x1 + Len(w$))
@@ -14914,7 +14915,7 @@ If x1 = 1 Then
                                                           y1 = 0
                                                           v = -1
                                                         ''  Set pppp = Nothing'     '''why
-                                                          GoTo again1
+                                                          GoTo AGAIN1
                                                     Else
                                                             Execute = 0
                                                             MyEr "Can't find " + w$, "ƒÂÌ ÏÔÒ˛ Ì· ‚Ò˘ Ùo " + w$
@@ -14978,7 +14979,7 @@ Do
             y1 = 0
             v = -1
             '' Set pppp = Nothing
-            GoTo again1
+            GoTo AGAIN1
             ElseIf Not lang Then ss$ = "≈–ºÃ≈Õœ " + sbb$
             If search2KIND(b$, ss$, x1, True) Then
             b$ = Mid$(b$, x1 + Len(w$))
@@ -14988,7 +14989,7 @@ Do
             y1 = 0
             v = -1
             '' Set pppp = Nothing
-            GoTo again1
+            GoTo AGAIN1
             Else
             Execute = 0
             MyEr "Can't find " + w$, "ƒÂÌ ÏÔÒ˛ Ì· ‚Ò˘ Ùo " + w$
@@ -15048,7 +15049,7 @@ Do
             y1 = 0
             v = -1
             '' Set pppp = Nothing
-            GoTo again1
+            GoTo AGAIN1
             ElseIf Not lang Then ss$ = "≈–ºÃ≈Õœ " + sbb$
                         If search2KIND(b$, ss$, x1, True) Then
             b$ = Mid$(b$, x1 + Len(w$))
@@ -15057,7 +15058,7 @@ Do
             y1 = 0
             v = -1
             '' Set pppp = Nothing
-            GoTo again1
+            GoTo AGAIN1
             Else
             Execute = 0
             MyEr "Can't find " + w$, "ƒÂÌ ÏÔÒ˛ Ì· ‚Ò˘ Ùo " + w$
@@ -15193,11 +15194,11 @@ ContInline:
                 If GetSub(myUcase(sw$, True), nd&) Then
                                 b$ = vbCrLf + sbf(nd&).sb & b$
                    sss = Len(b$)
-                   GoTo again1
+                   GoTo AGAIN1
                     ElseIf GetSub(HERE$ + sw$, nd&) Then
                                 b$ = vbCrLf + sbf(nd&).sb & b$
                    sss = Len(b$)
-                        GoTo again1
+                        GoTo AGAIN1
                     End If
             Else
             GoTo errstat1
@@ -15207,7 +15208,7 @@ ContInline:
         b$ = vbCrLf + ss$ & b$
            sss = Len(b$)
                 
-                GoTo again1
+                GoTo AGAIN1
         End If
         End If
         Case "UPDATE", "≈–… ¡…—œ"
@@ -15221,7 +15222,7 @@ contUpdate:
              Execute = 0
              Exit Function
                 End If
-                GoTo again1
+                GoTo AGAIN1
         Case "AFTER", "Ã≈‘¡"
 contAfter:
                  If linebyline Then
@@ -15404,11 +15405,11 @@ contWhile:
            If FastSymbol(b$, "}") Then
                 b$ = NLtrim(b$)
                  If b$ = "" Then Exit Function
-                 GoTo again1
+                 GoTo AGAIN1
                  Else
                  b$ = NLtrim$(b$)
                  If b$ = "" Then Exit Function
-                 GoTo again1
+                 GoTo AGAIN1
                  End If
                  Else
                  Exit Do
@@ -15769,7 +15770,7 @@ contif:
                     
                     IFCTRL = 2 ' NONEED ANYTHING BUT NOT ERROR FOR IF.ELSE AND ELSE
                     If Once Then
-                    sss = Len(b$): GoTo again1
+                    sss = Len(b$): GoTo AGAIN1
            
                     End If
               End If
@@ -16453,7 +16454,7 @@ contNegLocal:
                     End If
                     NewStat = True
                     sss = Len(b$)
-                GoTo again1
+                GoTo AGAIN1
                 
                 Case "GLOBAL", "√≈Õ… œ", "√≈Õ… «", "√≈Õ… ≈”"
 contNegGlobal:
@@ -16474,7 +16475,7 @@ contNegGlobal:
                 VarStat = True
                 sss = Len(b$)
                 
-                GoTo again1
+                GoTo AGAIN1
                 
 
         Case Else
@@ -18769,7 +18770,12 @@ NewTable basestack, rest$
 ' Õ≈œ” –…Õ¡ ¡” ”‘«Õ ¬¡”«
 Exit Function
 Case "≈ ‘≈À≈”«", "EXECUTE"   'ok
-CommExecAndTimeOut basestack, rest$
+ If IsLabelSymbolNew(rest$, " Ÿƒ… ¡", "CODE", lang) Then
+Identifier = ExecCode(basestack, rest$)
+ Else
+    CommExecAndTimeOut basestack, rest$
+    Identifier = True
+End If
 Exit Function
 ' Õ≈¡ À…”‘¡
 Case "¡Õ¡ ‘«”«", "RETRIEVE"  'ok
@@ -23753,12 +23759,12 @@ If hardlink Then
 
 Set oo = v(vIndex)
 If TypeOf oo Is mHandler Then
-Set oo = oo.ObjRef
-If oo.T1 <> 1 Then
-GoTo there
+    Set oo = oo.ObjRef
+    If oo.T1 <> 1 Then
+        GoTo there
+    End If
 End If
-var(newref).ConstructObj oo, l
-End If
+    var(newref).ConstructObj oo, l
 Set oo = Nothing
 Else
 var(newref).Construct vIndex, l, indirect   ' this is the link vindex is an index to var()
@@ -30017,8 +30023,13 @@ getrow ObjFromPtr(basestackLP), rest$, , , lang
 resp = True
 End Sub
 Sub NeoExecute(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+If IsLabelSymbolNew(rest$, " Ÿƒ… ¡", "CODE", lang) Then
+ resp = ExecCode(ObjFromPtr(basestackLP), rest$)
+ Else
 CommExecAndTimeOut ObjFromPtr(basestackLP), rest$
 resp = True
+End If
+
 End Sub
 
 Sub NeoTable(basestackLP As Long, rest$, lang As Long, resp As Boolean)
@@ -30112,7 +30123,7 @@ Else
 End If
 End Function
 Function makestruct(basestack As basetask, rest$, lang As Long) As Boolean
-Dim what$, offset As Long, offset1 As Long, mylist As FastCollection, i As Long, s$, b$, p As Double, w2 As Long
+Dim what$, offset As Long, offset1 As Long, offsetlist As FastCollection, i As Long, s$, b$, p As Double, w2 As Long
 
 ' struct is an inventory of offsets
 If Abs(IsLabel(basestack, rest$, what$)) = 1 Then  ' WE HAVE A NAME
@@ -30125,20 +30136,81 @@ If basestack.priveflag Then what$ = ChrW(&HFFBF) + what$
                         i = GlobalVar(basestack.GroupName & what$, s$)
                         MakeitObjectInventory var(i)
                     End If
+Set offsetlist = var(i).ObjRef
 ' so now we have the inventory
 If FastSymbol(rest$, "{") Then
+    If StructPage(basestack, rest$, lang, 0, offset, offsetlist, "") Then
+    offsetlist.StructLen = offset
+    var(i).ReadOnly = True
+    makestruct = True
+    End If
+End If
+Set offsetlist = Nothing
+End If
+End Function
+Function StructPage(basestack As basetask, rest$, lang As Long, ByVal offset, ByRef offset2, offsetlist As FastCollection, ByVal lasthead$) As Boolean
+Dim what$, offset1 As Long, i As Long, s$, b$, p As Double, w2 As Long, maxoffset As Long, probeoffset As Long
+
     b$ = NLtrim$(block(rest$))
-    makestruct = FastSymbol(rest$, "}")
-    
-    Set mylist = var(i).ObjRef
+   If Not FastSymbol(rest$, "}") Then Exit Function
+again:
     If FastSymbol(b$, vbCrLf, , 2) Then
     Do
         While FastSymbol(b$, vbCrLf, , 2)
         Wend
     Loop Until Not NocharsInLine(b$) Or b$ = ""
-    While Abs(IsLabelOnly(b$, what$)) = 1
+AGAIN1:
+    If MaybeIsSymbol(b$, "\'") Then
+    
+    SetNextLineNL b$
+    Do
+        While FastSymbol(b$, vbCrLf, , 2)
+        Wend
+    Loop Until Not NocharsInLine(b$) Or b$ = ""
+ 
+    GoTo AGAIN1
+    ElseIf FastSymbol(b$, "{") Then
+    ' IS A NEW PAGE
+    probeoffset = 0
+    If StructPage(basestack, b$, lang, offset, probeoffset, offsetlist, lasthead$) Then
+        If probeoffset > maxoffset Then maxoffset = probeoffset
+        ' leave offset as is
+    GoTo again
+    Else
+    Exit Function
+    End If
+    ElseIf Abs(IsLabelOnly(b$, what$)) = 1 Then
+    Do
     '' check type, or by default use 2
-    If IsLabelSymbolNew(b$, "Ÿ”", "AS", lang, , , , False) Then
+    If IsLabelSymbolNew(what$, "ƒœÃ«", "STRUCTURE", lang, , , , False) Then
+    If Abs(IsLabelOnly(b$, what$)) = 1 Then
+    If FastSymbol(b$, "{") Then
+        probeoffset = 0
+        If offsetlist.ExistKey(lasthead$ + what$) Then
+        MyEr "double name is same struct", "‰ÈÎﬁ ÂÈÛ·„˘„ﬁ ÔÌ¸Ï·ÙÔÚ"
+        StructPage = False
+        Set offsetlist = Nothing
+        Exit Function
+        End If
+
+        If StructPage(basestack, b$, lang, offset, probeoffset, offsetlist, lasthead$ + what$ + ".") Then
+            If probeoffset > maxoffset Then maxoffset = probeoffset
+            ' leave offset as is
+    
+            offsetlist.AddKey myUcase(lasthead$ + what$, True), CVar(offset)
+            If offsetlist.Done Then offsetlist.sValue = probeoffset - offset
+        GoTo again
+        Else
+        Exit Function
+        End If
+    Else
+        Exit Function
+    End If
+        Else
+        Exit Function
+    End If
+
+    ElseIf IsLabelSymbolNew(b$, "Ÿ”", "AS", lang, , , , False) Then
                         If IsLabelSymbolNew(b$, "ÿ«÷…œ", "BYTE", lang, , , , False) Then
                                      offset1 = 1
                                 ElseIf IsLabelSymbolNew(b$, "¡ ≈—¡…œ”", "INTEGER", lang, , , , False) Then
@@ -30190,31 +30262,44 @@ comehere:
     End If
     End If
     End If
-    If mylist.ExistKey(what$) Then
+    If offsetlist.ExistKey(lasthead$ + what$) Then
     MyEr "double name is same struct", "‰ÈÎﬁ ÂÈÛ·„˘„ﬁ ÔÌ¸Ï·ÙÔÚ"
-    makestruct = False
-    Set mylist = Nothing
+    StructPage = False
+    Set offsetlist = Nothing
     Exit Function
     End If
     
-    mylist.AddKey myUcase(what$, True), CVar(offset)
-    If mylist.Done Then mylist.sValue = w2
+    offsetlist.AddKey myUcase(lasthead$ + what$, True), CVar(offset)
+    If offsetlist.Done Then offsetlist.sValue = w2
     offset = offset + offset1
     SetNextLineNL b$
     Do
         While FastSymbol(b$, vbCrLf, , 2)
         Wend
     Loop Until Not NocharsInLine(b$) Or b$ = ""
-    Wend
+    Loop Until Not Abs(IsLabelOnly(b$, what$)) = 1
+        If maxoffset < offset Then
+    offset2 = offset
+    Else
+    offset2 = maxoffset
+    End If
+    StructPage = True
+    GoTo AGAIN1
+   End If
+    If maxoffset < offset Then
+    offset2 = offset
+    Else
+    offset2 = maxoffset
+    End If
+    StructPage = True
    
-    mylist.StructLen = offset
-    var(i).ReadOnly = True
-    makestruct = True
+    If offset2 < maxoffset Then
+        offset2 = maxoffset
+        StructPage = True
+    End If
     End If
     
-    End If
-    
-End If
+
 End Function
 Sub NeoText(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 resp = ProcText(ObjFromPtr(basestackLP), False, rest$)
@@ -31169,9 +31254,9 @@ End If
 End If
 ' from here is not MyRead = True
 Do
-again1:
+AGAIN1:
 MyRead = False
-If FastSymbol(rest$, ",") Then bs.soros.drop 1: GoTo again1
+If FastSymbol(rest$, ",") Then bs.soros.drop 1: GoTo AGAIN1
 If FastSymbol(rest$, "&") Or col = 1 Then
 ' so now for GROUP variables we use only by reference
 Select Case Abs(IsLabel(bstack, rest$, what$))
@@ -33511,6 +33596,7 @@ comehere:
                     End If
                     
                     Else
+
                                              var(i).ObjRef.Costruct PP, CLng(p), par
                         End If
                         End If
@@ -38099,4 +38185,47 @@ Dim v$
     rValue = 0
     End If
     
+End Function
+Function ExecCode(basestack As basetask, rest$) As Boolean ' experimental
+' ver .001
+Dim p As Double, mm As MemBlock, w2 As Long
+    If IsExp(basestack, rest$, p) Then
+        If Not basestack.lastobj Is Nothing Then
+          If Not TypeOf basestack.lastobj Is mHandler Then
+            Set basestack.lastobj = Nothing
+            Exit Function
+            End If
+            With basestack.lastobj
+                  If Not TypeOf .ObjRef Is MemBlock Then
+                      Set basestack.lastobj = Nothing
+                      Exit Function
+                  End If
+            End With
+            Set mm = basestack.lastobj.ObjRef
+            If mm.Status = 0 Then
+            w2 = mm.GetPtr(0)
+            If FastSymbol(rest$, ",") Then
+            If Not IsExp(basestack, rest$, p) Then
+                Set basestack.lastobj = Nothing
+                Set mm = Nothing
+                MissPar
+                Exit Function
+            End If
+            If p < 0 Or p >= mm.SizeByte Then
+                Set basestack.lastobj = Nothing
+                Set mm = Nothing
+                MyEr "Offset out of buffer", "ƒÈÂ˝ËıÌÛÁ ÂÍÙ¸Ú ‰È‹ÒËÒ˘ÛÁÚ"
+                Exit Function
+            End If
+            w2 = cUlng(uintnew(w2) + p)
+            End If
+            Set basestack.lastobj = Nothing
+            
+            CallLp w2
+            ExecCode = True
+            Set mm = Nothing
+            End If
+            End If
+        
+    End If
 End Function

@@ -72,15 +72,15 @@ End If
 End Sub
 Public Sub Copy2TopItem(where As Long)
 'we pick an item and to the top
-Dim aa As VarItem, MM As Object, mn As mArray, work As Object
+Dim aa As VarItem, mm As Object, mn As mArray, work As Object
 On Error Resume Next
 Set work = mstack.item(where).ObjectRef
 Select Case Typename(work)
 Case "Group"
 Set aa = New VarItem
 aa.Typename = "*"
-CopyGroup work, MM
-Set aa.ObjectRef = MM
+CopyGroup work, mm
+Set aa.ObjectRef = mm
 Case "mArray"
 Set aa = New VarItem
 aa.Typename = "*"
@@ -100,7 +100,7 @@ Inc
 End Sub
 Public Sub Copy2TopNItems2FromStiva(many As Long, Source As mStiva)
 'we pick an item and to the top
-Dim aa As VarItem, MM As Object, mn As mArray, work As Object
+Dim aa As VarItem, mm As Object, mn As mArray, work As Object
 On Error Resume Next
 For many = many To 1 Step -1
 Set work = Source.ObjRef(many)
@@ -108,8 +108,8 @@ Select Case Typename(work)
 Case "Group"
 Set aa = New VarItem
 aa.Typename = "*"
-CopyGroup work, MM
-Set aa.ObjectRef = MM
+CopyGroup work, mm
+Set aa.ObjectRef = mm
 Case "mArray"
 Set aa = New VarItem
 aa.Typename = "*"
@@ -177,12 +177,12 @@ Private Sub dec()
 mMany = mMany - 1
 
 End Sub
-Public Sub drop(ByVal items As Long)
+Public Sub drop(ByVal Items As Long)
 Dim num As Long
 On Error Resume Next
-mMany = mMany - items
+mMany = mMany - Items
 If mMany < 0 Then mMany = 0: Set mstack = New Collection: Exit Sub
-For num = 1 To items
+For num = 1 To Items
     mstack.Remove 1
 Next num
 End Sub

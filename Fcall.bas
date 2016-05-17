@@ -10,7 +10,7 @@ Private Declare Function lstrlenW Lib "KERNEL32" (ByVal lpString As Long) As Lon
 Private Declare Sub RtlMoveMemory Lib "KERNEL32" (dst As Any, src As Any, ByVal BLen As Long)
 
 Private Enum CALLINGCONVENTION_ENUM
-  CC_FASTCALL
+  cc_fastcall
   CC_CDECL
   CC_PASCAL
   CC_MACPASCAL
@@ -22,6 +22,9 @@ Private Enum CALLINGCONVENTION_ENUM
 End Enum
 
 Private LibHdls As New FastCollection, VType(0 To 63) As Integer, VPtr(0 To 63) As Long
+Public Sub CallLp(where As Long)
+DispCallFunc 0, where, cc_fastcall, vbEmpty, 0, 0, 0, 0
+End Sub
 
 Public Function stdCallW(sDll As String, sFunc As String, ByVal RetType As Variant, p() As Variant, j As Long)
 Dim v(), HRes As Long
