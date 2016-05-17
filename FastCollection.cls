@@ -48,6 +48,7 @@ Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
 Private Type item
     Key As String
     iValue As Variant
+    sValue As Long
     firsthash As Long
     lastpos As Long
     Pleft As Long  ' a list
@@ -62,6 +63,7 @@ Private lastkey As String
 Private Hash() As Long
 Public Done As Boolean
 Public Index As Long
+Public StructLen As Long
 Private ParentIndex As Long
 Private Sub Class_Initialize()
     MaxSpace = 5
@@ -69,9 +71,9 @@ Private Sub Class_Initialize()
     hashlen = MaxSpace * 2 + 3
     toplim = -1
 End Sub
-Public Sub AddKey(RHS, Optional aValue As Variant)
+Public Sub AddKey(rhs, Optional aValue As Variant)
     Index = -1
-    lastkey = CStr(RHS)
+    lastkey = CStr(rhs)
     Done = False
     If Not IsMissing(aValue) Then
     
@@ -96,15 +98,15 @@ ReHash
 End Sub
 
 
-Public Sub ToKey(RHS)
-    Done = Find(RHS)
-    If Done Then lastkey = CStr(RHS)
+Public Sub ToKey(rhs)
+    Done = Find(rhs)
+    If Done Then lastkey = CStr(rhs)
 End Sub
-Public Sub Remove(RHS)
+Public Sub Remove(rhs)
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
 If toplim < 0 Then Stop
 top1 = toplim
-Done = Find(RHS)
+Done = Find(rhs)
 If Done Then
 
         If ParentIndex > 0 Then
@@ -136,26 +138,40 @@ If Done Then
       ReduceHash toplim
 End If
 End Sub
-Property Let Value(RHS As Variant)
+Property Let Value(rhs As Variant)
 Done = False
 If Index = -1 Then
-ItemCreator lastkey, RHS
+ItemCreator lastkey, rhs
 
 Else
-    PriveSpace(Index).iValue = RHS
+    PriveSpace(Index).iValue = rhs
 End If
 Done = True
 End Property
-Property Set ValueObj(RHS As Variant)
+Property Set ValueObj(rhs As Variant)
 Done = False
 If Index = -1 Then
-    ItemCreator lastkey, RHS
+    ItemCreator lastkey, rhs
 Else
-    Set PriveSpace(Index).iValue = RHS
+    Set PriveSpace(Index).iValue = rhs
 End If
 Done = True
 End Property
-
+Property Get sValue() As Long
+Done = False
+If Index = -1 Then
+Else
+    Done = True
+    sValue = PriveSpace(Index).sValue
+End If
+End Property
+Property Let sValue(rhs As Long)
+If Index = -1 Then
+Else
+    Done = True
+    PriveSpace(Index).sValue = rhs
+End If
+End Property
 Property Get Value() As Variant
 Done = False
 If Index = -1 Then
@@ -168,6 +184,7 @@ ElseIf Not IsObject(PriveSpace(Index).iValue) Then
     End If
 End If
 End Property
+
 Property Get ValueObj() As Variant
 Done = False
 If Index = -1 Then
@@ -268,11 +285,11 @@ If Done Then
     End If
 End If
 End Sub
-Sub SwapByIndex(RHS As Long)
+Sub SwapByIndex(rhs As Long)
 On Error Resume Next
 If Done Then
-    SwapVariant PriveSpace(RHS).iValue, PriveSpace(Index).iValue
-    Index = RHS
+    SwapVariant PriveSpace(rhs).iValue, PriveSpace(Index).iValue
+    Index = rhs
 End If
 End Sub
 
@@ -298,9 +315,9 @@ Else
 IsObj = IsObject(PriveSpace(Index).iValue)
 End If
 End Function
-Function Find(RHS) As Boolean
+Function Find(rhs) As Boolean
 Dim k As Long, Key As String
-Key = CStr(RHS)
+Key = CStr(rhs)
 ParentIndex = 0
 Done = False
 If Len(Key) = 0 Then Exit Function
@@ -316,9 +333,9 @@ Do
 Loop Until k < 0
 End If
 End Function
-Function ExistKey(RHS) As Boolean
+Function ExistKey(rhs) As Boolean
 Dim k As Long, Key As String
-Key = CStr(RHS)
+Key = CStr(rhs)
 If Len(Key) = 0 Then Exit Function
 k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then

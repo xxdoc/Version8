@@ -34,7 +34,7 @@ Public Function MoveFile(pOldPath As String, pNewPath As String)
 End Function
 Public Function isdir(f$) As Boolean
 On Error Resume Next
-Dim MM As New recDir
+Dim mm As New recDir
 Dim lookfirst As Boolean
 Dim Pad$
 If f$ = "" Then Exit Function
@@ -52,16 +52,16 @@ Else
 Pad$ = ExtractPath(mcd + f$, True)
 End If
 End If
-lookfirst = MM.isdir(Pad$)
+lookfirst = mm.isdir(Pad$)
 If lookfirst Then f$ = Pad$
 Else
 f$ = mylcasefILE(f$)
-lookfirst = MM.isdir(f$)
+lookfirst = mm.isdir(f$)
 If Not lookfirst Then
 
 Pad$ = mcd + f$
 
-lookfirst = MM.isdir(Pad$)
+lookfirst = mm.isdir(Pad$)
 If lookfirst Then f$ = Pad$
 
 End If
@@ -346,11 +346,11 @@ End If
 
 End Sub
 
-Public Sub TABLENAMES(bstackstr As basetask, r$, lang As Long)
-Dim base As String, tablename As String, scope As Long, cnt As Long, srl As Long, stac1 As New mStiva
+Public Sub TABLENAMES(base As String, bstackstr As basetask, r$, lang As Long)
+Dim tablename As String, scope As Long, cnt As Long, srl As Long, stac1 As New mStiva
 Dim myBase  ' variant
 scope = 1
-If Not IsStrExp(bstackstr, r$, base) Then Exit Sub
+
 If FastSymbol(r$, ",") Then
 If IsStrExp(bstackstr, r$, tablename) Then
 scope = 2
@@ -1489,6 +1489,10 @@ Exit Function
 End If
 Dim aa As FastCollection
 Set aa = bstackstr.lastobj.ObjRef
+If aa.StructLen > 0 Then
+MyEr "Structure members are ReadOnly", "Τα μέλη της δομής είναι μόνο για ανάγνωση"
+Exit Function
+End If
 Set bstackstr.lastobj = Nothing
 Do While FastSymbol(r$, ",")
 ok = False

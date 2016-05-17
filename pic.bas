@@ -559,14 +559,14 @@ If zoomfactor <= 1 Then zoomfactor = 1
 zoomfactor = zoomfactor / 100#
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 Dim A As Single, b As Single, k As Single, r As Single
-Dim BR As Byte, BG As Byte, bbb As Byte, ba$
+Dim br As Byte, BG As Byte, bbb As Byte, ba$
 Dim BR1 As Byte, BG1 As Byte, BBb1 As Byte
 BR1 = 255 * ((100 - alpha) / 100#)
 BG1 = 255 * ((100 - alpha) / 100#)
 BBb1 = 255 * ((100 - alpha) / 100#)
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" & ba$, 6)
-BR = val("&h" & Mid$(ba$, 1, 2))
+br = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 Dim pw As Long, ph As Long
@@ -671,27 +671,27 @@ nomalo = Not (ang Mod 90 = 0)
                         If nomalo Then
                       If mmx <= 1 Then
                       
-                      bDib1(screen_x, screen_y) = BR * xf1
+                      bDib1(screen_x, screen_y) = br * xf1
                         
-                        bDib1(screen_x + 1, screen_y) = BR * xf1  ' * yf / 2
-                       bDib1(screen_x + 2, screen_y) = BR * xf1 '* yf / 2
+                        bDib1(screen_x + 1, screen_y) = br * xf1  ' * yf / 2
+                       bDib1(screen_x + 2, screen_y) = br * xf1 '* yf / 2
                        ElseIf mmx >= pw1out Then
-                        bDib1(screen_x, screen_y) = BR * xf
+                        bDib1(screen_x, screen_y) = br * xf
                         
-                        bDib1(screen_x + 1, screen_y) = BR * xf
+                        bDib1(screen_x + 1, screen_y) = br * xf
 
-                        bDib1(screen_x + 2, screen_y) = BR * xf
+                        bDib1(screen_x + 2, screen_y) = br * xf
                        End If
                        If mmy >= ph1out Then
-                         bDib1(screen_x, screen_y) = BR * yf
+                         bDib1(screen_x, screen_y) = br * yf
                         
-                        bDib1(screen_x + 1, screen_y) = BR * yf
-                       bDib1(screen_x + 2, screen_y) = BR * yf
+                        bDib1(screen_x + 1, screen_y) = br * yf
+                       bDib1(screen_x + 2, screen_y) = br * yf
                        ElseIf mmy <= 1 Then
-                          bDib1(screen_x, screen_y) = BR * yf1
+                          bDib1(screen_x, screen_y) = br * yf1
                         
-                        bDib1(screen_x + 1, screen_y) = BR * yf1
-                       bDib1(screen_x + 2, screen_y) = BR * yf1
+                        bDib1(screen_x + 1, screen_y) = br * yf1
+                       bDib1(screen_x + 2, screen_y) = br * yf1
                       End If
                
                  End If
@@ -845,10 +845,10 @@ If zoomfactor <= 0.01 Then zoomfactor = 0.01
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 
 Dim k As Single, r As Single
-Dim BR As Byte, BG As Byte, bbb As Byte, ba$
+Dim br As Byte, BG As Byte, bbb As Byte, ba$
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" + ba$, 6)
-BR = val("&h" + Mid$(ba$, 1, 2))
+br = val("&h" + Mid$(ba$, 1, 2))
 BG = val("&h" + Mid$(ba$, 3, 2))
 bbb = val("&h" + Mid$(ba$, 5, 2))
 
@@ -967,7 +967,7 @@ On Error Resume Next
                         bDib1(screen_x + 2, screen_y) = yf1 * (xf1 * bDib(mmx + 2, mmy) + xf * bDib(mmx + 5, mmy)) + yf * (xf1 * bDib(mmx + 2, mmy + 1) + xf * bDib(mmx + 5, mmy + 1))
                       End If
                     Else
-                        bDib1(screen_x, screen_y) = BR
+                        bDib1(screen_x, screen_y) = br
                         bDib1(screen_x + 1, screen_y) = BG
                         bDib1(screen_x + 2, screen_y) = bbb
                     End If
@@ -993,10 +993,10 @@ If cDIBbuffer0.hDIb = 0 Then Exit Sub
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 'Dim a As Single, b As Single
 Dim k As Single, r As Single
-Dim BR As Byte, BG As Byte, bbb As Byte, ba$
+Dim br As Byte, BG As Byte, bbb As Byte, ba$
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" + ba$, 6)
-BR = val("&h" + Mid$(ba$, 1, 2))
+br = val("&h" + Mid$(ba$, 1, 2))
 BG = val("&h" + Mid$(ba$, 3, 2))
 bbb = val("&h" + Mid$(ba$, 5, 2))
 
@@ -1095,7 +1095,7 @@ On Error Resume Next
                         bDib1(screen_x + 2, screen_y) = bDib(mmx + 2, mmy)
                      
                     Else
-                        bDib1(screen_x, screen_y) = BR
+                        bDib1(screen_x, screen_y) = br
                         bDib1(screen_x + 1, screen_y) = BG
                         bDib1(screen_x + 2, screen_y) = bbb
                     End If
@@ -1121,10 +1121,10 @@ If zoomfactor <= 1 Then zoomfactor = 1
 zoomfactor = zoomfactor / 100#
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 Dim k As Single, r As Single
-Dim BR As Byte, BG As Byte, bbb As Byte, ba$
+Dim br As Byte, BG As Byte, bbb As Byte, ba$
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" & ba$, 6)
-BR = val("&h" & Mid$(ba$, 1, 2))
+br = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 
@@ -1262,7 +1262,7 @@ End With
                 
                               If mmx >= 0 And mmx < pw And mmy >= 0 And mmy < ph Then
                                  mmx = mmx * 3
-                                                           If bDib(mmx, mmy) <> BR Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
+                                                           If bDib(mmx, mmy) <> br Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
                                  bDib1(screen_x, screen_y) = (bDib(mmx, mmy) * CLng(255 - bDib2(mmx, mmy)) + bDib1(screen_x, screen_y) * CLng(bDib2(mmx, mmy))) \ 255
                                  bDib1(screen_x + 1, screen_y) = (bDib(mmx + 1, mmy) * CLng(255 - bDib2(mmx + 1, mmy)) + bDib1(screen_x + 1, screen_y) * CLng(bDib2(mmx + 1, mmy))) \ 255
                                  bDib1(screen_x + 2, screen_y) = (bDib(mmx + 2, mmy) * CLng(255 - bDib2(mmx + 2, mmy)) + bDib1(screen_x + 2, screen_y) * CLng(bDib2(mmx + 2, mmy))) \ 255
@@ -1293,7 +1293,7 @@ End With
 
                      If mmx >= 0 And mmx < pw And mmy >= 0 And mmy < ph Then
                         mmx = mmx * 3
-                        If bDib(mmx, mmy) <> BR Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
+                        If bDib(mmx, mmy) <> br Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
                                       If alpha = 0 Then
                                       ElseIf alpha = 100 Then
                                         bDib1(screen_x, screen_y) = bDib(mmx, mmy)
@@ -1318,7 +1318,7 @@ End With
                         bDib1(screen_x + 1, screen_y) = bDib(mmx + 1, mmy)
                         bDib1(screen_x + 2, screen_y) = bDib(mmx + 2, mmy)
                     ElseIf bckColor <> -1 Then
-                        bDib1(screen_x, screen_y) = BR
+                        bDib1(screen_x, screen_y) = br
                       bDib1(screen_x + 1, screen_y) = BG
                       bDib1(screen_x + 2, screen_y) = bbb
                     End If
@@ -1906,10 +1906,10 @@ Dim tSA As SAFEARRAY2D
     End With
     CopyMemory ByVal VarPtrArray(bDib()), VarPtr(tSA), 4
 '.........................
-Dim BR As Integer, BG As Integer, bbb As Integer, ba$
+Dim br As Integer, BG As Integer, bbb As Integer, ba$
 ba$ = Hex$(lBackColor)
 ba$ = Right$("00000" & ba$, 6)
-BR = val("&h" & Mid$(ba$, 1, 2))
+br = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 
@@ -1933,7 +1933,7 @@ Dim GLHEIGHT, GLWIDTH As Long
             '
             Do While lCol < GLWIDTH
              
-            If Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
+            If Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
                lCol = lCol + 1
                 mmx = mmx + 3
             Loop
@@ -1946,7 +1946,7 @@ Dim GLHEIGHT, GLWIDTH As Long
                 lStart = lCol
                
                 Do While lCol < GLWIDTH
-                 If Not (Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
+                 If Not (Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
 
                 mmx = mmx + 3
                     lCol = lCol + 1
@@ -1996,10 +1996,10 @@ Dim tSA As SAFEARRAY2D
     End With
     CopyMemory ByVal VarPtrArray(bDib()), VarPtr(tSA), 4
 '.........................
-Dim BR As Integer, BG As Integer, bbb As Integer, ba$
+Dim br As Integer, BG As Integer, bbb As Integer, ba$
 ba$ = Hex$(lBackColor)
 ba$ = Right$("00000" & ba$, 6)
-BR = val("&h" & Mid$(ba$, 1, 2))
+br = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 
@@ -2021,7 +2021,7 @@ lSkinRgn = CreateRectRgn(0, 0, 0, 0)
             ' color as the background color.
             '
             Do While lCol < GLWIDTH
-            If Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
+            If Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
                 lCol = lCol + 1
                 mmx = mmx + 3
             Loop
@@ -2033,7 +2033,7 @@ lSkinRgn = CreateRectRgn(0, 0, 0, 0)
                 '
                 lStart = lCol
                 Do While lCol < GLWIDTH
-                If Not (Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
+                If Not (Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
 
                 mmx = mmx + 3
                     lCol = lCol + 1
@@ -2705,8 +2705,8 @@ Function ismine2(ByVal A$) As Boolean  ' CAN START A BLOCK OR DO SOMETHING
 ismine2 = True
 A$ = myUcase(A$, True)
 Select Case A$
-Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "DECLARE", "ELSE", "EVENT", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "INVENTORY", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "PATH", "PEN", "PRINTER", "PRINTING", "STACK", "START", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "WHILE"
-Case "аявг", "аккиыс", "цецомос", "цемийо", "цемийг", "цемийес", "циа", "дес", "ейтупытгс", "ейтупысг", "емы", "епипедо", "ивмос", "йахе", "йатастасг", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "ояисе", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
+Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "DECLARE", "ELSE", "EVENT", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "INVENTORY", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "PATH", "PEN", "PRINTER", "PRINTING", "STACK", "START", "STRUCTURE", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "WHILE"
+Case "аявг", "аккиыс", "цецомос", "цемийо", "цемийг", "цемийес", "циа", "дес", "долг", "ейтупытгс", "ейтупысг", "емы", "епипедо", "ивмос", "йахе", "йатастасг", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "ояисе", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
 Case "->"
 Case Else
 ismine2 = False
@@ -2732,7 +2732,7 @@ Case "ABOUT", "ABOUT$", "ABS(", "ADD.LICENCE$(", "AFTER", "ALWAYS", "AND", "ANGL
 Case "ARRAY$(", "ARRAY(", "AS", "ASC(", "ASCENDING", "ASK$(", "ASK(", "ATN("
 Case "BACK", "BACKGROUND", "BACKWARD(", "BASE", "BEEP", "BINARY", "BINARY.AND(", "BINARY.NEG("
 Case "BINARY.OR(", "BINARY.ROTATE(", "BINARY.SHIFT(", "BINARY.XOR(", "BITMAPS", "BMP$(", "BOLD"
-Case "BOOLEAN", "BORDER", "BREAK", "BROWSER", "BROWSER$", "BYTE", "CALL", "CASE", "CAT"
+Case "BOOLEAN", "BORDER", "BREAK", "BROWSER", "BROWSER$", "BUFFER", "BYTE", "CALL", "CASE", "CAT"
 Case "CDATE(", "CENTER", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.ORGAN"
 Case "CHR$(", "CHRCODE$(", "CHRCODE(", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLIPBOARD$", "CLIPBOARD.IMAGE$"
 Case "CLOSE", "CLS", "CODE", "CODEPAGE", "COLLIDE(", "COLOR", "COLOR(", "COLORS"
@@ -2799,7 +2799,7 @@ Case "басг(", "басг.паяовос", "басг.вягстгс", "баье", "бектистопоигсг", "бгла", 
 Case "цемийес", "цемийг", "цемийо", "циа", "цяалла$", "цяаллатосеияа", "цяаллатосеияа$", "цяаллесамажояас", "цяаллг"
 Case "цяажг$(", "цяаье", "цягцояа", "цымиа", "деийтг.лояжг", "деийтгс", "деийтгс.йол", "деийтгс.у", "деийтгс.в"
 Case "деийтгса.у", "деийтгса.в", "деине", "дей(", "дейаен", "дейаен$(", "дем", "дени$(", "денилеяос$(", "дес", "дглосио"
-Case "диа", "диабасе", "диацяажг", "диадовийо", "диайопг", "диайоптес", "диалесоу", "диаяйеиа", "диастасг("
+Case "диа", "диабасе", "диацяажг", "диадовийо", "диайопг", "диайоптес", "диалесоу", "диаяхяысг", "диаяйеиа", "диастасг("
 Case "диастиво", "диажамеиа", "диажамеиа$", "диажамо", "диажуцг", "диейоье", "дийтуо$", "диояхысе"
 Case "дипка", "дипкос", "дойилг", "долг", "дяолеас", "дуадийг.пеяистяожг(", "дуадийо", "дуадийо(", "дуадийо.айеяаио("
 Case "дуадийо.амти(", "дуадийо.амтистяожо(", "дуадийо.апо(", "дуадийо.г(", "дуадийо.йаи(", "дуадийо.окисхгсг(", "дуолиса(", "дысе"
@@ -3678,17 +3678,17 @@ End Function
 
 Public Function allcommands(aHash As sbHash) As Boolean
 Dim mycommands(), i As Long
-mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROUND", "BASE", "BEEP", "BITMAPS", "BOLD", "BREAK", "BROWSER", "CALL", "CASE", "CAT", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.ORGAN", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLOSE", "CLS", "CODEPAGE", "COLOR", "COMMIT", "COMPRESS", "CONTINUE", "COPY", "CURSOR", "CURVE", "DATA", "DB.PROVIDER", "DB.USER" _
+mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROUND", "BASE", "BEEP", "BITMAPS", "BOLD", "BREAK", "BROWSER", "BUFFER", "CALL", "CASE", "CAT", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.ORGAN", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLOSE", "CLS", "CODEPAGE", "COLOR", "COMMIT", "COMPRESS", "CONTINUE", "COPY", "CURSOR", "CURVE", "DATA", "DB.PROVIDER", "DB.USER" _
 , "DECLARE", "DEF", "DELETE", "DESKTOP", "DIM", "DIR", "DIV", "DO", "DOCUMENT", "DOS", "DOUBLE", "DRAW", "DRAWINGS", "DROP", "DURATION", "EDIT", "EDIT.DOC", "ELSE", "ELSE.IF", "EMPTY", "END", "ERASE", "ERROR", "ESCAPE", "EVENT", "EVERY", "EXECUTE", "EXIT", "EXPORT", "FAST", "FIELD", "FILES", "FILL", "FIND", "FKEY", "FLOODFILL", "FLUSH", "FONT", "FOR", "FORM", "FORMLABEL", "FRAME", "FUNCTION", "GET", "GLOBAL" _
 , "GOSUB", "GOTO", "GRADIENT", "GREEK", "GROUP", "HEIGHT", "HELP", "HEX", "HIDE", "HOLD", "HTML", "ICON", "IF", "IMAGE", "INLINE", "INPUT", "INSERT", "INVENTORY", "ITALIC", "JOYPAD", "KEYBOARD", "LATIN", "LAYER", "LEGEND", "LET", "LINE", "LINESPACE", "LINK", "LIST", "LOAD", "LOAD.DOC", "LOCAL", "LOCALE", "LONG", "LOOP", "MAIN.TASK", "MARK", "MEDIA", "MENU", "MERGE.DOC", "METHOD", "MODE", "MODULE" _
 , "MODULES", "MONITOR", "MOTION", "MOTION.W", "MOUSE.ICON", "MOVE", "MOVIE", "MOVIES", "MUSIC", "NAME", "NEW", "NEXT", "NORMAL", "ON", "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPTIMIZATION", "ORDER", "OVER", "OVERWRITE", "PAGE", "PART", "PATH", "PEN", "PIPE", "PLAY", "PLAYER", "POLYGON", "PRINT", "PRINTER", "PRINTING", "PROFILER", "PROPERTIES", "PUSH", "PUT", "READ", "RECURSION.LIMIT" _
 , "REFER", "REFRESH", "RELEASE", "REM", "REMOVE", "REPEAT", "REPORT", "RESTART", "RETRIEVE", "RETURN", "SAVE", "SAVE.AS", "SAVE.DOC", "SCAN", "SCORE", "SCREEN.PIXELS", "SCRIPT", "SCROLL", "SEARCH", "SEEK", "SELECT", "SET", "SETTINGS", "SHIFT", "SHIFTBACK", "SHOW", "SLOW", "SORT", "SOUND", "SOUNDREC", "SOUNDS", "SPEECH", "SPLIT", "SPRITE", "STACK", "START", "STATIC", "STEP", "STOCK", "STOP", "STRUCTURE" _
 , "SUB", "SUBDIR", "SWAP", "SWEEP", "SWITCHES", "TAB", "TABLE", "TARGET", "TARGETS", "TASK.MAIN", "TEST", "TEXT", "THEN", "THREAD", "THREAD.PLAN", "THREADS", "TITLE", "TONE", "TRY", "TUNE", "UPDATE", "USE", "USER", "VERSION", "VIEW", "VOLUME", "WAIT", "WHILE", "WIDTH", "WIN", "WINDOW", "WITH", "WORDS", "WRITE", "WRITER", "адеиасе", "аккацг", "аккане", "аккиыс", "аккиыс.ам", "ам", "амафгтгсг" _
 , "амахеыягсг", "амайтгсг", "амакоцио", "амакусг.охомгс", "амакутгс", "амаломг", "амамеысг", "амажояа", "амаье", "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "апедысе", "апо", "апохгйеусг.ыс", "апойопг", "аяца", "аявеиа", "аявеио", "аявг", "аукос", "ауноуса", "ажаияесг", "ажгсе", "баке", "басг", "басг.паяовос", "басг.вягстгс", "баье", "бектистопоигсг" _
-, "бгла", "богхеиа", "цецомос", "целисе", "цемийес", "цемийг", "цемийо", "циа", "цяаллатосеияа", "цяаллг", "цяаье", "цягцояа", "деийтг.лояжг", "деине", "дейаен", "дес", "диабасе", "диацяажг", "диайопг", "диайоптес", "диалесоу", "диаяйеиа", "диастиво", "диажамеиа", "диажамо", "диажуцг", "диейоье", "диояхысе", "дипка", "дипкос", "дойилг", "долг", "дяолеас", "дысе", "еццяажо", "еийома", "еийомес", "еийомидио" _
+, "бгла", "богхеиа", "цецомос", "целисе", "цемийес", "цемийг", "цемийо", "циа", "цяаллатосеияа", "цяаллг", "цяаье", "цягцояа", "деийтг.лояжг", "деине", "дейаен", "дес", "диабасе", "диацяажг", "диайопг", "диайоптес", "диалесоу", "диаяхяысг", "диаяйеиа", "диастиво", "диажамеиа", "диажамо", "диажуцг", "диейоье", "диояхысе", "дипка", "дипкос", "дойилг", "долг", "дяолеас", "дысе", "еццяажо", "еийома", "еийомес", "еийомидио" _
 , "еисацыцг", "ейдосг", "ейтекесг", "ейтупысг", "ейтупытгс", "екецвос", "еккгмийа", "емхесг", "емтасг", "емы", "емысе", "енацыцг", "енодос", "епамакабе", "епамекабе", "епекене", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.цяаллатосеияа", "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцг", "епикоцгс" _
 , "епипедо", "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяесг", "глеяолгмиа", "гвоцяажгсг", "гвои", "гвос", "хесе", "хесг", "идиотгтес", "исвмг", "ивмос", "йахаяг", "йахаяо", "йахе", "йакесе", "йалпукг", "йаме", "йамомийа", "йат", "йатакоцои", "йатакоцос", "йатастасг", "йатавыягсг", "йеилемо", "йемг", "йимгсг", "йимгсг.п", "йкасг", "йкеиди", "йкеисе", "йомсока", "йяата", "йяатгсе", "йяуье" _
-, "йуйкийа", "йуйкос", "йукисг", "йуяио.еяцо", "кабг", "кахос", "катимийа", "кенеис", "киста", "коцос", "лайяус", "ле", "леходос", "лекыдиа", "леяос", "лета", "летахесг", "лмглг", "лоусийг", "лпип", "мео", "мгла", "мглата", "нейима", "охомг", "олада", "омола", "ояио.амадяолгс", "ояисе", "паийтгс", "паине", "памы", "паяахуяо", "паяе", "паяелбокг", "павос", "педио", "пема", "пеяи" _
+, "йуйкийа", "йуйкос", "йукисг", "йуяио.еяцо", "кабг", "кахос", "катимийа", "кенеис", "киста", "коцос", "лайяус", "ле", "леходос", "лекыдиа", "леяос", "лета", "летахесг", "лоусийг", "лпип", "мео", "мгла", "мглата", "нейима", "охомг", "олада", "омола", "ояио.амадяолгс", "ояисе", "паийтгс", "паине", "памы", "паяахуяо", "паяе", "паяелбокг", "павос", "педио", "пема", "пеяи" _
 , "пеяихыяио", "пета", "пимайас", "пимайес", "пкациа", "пкаисио", "пкгйтяокоцио", "покуцымо", "пяос", "пяосхесе.еццяажо", "пяосхгйг", "пяовеияо", "яоутима", "яухлисеис", "с", "саяысе", "сбгсе", "сеияа", "секида", "семаяио", "сгл", "сглади", "сглеио", "статийг", "статийес", "стг", "стгм", "сто", "стой", "стовои", "стовос", "суццяажеас", "суццяажг", "суцвымеусе.еццяажо", "сулпиесг" _
 , "сулпкгяысг", "сумаятгсг", "сумевисе", "сумхгла", "сус", "сустгла", "сведиа", "сведио.мглатым", "сыяос", "сысе", "сысе.еццяажо", "таимиа", "таимиес", "танг", "танимолгсг", "текос", "титкос", "тлгла", "тлглата", "томос", "топийа", "топийес", "топийг", "топийо", "тоте", "тупос", "тупысе", "упойатакоцос", "упокоцистг", "жаядиа", "жеяе", "жеяеписы", "жомто", "жояла", "жоятос", "жоятысе" _
 , "жоятысе.еццяажо", "жымг", "ваяайтгяес", "ваяане", "вягсг", "вягстг", "вягстгс", "вяыла", "?")

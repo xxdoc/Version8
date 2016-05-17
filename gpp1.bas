@@ -136,12 +136,12 @@ End Type
       Private Declare Function ClosePrinter Lib "winspool.drv" _
       (ByVal hPrinter As Long) As Long
 
-      Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
+      Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" _
       (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
-      Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
+      Private Declare Function GlobalLock Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalAlloc Lib "KERNEL32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalFree Lib "KERNEL32" (ByVal hMem As Long) As Long
 Const GMEM_MOVEABLE = &H2
 Const GMEM_ZEROINIT = &H40
 
@@ -398,7 +398,17 @@ Function UINT(ByVal A As Long) As Long 'δίνει έναν integer σαν unsign integer σε
  End If
  
  End Function
- 
+Function cUbyte(ByVal A As Long) As Long
+Dim c As Long
+
+c = Abs(A) And &HFF&
+If c > 127 Then
+cUbyte = c - &H100
+Else
+cUbyte = c
+End If
+
+End Function
 Function cUint(ByVal A As Long) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
 Dim c As Long
 

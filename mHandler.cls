@@ -14,14 +14,15 @@ Attribute VB_Exposed = False
 ' Generic Handler
 Public ObjRef As Object
 Public T1 As Variant
-Public Par1 As Variant
+Public ReadOnly As Boolean
+''Public Par1 As Variant
 Private Sub Class_Terminate()
 Set ObjRef = Nothing
 End Sub
 Public Sub CopyTo(A As mHandler)
 Set A = New mHandler
 A.T1 = T1
-A.Par1 = Par1   ' key or index ???
+''A.Par1 = Par1   ' key or index ???
 ' no copy for reference
 Set A.ObjRef = ObjRef
 End Sub
