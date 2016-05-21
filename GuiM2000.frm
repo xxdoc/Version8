@@ -197,7 +197,7 @@ End Sub
 Private Sub Form_Activate()
 If PopupOn Then PopupOn = False
 If novisible Then Hide: Unload Me
-If ttl Then Form3.CaptionW = gList2.HeadLine
+If gList2.HeadLine <> "" Then If ttl Then Form3.CaptionW = gList2.HeadLine
 MarkSize = 4
 ResizeMark.Width = MarkSize * dv15
 ResizeMark.Height = MarkSize * dv15
@@ -374,7 +374,13 @@ CallEventFromGuiNow Me, myEvent, MyName$ + ".Unload(" + CStr(mIndex) + ")", var(
 Else
 CallEventFromGuiNow Me, myEvent, MyName$ + ".Unload()", var()
 End If
-            If var(0) = 0 Then
+If var(0) = 0 Then
+                     If ttl Then
+                     Form3.CaptionW = ""
+                     If Form3.WindowState = 1 Then Form3.WindowState = 0
+               
+                    Unload Form3
+             End If
                               Unload Me
                       End If
 End Sub
@@ -485,12 +491,26 @@ Public Property Let Index(ByVal RHS As Long)
 mIndex = RHS
 End Property
 Public Sub CloseNow()
+Dim w As Object
     If mModalId = ModalId And ModalId <> 0 Then
         ModalId = 0
       If Visible Then Hide
     Else
     mModalId = 0
-        Unload Me
+    For Each w In GuiControls
+    If Typename(w) Like "Gui*" Then
+    w.deconstruct
+    End If
+Next w
+Set w = Nothing
+         If ttl Then
+                     Form3.CaptionW = ""
+                     If Form3.WindowState = 1 Then Form3.WindowState = 0
+               
+                    Unload Form3
+             End If
+
+Unload Me
     End If
 End Sub
 Public Function Control(Index) As Object

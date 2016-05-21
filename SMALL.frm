@@ -202,6 +202,7 @@ oldcodeid = ModalId
                             End If
                             End If
                     Next x
+                     Set x = Nothing
 If INFOONLY Then
 NeoMsgBox.command1(0).SetFocus
 End If
@@ -229,6 +230,7 @@ Dim z As Form
           If x.Enablecontrol Then Set z = x
             End If
             Next x
+             Set x = Nothing
           If Typename(z) = "GuiM2000" Then
             z.ShowmeALL
             z.SetFocus
@@ -305,7 +307,7 @@ End If
 Loop Until PP <= CDbl(timeGetTime) Or NOEXECUTION Or MOUT
 
                        If exWnd <> 0 Then
-                mytitle$ bstack
+                MyTitle$ bstack
                 End If
 End Sub
 
@@ -355,7 +357,7 @@ End If
 Loop Until PP <= CDbl(timeGetTime) Or NOEXECUTION Or MOUT
 
                        If exWnd <> 0 Then
-                mytitle$ bstack
+                MyTitle$ bstack
                 End If
             
 End Sub
@@ -403,9 +405,6 @@ NOEDIT = True
 MOUT = True
 Cancel = True
 Else
-If Not TaskMaster Is Nothing Then
-TaskMaster.Dispose
-End If
 ttl = False
 End If
 
@@ -460,7 +459,7 @@ If reopen2 Then Form2.Show , Form1: Form2.Visible = True
        End If
        End If
        Next
-
+ Set x = Nothing
 Form1.SetFocus
 Form1.ZOrder 0
 

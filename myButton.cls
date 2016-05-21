@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "myButton"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Dim WithEvents glistN As gList
@@ -29,7 +29,7 @@ With glistN
 .BackColor = rgb(200, 120, 60)
 
 ''.FontSize = 12
-.Enabled = True
+.enabled = True
 .ShowMe
 End With
 End Property
@@ -49,7 +49,7 @@ glistN.ShowMe
 End Sub
 
 Private Sub glistN_CheckLostFocus()
-If Me.Enabled Then
+If Me.enabled Then
 glistN.BackColor = rgb(200, 120, 60)
 glistN.PanPos = 0
 glistN.ShowMe
@@ -96,19 +96,19 @@ Public Property Get Index() As Long
 Index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
-mIndex = rhs
+Public Property Let Index(ByVal RHS As Long)
+mIndex = RHS
 End Property
-Public Property Get Enabled() As Long
-Enabled = glistN.Enabled
+Public Property Get enabled() As Long
+enabled = glistN.enabled
 End Property
 
-Public Property Let Enabled(ByVal rhs As Long)
-glistN.Enabled = rhs
+Public Property Let enabled(ByVal RHS As Long)
+glistN.enabled = RHS
 End Property
 
 Public Sub Shutdown()
 glistN.Shutdown
-glistN.Enabled = False
+glistN.enabled = False
 
 End Sub

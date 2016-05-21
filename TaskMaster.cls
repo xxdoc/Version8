@@ -61,7 +61,7 @@ GoTo thh11
        If myRunningList(i).Id < 100 Then
         PlayMusic = True
  GoTo thh11
-       End
+     '  End
        End If
        
        Next i
@@ -112,7 +112,7 @@ GoTo thh
        myRunningList.Remove i
        ThrowOne = True
  GoTo thh
-       End
+     '  End
        End If
        
        Next i
@@ -137,7 +137,7 @@ GoTo thh
        myRunningList.Remove i
        ThrowOne = True
  GoTo thh
-       End
+     '  End
        End If
        
        Next i
@@ -161,7 +161,7 @@ rest
        Remove = True
        RestEnd
        Exit Function
-       End
+       
        End If
        
        Next i
@@ -204,7 +204,7 @@ GoTo thh
        If myRunningList(i).Id = thisid Then
         Set getone = myRunningList(i)
  GoTo thh
-       End
+      
        End If
        
        Next i

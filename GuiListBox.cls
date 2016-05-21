@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "GuiListBox"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
@@ -196,15 +196,15 @@ Public Property Get Index() As Long
 Index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
-mIndex = rhs
+Public Property Let Index(ByVal RHS As Long)
+mIndex = RHS
 End Property
 Public Property Get Locked() As Boolean
 Locked = Not glistN.enabled
 End Property
 
-Public Property Let Locked(ByVal rhs As Boolean)
-glistN.enabled = Not rhs
+Public Property Let Locked(ByVal RHS As Boolean)
+glistN.enabled = Not RHS
 End Property
 
 Private Sub glistN_ExposeListcount(cListCount As Long)
@@ -304,7 +304,7 @@ Private Sub glistN_ScrollSelected(item As Long, y As Long)
       End If
 End Sub
 
-Private Sub glistN_selected(item As Long)
+Private Sub glistN_Selected(item As Long)
 '
 If glistN.PanPos <> 0 Then glistN.PanPos = 0
    If mIndex >= 0 Then
@@ -353,8 +353,8 @@ Public Property Get enabled() As Boolean
 enabled = mEnabled
 End Property
 
-Public Property Let enabled(ByVal rhs As Boolean)
-mEnabled = rhs
+Public Property Let enabled(ByVal RHS As Boolean)
+mEnabled = RHS
 End Property
 
 Public Property Get Linespace() As Variant
@@ -431,14 +431,14 @@ glistN.Text = CStr(vNewValue)
 End Property
 Public Sub Sort(Optional SkipChar As Long = 1)
 If glistN.listcount < 2 Then Exit Sub
-Dim doc As Document, M As Long
+Dim doc As Document, m As Long
 Set doc = New Document
 doc.textDocFast = glistN.Text
-M = glistN.ListIndex
+m = glistN.ListIndex
 If SkipChar < 1 Then SkipChar = 1
 doc.SortDoc SkipChar, 1, glistN.listcount
 glistN.Text = doc.textDoc
-If M > 0 Then glistN.ListindexPrivateUse = M
+If m > 0 Then glistN.ListindexPrivateUse = m
 glistN.ShowMe2
 Set doc = Nothing
 End Sub

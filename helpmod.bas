@@ -59,11 +59,11 @@ Public Const DT_VCENTER As Long = &H4&
 Public Const DT_WORDBREAK As Long = &H10&
 Public Const DT_WORD_ELLIPSIS As Long = &H40000
 
-Private Declare Function GetLogicalDriveStrings Lib "kernel32" _
+Private Declare Function GetLogicalDriveStrings Lib "KERNEL32" _
   Alias "GetLogicalDriveStringsA" (ByVal nBufferLength As Long, _
   ByVal lpBuffer As String) As Long
-   Private Declare Function GetComputerName Lib "kernel32" Alias "GetComputerNameW" (ByVal lpBuffer As Long, nsize As Long) As Long
- Private Declare Function GetDiskFreeSpace Lib "kernel32" _
+   Private Declare Function GetComputerName Lib "KERNEL32" Alias "GetComputerNameW" (ByVal lpBuffer As Long, nsize As Long) As Long
+ Private Declare Function GetDiskFreeSpace Lib "KERNEL32" _
  Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, _
  lpSectorsPerCluster As Long, lpBytesPerSector As Long, _
  lpNumberOfFreeClusters As Long, lpTtoalNumberOfClusters As Long) _
@@ -143,7 +143,7 @@ Dim oshell, ofile, oFolder
 Set oshell = CreateObject("Shell.Application")
 If Not oshell Is Nothing Then
 Set oFolder = oshell.NameSpace(NET_HOOD)
-For Each ofile In oFolder.items
+For Each ofile In oFolder.Items
 If ofile.name = "" Then
 If all = "" Then
 all = "(" + ofile.GetLink.path + ")"
@@ -159,6 +159,8 @@ Else
      End If
      End If
 Next
+Set ofile = Nothing
+Set oFolder = Nothing
 If all <> "" Then
 FindNetworkFoldersNames = all + vbCrLf
 End If
@@ -180,12 +182,14 @@ Set oshell = CreateObject("Shell.Application")
 If Not oshell Is Nothing Then
 Set oFolder = oshell.NameSpace(NET_HOOD)
 
-For Each ofile In oFolder.items
+For Each ofile In oFolder.Items
 If ofile.name = giveAname Then
 FindNetworkFolderPath = ofile.GetLink.path
 Exit For
 End If
 Next ofile
+Set ofile = Nothing
+Set oFolder = Nothing
 End If
 
 End Function
@@ -203,7 +207,7 @@ Dim item    As Variant
     For Each item In qryWMI
       getIP = item.IPAddress(0)
     Next
-
+    Set item = Nothing
     Set WMI = Nothing
     Set qryWMI = Nothing
 

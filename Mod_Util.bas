@@ -1851,7 +1851,7 @@ If Not nopr Then crNew bstack, mybasket
 If Not nopr Then ddd.CurrentY = ddd.CurrentY - mybasket.Yt:   npy = npy - 1
     End If
 If Not nopr Then GetXYb2 ddd, mybasket, ruller&, npy
-CONThere:
+conthere:
 If Not nopr Then LCTbasket ddd, mybasket, npy, PX: ddd.CurrentX = ddd.CurrentX + dv2x15
 End If
 Case Else
@@ -3553,12 +3553,12 @@ UnHook Form1.hWnd
 Form1.KeyPreview = True
 Targets = ot
 End Sub
-Private Sub mywait11(bstack As basetask, pp As Double)
+Private Sub mywait11(bstack As basetask, PP As Double)
 Dim p As Boolean, e As Boolean
 On Error Resume Next
 If bstack.Process Is Nothing Then
 ''If extreme Then MyDoEvents
-If pp = 0 Then Exit Sub
+If PP = 0 Then Exit Sub
 Else
 
 Err.Clear
@@ -3570,7 +3570,7 @@ Exit Sub
 End If
 End If
 End If
-pp = pp + CDbl(timeGetTime)
+PP = PP + CDbl(timeGetTime)
 
 Do
 
@@ -3593,7 +3593,7 @@ Exit Do
 End If
 End If
 End If
-Loop Until pp <= CDbl(timeGetTime) Or NOEXECUTION
+Loop Until PP <= CDbl(timeGetTime) Or NOEXECUTION
 
                        If exWnd <> 0 Then
                 MyTitle$ bstack
@@ -3872,6 +3872,8 @@ If Form1.Visible = False Then
     MyDoEvents
     Sleep 100
     End If
+Else
+If Form1.top >= Screen.Height Then Form1.Move 0, 0
 End If
 If dq.Visible = False Then dq.Visible = True
 If exWnd = 0 Then Form1.KeyPreview = True
@@ -3907,7 +3909,13 @@ If USELIST Then
 Else
 If Not bstack.IamThread Then
 
- If Not iamactive Then k1 = 0: MyDoEvents1 Form1
+ If Not iamactive Then
+ If Not Form1.Visible Then
+ If Form1.WindowState = 1 Then Form1.WindowState = 0
+ Form1.Visible = True
+ End If
+ k1 = 0: MyDoEvents1 Form1
+ End If
 
  Else
  
@@ -3924,6 +3932,7 @@ If Not QRY Then HideCaret dq.hWnd:   Exit Do
  Once = True
 
  If QUERYLIST <> "" Then  ' up down
+ 
     If INK = "" Then MyDoEvents
 If clickMe = 38 Then
 
@@ -4047,7 +4056,7 @@ If RealLen(A$) = 1 Or Len(A$) = 1 Or (RealLen(A$) = 0 And Len(A$) = 1 And Len(s$
       LCTCB dq, prive, -1: DestroyCaret
  oldLCTCB dq, prive, 0
     s$ = ""
-    If ExTarget Then End
+    'If ExTarget Then End
 
     Exit Do
 ElseIf Asc(A$) = 27 Then

@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "GuiCheckBox"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' From Tools make changed property as default
@@ -30,8 +30,8 @@ Public Property Get Index() As Long
 Index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
-mIndex = rhs
+Public Property Let Index(ByVal RHS As Long)
+mIndex = RHS
 End Property
 Public Sub Construct(there As Form, name$)
  mIndex = -1
@@ -120,9 +120,9 @@ glistN.List(0) = "  " + mCaptext
 glistN.ShowMe
 End If
 End Property
-Public Property Let CheckReset(rhs As Boolean)
+Public Property Let CheckReset(RHS As Boolean)
 ' without event
-mValue = rhs
+mValue = RHS
 If Not glistN Is Nothing Then
 glistN.ListSelected(0) = mValue
 glistN.ShowMe
@@ -220,15 +220,15 @@ End Sub
 Public Property Get top() As Variant
 top = Callback.Controls(CtrlName).top
 End Property
-Public Property Let top(ByVal rhs As Variant)
-Callback.Controls(CtrlName).top = rhs
+Public Property Let top(ByVal RHS As Variant)
+Callback.Controls(CtrlName).top = RHS
 End Property
 Public Property Get Left() As Variant
 Left = Callback.Controls(CtrlName).Left
 End Property
 
-Public Property Let Left(ByVal rhs As Variant)
-Callback.Controls(CtrlName).Left = rhs
+Public Property Let Left(ByVal RHS As Variant)
+Callback.Controls(CtrlName).Left = RHS
 End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
 mStayOpen = CBool(vNewValue)

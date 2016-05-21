@@ -41,6 +41,9 @@ Dim v(), HRes As Long
   HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_STDCALL, CInt(RetType), j, VType(0), VPtr(0), stdCallW)
   End If
   If HRes Then Err.Raise HRes
+ If Typename(stdCallW) = "Null" Then
+ stdCallW = vbEmpty
+ End If
 End Function
 
 
@@ -59,6 +62,9 @@ Dim i As Long, pFunc As Long, v(), HRes As Long
   HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_CDECL, CInt(RetType), j, VType(0), VPtr(0), cdeclCallW)
   End If
   If HRes Then Err.Raise HRes
+  If Typename(cdeclCallW) = "Null" Then
+  cdeclCallW = vbEmpty
+  End If
 End Function
 
 Public Function stdCallA(sDll As String, sFunc As String, ByVal RetType As Variant, ParamArray p() As Variant)
@@ -111,39 +117,43 @@ Dim i As Long, v(), HRes As Long
   If HRes Then Err.Raise HRes
 End Function
 
-Public Function GetFuncPtr(sDll As String, sFunc As String) As Long
-Static hlib As Long, sLib As String
-  If sLib <> sDll Then 'just a bit of caching, to make resolving libHdls faster
-    sLib = sDll
-    On Error Resume Next
+Public Function GetFuncPtr(sLib As String, sFunc As String) As Long
+
+Dim hlib As Long
+
     If LibHdls.Find(sLib) Then
         hlib = LibHdls.Value
     Else
      
       hlib = LoadLibrary(sLib)
       If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
-      LibHdls.AddKey sLib, hlib '<- cache it under the dll-name for the next call
+      LibHdls.AddKey sLib, hlib
     End If
-  End If
+  'End If
   GetFuncPtr = GetProcByName(hlib, sFunc)
   If GetFuncPtr = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
 End Function
-Public Function GetFuncPtrOrd(sDll As String, sFunc As String) As Long
-Static hlib As Long, sLib As String
+Public Sub RemoveDll(sLib As String)
+If LibHdls.Find(sLib) Then
+    FreeLibrary LibHdls.Value
+    LibHdls.RemoveWithNoFind sLib
+End If
+End Sub
+
+Public Function GetFuncPtrOrd(sLib As String, sFunc As String) As Long
+Dim hlib As Long
 Dim lfunc As Long
-On Error Resume Next
+
 lfunc = val(Mid$(sFunc, 2))
 
-  If sLib <> sDll Then 'just a bit of caching, to make resolving libHdls faster
-    sLib = sDll
     If LibHdls.Find(sLib) Then
         hlib = LibHdls.Value
     Else
       hlib = LoadLibrary(sLib)
       If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
-      LibHdls.AddKey sLib, hlib '<- cache it under the dll-name for the next call
+      LibHdls.AddKey sLib, hlib
     End If
-    End If
+   ' End If
   GetFuncPtrOrd = GetProcByOrdinal(hlib, lfunc)
   If GetFuncPtrOrd = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
 End Function

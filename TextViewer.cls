@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "TextViewer"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' M2000 ver 1.
@@ -3225,7 +3225,7 @@ Private Sub PrintItem1X(mHdc As Long, ByVal c As String, r As RECT, col() As Var
 On Error Resume Next
     Dim cc As String, all As Long, CM As String, offset As Long, addthis As Long
       
-    Dim ww$(), items&, i, rleft
+    Dim ww$(), Items&, i, rleft
     If UBound(col()) <= 1 Then
         PrintItem1 mHdc, c, r
         Exit Sub
@@ -3233,14 +3233,14 @@ On Error Resume Next
     rleft = r.Left
     all = rleft + glistN.UserControlTextWidthPixels(c)
     r.Left = all
-    ww$() = SplitStringUsingArray(c, col(), items&)
+    ww$() = SplitStringUsingArray(c, col(), Items&)
     If showparagraphonce Then
         cc = "¶"
         DrawText mHdc, StrPtr(cc), -1, r, mway
     End If
     cc = ""
     CM = c
-    For i = items& To 0 Step -1
+    For i = Items& To 0 Step -1
         c = ww$(i)
         If Len(CM) - Len(ww$(i)) >= 0 Then
         CM = Left$(CM, Len(CM) - Len(ww$(i)))

@@ -225,23 +225,23 @@ Private Declare Function GetCommandLineW Lib "KERNEL32" () As Long
 Private Declare Sub PutMem4 Lib "msvbvm60" (ByVal Ptr As Long, ByVal Value As Long)
 Private Declare Function SysAllocStringLen Lib "oleaut32" (ByVal Ptr As Long, ByVal Length As Long) As Long
 
-Public Function CommandW() As String
+Public Function commandW() As String
 Static mm$
-If mm$ <> "" Then CommandW = mm$: Exit Function
+If mm$ <> "" Then commandW = mm$: Exit Function
 If m_bInIDE Then
 mm$ = command
 Else
 Dim Ptr As Long: Ptr = GetCommandLineW
     If Ptr Then
-        PutMem4 VarPtr(CommandW), SysAllocStringLen(Ptr, lstrlenW(Ptr))
-     If AscW(CommandW) = 34 Then
-       CommandW = Mid$(CommandW, InStr(CommandW, """ ") + 2)
+        PutMem4 VarPtr(commandW), SysAllocStringLen(Ptr, lstrlenW(Ptr))
+     If AscW(commandW) = 34 Then
+       commandW = Mid$(commandW, InStr(commandW, """ ") + 2)
        Else
-            CommandW = Mid$(CommandW, InStr(CommandW, " ") + 1)
+            commandW = Mid$(commandW, InStr(commandW, " ") + 1)
         End If
     End If
     End If
-    If mm$ = "" And command <> "" Then CommandW = command Else CommandW = mm$
+    If mm$ = "" And command <> "" Then commandW = command Else commandW = mm$
 End Function
 
 
@@ -1435,7 +1435,7 @@ MYFONT = .Font.name
 End With
 
 
-s$ = CommandW
+s$ = commandW
 If Not ISSTRINGA(s$, cLine) Then
 cLine = mylcasefILE(Trim(s$))
 Else
@@ -1545,13 +1545,15 @@ Sub something()
 
 Set basestack1.Owner = DIS
 Set DisStack.Owner = DIS
-
+NOEXECUTION = False
+basestack1.toprinter = False
+MOUT = False
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
 Dim pn As Long, A As New cDIBSection
 AutoRedraw = True
-If OneOnly Then Exit Sub
+ If App.StartMode = vbSModeStandalone Then If OneOnly Then Exit Sub
 OneOnly = True
 
 If m_bInIDE Then funcdeep = 128 Else funcdeep = 14800 ' need stack 102440960 bytes
@@ -1562,7 +1564,7 @@ FK$(13) = "”’√√—¡÷≈¡”"
 'Me.WindowState = 2
 ''Hide
 Me.WindowState = 0
-Sleep 10
+'Sleep 10
 If Me.WindowState = 0 Then
 If IsWine Then
 Me.Move 0, ScrY(), (ScrX() - 1), (ScrY() - 1)
@@ -1570,7 +1572,7 @@ Else
 Me.Move 0, ScrY(), ScrX(), ScrY()
 End If
 End If
-Sleep 10
+'Sleep 10
 
 basestack1.myCharSet = 0
     Font.charset = basestack1.myCharSet
@@ -1590,24 +1592,39 @@ Dim dummy As Boolean, i
 NOEXECUTION = False
 '
 myBreak basestack1
+MyNew basestack1, "", 0
+MyClear basestack1, ""
+Dim mybasket As basket
+mybasket = players(DisForm)
+PlaceBasket DIS, mybasket
 
 If cLine <> "" Then
 LASTPROG$ = cLine
 '
-Original basestack1, " : NEW : CLEAR : " & "TITLE " & """" + ExtractNameOnly(cLine) + """" & ", 0"
+ProcTitle basestack1, Chr$(34) + ExtractNameOnly(cLine) + Chr$(34) + ", 0", 0
 Else
-Original basestack1, " : NEW : CLEAR :" & "TITLE " & """" & "M2000" & """"
+Form1.top = 0
+ProcTitle basestack1, Chr$(34) + "M2000" + Chr$(34) + ",0", 0
+
 End If
 
 s_complete = True
 
+
+
+players(DisForm) = mybasket
+
+End Sub
+Public Sub MyPrompt(LoadFileAndSwitches$, Prompt$)
+elevatestatus = -1
+s_complete = True
+ExTarget = False
 Dim helpcnt As Long, qq$
 
 ''MyDoEvents
 
 Dim mybasket As basket
 mybasket = players(DisForm)
-PlaceBasket DIS, mybasket
 Do
 Do
 escok = True
@@ -1632,7 +1649,7 @@ Form2.ComputeNow
    
     End If
    
-     If Not Form1.Visible Then Form1.Show , Form5
+    If Not Form1.Visible Then Form1.Show , Form5
     If Not releasemouse Then Form1.SetFocus
   
     NORUN1 = False
@@ -1641,7 +1658,7 @@ Form2.ComputeNow
  ''reset refresh system
   REFRESHRATE = 25
   k1 = 0
-    QUERY basestack1, ">", qq$, (mybasket.mx * 4), True
+    QUERY basestack1, Prompt$, qq$, (mybasket.mx * 4), True
       mybasket = players(DisForm)
 If basestack1.Owner.Visible = True Then basestack1.Owner.Refresh Else basestack1.Owner.Visible = True
 
@@ -1650,7 +1667,7 @@ If basestack1.Owner.Visible = True Then basestack1.Owner.Refresh Else basestack1
     mybasket.pageframe = 0
     MYSCRnum2stop = holdcontrol(DIS, mybasket)
     HoldReset 1, mybasket
-If CommandW = "" And qq$ = "" Then helpcnt = helpcnt + 1
+If LoadFileAndSwitches$ = "" And qq$ = "" Then helpcnt = helpcnt + 1
 
         If helpcnt > 4 Then
     If basestack1.Owner.Font.charset <> 161 Then
@@ -1677,11 +1694,13 @@ If Not MOUT Then NOEXECUTION = False: ResetBreak: MOUT = interpret(basestack1, "
 Loop Until qq$ <> ""
 
 NoAction = True
+
+ResetBreak
+players(DisForm) = mybasket
+NoAction = True
 NOEXECUTION = False
 basestack1.toprinter = False
 MOUT = False
-ResetBreak
-players(DisForm) = mybasket
 If Not interpret(basestack1, qq$) Then
 mybasket = players(DisForm)
                 Dim x As Form
@@ -1689,12 +1708,13 @@ mybasket = players(DisForm)
              
                     If Typename$(x) = "GuiM2000" Then Unload x
                     Next
+                     Set x = Nothing
 If NERR Then Exit Do
     basestack1.toprinter = False
     If MOUT Then
             NOEXECUTION = False
             ResetBreak
-            MOUT = interpret(basestack1, "START"): qq$ = ""
+'
             
             mybasket = players(DisForm)
             MOUT = False
@@ -1728,6 +1748,7 @@ If NERR Then Exit Do
         LastErNum = 0: LastErNum1 = 0
         LastErName = ""
         LastErNameGR = ""
+        ExTarget = False
         End If
         players(DisForm) = mybasket
         End If
@@ -1746,37 +1767,16 @@ NoAction = False
 If ExTarget Then Exit Do
 para$ = ""
 Loop
-If NERR Then
-MsgBoxN "ShutDown", vbCritical, "Abnormal Exit"
-End If
-NoAction = False
-DelTemp
-Set DisStack.Owner = Nothing
-Set basestack1.Owner = Nothing
 
-Set LastGlist = Nothing
-Set LastGlist2 = Nothing
-Unload Form5
+elevatestatus = 0
 End Sub
 
 
 Private Sub Form_Unload(Cancel As Integer)
+
 Set MeStack.Owner = Nothing
 TEXT1.Dereference
 Set Point2Me = Nothing
-Exit Sub ' why......................................because form5 be closing the door..
-RemoveFont GetCurDir(True) & "TT6492M_.TTF"
-MediaPlayer1.closeMovie
-  DisableMidi
-  TaskMaster.Dispose
-  Set TaskMaster = Nothing
-
-Dim x As Form
-For Each x In Forms
-'MsgBox x.name
-If x.name <> Me.name Then Unload x
-Next
-If App.UnattendedApp Then End
 End Sub
 
 Private Sub List1_DblClick()
@@ -2179,13 +2179,13 @@ End Sub
 
 
 
-Public Sub view1_StatusTextChange11(bstack As basetask, ByVal t1 As String)
+Public Sub view1_StatusTextChange11(bstack As basetask, ByVal T1 As String)
 On Error Resume Next
 exWnd = 0
 
 view1.Visible = False
 Sleep 1
-PREPARE bstack, t1
+PREPARE bstack, T1
 Sleep 1
 If Form1.Visible Then Form1.Refresh
 End Sub
@@ -2372,6 +2372,7 @@ Public Sub myBreak(basestack As basetask)
              
                     If Typename$(x) = "GuiM2000" Then Unload x
                     Next
+                     Set x = Nothing
 Dim cc As Object
 Set cc = New cRegistry
 

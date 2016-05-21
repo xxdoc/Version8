@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "Group"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' MAKE VALUE AS DEFAULT PROPERTY
@@ -25,23 +25,23 @@ Dim mTeam As Boolean
 Dim LinkToGroup As Object
 Dim mTag As String
 Public Function PrepareSoros(ByRef v(), ByVal topname$) As mStiva
-Dim I As Long, AllSoros As New mStiva, s As String, VV As mStiva
-For I = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(I)
+Dim i As Long, AllSoros As New mStiva, s As String, vv As mStiva
+For i = 1 To OwnSoros.Total
+s = OwnSoros.StackItem(i)
 'Debug.Print s, topname$, GroupName
 
 If Left$(s$, 1) = "*" Then
 AllSoros.DataStr "*" + topname$ + GroupName + Mid$(s, 2)
- If Not IsObject(v(Val(Split(s)(1)))) Then Set v(Val(Split(s)(1))) = New Group
+ If Not IsObject(v(val(Split(s)(1)))) Then Set v(val(Split(s)(1))) = New Group
  If HERE$ <> "" Then
- Set VV = v(Val(Split(s)(1))).PrepareSoros(v(), HERE$ + "." + GroupName)
+ Set vv = v(val(Split(s)(1))).PrepareSoros(v(), HERE$ + "." + GroupName)
  Else
- Set VV = v(Val(Split(s)(1))).PrepareSoros(v(), GroupName)
+ Set vv = v(val(Split(s)(1))).PrepareSoros(v(), GroupName)
  End If
  
-AllSoros.MergeBottom VV
+AllSoros.MergeBottom vv
 Else
-If Val(Split(s)(1)) = 0 Then
+If val(Split(s)(1)) = 0 Then
 AllSoros.DataStr s
 Else
 AllSoros.DataStr topname$ + GroupName + s
@@ -53,17 +53,17 @@ Set PrepareSoros = AllSoros
 End Function
 
 Public Function types() As String
-Dim I As Long, s$
-I = OwnSoros.Total
+Dim i As Long, s$
+i = OwnSoros.Total
 On Error Resume Next
-While I > 0
-If InStr(OwnSoros.StackItem(I), "( ") > 0 Then
+While i > 0
+If InStr(OwnSoros.StackItem(i), "( ") > 0 Then
 s$ = "A" + s$
 Else
 s$ = "V" + s$
 End If
 
-I = I - 1
+i = i - 1
 
 Wend
 types = s$
@@ -134,11 +134,11 @@ If FloatGroup Then bank.SerialItem (0), 0, 7
 FloatGroup = False
 Set bank = Nothing
 End Sub
-Public Property Set LinkRef(a As Object)
+Public Property Set LinkRef(A As Object)
 If FloatGroup Then
 mTeam = False
-Set LinkToGroup = a
-If a Is Nothing Then Exit Property
+Set LinkToGroup = A
+If A Is Nothing Then Exit Property
 'erase functions,,,
  bank.item(bank.item(1) * 2 + 3) = ""
 mTeam = True
@@ -149,11 +149,11 @@ End Property
 Public Property Get Link() As Object
 Set Link = LinkToGroup
 End Property
-Public Property Set Sorosref(a As mStiva)
+Public Property Set Sorosref(A As mStiva)
 If FloatGroup Then
 ' we can't do anything with stored values
 Else
-Set OwnSoros = a
+Set OwnSoros = A
 End If
 End Property
 Public Property Get soros() As mStiva
@@ -167,13 +167,13 @@ Public Property Get Varlist() As String
 Varlist = VarRef$
 End Property
 Public Function FunclistTotal(v(), skip As Boolean) As String
-Dim I As Long, s As String, Sm As String
-For I = 1 To OwnSoros.Total
-s = OwnSoros.StackItem(I)
+Dim i As Long, s As String, Sm As String
+For i = 1 To OwnSoros.Total
+s = OwnSoros.StackItem(i)
 If Left$(s, 1) = "*" Then
-If Not IsObject(v(Val(Split(s)(1)))) Then Set v(Val(Split(s)(1))) = New Group
+If Not IsObject(v(val(Split(s)(1)))) Then Set v(val(Split(s)(1))) = New Group
 
- Sm = Sm + v(Val(Split(s)(1))).FunclistTotal(v(), False)
+ Sm = Sm + v(val(Split(s)(1))).FunclistTotal(v(), False)
 End If
 Next
 If skip Then
@@ -190,12 +190,12 @@ Public Property Let FuncList(ByVal vNewValue As String)
 FuncRef$ = vNewValue
 End Property
 Public Function ArrlistTotal(v(), skip As Boolean) As String
-    Dim I As Long, s As String, Sm As String
-    For I = 1 To OwnSoros.Total
-    s = OwnSoros.StackItem(I)
+    Dim i As Long, s As String, Sm As String
+    For i = 1 To OwnSoros.Total
+    s = OwnSoros.StackItem(i)
     If Left$(s, 1) = "*" Then
-    If Not IsObject(v(Val(Split(s)(1)))) Then Set v(Val(Split(s)(1))) = New Group
-    Sm = Sm + v(Val(Split(s)(1))).ArrlistTotal(v(), 0)
+    If Not IsObject(v(val(Split(s)(1)))) Then Set v(val(Split(s)(1))) = New Group
+    Sm = Sm + v(val(Split(s)(1))).ArrlistTotal(v(), 0)
     End If
     Next
     If skip Then
@@ -216,7 +216,7 @@ Public Property Get Value() As Variant
 Attribute Value.VB_UserMemId = 0
 Value = 0
 End Property
-Public Property Let Value(DUMMY As Variant)
+Public Property Let Value(dummy As Variant)
 '
 End Property
 

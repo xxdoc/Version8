@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "GuiButton"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Dim WithEvents glistN As gList
@@ -158,7 +158,7 @@ Private Sub glistN_RegisterGlist(this As gList)
 this.NoWheel = True
 End Sub
 
-Private Sub glistN_selected(item As Long)
+Private Sub glistN_Selected(item As Long)
 If mlocked Then
  If mIndex >= 0 Then
    Callback.Callback mesCtrlName + ".Click(" + Str(mIndex) + ")"
@@ -199,15 +199,15 @@ Public Property Get Index() As Long
 Index = mIndex
 End Property
 
-Public Property Let Index(ByVal rhs As Long)
-mIndex = rhs
+Public Property Let Index(ByVal RHS As Long)
+mIndex = RHS
 End Property
 Public Property Get enabled() As Long
 enabled = glistN.enabled
 End Property
 
-Public Property Let enabled(ByVal rhs As Long)
-glistN.enabled = rhs
+Public Property Let enabled(ByVal RHS As Long)
+glistN.enabled = RHS
 End Property
 Sub ColorsReset()
 white = rgb(255, 255, 255)
@@ -243,21 +243,21 @@ aa.bold = ThisBold
 Set glistN.Font = aa
 End If
 End Sub
-Public Sub Curve(rhs As Single)
-glistN.Curve False, rhs
+Public Sub Curve(RHS As Single)
+glistN.Curve False, RHS
 End Sub
 Public Property Get top() As Variant
 top = Callback.Controls(CtrlName).top
 End Property
-Public Property Let top(ByVal rhs As Variant)
-Callback.Controls(CtrlName).top = rhs
+Public Property Let top(ByVal RHS As Variant)
+Callback.Controls(CtrlName).top = RHS
 End Property
 Public Property Get Left() As Variant
 Left = Callback.Controls(CtrlName).Left
 End Property
 
-Public Property Let Left(ByVal rhs As Variant)
-Callback.Controls(CtrlName).Left = rhs
+Public Property Let Left(ByVal RHS As Variant)
+Callback.Controls(CtrlName).Left = RHS
 End Property
 Sub GetFocus()
 On Error Resume Next

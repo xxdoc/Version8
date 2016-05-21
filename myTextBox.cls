@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "myTextBox"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
@@ -27,12 +27,12 @@ Event DeployMenu()
 Private mprompt As String
 Private mkind As String
 Public SkipProcAtExitFocus As Boolean
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalAlloc Lib "KERNEL32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalFree Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalLock Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalReAlloc Lib "KERNEL32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
+Private Declare Function GlobalSize Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "KERNEL32" (ByVal hMem As Long) As Long
 Private Const GMEM_DDESHARE = &H2000
 Private Const GMEM_DISCARDABLE = &H100
 Private Const GMEM_DISCARDED = &H4000
@@ -50,7 +50,7 @@ Private Const GMEM_VALID_FLAGS = &H7F72
 Private Const GMEM_ZEROINIT = &H40
 Private Const GPTR = (GMEM_FIXED Or GMEM_ZEROINIT)
 Private Const GMEM_LOWER = GMEM_NOT_BANKED
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
+Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetClipboardData Lib "user32" _
     (ByVal wFormat As Long) As Long
@@ -78,29 +78,29 @@ Else
 vartext = Mid$(glistN.List(0), 1 + Len(mprompt))
 End If
 End Property
-Public Property Let vartext(ByVal rhs As String)
+Public Property Let vartext(ByVal RHS As String)
 glistN.restrictLines = 1
 glistN.HeadLine = "" ' no info
 glistN.HeadlineHeight = 0
 
 If glistN.listcount = 0 Then
-glistN.additem mprompt + rhs
+glistN.additem mprompt + RHS
 Else
-glistN.List(0) = mprompt + rhs
+glistN.List(0) = mprompt + RHS
 End If
-glistN.SelStart = Len(mprompt + rhs) + 1
+glistN.SelStart = Len(mprompt + RHS) + 1
 glistN.ShowMe
 End Property
-Public Property Let Text(ByVal rhs As String)
+Public Property Let Text(ByVal RHS As String)
 'Dim oldright As Long
 'oldright = glistN.LeftMarginPixels
 glistN.restrictLines = 1
 glistN.HeadLine = "" ' no info
 glistN.HeadlineHeight = 0
 If glistN.listcount = 0 Then
-glistN.additem rhs
+glistN.additem RHS
 Else
-glistN.List(0) = rhs
+glistN.List(0) = RHS
 End If
 'glistN.LeftMarginPixels = oldright
 
@@ -112,11 +112,11 @@ Info = glistN.HeadLine
 
 End Property
 
-Public Property Let Info(ByVal rhs As String)
+Public Property Let Info(ByVal RHS As String)
 Locked = False
 glistN.restrictLines = 0
 glistN.HeadLineHeightMinimum = glistN.HeightPixels
-glistN.HeadLine = rhs
+glistN.HeadLine = RHS
 
 glistN.ShowMe
 Locked = True
@@ -125,8 +125,8 @@ End Property
 Public Property Get top() As Long
 top = glistN.TopTwips
 End Property
-Public Property Let top(rhs As Long)
-glistN.TopTwips = rhs
+Public Property Let top(RHS As Long)
+glistN.TopTwips = RHS
 End Property
 Public Property Set Container(glistNN As gList)
 Set glistN = glistNN
@@ -143,10 +143,10 @@ Public Property Get Prompt() As String
 Prompt = mprompt
 End Property
 
-Public Property Let Prompt(ByVal rhs As String)
-mprompt = rhs
-glistN.PromptLineIdent = Len(rhs)
-Text = rhs
+Public Property Let Prompt(ByVal RHS As String)
+mprompt = RHS
+glistN.PromptLineIdent = Len(RHS)
+Text = RHS
 End Property
 
 
@@ -190,9 +190,9 @@ Public Property Get ThisKind() As String
 ThisKind = mkind
 End Property
 
-Public Property Let ThisKind(ByVal rhs As String)
-mkind = rhs
-glistN.LastLinePart = " " & rhs
+Public Property Let ThisKind(ByVal RHS As String)
+mkind = RHS
+glistN.LastLinePart = " " & RHS
 End Property
 
 
@@ -200,9 +200,9 @@ Public Property Get enabled() As Boolean
 enabled = glistN.EditFlag
 End Property
 
-Public Property Let enabled(ByVal rhs As Boolean)
-glistN.EditFlag = rhs
-glistN.NoCaretShow = Not rhs
+Public Property Let enabled(ByVal RHS As Boolean)
+glistN.EditFlag = RHS
+glistN.NoCaretShow = Not RHS
 End Property
 '
 
@@ -273,16 +273,16 @@ Public Property Get SelStart() As Long
 SelStart = glistN.SelStart
 End Property
 
-Public Property Let SelStart(ByVal rhs As Long)
-glistN.SelStart = rhs
+Public Property Let SelStart(ByVal RHS As Long)
+glistN.SelStart = RHS
 End Property
 
 Public Property Get Visible() As Boolean
 Visible = glistN.Visible
 End Property
 
-Public Property Let Visible(ByVal rhs As Boolean)
-glistN.Visible = rhs
+Public Property Let Visible(ByVal RHS As Boolean)
+glistN.Visible = RHS
 End Property
 Public Sub SetFocus()
 On Error Resume Next
@@ -303,8 +303,8 @@ Public Property Get Locked() As Boolean
 Locked = Not glistN.enabled
 End Property
 
-Public Property Let Locked(ByVal rhs As Boolean)
-glistN.enabled = Not rhs
+Public Property Let Locked(ByVal RHS As Boolean)
+glistN.enabled = Not RHS
 End Property
 Public Sub Spinner(ShowBar As Boolean, MinValue As Long, maxvalue As Long, LargeValue As Long)
 If Not ShowBar Then
@@ -331,9 +331,9 @@ End If
 
 End Property
 
-Public Property Let Value(ByVal rhs As Long)
+Public Property Let Value(ByVal RHS As Long)
 If glistN.Spinner Then
-glistN.ValueSilent = rhs
+glistN.ValueSilent = RHS
 End If
 
 End Property
@@ -347,8 +347,8 @@ Public Property Get MaxCharLength() As Long
 MaxCharLength = glistN.maxchar
 End Property
 
-Public Property Let MaxCharLength(ByVal rhs As Long)
-glistN.maxchar = rhs
+Public Property Let MaxCharLength(ByVal RHS As Long)
+glistN.maxchar = RHS
 End Property
 
 

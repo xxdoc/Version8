@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "myCheckBox"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' From Tools make changed property as default
@@ -21,16 +21,16 @@ Dim mCaptext As String
 Dim mValue As Boolean
 Public Property Set Container(glistNN As gList)
 Set glistN = glistNN
-glistN.clear
+glistN.Clear
 glistN.additem "  " + mCaptext
 glistN.NoCaretShow = True
 glistN.VerticalCenterText = True
 glistN.restrictLines = 1
 glistN.MenuItem 1, True, False, mValue
-glistN.listindex = 0
+glistN.ListIndex = 0
 glistN.LeftMarginPixels = glistN.HeightPixels
 glistN.ShowMe
-glistN.Enabled = True
+glistN.enabled = True
 End Property
 Public Property Let Caption(myCap As String)
 '
@@ -40,9 +40,9 @@ glistN.List(0) = "  " + mCaptext
 glistN.ShowMe
 End If
 End Property
-Public Property Let CheckReset(rhs As Boolean)
+Public Property Let CheckReset(RHS As Boolean)
 ' without event
-mValue = rhs
+mValue = RHS
 If Not glistN Is Nothing Then
 glistN.ListSelected(0) = mValue
 glistN.ShowMe
@@ -75,14 +75,14 @@ Private Sub glistN_CheckLostFocus()
 check1focus = False
 glistN.ShowMe
 End Sub
-Private Sub gListN_MenuChecked(item As Long)
+Private Sub glistN_MenuChecked(item As Long)
 ' always item is 1  so 1-1..0 (base 0)
 RaiseEvent Changed(glistN.ListSelected(0))
 End Sub
-Public Property Get Checked() As Boolean
-Attribute Checked.VB_UserMemId = 0
+Public Property Get checked() As Boolean
+Attribute checked.VB_UserMemId = 0
 If Not glistN Is Nothing Then
-Checked = glistN.ListSelected(0)
+checked = glistN.ListSelected(0)
 Else
 ' error
 End If
@@ -90,7 +90,7 @@ End Property
 
 Sub Shutdown()
 glistN.Shutdown
-glistN.Enabled = False
+glistN.enabled = False
 End Sub
 
 Private Sub glistN_OnResize()

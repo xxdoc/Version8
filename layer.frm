@@ -30,11 +30,11 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
+Private Declare Function GetLocaleInfo Lib "KERNEL32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&)
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
-Private Declare Function SetErrorMode Lib "kernel32" ( _
+Private Declare Function SetErrorMode Lib "KERNEL32" ( _
    ByVal wMode As Long) As Long
 
 Private Const SEM_NOGPFAULTERRORBOX = &H2&
@@ -58,20 +58,22 @@ Private Sub Form_Unload(Cancel As Integer)
 On Error Resume Next
 Set LastGlist = Nothing
 Set LastGlist2 = Nothing
+'Set DisStack.Owner = Nothing
 form5iamloaded = False
 RemoveFont GetCurDir(True) & "TT6492M_.TTF"
 MediaPlayer1.closeMovie
   DisableMidi
   TaskMaster.Dispose
   Set TaskMaster = Nothing
-Dim X As Form
-For Each X In Forms
+Dim x As Form
+For Each x In Forms
 ''MsgBox X.name
-If X.name <> Me.name Then Unload X
+If x.name <> Me.name Then Unload x
 Next
+Set x = Nothing
 If m_bInIDE Then Exit Sub
 SetErrorMode SEM_NOGPFAULTERRORBOX
-End
+'End
 ''If App.UnattendedApp Then End
 End Sub
 Private Sub Form_KeyPress(KeyAscii As Integer)
@@ -86,10 +88,10 @@ End Sub
     Buffer = String$(514, 0)
     Dim r&, k&
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
-      r = Val("&H" & Right(Hex(r), 4))
+      r = val("&H" & Right(Hex(r), 4))
     Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
     If Ret > 0 Then
-        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(Val("&h" + Left$(Buffer, Ret - 1))))))
+        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(val("&h" + Left$(Buffer, Ret - 1))))))
     Else
         GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, 1033)))
     End If

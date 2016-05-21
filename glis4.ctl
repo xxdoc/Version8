@@ -648,14 +648,14 @@ Public Property Let enabled(ByVal RHS As Boolean)
     PropertyChanged "Enabled"
     On Error Resume Next
     If Not waitforparent Then Exit Property
-    Dim MM$, mo As Control, nm$, cnt$, p As Long
+    Dim mm$, mo As Control, nm$, cnt$, p As Long
     
 ''new position
 
-MM$ = UserControl.Ambient.DisplayName
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 '' old position
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -671,14 +671,14 @@ Public Property Let TabStop(ByVal RHS As Boolean)
 ''    PropertyChanged "TabStop"
     On Error Resume Next
     If Not waitforparent Then Exit Property
-    Dim MM$, mo As Control, nm$, cnt$, p As Long
+    Dim mm$, mo As Control, nm$, cnt$, p As Long
     
 ''new position
 
-MM$ = UserControl.Ambient.DisplayName
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 '' old position
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -2170,11 +2170,11 @@ ListIndex = SELECTEDITEM - 1
 End If
 End Property
 Property Let ListIndex(item As Long)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -2201,11 +2201,11 @@ End If
 End Property
 Private Sub FloatListMe(state As Boolean, x As Single, y As Single)
 Static preX As Single, preY As Single
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Sub
 If Err.Number > 0 Then Exit Sub
@@ -2449,12 +2449,12 @@ Find = i
 End If
 End Function
 Public Sub ShowThis(ByVal item As Long, Optional noselect As Boolean)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
+Dim mm$, mo As Control, nm$, cnt$, p As Long
 On Error GoTo skipthis
-MM$ = UserControl.Ambient.DisplayName
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Sub
 If Err.Number > 0 Then Exit Sub
@@ -3194,14 +3194,14 @@ End If
 mytPixels = myt / scrTwips
 myt = mytPixels * scrTwips
 On Error GoTo th1
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 If Err.Number > 0 Then
 'DestroyCaret
 Exit Sub
 End If
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Sub
 If Err.Number > 0 Then Exit Sub
@@ -3254,14 +3254,14 @@ End If
 mytPixels = myt / scrTwips
 myt = mytPixels * scrTwips
 On Error GoTo th1
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 If Err.Number > 0 Then
 'DestroyCaret
 Exit Sub
 End If
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If Not waitforparent Then Exit Sub
 If UserControl.Parent Is Nothing Then Exit Sub
@@ -3483,14 +3483,14 @@ th1:
 'UserControl.Cls
 End If
 End Sub
-Private Sub Redraw(ParamArray status())
+Private Sub Redraw(ParamArray Status())
 
 If EnabledBar Then
 Dim fakeLargeChange As Long, newheight As Long, newTop As Long
 Dim b As Boolean, nstatus As Boolean
 Timer2bar.enabled = False
-If UBound(status) >= 0 Then
-nstatus = CBool(status(0))
+If UBound(Status) >= 0 Then
+nstatus = CBool(Status(0))
 Else
 nstatus = Shape1.Visible
 End If
@@ -3519,8 +3519,8 @@ Else
         Shape Shape3, Width - barwidth, newTop, barwidth, newheight * Percent   ' left or top
 End If
 End With
-If UBound(status) >= 0 Then
-b = (CBool(status(0)) Or Spinner) And listcount > lines
+If UBound(Status) >= 0 Then
+b = (CBool(Status(0)) Or Spinner) And listcount > lines
 If Not Shape1.Visible = b Then
 Shape1.Visible = b
 Shape2.Visible = b
@@ -3607,12 +3607,12 @@ Public Property Get Value() As Long
 Value = mValue
 End Property
 Public Property Get Visible() As Boolean
-Dim MM$, mo As Control, nm$, cnt$, p As Long
+Dim mm$, mo As Control, nm$, cnt$, p As Long
 On Error Resume Next
-MM$ = UserControl.Ambient.DisplayName
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 'On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -3627,11 +3627,11 @@ Visible = mo.Visible
 End Property
 
 Public Property Get TopTwips() As Long
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -3644,12 +3644,12 @@ End If
 TopTwips = CLng(mo.top)
 End Property
 Public Property Let Visible(ByVal RHS As Boolean)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
+Dim mm$, mo As Control, nm$, cnt$, p As Long
 On Error Resume Next
-MM$ = UserControl.Ambient.DisplayName
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -3664,11 +3664,11 @@ mo.Visible = RHS
 
 End Property
 Public Property Let TopTwips(ByVal RHS As Long)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -3681,11 +3681,11 @@ End If
 mo.Move mo.Left, CSng(RHS)
 End Property
 Public Property Get HeightTwips() As Long
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -3698,11 +3698,11 @@ End If
 HeightTwips = CLng(mo.Height)
 End Property
 Public Sub GetLeftTop(Ltwips, Ttwips)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Sub
 If Err.Number > 0 Then Exit Sub
@@ -3717,11 +3717,11 @@ Ttwips = CLng(mo.top)
 
 End Sub
 Public Property Let HeightTwips(ByVal RHS As Long)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Property
 If Err.Number > 0 Then Exit Property
@@ -3734,11 +3734,11 @@ End If
 mo.Move mo.Left, mo.top, mo.Width, RHS
 End Property
 Public Sub MoveTwips(ByVal mleft As Long, ByVal mtop As Long, mWidth As Long, mHeight As Long)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Sub
 If Err.Number > 0 Then Exit Sub
@@ -3757,11 +3757,11 @@ mo.Move mleft, mtop, mWidth, mHeight
 End If
 End Sub
 Public Sub ZOrder(Optional ByVal RHS As Long = 0)
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Sub
 If Err.Number > 0 Then Exit Sub
@@ -3775,11 +3775,11 @@ mo.ZOrder RHS
 End Sub
 
 Public Sub SetFocus()
-Dim MM$, mo As Control, nm$, cnt$, p As Long
-MM$ = UserControl.Ambient.DisplayName
+Dim mm$, mo As Control, nm$, cnt$, p As Long
+mm$ = UserControl.Ambient.DisplayName
 
-nm$ = GetStrUntilB(p, "(", MM$ & "(", True)
-cnt$ = GetStrUntilB(p, ")", MM$, True)
+nm$ = GetStrUntilB(p, "(", mm$ & "(", True)
+cnt$ = GetStrUntilB(p, ")", mm$, True)
 On Error Resume Next
 If UserControl.Parent Is Nothing Then Exit Sub
 If Err.Number > 0 Then Exit Sub
@@ -3789,7 +3789,9 @@ Set mo = UserControl.Parent.Controls(nm$).item(CInt(cnt$))
 Else
 Set mo = UserControl.Parent.Controls(nm$)
 End If
+If mo.Visible Then
 mo.SetFocus
+End If
 End Sub
 Public Property Let Value(ByVal RHS As Long)
 ' Dim oldvalue As Long

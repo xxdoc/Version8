@@ -8,7 +8,7 @@ BEGIN
 END
 Attribute VB_Name = "dropdownlist"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Public WithEvents Textbox As myTextBox
@@ -258,25 +258,25 @@ Public Property Get Text() As String
 Text = Textbox.vartext + Textbox.glistN.LastLinePart
 End Property
 
-Public Property Let Text(ByVal rhs As String)
+Public Property Let Text(ByVal RHS As String)
  Textbox.glistN.LastLinePart = ""
-Textbox.vartext = rhs
+Textbox.vartext = RHS
 
 End Property
 Public Property Get Locked() As Boolean
 Locked = Textbox.Locked
 End Property
 
-Public Property Let Locked(ByVal rhs As Boolean)
-If rhs = Textbox.Locked Then Exit Property
-If rhs Then
+Public Property Let Locked(ByVal RHS As Boolean)
+If RHS = Textbox.Locked Then Exit Property
+If RHS Then
 If Not Textbox.Locked Then
 glistN.BypassLeaveonChoose = True
 Textbox.SetFocus
 glistN.BypassLeaveonChoose = False
 End If
 End If
-Textbox.Locked = rhs
+Textbox.Locked = RHS
 End Property
 Public Sub additem(A$)
 glistN.additemFast A$

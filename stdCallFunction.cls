@@ -18,7 +18,7 @@ Dim RetType2Stack As Long   ' 0 is long, 1 is string without zeros
 Dim mCallType As Long
 Dim t() As Long
 Dim paramnum As Long
-
+Public FreeHere As Boolean
 
 Public Sub CallThis(ByVal vNewValue As String, paramList As String, lang As Long)
 Dim l As Long, check$, m As Long
@@ -77,6 +77,7 @@ func = mFunction
 End Property
 
 Public Function ReadType(there As Long) As Long
+If there < 0 Then Exit Function
 If t(there) < 0 Then
 ReadType = t(there)
 Else
@@ -142,3 +143,11 @@ End Property
 Public Property Let CallType(ByVal vNewValue As Long)
 mCallType = vNewValue
 End Property
+
+Private Sub Class_Terminate()
+If FreeHere Then
+If mFunction <> "" Then
+RemoveDll mFunction
+End If
+End If
+End Sub

@@ -547,6 +547,7 @@ End If
                                      
                          
                Next TBL
+               Set TBL = Nothing
     End If
     If scope = 1 Then
     stac1.PushVal CDbl(cnt)
@@ -1214,6 +1215,7 @@ mcat.TABLES(tablename).indexes.Refresh
         End If
         End If
         Next mtable
+        Set mtable = Nothing
         If okntable Then GoTo t111
 Else
 t111:
@@ -1488,7 +1490,7 @@ MyEr "Expected Inventory", "Περίμενα Κατάσταση"
 Exit Function
 End If
 Dim aa As FastCollection
-Set aa = bstackstr.lastobj.ObjRef
+Set aa = bstackstr.lastobj.objref
 If aa.StructLen > 0 Then
 MyEr "Structure members are ReadOnly", "Τα μέλη της δομής είναι μόνο για ανάγνωση"
 Exit Function

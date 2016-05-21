@@ -71,9 +71,9 @@ Private Sub Class_Initialize()
     hashlen = MaxSpace * 2 + 3
     toplim = -1
 End Sub
-Public Sub AddKey(rhs, Optional aValue As Variant)
+Public Sub AddKey(RHS, Optional aValue As Variant)
     Index = -1
-    lastkey = CStr(rhs)
+    lastkey = CStr(RHS)
     Done = False
     If Not IsMissing(aValue) Then
     
@@ -98,15 +98,14 @@ ReHash
 End Sub
 
 
-Public Sub ToKey(rhs)
-    Done = Find(rhs)
-    If Done Then lastkey = CStr(rhs)
+Public Sub ToKey(RHS)
+    Done = Find(RHS)
+    If Done Then lastkey = CStr(RHS)
 End Sub
-Public Sub Remove(rhs)
+Public Sub RemoveWithNoFind(RHS)
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
 If toplim < 0 Then Stop
 top1 = toplim
-Done = Find(rhs)
 If Done Then
 
         If ParentIndex > 0 Then
@@ -138,22 +137,58 @@ If Done Then
       ReduceHash toplim
 End If
 End Sub
-Property Let Value(rhs As Variant)
+Public Sub Remove(RHS)
+Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
+If toplim < 0 Then Stop
+top1 = toplim
+Done = Find(RHS)
+If Done Then
+
+        If ParentIndex > 0 Then
+            PriveSpace(ParentIndex).Pleft = PriveSpace(Index).Pleft
+        Else
+            Hash(PriveSpace(Index).lastpos) = PriveSpace(Index).Pleft
+        End If
+        SwapVariant vvv, PriveSpace(top1).iValue
+        PriveSpace(Index).iValue = -1
+        PriveSpace(Index) = PriveSpace(top1)
+        Dim new_item As item
+        PriveSpace(top1) = new_item
+        SwapVariant vvv, PriveSpace(Index).iValue
+        If Hash(PriveSpace(Index).lastpos) - 1 = top1 Then
+            Hash(PriveSpace(Index).lastpos) = Index + 1
+        Else
+            k = Hash(PriveSpace(Index).lastpos) - 1
+            If k < 1 Then
+                Hash(PriveSpace(Index).lastpos) = Index + 1
+            Else
+                Do
+                k1 = k
+                k = PriveSpace(k).Pleft - 1
+                Loop Until k = top1 Or k < 0
+                PriveSpace(k1).Pleft = Index + 1
+            End If
+        End If
+        toplim = toplim - 1
+      ReduceHash toplim
+End If
+End Sub
+Property Let Value(RHS As Variant)
 Done = False
 If Index = -1 Then
-ItemCreator lastkey, rhs
+ItemCreator lastkey, RHS
 
 Else
-    PriveSpace(Index).iValue = rhs
+    PriveSpace(Index).iValue = RHS
 End If
 Done = True
 End Property
-Property Set ValueObj(rhs As Variant)
+Property Set ValueObj(RHS As Variant)
 Done = False
 If Index = -1 Then
-    ItemCreator lastkey, rhs
+    ItemCreator lastkey, RHS
 Else
-    Set PriveSpace(Index).iValue = rhs
+    Set PriveSpace(Index).iValue = RHS
 End If
 Done = True
 End Property
@@ -165,11 +200,11 @@ Else
     sValue = PriveSpace(Index).sValue
 End If
 End Property
-Property Let sValue(rhs As Long)
+Property Let sValue(RHS As Long)
 If Index = -1 Then
 Else
     Done = True
-    PriveSpace(Index).sValue = rhs
+    PriveSpace(Index).sValue = RHS
 End If
 End Property
 Property Get Value() As Variant
@@ -285,11 +320,11 @@ If Done Then
     End If
 End If
 End Sub
-Sub SwapByIndex(rhs As Long)
+Sub SwapByIndex(RHS As Long)
 On Error Resume Next
 If Done Then
-    SwapVariant PriveSpace(rhs).iValue, PriveSpace(Index).iValue
-    Index = rhs
+    SwapVariant PriveSpace(RHS).iValue, PriveSpace(Index).iValue
+    Index = RHS
 End If
 End Sub
 
@@ -315,9 +350,9 @@ Else
 IsObj = IsObject(PriveSpace(Index).iValue)
 End If
 End Function
-Function Find(rhs) As Boolean
+Function Find(RHS) As Boolean
 Dim k As Long, Key As String
-Key = CStr(rhs)
+Key = CStr(RHS)
 ParentIndex = 0
 Done = False
 If Len(Key) = 0 Then Exit Function
@@ -333,9 +368,9 @@ Do
 Loop Until k < 0
 End If
 End Function
-Function ExistKey(rhs) As Boolean
+Function ExistKey(RHS) As Boolean
 Dim k As Long, Key As String
-Key = CStr(rhs)
+Key = CStr(RHS)
 If Len(Key) = 0 Then Exit Function
 k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then

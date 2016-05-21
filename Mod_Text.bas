@@ -49,7 +49,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 18
+Global Const Revision = 20
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -119,7 +119,8 @@ Public DYP As Long
 Public SLOW As Boolean
 Public pName As String
 Public port As String
-
+Global elevatestatus As Long
+Global elevatestatus2 As Long
 Public FKey As Long
 Public FK$(1 To 13)
 Public strTemp As String
@@ -243,7 +244,6 @@ Public mute As Boolean
 Public beat As Long
 Public baseNote As Long
 Public prof As New clsProfiler
-Public grandscr As Collection
 Public Declare Function GetACP Lib "KERNEL32" () As Long  ' 1253 in my computer
 
 Public Declare Function GetLocaleInfoW Lib "KERNEL32" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
@@ -258,7 +258,7 @@ Function ChangeValues(bstack As basetask, rest$) As Boolean
 Dim aa As mHandler, bb As FastCollection, ah As String, p As Double, s$
 Set aa = bstack.lastobj
 Set bstack.lastobj = Nothing
-Set bb = aa.ObjRef
+Set bb = aa.objref
 If bb.StructLen > 0 Then
 MyEr "Structure members are ReadOnly", "‘· Ï›ÎÁ ÙÁÚ ‰ÔÏﬁÚ ÂﬂÌ·È Ï¸ÌÔ „È· ·Ì‹„Ì˘ÛÁ"
 Exit Function
@@ -405,7 +405,7 @@ Dim aa As mHandler, ah As String, p As Double, s$, Addr As Long, PP As Double, w
 Dim bb1 As MemBlock
 Set aa = bstack.lastobj
 Set bstack.lastobj = Nothing
-Set bb1 = aa.ObjRef
+Set bb1 = aa.objref
 
     Do While FastSymbol(rest$, ",")
         ChangeValuesMem = True
@@ -3173,10 +3173,40 @@ End Sub
 '' this is from Trick (VbForums)
 Sub Proto1(ByVal Addr As Long, basestack As basetask, rest$, lang As Long, resp As Boolean)
 End Sub
+
 Sub Main()
+''
+'' If App.StartMode = vbSModeStandalone Then NeoSubMain
+Dim m As New callback
+
+m.Run "start"
+If m.Status = 0 Then
+m.Cli Form1.commandW, ">"
+m.Reset
+End If
+m.ShowGui = False
+Debug.Print "ok"
+ 
+End Sub
+Public Sub NeoSubMain()
 ' need to read registry form sub main
 On Error Resume Next
-
+If dv15 <> 0 Then
+l_complete = False
+s_complete = False
+DisableProcessWindowsGhosting
+Set HelpStack = New basetask
+Set oprinter = New cDIBSection
+Set basestack1.Sorosref = globalstack
+Set subHash = New sbHash
+Set varhash = New Hash
+Set comhash = New sbHash
+Set numid = New sbHash
+Set funid = New sbHash
+Set strid = New sbHash
+Set strfunid = New sbHash
+GoTo there
+End If
 dv15 = 1440 / DpiScrX
 DisableProcessWindowsGhosting
 '' BY DEAFULT IS FALSE
@@ -3219,7 +3249,7 @@ ReDim var(3000) As Variant
 clickMe2 = -1
 
 
-Dim soros As New mStiva
+''Dim soros As New mStiva
 Dim t As Long
 ReDim q(0) As target
 
@@ -3233,6 +3263,7 @@ octava = 4
 NOTA = 0
 ENTASI = 127   '' volume
 voices(0) = "CC#"
+there:
 Randomize
 allcommands comhash
 NumberId numid, funid
@@ -3258,27 +3289,39 @@ Load Form5
 ' Form1.Hide
 If Not l_complete Then
 'MsgBox "Loading of Form1 not complete"
-End
+Exit Sub
+'End
 Else
-
 Form1.something
+'If Not App.StartMode = vbSModeStandalone Then Exit Sub
 
+'terminatefinal
+End If
+End Sub
+Sub TerminateM2000()
+NoAction = False
+DelTemp
+'Set DisStack.Owner = Nothing
+
+Set basestack1.Owner = Nothing
+
+Set LastGlist = Nothing
+Set LastGlist2 = Nothing
+Unload Form5
+End Sub
+Public Sub terminatefinal()
+Set globalstack = Nothing
+Set basestack1 = Nothing
 CloseAllConnections  ' new for ADO we keep objects not the connections
 CleanupLibHandles
-If Not s_complete Then
-MsgBox "Language can't go Up"
-End
-End If
-End If
-' for any reason
-    Dim tmpForm As Form
-    For Each tmpForm In Forms
-            Unload tmpForm
-            Set tmpForm = Nothing
-    Next
-    End
-End Sub
+'If Not s_complete Then
+'MsgBox "Language can't go Up"
 
+'End If
+'End
+s_complete = False
+l_complete = False
+End Sub
 
 Function IsExp(basestack As basetask, A$, r As Double, Optional ByVal noand1 As Boolean = True) As Boolean
 Dim par As Long
@@ -4478,8 +4521,17 @@ IsNumber = True
 Exit Function
 End With
 'myCompEq("Û","Ú")
+
 Case "HWND", "–¡—¡»’—œ"
+If Typename(bstack.Owner) = "GuiM2000" Then
 r = SG * bstack.Owner.hWnd
+Else
+If ttl Then
+r = SG * Form3.hWnd
+Else
+r = SG * bstack.Owner.hWnd
+End If
+End If
 A$ = n$
 IsNumber = True
 Exit Function
@@ -5050,6 +5102,8 @@ Case Else
     r = 0
     Else
     If IsObject(var(VR)) Then
+    ' new we can pass object!
+    Set bstack.lastobj = var(VR)
     r = 0
     Else
         r = SG * var(VR)
@@ -5490,7 +5544,7 @@ IsNumber = False
 End If
 Else
    If NeoGetArrayItem(pppp, bstack, s$, w1, n$) Then
-    Set pppp = pppp.GroupRef.ObjRef.ValueObj
+    Set pppp = pppp.GroupRef.objref.ValueObj
   End If
 End If
 Else
@@ -5531,7 +5585,7 @@ If IsStrExp(bstack, n$, s$) Then
       If Not pppp.Arr Then
     
   If NeoGetArrayItem(pppp, bstack, s$, w1, n$, , False) Then
-  Set pppp = pppp.GroupRef.ObjRef.ValueObj
+  Set pppp = pppp.GroupRef.objref.ValueObj
   End If
   
    
@@ -5678,12 +5732,12 @@ IsNumber = False
     Set anything = bstack.lastobj
     Set bstack.lastobj = Nothing
     With anything
-    If TypeOf .ObjRef Is FastCollection Then
+    If TypeOf .objref Is FastCollection Then
     If FastSymbol(n$, ",") Then
     If IsExp(bstack, n$, p) Then
-    r = SG * .ObjRef.Find(p)
+    r = SG * .objref.Find(p)
     ElseIf IsStrExp(bstack, n$, s$) Then
-    r = SG * .ObjRef.Find(s$)
+    r = SG * .objref.Find(s$)
     End If
     
     A$ = n$
@@ -5952,15 +6006,15 @@ Case "EVAL(", "≈ ÷—(", "≈ ÷—¡”«("
             With anything
                 If .T1 = 1 Then
                     On Error GoTo there12
-                    If .ObjRef.Done Then
+                    If .objref.Done Then
                          If FastSymbol(n$, "!") Then
-                            r = SG * .ObjRef.Index
+                            r = SG * .objref.Index
                             Set bstack.lastobj = Nothing
                         Else
-                            If .ObjRef.IsObj Then
-                                r = SG * CDbl(rValue(bstack, .ObjRef.ValueObj))
+                            If .objref.IsObj Then
+                                r = SG * CDbl(rValue(bstack, .objref.ValueObj))
                             Else
-                                r = SG * val(.ObjRef.Value)
+                                r = SG * val(.objref.Value)
                                 Set bstack.lastobj = Nothing
                             End If
                         End If
@@ -5992,9 +6046,9 @@ there12:
                                 End If
                                 ' use another itemsize
                                 ' p is byte offset
-                                w2 = .ObjRef.GetBytePtr(p)
+                                w2 = .objref.GetBytePtr(p)
 absolute:
-                                If .ObjRef.ValidArea(w2, PP) Then
+                                If .objref.ValidArea(w2, PP) Then
                                     Select Case PP
                                     Case 1
                                         GetMem1 w2, rb
@@ -6015,7 +6069,7 @@ absolute:
                             
                             Else
 firstpram:
-                                Set anything = .ObjRef
+                                Set anything = .objref
                                 With anything
          
                                  PP = .ItemSize
@@ -7085,13 +7139,13 @@ Case "LEN.DISP(", "Ã« œ”.≈Ã÷("
     If IsExp(bstack, n$, p) Then
     If Typename(bstack.lastobj) = "mHandler" Then
     With bstack.lastobj
-    If TypeOf .ObjRef Is FastCollection Then
-    r = SG * .ObjRef.Count
+    If TypeOf .objref Is FastCollection Then
+    r = SG * .objref.Count
     A$ = n$
     IsNumber = FastSymbol(A$, ")", True)
     Exit Function
-    ElseIf TypeOf .ObjRef Is MemBlock Then
-    r = SG * .ObjRef.Items
+    ElseIf TypeOf .objref Is MemBlock Then
+    r = SG * .objref.Items
     A$ = n$
     IsNumber = FastSymbol(A$, ")", True)
     Exit Function
@@ -7115,17 +7169,17 @@ Case "LEN(", "Ã« œ”("
     If IsExp(bstack, n$, p) Then
     If Typename(bstack.lastobj) = "mHandler" Then
     With bstack.lastobj
-    If TypeOf .ObjRef Is FastCollection Then
-    If .ObjRef.StructLen > 0 Then
-    r = SG * .ObjRef.StructLen
+    If TypeOf .objref Is FastCollection Then
+    If .objref.StructLen > 0 Then
+    r = SG * .objref.StructLen
     Else
-    r = SG * .ObjRef.Count
+    r = SG * .objref.Count
     End If
     A$ = n$
     IsNumber = FastSymbol(A$, ")", True)
     Exit Function
-    ElseIf TypeOf .ObjRef Is MemBlock Then
-    r = SG * .ObjRef.SizeByte()
+    ElseIf TypeOf .objref Is MemBlock Then
+    r = SG * .objref.SizeByte()
     A$ = n$
     IsNumber = FastSymbol(A$, ")", True)
     Exit Function
@@ -7530,35 +7584,35 @@ Case "SINT(", "¡ ≈—¡…œ.ƒ’¡ƒ… œ("
  If Not bstack.lastobj Is Nothing Then
  If Not TypeOf bstack.lastobj Is mHandler Then A$ = n$: Exit Function
  With bstack.lastobj
-    If Not TypeOf .ObjRef Is MemBlock Then GoTo err1256
+    If Not TypeOf .objref Is MemBlock Then GoTo err1256
     If Not FastSymbol(n$, ",") Then GoTo err1256
     If Not IsExp(bstack, n$, p) Then GoTo err1256
 
-            Select Case .ObjRef.ItemSize
+            Select Case .objref.ItemSize
             Case 1
-                If .ObjRef.ValidArea2(p, 1) Then
-                GetMem1 .ObjRef.GetPtr(p), rb
+                If .objref.ValidArea2(p, 1) Then
+                GetMem1 .objref.GetPtr(p), rb
                 r = SG * cUbyte(CDbl(rb))
                 Else
                     GoTo err1256
                 End If
             Case 2
-                If .ObjRef.ValidArea2(p, 2) Then
-                GetMem2 .ObjRef.GetPtr(p), ri
+                If .objref.ValidArea2(p, 2) Then
+                GetMem2 .objref.GetPtr(p), ri
                 r = SG * cUint(CDbl(UINT(CLng(ri))))
                 Else
                     GoTo err1256
                 End If
             Case 8
-                If .ObjRef.ValidArea2(p, 8) Then
-                GetMem8 .ObjRef.GetPtr(p), r
+                If .objref.ValidArea2(p, 8) Then
+                GetMem8 .objref.GetPtr(p), r
                 r = SG * r
                 Else
                     GoTo err1256
                 End If
             Case 4
-                If .ObjRef.ValidArea2(p, 4) Then
-                GetMem4 .ObjRef.GetPtr(p), dn
+                If .objref.ValidArea2(p, 4) Then
+                GetMem4 .objref.GetPtr(p), dn
                 r = SG * dn
                 
             Else
@@ -7909,14 +7963,14 @@ If Typename(pppp.GroupRef) = "mHandler" Then
 If Left$(n$, 1) = "." Then
 ' LOOK FOR GROUP
 
-w2 = -pppp.GroupRef.ObjRef.Index - 2
+w2 = -pppp.GroupRef.objref.Index - 2
 GoTo contgroup
 ElseIf FastSymbol(n$, "(") Then
-w2 = -pppp.GroupRef.ObjRef.Index - 2
+w2 = -pppp.GroupRef.objref.Index - 2
 GoTo contlambdahere
 Else
 Set bstack.lastobj = pppp
-r = SG * pppp.GroupRef.ObjRef.Done
+r = SG * pppp.GroupRef.objref.Done
 End If
 End If
 Else
@@ -8048,7 +8102,7 @@ contlambdahere:
                 
                 If pppp.GroupRef.T1 = 2 Then ' OK for Buffer
                 
-                 With pppp.GroupRef.ObjRef
+                 With pppp.GroupRef.objref
                  If FastSymbol(n$, "!") Then
                  r = SG * .GetBytePtr(p)
                  Else
@@ -8063,7 +8117,7 @@ contlambdahere:
                 Exit Function
                 End If
                 If Not FastSymbol(n$, "!") Then s$ = CStr(p): GoTo contlabel
-                 With pppp.GroupRef.ObjRef
+                 With pppp.GroupRef.objref
                     
                     p = Int(p)
                     
@@ -8102,7 +8156,7 @@ contlambdahere:
                                
                       End If
                         Else
-                        Set bstack.lastobj = pppp.GroupRef.ObjRef.ValueObj
+                        Set bstack.lastobj = pppp.GroupRef.objref.ValueObj
                        r = 0
                        End If
                        
@@ -8117,7 +8171,7 @@ contlambdahere:
                         Exit Function
                 ElseIf IsStrExp(bstack, n$, s$) Then
 contlabel:
-                 With pppp.GroupRef.ObjRef
+                 With pppp.GroupRef.objref
                 If .StructLen > 0 Then s$ = myUcase(s$)
                     If .Find(s$) Then
                        
@@ -8153,7 +8207,7 @@ contlabel:
                                   End If
                                  End If
                         Else
-                       r = SG * rValue(bstack, pppp.GroupRef.ObjRef.ValueObj)
+                       r = SG * rValue(bstack, pppp.GroupRef.objref.ValueObj)
                        End If
                        
                        
@@ -10709,10 +10763,10 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
             If FastSymbol(A$, ",") Then
                 If IsExp(bstackstr, A$, p) Then
                 p = Int(p)
-                If p >= 0 And p < .ObjRef.Count Then
-                .ObjRef.Index = p
-                .ObjRef.Done = True
-                r$ = .ObjRef.KeyToString
+                If p >= 0 And p < .objref.Count Then
+                .objref.Index = p
+                .objref.Done = True
+                r$ = .objref.KeyToString
                   Else
          
                   MyEr "Index out of limits", "ƒÂﬂÍÙÁÚ ÂÍÙ¸Ú ÔÒﬂ˘Ì"
@@ -10721,17 +10775,17 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
                 Else
                 MissPar
                 End If
-                ElseIf .ObjRef.Done Then
+                ElseIf .objref.Done Then
                     If FastSymbol(A$, "!") Then
-                     r$ = .ObjRef.KeyToString
+                     r$ = .objref.KeyToString
                      Set bstackstr.lastobj = Nothing
                     Else
-                    If .ObjRef.IsObj Then
-                        If TypeOf .ObjRef.ValueObj Is lambda Then CopyLambda .ObjRef.ValueObj, bstackstr
+                    If .objref.IsObj Then
+                        If TypeOf .objref.ValueObj Is lambda Then CopyLambda .objref.ValueObj, bstackstr
                            r$ = ""
                         Else
                         Set bstackstr.lastobj = Nothing
-                            r$ = CStr(.ObjRef.Value)
+                            r$ = CStr(.objref.Value)
                         End If
                     End If
                     End If
@@ -10744,10 +10798,10 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
                         If FastSymbol(A$, "!") Then
                         
                          If IsLabelOnly(A$, s$) Then
-                            If .ObjRef.UseStruct Then
-                                If .ObjRef.structref.Find(myUcase(s$, True)) Then
-                                PP = .ObjRef.structref.sValue
-                                    w2 = cUlng(uintnew(.ObjRef.GetPtr(p)) + .ObjRef.structref.Value)
+                            If .objref.UseStruct Then
+                                If .objref.structref.Find(myUcase(s$, True)) Then
+                                PP = .objref.structref.sValue
+                                    w2 = cUlng(uintnew(.objref.GetPtr(p)) + .objref.structref.Value)
                                     If FastSymbol(A$, "!") Then
                                      If IsExp(bstackstr, A$, p) Then
                                       ' w2 = w2 + Int(p) * PP
@@ -10766,19 +10820,19 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
                             
                         End If
                         Else
-                        w2 = .ObjRef.GetBytePtr(p)
+                        w2 = .objref.GetBytePtr(p)
                         End If
                         
                             
                         Else
-                            w2 = .ObjRef.GetPtr(p)
+                            w2 = .objref.GetPtr(p)
                         End If
-                        If .ObjRef.Status = 4 Then MyEr "Buffer locked, wrong use of pointer", "« ƒÈ‹ÒËÒ˘ÛÁ ÍÎÂÈ‰˛ËÁÍÂ, Í·Íﬁ ˜ÒﬁÛÁ ‰ÂﬂÍÙÁ": Exit Function
+                        If .objref.Status = 4 Then MyEr "Buffer locked, wrong use of pointer", "« ƒÈ‹ÒËÒ˘ÛÁ ÍÎÂÈ‰˛ËÁÍÂ, Í·Íﬁ ˜ÒﬁÛÁ ‰ÂﬂÍÙÁ": Exit Function
                         If FastSymbol(A$, ",") Then
                             If IsExp(bstackstr, A$, p) Then
                             ' NOW WE KNOW HOW MANY BYTES WE TAKE (ALWAYS BYTES)
                                 p = Int(p)
-                                If .ObjRef.ValidArea(w2, p) Then
+                                If .objref.ValidArea(w2, p) Then
                                     r$ = String$((p + 1) \ 2, Chr(0))
                                     CopyBytes CLng(p), StrPtr(r$), w2
                                 Else
@@ -10790,11 +10844,11 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
                                 Exit Function
                             End If
                         Else
-                                    p = .ObjRef.SizeByte - PP * 2
-                                     r$ = String$((.ObjRef.SizeByte - PP * 2 + 1) \ 2, Chr(0))
+                                    p = .objref.SizeByte - PP * 2
+                                     r$ = String$((.objref.SizeByte - PP * 2 + 1) \ 2, Chr(0))
                                     CopyBytes CLng(p), StrPtr(r$), w2
                         End If
-                        IsString = FastSymbol(A$, ")") And .ObjRef.Status = 0
+                        IsString = FastSymbol(A$, ")") And .objref.Status = 0
                         Exit Function
                     Else
                         MissPar
@@ -10803,9 +10857,9 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
                     End If
                     
                 Else  ' elval$(alfa)  'copy entire block to r$
-                    If .ObjRef.SizeByte > 0 And .ObjRef.Status = 0 Then
-                        r$ = String$((.ObjRef.SizeByte + 1) \ 2, Chr(0))
-                        CopyBytes .ObjRef.SizeByte, StrPtr(r$), .ObjRef.GetPtr(0)
+                    If .objref.SizeByte > 0 And .objref.Status = 0 Then
+                        r$ = String$((.objref.SizeByte + 1) \ 2, Chr(0))
+                        CopyBytes .objref.SizeByte, StrPtr(r$), .objref.GetPtr(0)
                     Else
                         r$ = ""
                     End If
@@ -11198,7 +11252,7 @@ If Trim$(r$ + q2$) <> "" Then
                        Case 2
                            r$ = "Buffer"
                        Case Else
-                         r$ = Typename(var(W3).ObjRef)
+                         r$ = Typename(var(W3).objref)
                        End Select
                      End If
                     End If
@@ -11442,13 +11496,13 @@ If Trim$(r$ + q2$) <> "" Then
                                  Case 2
                                      r$ = "Buffer"
                                  Case Else
-                                     r$ = Typename(pppp.item(w2).ObjRef)
+                                     r$ = Typename(pppp.item(w2).objref)
                              End Select
                          End If
                     Else
                     If Typename(pppp.GroupRef) = "mHandler" Then
                     
-                        Set bstackstr.lastobj = pppp.GroupRef.ObjRef
+                        Set bstackstr.lastobj = pppp.GroupRef.objref
                         With bstackstr.lastobj
                         If pppp.GroupRef.T1 = 1 Then
                         If .IsObj Then
@@ -11460,7 +11514,7 @@ If Trim$(r$ + q2$) <> "" Then
                                     Case 2
                                         r$ = "Buffer"
                                     Case Else
-                                        r$ = Typename(.ValueObj.ObjRef)
+                                        r$ = Typename(.ValueObj.objref)
                                 End Select
                              End If
                         Else
@@ -11504,7 +11558,7 @@ If Trim$(r$ + q2$) <> "" Then
                         r$ = "Buffer"
                         Case Else
                         
-                        r$ = Typename(var(w1).ObjRef)
+                        r$ = Typename(var(w1).objref)
                      End Select
                      End If
                    
@@ -12423,7 +12477,7 @@ contlambdastr:
             Exit Function
         End If
         ' only for Inventory
-        With pppp.GroupRef.ObjRef
+        With pppp.GroupRef.objref
             If IsExp(bstackstr, A$, p) Then
             If FastSymbol(A$, "!") Then
               If p >= 0 And p < .Count Then
@@ -13392,6 +13446,7 @@ PROCESSCOMMAND:
                    End If
         
                 Case "‘≈Àœ”", "END"
+   
                     If NORUN1 Then NORUN1 = False: interpret = True: b$ = "": Exit Function   ' send environment....to hell
                     ExTarget = True: INK$ = Chr(27):   UINK$ = Chr(27)     ' send escape...for any good reason...
                 Case Else
@@ -14016,9 +14071,12 @@ Do While Len(b$) <> LLL
 
 
 If trace Or SLOW Then
+refreshGui
 If trace Then
 ''Sleep 10
 MyDoEvents0 di   ' change from simple to version 2\ change to mydoevents0
+
+
 Else
 MyDoEvents1 di
 End If
@@ -14692,6 +14750,12 @@ ContEnd:
                 Else
                 b$ = ""   ' no more syntax error
                 Execute = 1
+                
+            '     If Not App.StartMode = vbSModeStandalone Then
+                 MOUT = True
+                 
+                 'ProcTitle bstack, Chr$(34) + Chr$(34) + ",0", 0
+'End If
                 Exit Function
                 End If
         Case "≈Œœƒœ”", "EXIT"
@@ -15242,7 +15306,7 @@ contAfter:
          bstack.PushThread CLng(sp), "after"
         sThreadInternal bs, sp, 0, ss$, uintnew(p), HERE$, True
         Set bs = Nothing
-    LLL = 0
+       LLL = 0
        Execute = 1
        
         Else
@@ -16570,7 +16634,7 @@ varonly:
                         Else
                          Set myobject = var(v)
                          myobject.T1 = 0
-                         Set myobject.ObjRef = bstack.lastobj
+                         Set myobject.objref = bstack.lastobj
                         End If
                         Set bstack.lastobj = Nothing
                         Set myobject = Nothing
@@ -18151,7 +18215,7 @@ If Not myUcase(.SelText, True) = Form2.Label1(1) Then
 End If
 End If
 ''Debug.Print b.addlen
-MyDoEvents
+'MyDoEvents
 End With
 
 Once = False
@@ -18687,10 +18751,12 @@ End If
 End Function
 Function Identifier(basestack As basetask, what$, rest$, Optional nocom As Boolean = False, Optional lang As Long = 1) As Boolean
 Dim x1 As Long, y1 As Long, it As Long, ohere$, s$, par As Boolean
+If Not TaskMaster Is Nothing Then
 If TaskMaster.PlayMusic Then
     TaskMaster.OnlyMusic = True
     TaskMaster.TimerTick
     TaskMaster.OnlyMusic = False
+End If
 End If
 ''Debug.Print what$
 On Error GoTo NERR
@@ -18770,12 +18836,8 @@ NewTable basestack, rest$
 ' Õ≈œ” –…Õ¡ ¡” ”‘«Õ ¬¡”«
 Exit Function
 Case "≈ ‘≈À≈”«", "EXECUTE"   'ok
- If IsLabelSymbolNew(rest$, " Ÿƒ… ¡", "CODE", lang) Then
-Identifier = ExecCode(basestack, rest$)
- Else
-    CommExecAndTimeOut basestack, rest$
-    Identifier = True
-End If
+CommExecAndTimeOut basestack, rest$
+Identifier = True
 Exit Function
 ' Õ≈¡ À…”‘¡
 Case "¡Õ¡ ‘«”«", "RETRIEVE"  'ok
@@ -19786,14 +19848,16 @@ nm$ = myUcase(nm$)
 If useglobalname Or HERE$ = "" Then
 n$ = bstack.GroupName + nm$
 
+ElseIf Left$(nm$, 5) = "¡’‘œ." Or Left$(nm$, 5) = "THIS." Then
+GoTo here12
 Else
-
 n$ = HERE$ & "." + bstack.GroupName + nm$
 
 End If
 
 
 If Left$(nm$, 5) = "¡’‘œ." Or Left$(nm$, 5) = "THIS." Then
+here12:
     If useLocalOnly Then Exit Function
     If bstack.UseGroupname <> "" Then
     n$ = bstack.UseGroupname + Mid$(nm$, 6)
@@ -21430,7 +21494,7 @@ Case 1
 Case 2
     s$ = s$ + "*[Buffer]"
 Case Else
-    s$ = s$ + "*[" + Typename(var(h&).ObjRef) + "]"
+    s$ = s$ + "*[" + Typename(var(h&).objref) + "]"
 End Select
 Else
 s$ = s$ & "[" & Typename(var(h&)) & "]"
@@ -21486,7 +21550,7 @@ Dim ppp$
     If PP.GroupRef.T1 <> 1 Then
      If IsExp(bstack, rst$, p) Then
      p = Int(p)
-     If p >= 0 Or p < PP.GroupRef.ObjRef.Items Then
+     If p >= 0 Or p < PP.GroupRef.objref.Items Then
      
      GoTo conthere
      
@@ -21498,7 +21562,7 @@ Dim ppp$
     If IsExp(bstack, rst$, p) Then
 
     
-     With PP.GroupRef.ObjRef
+     With PP.GroupRef.objref
      If Not FastSymbol(rst$, "!") Then ppp$ = CStr(p): GoTo contlabel1
      p = Int(p)
      If p >= 0 And p < .Count Then
@@ -21511,7 +21575,7 @@ Dim ppp$
      End With
     ElseIf IsStrExp(bstack, rst$, ppp$) Then
 contlabel1:
-        With PP.GroupRef.ObjRef
+        With PP.GroupRef.objref
             
             If Not .Find(ppp$) Then
             
@@ -22334,13 +22398,13 @@ End Sub
 Sub MakeitObjectInventory(var As Variant)
 Dim aa As New mHandler
 aa.T1 = 1 ' 1 for Inventory
-Set aa.ObjRef = New FastCollection
+Set aa.objref = New FastCollection
 Set var = aa
 End Sub
 Sub MakeitObjectBuffer(var As Variant)
 Dim aa As New mHandler
 aa.T1 = 2 ' 2 for Buffer
-Set aa.ObjRef = New MemBlock
+Set aa.objref = New MemBlock
 Set var = aa
 End Sub
 Sub MakeitObjectLong(var As Variant)
@@ -23667,7 +23731,7 @@ If TypeOf vv Is mHandler Then
  '   SyntaxError
   '  GoTo there
 'End If
-Set vv = vv.ObjRef: indirect = True
+Set vv = vv.objref: indirect = True
 End If
 ReDim var1(0 To 0)
 
@@ -23759,7 +23823,7 @@ If hardlink Then
 
 Set oo = v(vIndex)
 If TypeOf oo Is mHandler Then
-    Set oo = oo.ObjRef
+    Set oo = oo.objref
     If oo.T1 <> 1 Then
         GoTo there
     End If
@@ -23790,7 +23854,7 @@ With pppp
     If hardlink Then
 
 Set oo = v(vIndex)
-If TypeOf oo Is mHandler Then Set oo = oo.ObjRef
+If TypeOf oo Is mHandler Then Set oo = oo.objref
 myVar.ConstructObj oo, l
 Set oo = Nothing
 Else
@@ -23816,7 +23880,7 @@ MakeitPropReference myVar
 If hardlink Then
 
 Set oo = v(vIndex)
-If TypeOf oo Is mHandler Then Set oo = oo.ObjRef
+If TypeOf oo Is mHandler Then Set oo = oo.objref
 myVar.ConstructObj oo, l
 Set oo = Nothing
 Else
@@ -23856,7 +23920,7 @@ Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, glob As Boole
 Dim vv As Object, mstack As New mStiva, result As Variant, retobject As Object
 Dim namarg As Long
 Set vv = v(vIndex)
-If TypeOf vv Is mHandler Then Set vv = vv.ObjRef
+If TypeOf vv Is mHandler Then Set vv = vv.objref
 ReDim var1(0 To 0)
 Dim var2() As String
 ReDim var2(0 To 0)
@@ -24025,7 +24089,7 @@ On Error GoTo there
 Set o = var(fromIndex)
 If TypeOf o Is mHandler Then
 propIndex = -propIndex
-Set o = o.ObjRef
+Set o = o.objref
 End If
 er$ = ""
 ReadProp = ReadOneParameter(o, propIndex, er$, RETVAR)
@@ -24040,7 +24104,7 @@ On Error GoTo there
 Set o = var(fromIndex)
 If TypeOf o Is mHandler Then
 propIndex = -propIndex
-Set o = o.ObjRef
+Set o = o.objref
 End If
 er$ = ""
 ReadPropIndex = ReadOneIndexParameter(o, propIndex, er$, myIndex)
@@ -24054,7 +24118,7 @@ Dim o As Object, er$
 Set o = var(fromIndex)
 If TypeOf o Is mHandler Then
 propIndex = -propIndex
-Set o = o.ObjRef
+Set o = o.objref
 End If
 'ChangeOneIndexParameter
 ChangeOneParameter o, propIndex, Anyval, er$
@@ -24067,7 +24131,7 @@ Dim o As Object, er$
 Set o = var(fromIndex)
 If TypeOf o Is mHandler Then
 propIndex = -propIndex
-Set o = o.ObjRef
+Set o = o.objref
 End If
 ChangeOneIndexParameter o, propIndex, Anyval, er$, myIndex
 If er$ <> "" Then
@@ -24226,7 +24290,6 @@ Dim b$(), vvl As Variant, delme As Document, myArray As mArray, mySecondArray As
 Dim c$(), arrIndex As Long, choose$
 Set k = New Group
 Set k.Sorosref = mgroup.soros.Copy
-
 Dim BI As Long
 BI = 1
 
@@ -24343,10 +24406,13 @@ With myobject
                                             If Not neoGetArrayLinkOnly(bstack, s$, i) Then  ''
                                                     Set subgroup = vvl
                                                     j = -1
-                                                    GlobalArr bstack, s$, ss$, 0, j ''bstack.GroupName &
+                                                    GlobalArr bstack, s$, ss$, 0, j  ''bstack.GroupName &
                                                     Set pppp = var(j)
+                                                   '  pppp.IHaveGui = vvl.IHaveGui
+                                                    'Set pppp.GroupRef = vvl.GroupRef
                                                     subgroup.CopyArray pppp
                                                     Set subgroup = Nothing
+                                                    
                                             End If
 
                                             ps.DataStr s$ + Str$(j)
@@ -24566,7 +24632,7 @@ End If
                                                     subgroup.CopyArray pppp
                                                     Set subgroup = Nothing
                                             Else
-                                            Set subgroup = vvl
+                                                    Set subgroup = vvl
                                                     Set pppp = var(j)
                                                     subgroup.CopyArray pppp
                                                     Set subgroup = Nothing
@@ -28099,9 +28165,13 @@ Else
      mywait bstack, 5
     End If
 End If
-
+If Typename(scr) = "PictureBox" Then
+If scr.Parent.Visible = False Then
+scr.Parent.Visible = True
+mywait bstack, 5
+End If
+End If
     scr.Visible = True
-
         Do While Not scr.Visible Or NOEXECUTION
 mywait bstack, 5
         Loop
@@ -28279,20 +28349,7 @@ GetCode = -1
 Case "PrinterDocument1"
 GetCode = -2
 Case Else
-GetCode = val("0" & Form1.dSprite(dq.Index).Tag) '' so we get logical basket for given player
-'' numbers are in priority order
-'' we use logical basket because maybe we have 1, 5,28 layer as  2,1,3 dsprites
-' so basket(28) is always for sprite 28, but here dSprite(3) is player 28.\
-' if we change priority swapping 1 with 28, we have to move 28 before 1, and we change also numbers
-' so we use A=1 and B=28, we do Player A swap B and Swap A, B
-' So now we address to layer B as 1 and 1 has changed tag to give as the right basket.
-' We can insert, say, a 15 layer -or player-, and this get basket 4, so we use another variable K
-' We can change priority with swap and we know about it just reading the priority value inside variable
-' So player 32 is always the top player
-' baskets and priorities..never moved from what actual are
-' so if we wait for read something in layer 1, and something move that layer..
-' we have only to check if we have the same priority, and if not, we have to change Dq
-' or from Vb...is better to read the tag.
+GetCode = val("0" & Form1.dSprite(dq.Index).Tag)
 End Select
 End If
 End Function
@@ -29144,12 +29201,29 @@ End Function
 Function DeclareGUI(bstack As basetask, what$, rest$, ifier As Boolean, lang As Long, i As Long, Optional ar As Long = 0, Optional oName As String = "", Optional glob As Long = 0)
 DeclareGUI = True
 Dim w$, x1 As Long, y1 As Long, s$, useold As Boolean, bp As Long
-Dim alfa As GuiM2000
+Dim alfa As GuiM2000, mm As CallBack2
 Dim aVar As Variant, p As Double
 Dim pppp As mArray, mmmm As mEvent
-If IsLabelSymbolNew(rest$, "÷œ—Ã¡", "FORM", lang) Then
-    
-                   If IsLabelSymbolNew(rest$, "√≈√œÕœ”", "EVENT", lang) Then
+ If IsLabelSymbolNew(rest$, "≈÷¡—Ãœ√«", "APPLICATION", lang) Then
+ 
+ Set mm = New CallBack2
+ 
+                     With mm
+                     .NoPublic bstack, ""
+                    End With
+                     Set var(i) = mm
+                     Set mm = Nothing
+                        Exit Function
+ElseIf IsLabelSymbolNew(rest$, "‘Ã«Ã¡", "MODULE", lang) Then
+         Set mm = New CallBack2
+                     With mm
+                     .NoPublic bstack, HERE$
+                    End With
+                     Set var(i) = mm
+                     Set mm = Nothing
+                     Exit Function
+ElseIf IsLabelSymbolNew(rest$, "÷œ—Ã¡", "FORM", lang) Then
+                  If IsLabelSymbolNew(rest$, "√≈√œÕœ”", "EVENT", lang) Then
                   
                              x1 = Abs(IsLabel(bstack, rest$, w$))
                              If x1 <> 1 Then
@@ -30023,13 +30097,8 @@ getrow ObjFromPtr(basestackLP), rest$, , , lang
 resp = True
 End Sub
 Sub NeoExecute(basestackLP As Long, rest$, lang As Long, resp As Boolean)
-If IsLabelSymbolNew(rest$, " Ÿƒ… ¡", "CODE", lang) Then
- resp = ExecCode(ObjFromPtr(basestackLP), rest$)
- Else
 CommExecAndTimeOut ObjFromPtr(basestackLP), rest$
 resp = True
-End If
-
 End Sub
 
 Sub NeoTable(basestackLP As Long, rest$, lang As Long, resp As Boolean)
@@ -30136,7 +30205,7 @@ If basestack.priveflag Then what$ = ChrW(&HFFBF) + what$
                         i = GlobalVar(basestack.GroupName & what$, s$)
                         MakeitObjectInventory var(i)
                     End If
-Set offsetlist = var(i).ObjRef
+Set offsetlist = var(i).objref
 ' so now we have the inventory
 If FastSymbol(rest$, "{") Then
     If StructPage(basestack, rest$, lang, 0, offset, offsetlist, "") Then
@@ -30224,9 +30293,9 @@ AGAIN1:
                                 If IsExp(basestack, s$, p) Then
                                     If basestack.lastobj Is Nothing Then GoTo comehere
                                     If Not TypeOf basestack.lastobj Is mHandler Then GoTo comehere
-                                    If Not TypeOf basestack.lastobj.ObjRef Is FastCollection Then GoTo comehere
-                                    If basestack.lastobj.ObjRef.StructLen = 0 Then GoTo comehere
-                                offset1 = basestack.lastobj.ObjRef.StructLen
+                                    If Not TypeOf basestack.lastobj.objref Is FastCollection Then GoTo comehere
+                                    If basestack.lastobj.objref.StructLen = 0 Then GoTo comehere
+                                offset1 = basestack.lastobj.objref.StructLen
                                     Set basestack.lastobj = Nothing
                                     Else
                                     GoTo comehere
@@ -31778,9 +31847,9 @@ ElseIf y1 < 5 And y1 > 0 Then
             MyClear = False
             
             End If
-       Set var(i).ObjRef = New FastCollection
+       Set var(i).objref = New FastCollection
        Else
-       Set var(i).ObjRef = New MemBlock
+       Set var(i).objref = New MemBlock
        End If
        Else
          MissingGroup
@@ -31922,7 +31991,10 @@ goNothing:
                         BadObjectDecl
                         MyDeclare = False
                    Else
-                   If Typename$(var(i)) = "GuiM2000" Then Unload var(i)
+                      If Typename$(var(i)) = "GuiM2000" Then
+                      var(i).CloseNow
+                      Unload var(i)
+                      End If
                        Set var(i) = Nothing
                    End If
                    Exit Function
@@ -31972,7 +32044,7 @@ goNothing:
                     End If
                 Else
                     If HERE$ = "" Or y1 Then
-                        GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = STRING"
+                        GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
                     Else
                         GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
                     End If
@@ -33567,11 +33639,11 @@ If IsLabelSymbolNew(rest$, " ≈Õ«", "CLEAR", lang) Then par = &H8
                         If IsExp(bstack, what2$, p) Then
                                 If bstack.lastobj Is Nothing Then GoTo comehere
                                 If Not TypeOf bstack.lastobj Is mHandler Then GoTo comehere
-                                If Not TypeOf bstack.lastobj.ObjRef Is FastCollection Then GoTo comehere
-                                If bstack.lastobj.ObjRef.StructLen = 0 Then GoTo comehere
-                               PP = bstack.lastobj.ObjRef.StructLen
-                               Set var(i).ObjRef.structref = bstack.lastobj.ObjRef
-                               var(i).ObjRef.UseStruct = True
+                                If Not TypeOf bstack.lastobj.objref Is FastCollection Then GoTo comehere
+                                If bstack.lastobj.objref.StructLen = 0 Then GoTo comehere
+                               PP = bstack.lastobj.objref.StructLen
+                               Set var(i).objref.structref = bstack.lastobj.objref
+                               var(i).objref.UseStruct = True
                                Set bstack.lastobj = Nothing
                         End If
                         Else
@@ -33590,14 +33662,14 @@ comehere:
                             Exit Function
                         Else
                          '' MAKE IT
-                    If var(i).ObjRef.ItemSize <> 0 Then
-                    If var(i).ObjRef.ItemSize = PP Then
-                    var(i).ObjRef.ResizeItems CLng(p), par
+                    If var(i).objref.ItemSize <> 0 Then
+                    If var(i).objref.ItemSize = PP Then
+                    var(i).objref.ResizeItems CLng(p), par
                     End If
                     
                     Else
 
-                                             var(i).ObjRef.Costruct PP, CLng(p), par
+                                             var(i).objref.Costruct PP, CLng(p), par
                         End If
                         End If
                         Else
@@ -33607,8 +33679,8 @@ comehere:
                         End If
                         
                     Else
-                    If var(i).ObjRef.Status = 0 Then
-                        var(i).ObjRef.Costruct PP, 1, par
+                    If var(i).objref.Status = 0 Then
+                        var(i).objref.Costruct PP, 1, par
                         End If
                     End If
                 End If
@@ -34344,7 +34416,7 @@ Case 1
 Case 2
     s$ = s$ + "*[Buffer]"
 Case Else
-    s$ = s$ + "*[" + Typename(myobject.ObjRef) + "]"
+    s$ = s$ + "*[" + Typename(myobject.objref) + "]"
 End Select
 Else
     s$ = s$ + "*[" + Typename(myobject) + "]"
@@ -35370,9 +35442,9 @@ desc = IsLabelSymbolNew(rest$, "÷»…Õœ’”¡", "DESCENDING", lang)
                             If FastSymbol(rest$, ",") Then
                                 If IsExp(basestack, rest$, p) Then
                                     If p <> 0 Then
-                                        var(i).ObjRef.Sort
+                                        var(i).objref.Sort
                                     Else
-                                        var(i).ObjRef.SortDes
+                                        var(i).objref.SortDes
                                     End If
                                 Else
                                     MissPar
@@ -35380,9 +35452,9 @@ desc = IsLabelSymbolNew(rest$, "÷»…Õœ’”¡", "DESCENDING", lang)
                                 End If
                             Else
                                 If desc Then
-                                 var(i).ObjRef.SortDes
+                                 var(i).objref.SortDes
                                 Else
-                                    var(i).ObjRef.Sort
+                                    var(i).objref.Sort
                                 End If
                             End If
                             ProcSort = True
@@ -36265,7 +36337,7 @@ If IsExp(basestack, rest$, p) Then
         End If
     End If
 If flag Then
-With myobject.ObjRef
+With myobject.objref
 ' pp is offset
 If .ValidArea2(PP, FLEN(f)) Then
 Dim aa() As Byte
@@ -36876,7 +36948,6 @@ If FastSymbol(rest$, ",") Then
                    If Not Form3.WindowState = 1 Then
                         Form3.Visible = True: Form3.Move -48000, 48000
                         Form3.WindowState = 1
-                   
                    End If
         Else
             If Not Form3.WindowState = 0 Then
@@ -36894,9 +36965,14 @@ If FastSymbol(rest$, ",") Then
         ProcTitle = False
     End If
 Else
+
+
     Form3.WindowState = 0
-    MyDoEvents
-    Sleep 1
+'If App.StartMode = vbSModeStandalone Then
+    
+ '   MyDoEvents
+  '  Sleep 1
+  '  End If
 End If
 ElseIf ttl Then
     If Form3.WindowState = 1 Then
@@ -37005,7 +37081,7 @@ If Not FastSymbol(rest$, ",") Then Exit Function
     If IsExp(basestack, rest$, p) Then
     If basestack.lastobj Is Nothing Then Exit Function
     If Not TypeOf basestack.lastobj Is mHandler Then Exit Function
-    If Not TypeOf basestack.lastobj.ObjRef Is MemBlock Then Exit Function
+    If Not TypeOf basestack.lastobj.objref Is MemBlock Then Exit Function
     Set myobject = basestack.lastobj
     par = True
     Else
@@ -37021,7 +37097,7 @@ Else
     GoTo ex123
 End If
 End If
-With myobject.ObjRef
+With myobject.objref
 Dim aa() As Byte
 If .ValidArea2(0, FLEN(f)) Then
 ReDim aa(0 To FLEN(f) - 1)
@@ -37301,6 +37377,8 @@ Else
 If sb2used <= basestack.OriginalCode And basestack.OriginalCode <> 0 Then
 MyEr "Can't Remove Last Module/Function", "ƒÂÌ ÏÔÒ˛ Ì· ‰È·„Ò‹¯˘ ÙÔ ÙÂÎÂıÙ·ﬂÔ ÙÏﬁÏ·/ÛıÌ‹ÒÙÁÛÁ"
 ProcRemove = False
+ElseIf IsStrExp(basestack, rest$, ss$) Then
+RemoveDll ss$
 Else
 If sb2used > 0 Then
 If subHash.Count > 0 Then subHash.ReduceHash subHash.Count - 1, sbf()
@@ -37726,7 +37804,7 @@ Do
 
     ''*********************
     If neoGetArray(basestack, w$, pppp, HERE$ <> "") And Not par Then
-    
+    If pppp.IHaveClass And pppp.GroupRef Is Nothing Then Set pppp = Nothing: Exit Function
     Select Case it
     Case 5, 6, 7
    GlobalArrResize pppp, basestack, w$, rest$, i
@@ -38011,10 +38089,10 @@ If Typename(bstack.lastobj) = "mHandler" Then
 Dim aa As mHandler
 Set aa = bstack.lastobj
 Set bstack.lastobj = Nothing
-If Not aa.ObjRef Is Nothing Then
-If TypeOf aa.ObjRef Is FastCollection Then
+If Not aa.objref Is Nothing Then
+If TypeOf aa.objref Is FastCollection Then
 Dim bb As FastCollection
-Set bb = aa.ObjRef
+Set bb = aa.objref
 If bb.StructLen > 0 Then
 MyEr "Structure members are ReadOnly", "‘· Ï›ÎÁ ÙÁÚ ‰ÔÏﬁÚ ÂﬂÌ·È Ï¸ÌÔ „È· ·Ì‹„Ì˘ÛÁ"
 Exit Function
@@ -38186,46 +38264,13 @@ Dim v$
     End If
     
 End Function
-Function ExecCode(basestack As basetask, rest$) As Boolean ' experimental
-' ver .001
-Dim p As Double, mm As MemBlock, w2 As Long
-    If IsExp(basestack, rest$, p) Then
-        If Not basestack.lastobj Is Nothing Then
-          If Not TypeOf basestack.lastobj Is mHandler Then
-            Set basestack.lastobj = Nothing
-            Exit Function
-            End If
-            With basestack.lastobj
-                  If Not TypeOf .ObjRef Is MemBlock Then
-                      Set basestack.lastobj = Nothing
-                      Exit Function
-                  End If
-            End With
-            Set mm = basestack.lastobj.ObjRef
-            If mm.Status = 0 Then
-            w2 = mm.GetPtr(0)
-            If FastSymbol(rest$, ",") Then
-            If Not IsExp(basestack, rest$, p) Then
-                Set basestack.lastobj = Nothing
-                Set mm = Nothing
-                MissPar
-                Exit Function
-            End If
-            If p < 0 Or p >= mm.SizeByte Then
-                Set basestack.lastobj = Nothing
-                Set mm = Nothing
-                MyEr "Offset out of buffer", "ƒÈÂ˝ËıÌÛÁ ÂÍÙ¸Ú ‰È‹ÒËÒ˘ÛÁÚ"
-                Exit Function
-            End If
-            w2 = cUlng(uintnew(w2) + p)
-            End If
-            Set basestack.lastobj = Nothing
-            
-            CallLp w2
-            ExecCode = True
-            Set mm = Nothing
-            End If
-            End If
-        
-    End If
-End Function
+Sub refreshGui()
+   Dim x As Form
+                    For Each x In Forms
+             
+                    If Typename$(x) = "GuiM2000" Then
+                    If x.enabled Then x.Refresh
+                    End If
+                    Next
+                    Set x = Nothing
+End Sub

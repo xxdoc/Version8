@@ -83,6 +83,8 @@ k.item(i) = Me.item(i)
 End If
 Next i
 End If
+'' new
+Set k.GroupRef = Me.GroupRef
 k.IHaveGui = Me.IHaveGui
 k.IHaveClass = Me.IHaveClass
 End Sub
@@ -217,11 +219,11 @@ Else
 End If
 Else
 If curitem < 0 Then
-If GroupRef.ObjRef.Done Then
-If GroupRef.ObjRef.IsObj Then
-Set item = GroupRef.ObjRef.ValueObj
+If GroupRef.objref.Done Then
+If GroupRef.objref.IsObj Then
+Set item = GroupRef.objref.ValueObj
 Else
-item = GroupRef.ObjRef.Value
+item = GroupRef.objref.Value
 End If
 
 End If
@@ -245,8 +247,8 @@ If curitem < 0 Then
 If Not GroupRef Is Nothing Then
 If TypeOf GroupRef Is mHandler Then
 If GroupRef.T1 = 1 Then
-If GroupRef.ObjRef.Done Then
-Set GroupRef.ObjRef.ValueObj = item
+If GroupRef.objref.Done Then
+Set GroupRef.objref.ValueObj = item
 Exit Property
 End If
 End If

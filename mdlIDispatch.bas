@@ -28,7 +28,7 @@ Enum cbnCallTypes
 End Enum
 ' Maybe need this http://support2.microsoft.com/kb/2870467/
 'To update oleaut32
-Private Declare Sub VariantCopy Lib "oleaut32.dll" (ByRef pvargDest As Variant, ByRef pvargSrc As Variant)
+Private Declare Sub VariantCopy Lib "OleAut32.dll" (ByRef pvargDest As Variant, ByRef pvargSrc As Variant)
 Private KnownProp As FastCollection
 Private Init As Boolean
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long
@@ -75,7 +75,7 @@ Public Function CallByNameFixParamArray _
     (pobjTarget As Object, _
     ByVal pstrProcName As Variant, _
     ByVal CallType As cbnCallTypes, _
-     pArgs(), pargs2() As String, items As Long, Optional robj As Object, Optional fixnamearg As Long = 0) As Variant
+     pArgs(), pargs2() As String, Items As Long, Optional robj As Object, Optional fixnamearg As Long = 0) As Variant
 
 
     ' pobjTarget    :   Class or form object that contains the procedure/property
@@ -128,14 +128,14 @@ Else
 End If
     If lngRet = 0 Then
 passhere:
-        If items > 0 Or fixnamearg > 0 Then
-                ReDim varArr(0 To items - 1 + fixnamearg)
+        If Items > 0 Or fixnamearg > 0 Then
+                ReDim varArr(0 To Items - 1 + fixnamearg)
                
-                For lngLoop = 0 To items - 1 + fixnamearg
-                    SwapVariant varArr(fixnamearg + items - 1 - lngLoop), pArgs(lngLoop)
+                For lngLoop = 0 To Items - 1 + fixnamearg
+                    SwapVariant varArr(fixnamearg + Items - 1 - lngLoop), pArgs(lngLoop)
                 Next
               With Params
-                    .cArgs = items + fixnamearg
+                    .cArgs = Items + fixnamearg
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                  If CallType = VbLet Or CallType = VbSet Or fixnamearg > 0 Then
                 
@@ -174,6 +174,9 @@ End With
 
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then
+            ' CallByName pobjTarget, pstrProcName, VbMethod
+             MyEr GetBStrFromPtr(Excep.StrPtrDescription, False), GetBStrFromPtr(Excep.StrPtrDescription, False)
+             GoTo exithere
                 Err.Raise Excep.wCode
            ' ElseIf items = 0 And CallType = VbMethod Then
            ElseIf Typename$(pobjTarget) = "GuiM2000" Then
@@ -183,7 +186,7 @@ jumphere:
            If UCase(pstrProcName) = "SHOW" Then
             CallByName pobjTarget, "ShowmeALl", VbMethod
             
-           If items = 0 Then
+           If Items = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
            ElseIf varArr(0) = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
@@ -249,10 +252,10 @@ jumphere:
           ModalId = oldmoldid
            End If
            
-           ElseIf items = 0 Then
+           ElseIf Items = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod
            Else
-           Select Case items
+           Select Case Items
            Case 1
            CallByName pobjTarget, pstrProcName, VbMethod, varArr(0)
            Case 2
@@ -287,11 +290,11 @@ jumphere:
 
         Err.Raise lngRet
     End If
-    If items > 0 Then
+    If Items > 0 Then
                 ' Fill parameters arrays. The array must be
                 ' filled in reverse order.
-                For lngLoop = 0 To items - 1 + fixnamearg
-                    SwapVariant varArr(fixnamearg + items - 1 - lngLoop), pArgs(lngLoop)
+                For lngLoop = 0 To Items - 1 + fixnamearg
+                    SwapVariant varArr(fixnamearg + Items - 1 - lngLoop), pArgs(lngLoop)
                 Next
     End If
     On Error Resume Next
