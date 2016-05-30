@@ -1,5 +1,33 @@
 Attribute VB_Name = "PicHandler"
 Option Explicit
+Public fonttest As PictureBox
+Private Declare Function GetTextMetrics Lib "gdi32" _
+Alias "GetTextMetricsA" (ByVal hDC As Long, _
+lpMetrics As TEXTMETRIC) As Long
+Private Type TEXTMETRIC
+tmHeight As Long
+tmAscent As Long
+tmDescent As Long
+tmInternalLeading As Long
+tmExternalLeading As Long
+tmAveCharWidth As Long
+tmMaxCharWidth As Long
+tmWeight As Long
+tmOverhang As Long
+tmDigitizedAspectX As Long
+tmDigitizedAspectY As Long
+tmFirstChar As Byte
+tmLastChar As Byte
+tmDefaultChar As Byte
+tmBreakChar As Byte
+tmItalic As Byte
+tmUnderlined As Byte
+tmStruckOut As Byte
+tmPitchAndFamily As Byte
+tmCharSet As Byte
+End Type
+Dim tm As TEXTMETRIC
+
 Public osnum As Long
 Private Declare Function GdiFlush Lib "gdi32" () As Long
 Private Declare Function GetSystemMetrics Lib "user32" _
@@ -8,7 +36,7 @@ Private Const SM_CXSCREEN = 0
 Private Const SM_CYSCREEN = 1
 Private Const LOGPIXELSX = 88
 Private Const LOGPIXELSY = 90
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
 
 Public MediaPlayer1 As New MovieModule
 Public MediaBack1 As New MovieModule
@@ -2599,7 +2627,8 @@ Function Convert2Ansi(A$, localeid As Long) As String
 Dim b$, i&
 If A$ <> "" Then
 For i& = 1 To Len(A$)
-b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(A$, i, 1) + Chr$(0), 128, localeid), 1))), 64, 1032), 1)
+' change 1032 to lcid_def
+b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(A$, i, 1) + Chr$(0), 128, localeid), 1))), 64, LCID_def), 1)
 
 Next i&
 Convert2Ansi = b$
@@ -2688,8 +2717,8 @@ ElseIf Convert3(Convert2(A$, cLid), cLid) = A$ Then
  FoundLocaleId = cLid
 End If
 End Function
-Function FoundSpecificLocaleId(A$, this As Long) As Long
-If Convert3(Convert2(A$, this), this) = A$ Then FoundSpecificLocaleId = True
+Function FoundSpecificLocaleId(A$, This As Long) As Long
+If Convert3(Convert2(A$, This), This) = A$ Then FoundSpecificLocaleId = True
 End Function
 Function ismine1(ByVal A$) As Boolean  '  START A BLOCK
 ismine1 = True
@@ -3123,15 +3152,15 @@ ScrY = GetSystemMetrics(SM_CYSCREEN) * dv15
 End Function
 Public Function MyTrimLi(s$, l As Long) As Long
 Dim i&
-Dim p2 As Long, P1 As Integer, p4 As Long
+Dim p2 As Long, p1 As Integer, p4 As Long
  If l > Len(s) Then MyTrimLi = Len(s) + 1: Exit Function
  If l <= 0 Then MyTrimLi = 1: Exit Function
   l = l - 1
   i = Len(s)
   p2 = StrPtr(s) + l * 2:  p4 = p2 + i * 2
   For i = p2 To p4 Step 2
-  GetMem2 i, P1
-  Select Case P1
+  GetMem2 i, p1
+  Select Case p1
     Case 32, 160
     Case Else
      MyTrimLi = (i - p2) \ 2 + 1 + l
@@ -3142,13 +3171,13 @@ Dim p2 As Long, P1 As Integer, p4 As Long
 End Function
 Public Function MyTrimL(s$) As Long
 Dim i&, l As Long
-Dim p2 As Long, P1 As Integer, p4 As Long
+Dim p2 As Long, p1 As Integer, p4 As Long
   l = Len(s): If l = 0 Then MyTrimL = 1: Exit Function
   p2 = StrPtr(s): l = l - 1
   p4 = p2 + l * 2
   For i = p2 To p4 Step 2
-  GetMem2 i, P1
-  Select Case P1
+  GetMem2 i, p1
+  Select Case p1
     Case 32, 160
     Case Else
      MyTrimL = (i - p2) \ 2 + 1
@@ -3159,13 +3188,13 @@ Dim p2 As Long, P1 As Integer, p4 As Long
 End Function
 Public Function excludespace(s$) As Long
 Dim i&, l As Long
-Dim p2 As Long, P1 As Integer, p4 As Long
+Dim p2 As Long, p1 As Integer, p4 As Long
   l = Len(s): If l = 0 Then Exit Function
   p2 = StrPtr(s): l = l - 1
   p4 = p2 + l * 2
   For i = p2 To p4 Step 2
-  GetMem2 i, P1
-  Select Case P1
+  GetMem2 i, p1
+  Select Case p1
     Case 32, 160
     Case Else
      excludespace = (i - p2) \ 2
@@ -3181,14 +3210,14 @@ Dim rr&, one As Boolean, c$, gr As Boolean
 r$ = ""
 ' NEW FOR REV 156  - WE WANT TO RUN WITH GREEK COMMANDS IN ANY COMPUTER
 Dim i&, l As Long, p3 As Integer
-Dim p2 As Long, P1 As Integer, p4 As Long
+Dim p2 As Long, p1 As Integer, p4 As Long
 l = Len(A$): If l = 0 Then IsLabelAnew = 0: lang = 1: Exit Function
 
 p2 = StrPtr(A$): l = l - 1
   p4 = p2 + l * 2
   For i = p2 To p4 Step 2
-  GetMem2 i, P1
-  Select Case P1
+  GetMem2 i, p1
+  Select Case p1
     Case 13
     
     If i < p4 Then
@@ -3201,12 +3230,12 @@ p2 = StrPtr(A$): l = l - 1
     i = i + 4
     Do While i < p4
 
-    GetMem2 i, P1
-    If P1 = 32 Or P1 = 160 Then
+    GetMem2 i, p1
+    If p1 = 32 Or p1 = 160 Then
     i = i + 2
     Else
     GetMem2 i + 2, p3
-    If P1 <> 13 And p3 <> 10 Then Exit Do
+    If p1 <> 13 And p3 <> 10 Then Exit Do
     i = i + 4
     End If
     Loop
@@ -3229,12 +3258,12 @@ p2 = StrPtr(A$): l = l - 1
   Next i
     If i > p4 Then A$ = "": IsLabelAnew = 0: Exit Function
   For i = i To p4 Step 2
-  GetMem2 i, P1
-  If P1 < 256 Then
-  Select Case ChrW(P1)
+  GetMem2 i, p1
+  If p1 < 256 Then
+  Select Case ChrW(p1)
         Case "@"
             If i < p4 And r$ <> "" Then
-                GetMem2 i + 2, P1
+                GetMem2 i + 2, p1
                 where$ = r$
                 r$ = ""
             Else
@@ -3257,18 +3286,18 @@ p2 = StrPtr(A$): l = l - 1
             If one Then
                 Exit For
             ElseIf r$ <> "" And i < p4 Then
-                GetMem2 i + 2, P1
-                If ChrW(P1) = "." Or ChrW(P1) = " " Then
-                If ChrW(P1) = "." And i + 2 < p4 Then
-                    GetMem2 i + 4, P1
-                    If ChrW(P1) = " " Then i = i + 4: Exit For
+                GetMem2 i + 2, p1
+                If ChrW(p1) = "." Or ChrW(p1) = " " Then
+                If ChrW(p1) = "." And i + 2 < p4 Then
+                    GetMem2 i + 4, p1
+                    If ChrW(p1) = " " Then i = i + 4: Exit For
                 Else
                     i = i + 2
                    Exit For
                 End If
             End If
-                GetMem2 i, P1
-                r$ = r$ & ChrW(P1)
+                GetMem2 i, p1
+                r$ = r$ & ChrW(p1)
                 rr& = 1
             End If
       Case "&"
@@ -3285,7 +3314,7 @@ p2 = StrPtr(A$): l = l - 1
 
             Exit For
             ElseIf r$ <> "" Then
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             '' A$ = Mid$(A$, 2)
             rr& = 1 'is an identifier or floating point variable
             Else
@@ -3295,7 +3324,7 @@ p2 = StrPtr(A$): l = l - 1
             If one Then
             Exit For
             Else
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             rr& = 1 'is an identifier or floating point variable
             End If
         Case "$"
@@ -3303,7 +3332,7 @@ p2 = StrPtr(A$): l = l - 1
             If r$ <> "" Then
             one = True
             rr& = 3 ' is string variable
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             Else
             Exit For
             End If
@@ -3312,7 +3341,7 @@ p2 = StrPtr(A$): l = l - 1
             If r$ <> "" Then
             one = True
             rr& = 4 ' is long variable
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             Else
             Exit For
             End If
@@ -3320,9 +3349,9 @@ p2 = StrPtr(A$): l = l - 1
         Case "("
             If r$ <> "" Then
             If i + 4 <= p4 Then
-                GetMem2 i + 2, P1
+                GetMem2 i + 2, p1
                 GetMem2 i + 2, p3
-                If ChrW(P1) + ChrW(p3) = ")@" Then
+                If ChrW(p1) + ChrW(p3) = ")@" Then
                     r$ = r$ & "()."
                     i = i + 4
                 Else
@@ -3340,8 +3369,8 @@ i1233:
                                        Case Else
                                        Exit For
                                        End Select
-                     GetMem2 i, P1
-                                        r$ = r$ & ChrW(P1)
+                     GetMem2 i, p1
+                                        r$ = r$ & ChrW(p1)
                                         i = i + 2
                                       ' A$ = Mid$(A$, 2)
                                    Exit For
@@ -3360,7 +3389,7 @@ i1233:
               Exit For
               Else
               gr = True
-              r$ = r$ & ChrW(P1)
+              r$ = r$ & ChrW(p1)
               rr& = 1 'is an identifier or floating point variable
               End If
     End If
@@ -3383,13 +3412,13 @@ Dim rr&, one As Boolean, c$, firstdot$, gr As Boolean
 rrr$ = ""
 r$ = ""
 Dim i&, l As Long, p3 As Integer
-Dim p2 As Long, P1 As Integer, p4 As Long '', excludesp As Long
+Dim p2 As Long, p1 As Integer, p4 As Long '', excludesp As Long
   l = Len(A$): If l = 0 Then IsLabelDotSub = 0: lang = 1: Exit Function
 p2 = StrPtr(A$): l = l - 1
   p4 = p2 + l * 2
   For i = p2 To p4 Step 2
-  GetMem2 i, P1
-  Select Case P1
+  GetMem2 i, p1
+  Select Case p1
     Case 13
     
     If i < p4 Then
@@ -3402,12 +3431,12 @@ p2 = StrPtr(A$): l = l - 1
     i = i + 4
     Do While i < p4
 
-    GetMem2 i, P1
-    If P1 = 32 Or P1 = 160 Then
+    GetMem2 i, p1
+    If p1 = 32 Or p1 = 160 Then
     i = i + 2
     Else
     GetMem2 i + 2, p3
-    If P1 <> 13 And p3 <> 10 Then Exit Do
+    If p1 <> 13 And p3 <> 10 Then Exit Do
     i = i + 4
     End If
     Loop
@@ -3432,13 +3461,13 @@ p2 = StrPtr(A$): l = l - 1
   If i > p4 Then A$ = "": IsLabelDotSub = 0: Exit Function
   
   For i = i To p4 Step 2
-  GetMem2 i, P1
-  If P1 < 256 Then
-  Select Case ChrW(P1)
+  GetMem2 i, p1
+  If p1 < 256 Then
+  Select Case ChrW(p1)
     Case "@"
             If i < p4 And r$ <> "" Then
-            GetMem2 i + 2, P1
-            If ChrW(P1) <> "(" Then
+            GetMem2 i + 2, p1
+            If ChrW(p1) <> "(" Then
               where$ = myUcase(r$, gr)
             r$ = ""
             rrr$ = ""
@@ -3479,19 +3508,19 @@ p2 = StrPtr(A$): l = l - 1
             If one Then
             Exit For
             ElseIf r$ <> "" And i < p4 Then
-            GetMem2 i + 2, P1
-            If ChrW(P1) = "." Or ChrW(P1) = " " Then
-            If ChrW(P1) = "." And i + 2 < p4 Then
+            GetMem2 i + 2, p1
+            If ChrW(p1) = "." Or ChrW(p1) = " " Then
+            If ChrW(p1) = "." And i + 2 < p4 Then
             
-                GetMem2 i + 4, P1
-                If ChrW(P1) = " " Then i = i + 4: Exit For
+                GetMem2 i + 4, p1
+                If ChrW(p1) = " " Then i = i + 4: Exit For
             Else
                 i = i + 2
                Exit For
             End If
             End If
-            GetMem2 i, P1
-            r$ = r$ & ChrW(P1)
+            GetMem2 i, p1
+            r$ = r$ & ChrW(p1)
             ''A$ = Mid$(A$, 2)
             rr& = 1
             Else
@@ -3505,7 +3534,7 @@ p2 = StrPtr(A$): l = l - 1
 
             Exit For
             ElseIf r$ <> "" Then
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             '' A$ = Mid$(A$, 2)
             rr& = 1 'is an identifier or floating point variable
             Else
@@ -3515,7 +3544,7 @@ p2 = StrPtr(A$): l = l - 1
             If one Then
             Exit For
             Else
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             rr& = 1 'is an identifier or floating point variable
             End If
         Case "$"
@@ -3523,7 +3552,7 @@ p2 = StrPtr(A$): l = l - 1
             If r$ <> "" Then
             one = True
             rr& = 3 ' is string variable
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             Else
             Exit For
             End If
@@ -3532,16 +3561,16 @@ p2 = StrPtr(A$): l = l - 1
             If r$ <> "" Then
             one = True
             rr& = 4 ' is long variable
-            r$ = r$ & ChrW(P1)
+            r$ = r$ & ChrW(p1)
             Else
             Exit For
             End If
     Case "("
             If r$ <> "" Then
             If i + 4 <= p4 Then
-                GetMem2 i + 2, P1
+                GetMem2 i + 2, p1
                 GetMem2 i + 2, p3
-                If ChrW(P1) + ChrW(p3) = ")@" Then
+                If ChrW(p1) + ChrW(p3) = ")@" Then
                     r$ = r$ & "()."
                     i = i + 4
                 Else
@@ -3559,8 +3588,8 @@ i123:
                                        Case Else
                                        Exit For
                                        End Select
-                     GetMem2 i, P1
-                                        r$ = r$ & ChrW(P1)
+                     GetMem2 i, p1
+                                        r$ = r$ & ChrW(p1)
                                         i = i + 2
                                       ' A$ = Mid$(A$, 2)
                                    Exit For
@@ -3578,7 +3607,7 @@ i123:
               Exit For
               Else
               gr = True
-              r$ = r$ & ChrW(P1)
+              r$ = r$ & ChrW(p1)
               rr& = 1 'is an identifier or floating point variable
               End If
     End If
@@ -3935,4 +3964,27 @@ allcommands = True
 End Function
 Private Function ProcPtr(ByVal nAddress As Long) As Long
     ProcPtr = nAddress
+End Function
+Public Sub StoreFont(aName$, aSize As Single, ByVal aCharset As Long)
+
+On Error Resume Next
+fonttest.Font.Size = aSize
+If Err.number > 0 Then aSize = 12: fonttest.Font.Size = aSize
+    fonttest.FontName = aName$
+    fonttest.Font.bold = True
+    fonttest.Font.Italic = True
+    fonttest.Font.charset = aCharset
+        fonttest.FontName = aName$
+    fonttest.Font.bold = True
+    fonttest.Font.Italic = True
+    fonttest.Font.charset = aCharset
+    fonttest.Font.Size = aSize
+    aSize = fonttest.Font.Size '' return
+End Sub
+Public Function InternalLeadingSpace() As Long
+On Error Resume Next
+    GetTextMetrics fonttest.hDC, tm
+  With tm
+InternalLeadingSpace = (tm.tmInternalLeading = 0) Or Not (tm.tmInternalLeading > 0)
+End With
 End Function

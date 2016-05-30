@@ -25,20 +25,102 @@ Public GroupRef As Object   ' get a floating Group, maybe with groups inside....
 Public CodeName As String
 Private oldmaxitems As Long
 Public Arr As Boolean
-Public Sub PushProp(A As Variant)
-Set GroupRef = A
+Public RevOrder As Boolean
+Private Type SAFEArrayPart
+   cDims                        As Integer
+   fFeatures                    As Integer
+   cbElements                   As Long
+   cLocks                       As Long
+   pvData                       As Long
+   End Type
+Private Declare Sub GetMem4 Lib "msvbvm60" (ByVal addr As Long, retval As Long)
+Private Declare Sub PutMem4 Lib "msvbvm60" (ByVal addr As Long, ByVal NewVal As Long)
+
+Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long
+  Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" _
+      (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
+        Private Declare Sub CopyPart Lib "KERNEL32" Alias "RtlMoveMemory" _
+      (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
+Private Declare Function SafeArrayGetDim Lib "OleAut32.dll" (ByVal pSA As Long) As Long
+Private Declare Function SafeArrayLock Lib "OleAut32.dll" (ByVal pSA As Long) As Long
+Private Declare Function SafeArrayUnlock Lib "OleAut32.dll" (ByVal pSA As Long) As Long
+  
+Private Declare Function SafeArrayAccessData Lib "OleAut32.dll" (ByVal pSA As Long, ppVdata As Long) As Long
+Private Declare Function SafeArrayUnaccessData Lib "OleAut32.dll" (ByVal pSA As Long) As Long
+Private Declare Function SafeArrayGetElemsize Lib "OleAut32.dll" (ByVal pSA As Long) As Long
+Private Declare Sub SafeArrayCopyData Lib "OleAut32.dll" (ByVal psaSource As Any, ByVal psaTarget As Any)
+Private Type SAFEARRAY1D
+    cDims As Integer
+    fFeatures As Integer
+    cbElements As Long
+    cLocks As Long
+    pvData As Long
+    cElements As Long
+    lLbound As Long
+End Type
+Public Sub PushProp(a As Variant)
+Set GroupRef = a
 Arr = False
 End Sub
+Public Sub CopySerialize(mmm() As Variant)
+' may we get an exception here
+Dim m_base As Long, first12 As Long
+Dim m_base_0 As Long, first12_0 As Long, r1 As Long, r2 As Long
+
+GetMem4 VarPtrArray(mmm()), m_base
+GetMem4 VarPtrArray(actualdata()), m_base_0
+r1 = SafeArrayLock(m_base)
+r2 = SafeArrayLock(m_base_0)
+r1 = SafeArrayAccessData(ByVal m_base, first12)
+r2 = SafeArrayAccessData(ByVal m_base_0, first12_0)
+
+'GetMem4 m_base + 12, first1
+'GetMem4 m_base_0 + 12, first1_0
+PutMem4 m_base + 12, first12_0
+PutMem4 m_base_0 + 12, first12
+r2 = SafeArrayUnaccessData(ByVal m_base_0)
+r1 = SafeArrayUnaccessData(ByVal m_base)
+r2 = SafeArrayUnlock(m_base_0)
+r1 = SafeArrayUnlock(m_base)
+End Sub
+Public Sub CopyBackSerialize(mmm() As Variant)
+' may we get an exception here
+Dim m_base As Long, first12 As Long
+Dim m_base_0 As Long, first12_0 As Long, r1 As Long, r2 As Long
+If Not RevOrder Then Err.Raise vbObjectError + 12345, "CopyBack", "Failed. is not vb6"
+Dim backup()
+backup() = actualdata()
+GetMem4 VarPtrArray(mmm()), m_base
+GetMem4 VarPtrArray(backup()), m_base_0
+r1 = SafeArrayLock(m_base)
+r2 = SafeArrayLock(m_base_0)
+r1 = SafeArrayAccessData(ByVal m_base, first12)
+r2 = SafeArrayAccessData(ByVal m_base_0, first12_0)
+
+'GetMem4 m_base + 12, first1
+'GetMem4 m_base_0 + 12, first1_0
+PutMem4 m_base + 12, first12_0
+PutMem4 m_base_0 + 12, first12
+r2 = SafeArrayUnaccessData(ByVal m_base_0)
+r1 = SafeArrayUnaccessData(ByVal m_base)
+r2 = SafeArrayUnlock(m_base_0)
+r1 = SafeArrayUnlock(m_base)
+End Sub
+
+
 
 Public Sub CopyArray(k As mArray)
 'copy this to k
-Dim v As Variant, i As Long, obj As Object, obj2 As Object, spare As lambda
-k.SerialItem v, Me.UpperMonoLimit, 8
+Dim V As Variant, i As Long, obj As Object, obj2 As Object, spare As lambda
+k.SerialItem V, Me.UpperMonoLimit, 8
+k.RevOrder = False
 k.StartResize
 For i = 0 To dnum - 1
 k.PushDim limit(i)
 Next i
+
 k.PushEnd
+k.RevOrder = RevOrder
 If Right$(k.arrname, 2) = "%(" Then
 For i = 0 To Me.UpperMonoLimit
 
@@ -121,6 +203,17 @@ End If
 Dim i As Long, mx As Long
 mx = maxitems
 If limit(i) > 0 Then
+If RevOrder Then
+Dim revlimit()
+ReDim revlimit(UBound(limit()))
+    For i = 0 To dnum - 1
+    revlimit(i) = limit(dnum - i - 1)
+    Next i
+    For i = 0 To dnum - 1
+    limit(i) = revlimit(i)
+    Next i
+    
+End If
 For i = 0 To dnum - 1
     dtable(i) = mx / limit(i)
     mx = dtable(i)
@@ -164,7 +257,11 @@ ElseIf command = 6 Then
 If cursor > 9 Or cursor < 0 Then
 item = 0
 Else
+If RevOrder Then
+item = limit(dnum - cursor - 1)
+Else
 item = limit(cursor)
+End If
 End If
 ElseIf command = 7 Then  'erase all data
 Dim aa As Variant
@@ -192,8 +289,14 @@ If curdim >= dnum Then
 ' error...
 PushOffset = False
 Else
+
+If RevOrder Then
+If nDim >= limit(dnum - curdim - 1) Then Exit Function
+curitem = curitem + dtable(dnum - curdim - 1) * nDim
+Else
 If nDim >= limit(curdim) Then Exit Function
 curitem = curitem + dtable(curdim) * nDim
+End If
 PushOffset = True
 End If
 End Function
@@ -237,7 +340,11 @@ On Error Resume Next
 If Not IsObject(actualdata(curitem)) Then
 actualdata(curitem) = item
 Else
+If Not IsObject(item) Then
+Set actualdata(curitem) = Nothing
+Else
 actualdata(curitem).Value = item
+End If
 End If
 
 End Property
@@ -300,7 +407,7 @@ Set var = aa
 End Sub
 Sub CopyGroup(myobject As Object, myobject2 As Object)
 'Special Copy
- Dim ps As New mStiva, v As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
+ Dim ps As New mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
 Dim subgroup As Object, sub2 As Object
  Set myobject2 = New Group
  
@@ -339,6 +446,13 @@ End Sub
 
 Private Sub Class_Terminate()
 Set GroupRef = Nothing
+'On Error Resume Next
+'If UBound(actualdata()) > 0 Then
+'Dim i As Long
+'For i = 0 To UBound(actualdata())
+'If IsObject(actualdata(i)) Then Set actualdata(i) = Nothing
+'Next i
+'End If
 Erase actualdata()
 End Sub
 Private Function GetAnyName$()

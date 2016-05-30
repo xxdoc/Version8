@@ -8,9 +8,9 @@ BEGIN
 END
 Attribute VB_Name = "mEvent"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Exposed = True
 Option Explicit
 
 
@@ -21,12 +21,72 @@ Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
 Dim StartPoint As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
 Private mParamBlock As String, mParams As Long
 Private Hash() As Long
+Public Function Extern(ParamArray A()) As Long
+Attribute Extern.VB_UserMemId = 0
+' default function
+Dim ohere$, objref As New basetask
+If Forms.Count >= 4 Then
+    Set objref.Owner = Form1.DIS
+Else
+Exit Function
+End If
+ohere$ = HERE$
+Dim i As Long, ar As mArray, j As Long
+Dim manydim As Long, maxitems As Long, probe As Long, v() As Variant, probelow As Long
+Dim mS As mStiva
+Set mS = objref.soros
+For i = 0 To UBound(A())
+Select Case VarType(A(i))
+Case Is >= vbArray
+' only with error control
+If Typename(A(i)) = "Variant()" Then
+Set ar = New mArray
+v() = A(i)
+On Error Resume Next
+For j = 1 To 60
+    probe = UBound(v, j)
+    If Err Then Exit For
+Next j
+manydim = j - 1
+On Error Resume Next
+Dim items As Long
+For j = 1 To manydim
+    
+    probe = UBound(v, j)
+    If Err Then Exit For
+    probelow = LBound(v, j)
+    ar.PushDim probe - probelow + 1
+Next j
+ar.PushEnd
+'ar.RevOrder = True
+ar.CopySerialize v()
+mS.DataObj ar
+Set ar = Nothing
+Erase v()
+Else
+mS.DataValLong 0
+End If
+Case vbEmpty
+mS.DataValLong 0
+Case vbVariant, vbString
+mS.DataStr CStr(A(i))
+Case Else
+mS.DataVal CDbl(A(i))
+End Select
+Next i
+objref.soros.MergeTop mS
+HERE$ = ""
+Call CallEvent(objref, "", 1, VarIndex)
+Set mS = Nothing
+HERE$ = ohere$
+End Function
 
-Public Property Get Params() As Long
-Params = mParams
+
+Public Property Get params() As Long
+params = mParams
 End Property
 Public Property Get ParamsRead() As String
 ParamsRead = mParamBlock
@@ -243,18 +303,18 @@ Private Sub ab(ByVal A As Long, b As Long)
 b = (b + A + 1024 * A) Xor &H83F3CF
 End Sub
 Public Function HashFunc0(A$) As Long
- Dim i&, p2 As Long, P1 As Integer, p4 As Long, k As Long, p3 As Long
+ Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
   p4 = Len(A$) * 2 '- 2
   p2 = StrPtr(A$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
-  GetMem2 i, P1
-  p3 = UINT(P1)
+  GetMem2 i, p1
+  p3 = UINT(p1)
   HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
   Next i
   k = 2
   For i = p4 - 8 To p2 Step -2
-  GetMem2 i, P1
-  p3 = UINT(P1)
+  GetMem2 i, p1
+  p3 = UINT(p1)
   HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
  i = i - 2 * k
   k = k + 1
@@ -310,3 +370,5 @@ End Property
 Public Property Let VarIndex(ByVal vNewValue As Variant)
 StartPoint = vNewValue
 End Property
+
+

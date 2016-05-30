@@ -40,8 +40,9 @@ ElseIf mFunction Like "dll*" Then
 mFunction = Mid(mFunction, 4)
 End If
 Do While paramList <> ""
-If FastSymbol(paramList, "&") Then l = 16 Else l = 0
+
  If IsLabelSymbolNew(paramList, "Ã¡ —’”", "LONG", lang) Then
+ If FastSymbol(paramList, "&") Then l = 16 Else l = 0
  If IsPureLabel(paramList, check$) = 1 Then
  'OK
  m = 2
@@ -50,6 +51,7 @@ If FastSymbol(paramList, "&") Then l = 16 Else l = 0
  Exit Sub
  End If
  Else
+  If FastSymbol(paramList, "&") Then l = 16 Else l = 0
  m = IsPureLabel(paramList, check$)
  If m = 0 Then
  If FastSymbol(paramList, "...", , 3) Then

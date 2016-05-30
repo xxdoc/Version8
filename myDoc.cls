@@ -46,8 +46,8 @@ Public BackMove As Boolean
 Public LastSelStart As Long
 Public ListLoadedType As Long
 Private Declare Function CompareString Lib "KERNEL32" Alias "CompareStringW" (ByVal Locale As Long, ByVal dwCmpFlags As Long, ByVal lpString1 As Long, ByVal cchCount1 As Long, ByVal lpString2 As Long, ByVal cchCount2 As Long) As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
-Private Declare Sub PutMem2 Lib "msvbvm60" (ByVal Addr As Long, ByVal NewVal As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
+Private Declare Sub PutMem2 Lib "msvbvm60" (ByVal addr As Long, ByVal NewVal As Integer)
 Private words$, Unique As Long
 Private p3 As Long
 Dim mlcid As Long
@@ -1837,7 +1837,7 @@ If Not Append Then
 If Not NeoUnicodeFile(FileName) Then Exit Function
 End If
 f$ = GetDosPath(FileName)
-If Err.Number > 0 Or f$ = "" Then Exit Function
+If Err.number > 0 Or f$ = "" Then Exit Function
 w = FreeFile
 Open f$ For Binary As w
 ' mode2save
@@ -1882,7 +1882,8 @@ ElseIf mode2save = 3 Then ' ascii
             iPos = DocParaNext(0)
             maxmw = 327680
             While iPos <> 0
-                Put #w, , textString(lf$, iPos, maxmw)
+            
+                Put #w, , Convert2Ansi(textString(lf$, iPos, maxmw), mlcid)
             Wend
             Close w
             SaveUnicodeOrAnsi = True
@@ -1995,13 +1996,13 @@ Loop
 End Property
 Private Function mWordCount(ByVal s$) As Long
 Dim i&, l As Long
-Static p2 As Long, P1 As Integer, p4 As Long
+Static p2 As Long, p1 As Integer, p4 As Long
   l = Len(s): If l = 0 Then Exit Function
   p2 = StrPtr(s): l = l - 1
   p4 = p2 - 2
   For i = p2 To p2 + l * 2 Step 2
-  GetMem2 i, P1
-  Select Case P1
+  GetMem2 i, p1
+  Select Case p1
     Case 65 To 90, 97 To 122, Is > 127
     If i - p4 = 2 Then mWordCount = mWordCount + 1
     Case 39
@@ -2013,7 +2014,7 @@ Static p2 As Long, P1 As Integer, p4 As Long
 End Function
 Private Function mWordMap(s$) As String
 Dim i&, l As Long
-Static p2 As Long, P1 As Integer, p3 As Long, p4 As Long
+Static p2 As Long, p1 As Integer, p3 As Long, p4 As Long
 Dim ss$, pos As Long
 pos = -2
   l = Len(s): If l = 0 Then mWordMap = " ": Exit Function
@@ -2022,8 +2023,8 @@ pos = -2
   p3 = p2
   p4 = p2 - 2
   For i = p2 To p2 + l * 2 Step 2
-  GetMem2 i, P1
-  Select Case P1
+  GetMem2 i, p1
+  Select Case p1
     Case 65 To 90, 97 To 122, Is > 127
     If i - p4 = 2 Then p2 = i: pos = pos + 2
     Case 39
@@ -2270,7 +2271,18 @@ On Error GoTo a11
 Do While Not (thislof < SeekBuf)
     GetByte f, SeekBuf, check
     If check <> 10 And check <> 13 Then
-     getAnsiStringlINE = getAnsiStringlINE + Chr(check)
+ If LCID_def <> 1033 Then
+
+                  getAnsiStringlINE = getAnsiStringlINE + Convert3(Convert2(ChrW(check), 1033), mlcid)
+                Else
+                    getAnsiStringlINE = getAnsiStringlINE + Convert3(ChrW(check), mlcid)
+         End If
+            
+  '  If Asc(ChrW(915)) = 195 Then
+   '     getAnsiStringlINE = getAnsiStringlINE + Convert3(Convert2(ChrW(check), 1033), mlcid)
+    'Else
+     '   getAnsiStringlINE = getAnsiStringlINE + Convert3(ChrW(check), mlcid)
+     'End If
     Else
         If Not (thislof < SeekBuf) Then
             ss = SeekBuf
@@ -2440,39 +2452,39 @@ End If
 GetMem2 VarPtr(Buffer(location - bufOffset)), b
 SeekBuf = location + 2
 End Sub
-Function InstrTextCompareAnyLocale(position As Long, from$, this$, Optional uLCID As Long = 1033) As Long
+Function InstrTextCompareAnyLocale(position As Long, from$, This$, Optional uLCID As Long = 1033) As Long
 
 Const NORM_IGNORECASE = &H1
-Dim P1 As Long, p2 As Long, l1 As Long, l2 As Long, cu As Long
-l1 = (Len(from$) - Len(this$)) * 2 - (position - 1) * 2
+Dim p1 As Long, p2 As Long, l1 As Long, l2 As Long, cu As Long
+l1 = (Len(from$) - Len(This$)) * 2 - (position - 1) * 2
 If l1 < 0 Then Exit Function
-P1 = StrPtr(from$) + (position - 1) * 2
-p2 = StrPtr(this$)
-l2 = Len(this$)
-For cu = P1 To P1 + l1 Step 2
+p1 = StrPtr(from$) + (position - 1) * 2
+p2 = StrPtr(This$)
+l2 = Len(This$)
+For cu = p1 To p1 + l1 Step 2
 If CompareString(uLCID, NORM_IGNORECASE, cu, l2, p2, l2) = 2 Then
 InstrTextCompareAnyLocale = (cu - StrPtr(from$)) \ 2 + 1
 Exit Function
 End If
 Next cu
 End Function
-Function InstrRevTextCompareAnyLocale(from$, this$, Optional position As Long = -1, Optional uLCID As Long = 1033) As Long
+Function InstrRevTextCompareAnyLocale(from$, This$, Optional position As Long = -1, Optional uLCID As Long = 1033) As Long
 
 Const NORM_IGNORECASE = &H1
-Dim P1 As Long, p2 As Long, l1 As Long, l2 As Long, cu As Long
+Dim p1 As Long, p2 As Long, l1 As Long, l2 As Long, cu As Long
 If Len(from$) < position Then position = -1
 If position > 0 Then
-l1 = (Len(from$) - Len(this$)) * 2 - (Len(from$) - position) * 2
+l1 = (Len(from$) - Len(This$)) * 2 - (Len(from$) - position) * 2
 Else
-l1 = (Len(from$) - Len(this$)) * 2
+l1 = (Len(from$) - Len(This$)) * 2
 End If
 If l1 < 0 Then Exit Function
-P1 = StrPtr(from$)
-p2 = StrPtr(this$)
-l2 = Len(this$)
-For cu = P1 + l1 To P1 Step -2
+p1 = StrPtr(from$)
+p2 = StrPtr(This$)
+l2 = Len(This$)
+For cu = p1 + l1 To p1 Step -2
 If CompareString(uLCID, NORM_IGNORECASE, cu, l2, p2, l2) = 2 Then
-InstrRevTextCompareAnyLocale = (cu - P1) \ 2 + 1
+InstrRevTextCompareAnyLocale = (cu - p1) \ 2 + 1
 Exit Function
 End If
 Next cu

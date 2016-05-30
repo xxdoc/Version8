@@ -147,7 +147,7 @@ Public Sub Construct(there As Form, name$)
  On Error Resume Next
  Set glistN = there.Controls.Add("m2000.glist", name$)
   CtrlName = name$
- If Err.Number > 0 Then
+ If Err.number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
   CtrlName = GetTag$
  End If
@@ -164,7 +164,7 @@ Public Sub ConstructArray(there As Form, name$, i As Long)
   Set glistN = there.Controls.Add("m2000.glist", name$ + "_" + LTrim(Str$(i)))
 CtrlName = name$ + "_" + LTrim(Str$(i))
 
- If Err.Number > 0 Then
+ If Err.number > 0 Then
  Set glistN = there.Controls.Add("m2000.glist", GetTag$)
  CtrlName = GetTag$
  End If
@@ -500,7 +500,7 @@ End Sub
 
 
 Private Sub glistN_CheckGotFocus()
-If Not Locked Then
+If Not locked Then
 glistN.HideCaretOnexit = False
 If glistN.ListIndex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
 'RaiseEvent GotFocus
@@ -525,7 +525,7 @@ End If
 End Sub
 Private Sub glistN_CheckLostFocus()
 
-If Not Locked Then
+If Not locked Then
 If mStayOpen And Not SkipProcAtExitFocus Then
 glistN.NoCaretShow = NoMark
 glistN.HideCaretOnexit = True
@@ -778,7 +778,7 @@ Private Sub glistN_ExposeListcount(cListCount As Long)
 cListCount = all
 End Sub
 
-Private Sub gListN_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
+Private Sub gListN_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, Skip As Boolean)
 Dim A As RECT, b As RECT, i As Long, pastchars As Long
 Dim final$, fbypass As Boolean
 Dim oldcolor As Long
@@ -802,7 +802,7 @@ FillBack thisHDC, b, glistN.CapColor
     A.top = A.top + onelineheight
   Next i
  ' RaiseEvent ExposeRect(item, thisrect, thisHDC, skip)
-  skip = True
+  Skip = True
    Exit Sub
    
 Else
@@ -956,7 +956,7 @@ End If
 SetTextColor thisHDC, oldcolor
  showparagraphonce = False
 
-skip = True
+Skip = True
 End Sub
 
 
@@ -1841,15 +1841,15 @@ If NoMark Then item = 0
 If blockKeyboard Then item = 0
 If item > 32 And item <> 127 Then GetUndoNext = True
 End Sub
-Private Sub glistN_RegisterGlist(this As gList)
+Private Sub glistN_RegisterGlist(This As gList)
 On Error Resume Next
-Set LastGlist = this
-If Err.Number > 0 Then this.NoWheel = True
+Set LastGlist = This
+If Err.number > 0 Then This.NoWheel = True
 End Sub
 Private Sub glistN_UnregisterGlist()
 On Error Resume Next
 Set LastGlist = Nothing
-If Err.Number > 0 Then glistN.NoWheel = True
+If Err.number > 0 Then glistN.NoWheel = True
 End Sub
 
 Private Sub glistN_WordMarked(ThisWord As String)
@@ -3165,10 +3165,12 @@ If Right$(RHS, 1) = vbCr Then RHS = RHS + vbLf
 If RHS <> "" Then
 
 If NumberOnly Then
-Pad$ = Space$(Len(RHS) + glistN.List(0))
+Pad$ = Space$(Len(RHS) + Len(glistN.List(0)))
 Mid$(Pad$, 1, Charpos - 1) = Myleft$(glistN.List(0), Charpos - 1)
 Mid$(Pad$, Charpos, Len(RHS)) = RHS
-Mid$(Pad$, Charpos + Len(RHS)) = Mid$(glistN.List(0), Charpos)
+If Len(glistN.List(0)) > 0 Then
+Mid$(Pad$, Charpos + Len(RHS) - 1) = Mid$(glistN.List(0), Charpos)
+End If
 RHS = glistN.List(0)
 glistN.List(0) = Pad$
 If Not glistN.List(0) = Pad$ Then glistN.List(0) = RHS
@@ -3418,15 +3420,15 @@ End Function
 Public Function AutoIntNewLine() As Boolean
 ' if autonumber
 Dim A$, newid As Long 'mDoc.MarkParagraphID
-Dim b$, c$, d$, e$, skip As Boolean, tr$, maxw As Long
+Dim b$, c$, d$, e$, Skip As Boolean, tr$, maxw As Long
 showparagraphWork = False
 b$ = CurrentParagraph
 If AutoNumber Then
 If IsNumberLabel(b$, c$) Then
-d$ = NextParagraph: If d$ <> "" Then If IsNumberLabel(d$, e$) Then skip = True
-If Not skip Then c$ = Trim(c$)
-If e$ <> "" Then If val(e$) > val(c$) + 10 Then skip = False
-If (val(c$) Mod 10 = 0) And Not skip Then
+d$ = NextParagraph: If d$ <> "" Then If IsNumberLabel(d$, e$) Then Skip = True
+If Not Skip Then c$ = Trim(c$)
+If e$ <> "" Then If val(e$) > val(c$) + 10 Then Skip = False
+If (val(c$) Mod 10 = 0) And Not Skip Then
 tr$ = String$(Len(Trim$(c$)), "0")
 A$ = Format((val(c$) + 10), tr$) + Space$(Len(CurrentParagraph) - Len(c$) - Len(NLtrim$(b$)))
 Else
@@ -3498,7 +3500,7 @@ Private Sub PrintItem1X(mHdc As Long, ByVal c As String, r As RECT, col() As Var
 On Error Resume Next
     Dim cc As String, all As Long, CM As String, offset As Long, addthis As Long
       
-    Dim ww$(), Items&, i, rleft
+    Dim ww$(), items&, i, rleft
     If UBound(col()) <= 1 Or mNoColor Then
         PrintItem1 mHdc, c, r
         Exit Sub
@@ -3506,14 +3508,14 @@ On Error Resume Next
     rleft = r.Left
     all = rleft + glistN.UserControlTextWidthPixels(c)
     r.Left = all
-    ww$() = SplitStringUsingArray(c, col(), Items&)
+    ww$() = SplitStringUsingArray(c, col(), items&)
     If showparagraphonce Then
         cc = "¶"
         DrawText mHdc, StrPtr(cc), -1, r, mway
     End If
     cc = ""
     CM = c
-    For i = Items& To 0 Step -1
+    For i = items& To 0 Step -1
         c = ww$(i)
         CM = Myleft$(CM, Len(CM) - Len(ww$(i)))
         offset = glistN.UserControlTextWidthPixels(CM)
@@ -3933,11 +3935,11 @@ TextPixelOffset = Int(glistN.TextHeightOffset)
 End If
 End Sub
 
-Public Property Get Locked() As Boolean
-Locked = Not glistN.enabled
+Public Property Get locked() As Boolean
+locked = Not glistN.enabled
 End Property
 
-Public Property Let Locked(ByVal RHS As Boolean)
+Public Property Let locked(ByVal RHS As Boolean)
 glistN.enabled = Not RHS
 End Property
 Public Property Get Index() As Long
@@ -4518,6 +4520,7 @@ MyPopUp.ZOrder 0
         Do While MyPopUp.Visible
    ProcTask2 basestack1
                 '     mywait basestack1, 1
+                If ExTarget Then Exit Do
                 Loop
                 ModalId = oldModalId
          '  Hook Callback.hWnd, Nothing

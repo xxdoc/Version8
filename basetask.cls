@@ -242,7 +242,7 @@ Else
     End If
     End If
     End If
-    GetDotNew = Err.Number = 0
+    GetDotNew = Err.number = 0
 End Function
 
 Public Function GetDot(A$, st&) As Boolean
@@ -418,7 +418,7 @@ On Error Resume Next
 ' this is mandatory
 If TaskMaster Is Nothing Then Exit Function
 If TaskMaster.ThrowOne(Threadid) Then ThrowOne = True
-If Err.Number > 0 Then Err.Clear: Exit Function
+If Err.number > 0 Then Err.Clear: Exit Function
 ' maybe the task isn't on our list - because we send message from other thread!
 If threadsnames.Find(Threadid) Then
     Set aa = threadsnames.ValueObj
@@ -514,6 +514,7 @@ Set Owner = Nothing
 Set lastobj = Nothing
 Set FuncObj = Nothing
 End Sub
+
 Public Function IsNumber(r As Double) As Boolean
 If parentSoros.LookNull Then
 r = parentSoros.PopVal
@@ -632,3 +633,22 @@ End Property
 Public Property Let IamAnEvent(ByVal vNewValue As Variant)
 mIamAnEvent = vNewValue
 End Property
+
+Friend Function lastobjIndirect(var()) As Variant
+If lastobj Is Nothing Then
+ElseIf TypeOf lastobj Is mHandler Then
+With lastobj
+Select Case .Indirect
+    Case 0 To var2used
+        On Error Resume Next
+        Set lastobjIndirect = var(.Indirect)
+    Case Else
+        Set lastobj = Nothing
+    End Select
+End With
+Else
+Set lastobjIndirect = lastobj
+End If
+
+End Function
+

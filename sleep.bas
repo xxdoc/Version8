@@ -1,6 +1,19 @@
 Attribute VB_Name = "Module7"
 Option Explicit
-
+Private Const MEM_DECOMMIT = &H4000
+Private Const MEM_RELEASE = &H8000
+Private Const MEM_COMMIT = &H1000
+Private Const MEM_RESERVE = &H2000
+Private Const MEM_RESET = &H80000
+Private Const MEM_TOP_DOWN = &H100000
+Private Const PAGE_READONLY = &H2
+Private Const PAGE_READWRITE = &H4
+Private Const PAGE_EXECUTE = &H10
+Private Const PAGE_EXECUTE_READ = &H20
+Private Const PAGE_EXECUTE_READWRITE = &H40
+Private Const PAGE_GUARD = &H100
+Private Const PAGE_NOACCESS = &H1
+Private Const PAGE_NOCACHE = &H200
 Private Type FILETIME
     dwLowDateTime As Long
     dwHighDateTime As Long
@@ -85,25 +98,42 @@ Private Declare Function HeapReAlloc Lib "kernel32.dll" (ByVal hHeap As Long, By
 Private Declare Function HeapSize Lib "kernel32.dll" (ByVal hHeap As Long, ByVal dwFlags As Long, ByVal lpMem As Long) As Long
 Private Declare Function HeapFree Lib "kernel32" (ByVal hHeap As Long, ByVal dwFlags As Long, ByVal lpMem As Long) As Long
 Private Declare Function GetProcessHeap Lib "kernel32" () As Long
+Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
+Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
+Private Declare Function VirtualLock Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long) As Long
+Private Declare Function VirtualUnlock Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long) As Long
 
 
 
-Public Function Blockmalloc(ByVal nBytes As Long, way As Long) As Long
+Public Function Blockmalloc(ByVal nBytes As Long, way As Long, Optional NoRun As Boolean = True) As Long
+If NoRun Then
     Dim hHeap As Long: hHeap = GetProcessHeap()
     Blockmalloc = HeapAlloc(hHeap, way, nBytes)
+Else
+
+End If
 End Function
 Public Function BlockResizemalloc(ByVal Ptr As Long, ByVal nBytes As Long, way As Long) As Long
+
     Dim hHeap As Long: hHeap = GetProcessHeap()
     BlockResizemalloc = HeapReAlloc(hHeap, way, Ptr, nBytes)
+
 End Function
 Public Function BlockSize(ByVal Ptr As Long) As Long
     Dim hHeap As Long: hHeap = GetProcessHeap()
     BlockSize = HeapSize(hHeap, 0, Ptr)
 End Function
 Public Sub BlockFree(ByVal Ptr As Long)
+
     HeapFree GetProcessHeap(), 0, Ptr
+
 End Sub
 
+Public Sub BlockFreeVirtual(ByVal Ptr As Long, ByVal nBytes As Long)
+        VirtualUnlock Ptr, nBytes
+        VirtualFree Ptr, nBytes, MEM_DECOMMIT
+        VirtualFree Ptr, 0, MEM_RELEASE
+End Sub
 
 
 Public Sub MyDoEvents0(some As Object)

@@ -385,7 +385,7 @@ End If
                 If myBase = "" Then
                     If Left$(base, 1) = "(" Or JetPostfix = ";" Then
                         myBase.Open JetPrefix & JetPostfix
-                        If Err.Number Then
+                        If Err.number Then
                         MyEr Err.Description, Err.Description
                         Exit Sub
                         End If
@@ -393,7 +393,7 @@ End If
                         myBase.Open JetPrefix & GetDosPath(base) & ";Mode=Share Deny Write" & JetPostfix & "User Id=" & DBUser & ";Password=" & DBUserPassword & ";" & DBSecurityOFF      'open the Connection
                     End If
                 End If
-                If Err.Number > 0 Then
+                If Err.number > 0 Then
                     Do While srl <> DriveSerial(Left$(base, 3))
                         If lang = 0 Then
                             If ask("Βάλε το CD/Δισκέτα με αριθμό σειράς " & CStr(srl) & " στον οδηγό " & Left$(base, 1)) = vbCancel Then Exit Do
@@ -411,7 +411,7 @@ End If
                 ' check if we have ODBC
                     If Left$(base, 1) = "(" Or JetPostfix = ";" Then
                         myBase.Open JetPrefix & JetPostfix
-                        If Err.Number Then
+                        If Err.number Then
                             MyEr Err.Description, Err.Description
                             Exit Sub
                         End If
@@ -420,7 +420,7 @@ End If
                     End If
                 End If
         End If
-        If Err.Number > 0 Then GoTo g102
+        If Err.number > 0 Then GoTo g102
         PushOne base, myBase
     End If
   Dim cat, TBL, rs
@@ -606,7 +606,7 @@ End If
                 Else
                 If Left$(base, 1) = "(" Or JetPostfix = ";" Then
                     myBase.Open JetPrefix & JetPostfix
-                    If Err.Number Then
+                    If Err.number Then
                         MyEr Err.Description, Err.Description
                         Exit Sub
                     End If
@@ -628,7 +628,7 @@ End If
             Err.Clear
            rec.Open Id$, myBase, 3, 4 'adOpenStatic, adLockBatchOptimistic
 
- If Err.Number <> 0 Then
+ If Err.number <> 0 Then
 LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
@@ -637,7 +637,7 @@ RemoveOneConn base
  PushOne base, myBase
  Err.Clear
 rec.Open Id$, myBase, 3, 4
-If Err.Number Then
+If Err.number Then
 MyEr Err.Description & " " & Id$, Err.Description & " " & Id$
 Exit Sub
 End If
@@ -650,7 +650,7 @@ Err.Clear
     rec.MoveLast
     rec.MoveFirst
     rec.AbsolutePosition = gindex '  - 1
-    If Err.Number <> 0 Then
+    If Err.number <> 0 Then
     MyEr "Wrong index for table " & table$, "Λάθος δείκτης για αρχείο " & table$
     End If
 Else
@@ -677,7 +677,7 @@ i& = i& + 1
 Wend
 Err.Clear
 rec.UpdateBatch  ' update be an updatebatch
-If Err.Number > 0 Then
+If Err.number > 0 Then
 MyEr "Can't append " & Err.Description, "Αδυναμία προσθήκης:" & Err.Description
 End If
 
@@ -787,7 +787,7 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
  '  If mybase = "" Then ' mybase.Mode = adShareDenyWrite
    If myBase = "" Then myBase.Open JetPrefix & GetDosPath(base) & ";Mode=Share Deny Write" & JetPostfix & "User Id=" & DBUser & ";Password=" & DBUserPassword & ";" & DBSecurityOFF     'open the Connection
 
-            If Err.Number > 0 Then
+            If Err.number > 0 Then
             
             Do While srl <> DriveSerial(Left$(base, 3))
                 If lang = 0 Then
@@ -808,7 +808,7 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
  If myBase = "" Then
  If Left$(base, 1) = "(" Or JetPostfix = ";" Then
  myBase.Open JetPrefix & JetPostfix
- If Err.Number Then
+ If Err.number Then
  MyEr Err.Description, Err.Description
  Exit Sub
  End If
@@ -820,7 +820,7 @@ Id$ = "SELECT * FROM [" & table$ & "] WHERE [" & first$ & "] " & Second$
 
     End If
 
-   If Err.Number > 0 Then GoTo g10
+   If Err.number > 0 Then GoTo g10
    
       PushOne base, myBase
       
@@ -830,7 +830,7 @@ Dim LL$
    Set rec = CreateObject("ADODB.Recordset")
  Err.Clear
   rec.Open Id$, myBase, 3, 4
-If Err.Number <> 0 Then
+If Err.number <> 0 Then
 LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
@@ -839,7 +839,7 @@ RemoveOneConn base
  PushOne base, myBase
  Err.Clear
 rec.Open Id$, myBase, 3, 4
-If Err.Number Then
+If Err.number Then
 MyEr Err.Description & " " & Id$, Err.Description & " " & Id$
 Exit Sub
 End If
@@ -915,7 +915,7 @@ On Error Resume Next
 
 End Sub
 
-Public Sub getnames(bstackstr As basetask, r$, bv As Object, lang)
+Public Sub GetNames(bstackstr As basetask, r$, bv As Object, lang)
 Dim base As String, table$, from As Long, many As Long, ok As Boolean, fr As Double, stac1$, i&
 ok = False
 If IsStrExp(bstackstr, r$, base) Then
@@ -973,7 +973,7 @@ End If
 
      myBase.Open JetPrefix & GetDosPath(base) & ";Mode=Share Deny Write" & JetPostfix & "User Id=" & DBUser & ";Password=" & DBUserPassword & ";" & DBSecurityOFF    'open the Connection
 
-               If Err.Number > 0 Then
+               If Err.number > 0 Then
         
             Do While srl <> DriveSerial(Left$(base, 3))
             If lang = 0 Then
@@ -992,7 +992,7 @@ End If
    Else
     If Left$(base, 1) = "(" Or JetPostfix = ";" Then
  myBase.Open JetPrefix & JetPostfix
- If Err.Number Then
+ If Err.number Then
  MyEr Err.Description, Err.Descnullription
  Exit Sub
  End If
@@ -1008,7 +1008,7 @@ On Error GoTo g101
    Set rec = CreateObject("ADODB.Recordset")
     Err.Clear
      rec.Open Id$, myBase, 3, 4
-      If Err.Number <> 0 Then
+      If Err.number <> 0 Then
 LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
@@ -1017,7 +1017,7 @@ RemoveOneConn base
  PushOne base, myBase
  Err.Clear
 rec.Open Id$, myBase, 3, 4
-If Err.Number Then
+If Err.number Then
 MyEr Err.Description & " " & Id$, Err.Description & " " & Id$
 Exit Sub
 End If
@@ -1101,7 +1101,7 @@ Dim myBase
                 Else
                     If Left$(base, 1) = "(" Or JetPostfix = ";" Then
                         myBase.Open JetPrefix & JetPostfix
-                        If Err.Number Then
+                        If Err.number Then
                         MyEr Err.Description, Err.Description
                         Exit Sub
                         End If
@@ -1113,7 +1113,7 @@ Dim myBase
     End If
            Err.Clear
            If comTimeOut >= 10 Then myBase.CommandTimeout = CLng(comTimeOut)
-           If Err.Number > 0 Then Err.Clear: myBase.errors.Clear
+           If Err.number > 0 Then Err.Clear: myBase.errors.Clear
             myBase.Execute com2execute
 
 If myBase.errors.Count <> 0 Then
@@ -1162,7 +1162,7 @@ End If
                 Else
                     If Left$(base, 1) = "(" Or JetPostfix = ";" Then
                         myBase.Open JetPrefix & JetPostfix
-                        If Err.Number Then
+                        If Err.number Then
                         MyEr Err.Description, Err.Description
                         Exit Sub
                         End If
@@ -1183,7 +1183,7 @@ End If
 
             
 
-        If Err.Number <> 0 Then
+        If Err.number <> 0 Then
 LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
@@ -1195,7 +1195,7 @@ RemoveOneConn base
             mcat.activeconnection = myBase
             
 
-If Err.Number Then
+If Err.number Then
 MyEr Err.Description & " " & tablename, Err.Description & " " & tablename
 Exit Sub
 End If
@@ -1252,7 +1252,7 @@ End If
         Wend
         If pindex.Columns.Count > 0 Then
         mtable.indexes.Append pindex
-             If Err.Number Then
+             If Err.number Then
          MyEr Err.Description, Err.Description
          Exit Sub
         End If
@@ -1297,7 +1297,7 @@ End If
                 Else
                 If Left$(base, 1) = "(" Or JetPostfix = ";" Then
                     myBase.Open JetPrefix & JetPostfix
-                    If Err.Number Then
+                    If Err.number Then
                     MyEr Err.Description, Err.Description
                     Exit Sub
                     End If
@@ -1316,7 +1316,7 @@ Dim cat, mtable, LL$
            Set cat.activeconnection = myBase
 
 
-If Err.Number <> 0 Then
+If Err.number <> 0 Then
 LL$ = myBase ' AS A STRING
 Set myBase = Nothing
 RemoveOneConn base
@@ -1325,7 +1325,7 @@ RemoveOneConn base
  PushOne base, myBase
  Err.Clear
  Set cat.activeconnection = myBase
-If Err.Number Then
+If Err.number Then
 MyEr Err.Description & " " & mtable, Err.Description & " " & mtable
 Exit Sub
 End If
@@ -1384,7 +1384,7 @@ End If
 End With
         If okntable Then
         cat.TABLES.Append mtable
-        If Err.Number Then
+        If Err.number Then
          MyEr Err.Description, Err.Description
          Exit Sub
         End If
@@ -1441,11 +1441,11 @@ If realtype$ <> "" Then
                                 
 
     
-    If Err.Number = 0 Then
+    If Err.number = 0 Then
     If ExtractPath(base) <> ExtractPath(BASE2) Then
        KillFile base
        Sleep 50
-        If Err.Number = 0 Then
+        If Err.number = 0 Then
             MoveFile BASE2, base
             Sleep 50
 
@@ -1586,7 +1586,7 @@ Dim myBase
                 Else
                  If Left$(base, 1) = "(" Or JetPostfix = ";" Then
                     myBase.Open JetPrefix & JetPostfix
-                    If Err.Number Then
+                    If Err.number Then
                     MyEr Err.Description, Err.Description
                     DELfields = False: Exit Function
                     End If
@@ -1661,7 +1661,7 @@ conCollection.Index = i
 If conCollection.IsObj Then
 With conCollection.ValueObj
 bb = .connectionstring <> ""
-If Err.Number = 0 Then
+If Err.number = 0 Then
 If .Mode > 0 Then
 If .state = 1 Then
    .Close
@@ -1694,7 +1694,7 @@ If Typename$(vv) = "Empty" Then
 ' old code here
 Err.Clear
     vv = conCollection(conname)
-    If Not Err.Number <> 0 Then
+    If Not Err.number <> 0 Then
         conCollection.Remove conname
         
 Else
@@ -1707,23 +1707,23 @@ Else
     
     Exit Sub
 End If
-If Not Err.Number <> 0 Then
+If Not Err.number <> 0 Then
 Err.Clear
 If vv.connectionstring <> "" Then
-If Err.Number = 0 Then If vv.activeconnection <> "" Then vv.Close
+If Err.number = 0 Then If vv.activeconnection <> "" Then vv.Close
 Err.Clear
 End If
 conCollection.Remove conname
 Err.Clear
 End If
 End Sub
-Private Function getone(conname As String, this As Variant) As Boolean
+Private Function getone(conname As String, This As Variant) As Boolean
 On Error Resume Next
 Dim v As Variant
 InitMe
 
 If conCollection.ExistKey(conname) Then
-Set this = conCollection.ValueObj
+Set This = conCollection.ValueObj
 End If
 End Function
 
@@ -1916,6 +1916,6 @@ Dim errorObject
 
  For Each errorObject In aBasBase.activeconnection.errors
  Debug.Print "Description :"; errorObject.Description
- Debug.Print "Number:"; Hex(errorObject.Number)
+ Debug.Print "Number:"; Hex(errorObject.number)
  Next
 End Sub

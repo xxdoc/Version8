@@ -68,7 +68,7 @@ Begin VB.Form Form1
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1140
-      Left            =   7995
+      Left            =   8010
       ScaleHeight     =   1140
       ScaleWidth      =   1185
       TabIndex        =   0
@@ -82,7 +82,7 @@ Begin VB.Form Form1
       Left            =   7485
       TabIndex        =   3
       TabStop         =   0   'False
-      Top             =   2940
+      Top             =   2955
       Visible         =   0   'False
       Width           =   1530
       _ExtentX        =   2699
@@ -102,7 +102,7 @@ Begin VB.Form Form1
    End
    Begin M2000.gList List1 
       Height          =   1920
-      Left            =   7740
+      Left            =   7755
       TabIndex        =   4
       TabStop         =   0   'False
       Top             =   510
@@ -176,6 +176,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
 Option Explicit
+Private onetime As Long
 Public fState As Long
 Public lockme As Boolean
 Public WithEvents TEXT1 As TextViewer
@@ -258,9 +259,6 @@ Dim Message As Msg
     Exit Function
 End Function
 
-
-
-
 Private Sub DIS_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
@@ -271,6 +269,7 @@ End Sub
 
 Private Sub dSprite_GotFocus(Index As Integer)
 If lockme Then TEXT1.SetFocus: Exit Sub
+
 End Sub
 
 Private Sub dSprite_OLEDragOver(Index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
@@ -511,14 +510,14 @@ End If
 End Select
 End Sub
 
-Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
+Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, Skip As Boolean)
 If item = List1.ListIndex Then
 
 List1.FillThere thisHDC, thisrect, &HFFFFFF, -List1.LeftMarginPixels  ' or black in reverse
 List1.WriteThere thisrect, List1.List(item), List1.PanPos / dv15, List1.addpixels / 2, 0
-skip = True
+Skip = True
 Else
-skip = False
+Skip = False
 End If
 End Sub
 
@@ -583,9 +582,9 @@ TEXT1.SelStartSilent = TEXT1.SelStart  'MOVE CHARPOS TO SELSTART
 
 el = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
 s$ = TEXT1.SelText
-OldLcid = TEXT1.mdoc.LCID
+OldLcid = TEXT1.mdoc.lcid
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
 
 l = el + 1
 If EditTextWord Then
@@ -619,7 +618,7 @@ End If
 Loop Until (w = eW And l = el) Or SAFETY = 2
 
 End If
-TEXT1.mdoc.LCID = OldLcid
+TEXT1.mdoc.lcid = OldLcid
 'TEXT1.mdoc.WrapAgainColor
 TEXT1.mdoc.WrapAgain
 
@@ -644,9 +643,9 @@ Else
 neo$ = InputBoxN("Replace Word (use Shift for Stop)", "Text Editor", s$)
 End If
 If neo$ = "" Then Exit Sub
-OldLcid = TEXT1.mdoc.LCID
+OldLcid = TEXT1.mdoc.lcid
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
 If Len(neo$) >= Len(s$) Then
     Set mDoc10 = New Document
     mDoc10 = neo$
@@ -752,7 +751,7 @@ End If
 Loop Until SAFETY = 2 Or KeyPressed(16)
 TEXT1.glistN.dropkey = False
 End If
-TEXT1.mdoc.LCID = OldLcid
+TEXT1.mdoc.lcid = OldLcid
 If w2 > 0 Then TEXT1.mdoc.WrapAgainBlock w2, w2:  TEXT1.mdoc.ColorThis w2
 
 'TEXT1.mdoc.WrapAgainColor
@@ -772,9 +771,9 @@ w = TEXT1.mdoc.MarkParagraphID   ' this is the not the order
 TEXT1.SelStartSilent = TEXT1.SelStart
 l = TEXT1.Charpos + 1
 
-OldLcid = TEXT1.mdoc.LCID
+OldLcid = TEXT1.mdoc.lcid
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
 If EditTextWord Or anystr Then
     If anystr Then
   If Not TEXT1.mdoc.FindStrDown(s$, w, l) Then GoTo sdnOut
@@ -791,7 +790,7 @@ TEXT1.ParaSelStart = l
 TEXT1.glistN.enabled = True
 TEXT1.SelLength = Len(s$)
 sdnOut:
-TEXT1.mdoc.LCID = OldLcid
+TEXT1.mdoc.lcid = OldLcid
 End Sub
 
 Public Sub supsub()
@@ -805,9 +804,9 @@ Dim l As Long, w As Long, TempLcid As Long, OldLcid As Long
 w = TEXT1.mdoc.MarkParagraphID
 TEXT1.SelStartSilent = TEXT1.SelStart - (TEXT1.SelLength > 1)
 l = TEXT1.Charpos + 1
-OldLcid = TEXT1.mdoc.LCID
+OldLcid = TEXT1.mdoc.lcid
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
 If EditTextWord Or anystr Then
    If anystr Then
    If Not TEXT1.mdoc.FindStrUp(s$, w, l) Then GoTo sdupOut
@@ -824,7 +823,7 @@ TEXT1.ParaSelStart = l
 TEXT1.glistN.enabled = True
 TEXT1.SelLength = Len(s$)
 sdupOut:
-TEXT1.mdoc.LCID = OldLcid
+TEXT1.mdoc.lcid = OldLcid
 End Sub
 Public Function InIDECheck() As Boolean
     m_bInIDE = True
@@ -1366,6 +1365,8 @@ End Sub
 
 Private Sub Form_Load()
 Debug.Assert (InIDECheck = True)
+onetime = 0
+Set fonttest = Form1.dSprite(0)
 Set TEXT1 = New TextViewer
 
 Set TEXT1.Container = gList1
@@ -1469,7 +1470,6 @@ Switches para$
       For i = 0 To Controls.Count - 1
      If Typename(Controls(i)) <> "Menu" Then Controls(i).TabStop = False
       Next i
- 
 End Sub
 
 
@@ -1601,11 +1601,24 @@ PlaceBasket DIS, mybasket
 If cLine <> "" Then
 LASTPROG$ = cLine
 '
-ProcTitle basestack1, Chr$(34) + ExtractNameOnly(cLine) + Chr$(34) + ", 0", 0
+If ttl = False Then Load Form3
+Form3.Timer1.enabled = False
+mywait basestack1, 100
+Form3.Visible = True: Form3.Move -48000, 48000
+mywait basestack1, 100
+Form3.CaptionW = ExtractNameOnly(cLine)
+'ProcTitle basestack1, Chr$(34) + ExtractNameOnly(cLine) + Chr$(34) + ", 0", 0
 Else
-Form1.top = 0
-ProcTitle basestack1, Chr$(34) + "M2000" + Chr$(34) + ",0", 0
 
+'If ttl = False Then Load Form3
+
+If Not ttl Then
+
+Form3.Visible = True: If Form3.WindowState = 0 Then Form3.Move -48000, 48000
+Form3.SetFocus
+Form3.CaptionW = "M2000"
+End If
+'ProcTitle basestack1, Chr$(34) + "M2000" + Chr$(34) + ",1", 0
 End If
 
 s_complete = True
@@ -1616,6 +1629,9 @@ players(DisForm) = mybasket
 
 End Sub
 Public Sub MyPrompt(LoadFileAndSwitches$, Prompt$)
+
+onetime = onetime + 1
+On Error GoTo finale
 elevatestatus = -1
 s_complete = True
 ExTarget = False
@@ -1658,7 +1674,17 @@ Form2.ComputeNow
  ''reset refresh system
   REFRESHRATE = 25
   k1 = 0
+'If ttl Then
+'If Not Form3.WindowState = 0 Then Form3.Timer1.enabled = True
+
+'End If
+ Show
+ 
+If onetime = 1 Then
+Form1.SetFocus
+End If
     QUERY basestack1, Prompt$, qq$, (mybasket.mx * 4), True
+    If ExTarget = True Then Exit Sub
       mybasket = players(DisForm)
 If basestack1.Owner.Visible = True Then basestack1.Owner.Refresh Else basestack1.Owner.Visible = True
 
@@ -1685,6 +1711,19 @@ Else
    If Len(Left$(cLine, rinstr(cLine, "\"))) > 0 Then
 
     mcd = Left$(cLine, rinstr(cLine, "\"))
+   End If
+   If Not ttl Then
+   Load Form3: Form3.Timer1 = False
+   mywait basestack1, 200
+   Form3.WindowState = 0
+   Form3.Move -48000, 48000
+   Form3.Visible = True
+   
+    Form3.CaptionW = "M2000"
+    Form3.Refresh
+ 
+          
+      
    End If
    cLine = ""
 End If
@@ -1765,15 +1804,23 @@ If NERR Then Exit Do
 MOUT = True
 NoAction = False
 If ExTarget Then Exit Do
-para$ = ""
-Loop
+If ttl Then
 
+If Form3.WindowState = 1 Then Form3.WindowState = 0
+End If
+para$ = ""
+
+Loop
+elevatestatus = 0
+Exit Sub
+finale:
+ExTarget = True
 elevatestatus = 0
 End Sub
 
 
 Private Sub Form_Unload(Cancel As Integer)
-
+Set fonttest = Nothing
 Set MeStack.Owner = Nothing
 TEXT1.Dereference
 Set Point2Me = Nothing
@@ -2213,9 +2260,9 @@ MyDoEvents
 End If
 End Sub
 Public Sub IEUP(ThisFile As String)
-Static Once As Boolean
-If Once Then Exit Sub
-Once = True
+Static once As Boolean
+If once Then Exit Sub
+once = True
 If ThisFile = "" Then
 
 If exWnd <> 0 Then
@@ -2235,7 +2282,7 @@ Sleep 50
 view1.Visible = False
 
  End If
- Once = False
+ once = False
     Exit Sub
 End If
    
@@ -2284,7 +2331,7 @@ End If
 
 'follow IEX, IEY
 cnt = False
-Once = False
+once = False
 End Sub
 Public Sub follow(ByVal nx As Long, ByVal ny As Long)
 Exit Sub
@@ -2399,7 +2446,7 @@ MYFONT = defFontname
             DIS.FontName = MYFONT
             DIS.Font.Italic = False
             DIS.FontName = MYFONT
-            If Err.Number > 0 Then
+            If Err.number > 0 Then
             Err.Clear
             MYFONT = defFontname
             End If
@@ -2499,7 +2546,7 @@ Err.Clear
 DIS.FontName = MYFONT
 DIS.Font.Italic = False
 DIS.FontName = MYFONT
-If Err.Number > 0 Then
+If Err.number > 0 Then
 Err.Clear
 MYFONT = defFontname
 End If
@@ -2647,25 +2694,25 @@ TEXT1.Render
 TEXT1.ManualInform
 End Sub
 Function GetKeY(ascii As Integer) As String
-    Dim Buffer As String, Ret As Long
+    Dim Buffer As String, ret As Long
     Buffer = String$(514, 0)
     Dim r&, k&
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
       r = CLng(val("&H" & Right(Hex(r), 4)))
-    Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
-    If Ret > 0 Then
-        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(val("&h" + Left$(Buffer, Ret - 1))))))
+    ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
+    If ret > 0 Then
+        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(val("&h" + Left$(Buffer, ret - 1))))))
     Else
         GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, 1033)))
     End If
 End Function
 Public Function GetLCIDFromKeyboard() As Long
-    Dim Buffer As String, Ret&, r&
+    Dim Buffer As String, ret&, r&
     Buffer = String$(514, 0)
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
       r = val("&H" & Right(Hex(r), 4))
-        Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
-    GetLCIDFromKeyboard = CLng(val("&h" + Left$(Buffer, Ret - 1)))
+        ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
+    GetLCIDFromKeyboard = CLng(val("&h" + Left$(Buffer, ret - 1)))
 End Function
 Sub MarkSoftButton(para As Long, pospara As Long)
 If TEXT1.glistN.lines = 1 Then Exit Sub
@@ -2753,8 +2800,8 @@ Para1 = 0: Para2 = 0: Para3 = 0
 
 
 End Sub
-Public Sub hookme(this As gList)
-Set LastGlist = this
+Public Sub hookme(This As gList)
+Set LastGlist = This
 End Sub
 Public Function mybreak1() As Boolean
 Dim i As Long
@@ -2811,3 +2858,4 @@ TEXT1.NoColor = True
 fState = -1
 End Select
 End Sub
+

@@ -12,9 +12,10 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 'class for call back
+
 Private objref As basetask
 Private mineHere$
-Event ErrorAtt(ByRef recover As Variant)
+Public Event ErrorAtt(ByRef recover As Variant)
 Dim locked As Boolean
 Friend Sub NoPublic(bstack As basetask, where$)
 
@@ -72,7 +73,9 @@ Form1.Visible = True
 Form1.WindowState = 0
 If Form1.top >= Screen.Height Then Form1.Move 0, 0
 Else
-Form1.Visible = False
+If Form1.WindowState = 0 Then
+If Not (QRY Or GFQRY Or Forms.Count > 5) Then Form1.Visible = False
+End If
 End If
 End Property
 Public Sub ExecuteStatement(ByVal code$)
@@ -129,7 +132,7 @@ Dim pos As Long, p As Double, s As String, drop$
 Set objref.lastobj = Nothing
 End Function
 Public Sub AddExecCode(code$)
-If lockedidonce Then Exit Sub
+If locked Then Exit Sub
 Call Run(code$, False)
 End Sub
 Public Function Run(ByVal code$, Optional clean As Boolean = True) As Boolean
@@ -149,13 +152,10 @@ Run = True
         LastErName = ""
         LastErNameGR = ""
 If Execute(objref, code$, False) <> 1 Then
-Run = fasle
-'If Not App.StartMode = vbSModeStandalone Then
+        Run = fasle
                  MOUT = True
-               '  ProcTitle objref, Chr$(34) + Chr$(34) + ",0", 0
-'End If
-             
-                End If
+End If
+If clean Or MOUT Or ExTarget Then
                 Dim x As Form
                     For Each x In Forms
              
@@ -167,7 +167,11 @@ If NERR Then
 RaiseEvent ErrorAtt(stay)
 If Not stay Then GoTo finalize
 End If
+If Not objref Is Nothing Then
     objref.toprinter = False
+Else
+    Run = False: GoTo finalize
+End If
     If MOUT Then
             NOEXECUTION = False
             ResetBreak
@@ -183,11 +187,15 @@ End If
         
 MOUT = True
 NoAction = False
+
 If ExTarget Then Run = False
+End If
 finalize:
 HERE$ = ohere$
 
-If clean Then PopStage objref
+If clean Then
+If Not objref Is Nothing Then PopStage objref Else Run = False
+End If
 elevatestatus = 0
 End Function
 Property Get ErrorGr() As String
@@ -219,6 +227,7 @@ NeoSubMain
 End Sub
 
 Private Sub Class_Initialize()
+
  If Not l_complete Then NeoSubMain
         Set objref = New basetask
         Set objref.Owner = Form1.DIS

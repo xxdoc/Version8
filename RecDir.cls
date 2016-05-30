@@ -8,9 +8,9 @@ BEGIN
 END
 Attribute VB_Name = "recDir"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Exposed = True
 Option Explicit
 Private LastPath As String
 Private Const MAX_PATH As Long = 260
@@ -42,9 +42,9 @@ dwReserved1 As Long
 cFileName(MAX_PATH * 2 - 1) As Byte
 cAlternate(14 * 2 - 1) As Byte
 End Type
-Private Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileW" (ByVal lpFileName As Long, lpFindFileData As WIN32_FIND_DATA) As Long
+Private Declare Function FindFirstFile Lib "KERNEL32" Alias "FindFirstFileW" (ByVal lpFileName As Long, lpFindFileData As WIN32_FIND_DATA) As Long
 
-Private Declare Function FindNextFile Lib "kernel32" Alias "FindNextFileW" (ByVal hFindFile As Long, lpFindFileData As WIN32_FIND_DATA) As Long
+Private Declare Function FindNextFile Lib "KERNEL32" Alias "FindNextFileW" (ByVal hFindFile As Long, lpFindFileData As WIN32_FIND_DATA) As Long
 Private Declare Function FindClose Lib "kernel32.dll" (ByVal hFindFile As Long) As Long
 
 Dim myfile$(), myLevel() As Integer
@@ -61,23 +61,23 @@ Private mTopFolder As String
 Dim InUseItems As Long
 Public LevelStop As Long
 
-Private Declare Function GetDiskFreeSpace Lib "kernel32" _
+Private Declare Function GetDiskFreeSpace Lib "KERNEL32" _
  Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, _
  lpSectorsPerCluster As Long, lpBytesPerSector As Long, _
  lpNumberOfFreeClusters As Long, lpTtoalNumberOfClusters As Long) _
  As Long
-Private Declare Function GetLogicalDriveStrings Lib "kernel32" _
+Private Declare Function GetLogicalDriveStrings Lib "KERNEL32" _
   Alias "GetLogicalDriveStringsA" (ByVal nBufferLength As Long, _
   ByVal lpBuffer As String) As Long
 
 
-Private Declare Function GetLongPathName Lib "kernel32" _
+Private Declare Function GetLongPathName Lib "KERNEL32" _
    Alias "GetLongPathNameW" _
   (ByVal lpszShortPath As Long, _
    ByVal lpszLongPath As Long, _
    ByVal cchBuffer As Long) As Long
 Public lastTimeStamp As Date
-Private Declare Function FileTimeToSystemTime Lib "kernel32" (lpFileTime As FILETIME, lpSystemTime As SYSTEMTIME) As Long
+Private Declare Function FileTimeToSystemTime Lib "KERNEL32" (lpFileTime As FILETIME, lpSystemTime As SYSTEMTIME) As Long
 Private Function FileTimeToDate(File_Time As FILETIME) As Date
 Dim System_Time As SYSTEMTIME
  
@@ -166,7 +166,7 @@ Function NumberofDrives() As Integer
     NumberofDrives = DriveCount
 End Function
 
-Function DriveName(Index As Integer) As String
+Function DriveName(index As Integer) As String
 ' Returns the drive letter using an index
 ' Returns an empty string if index > number of drives
     Dim i As Integer
@@ -184,7 +184,7 @@ Function DriveName(Index As Integer) As String
           TheDrive = TheDrive & Mid(Buffer, i, 1)
         If Asc(Mid(Buffer, i, 1)) = 0 Then 'null separates drives
             DriveCount = DriveCount + 1
-            If DriveCount = Index Then
+            If DriveCount = index Then
                 DriveName = UCase(Left(TheDrive, 1))
                 Exit Function
             End If
@@ -265,14 +265,14 @@ Next i
 End If
 End Function
 
-Public Sub AddAFile(file$, level As Integer)
+Public Sub AddAFile(file$, Level As Integer)
 If Not onetime Then onetime = True: Once
 If InUseItems >= UBound(myfile$()) Then
 ReDim Preserve myfile$(UBound(myfile$()) * 2)
 ReDim Preserve myLevel(UBound(myLevel()) * 2) As Integer
 End If
  myfile$(InUseItems) = file
-myLevel(InUseItems) = level  ' level must be not 0, mark = false
+myLevel(InUseItems) = Level  ' level must be not 0, mark = false
 InUseItems = InUseItems + 1
 
 
@@ -282,16 +282,16 @@ ReDim myfile$(100)
 ReDim myLevel(100) As Integer
 InUseItems = 0
 End Sub
-Public Property Get List(Index As Long) As String
-If Index < 0 Then
+Public Property Get List(index As Long) As String
+If index < 0 Then
 List = ""
 Else
 If Not onetime Then onetime = True: Once
-List = myfile$(Index)
+List = myfile$(index)
 End If
 End Property
-Public Property Let List(Index As Long, rhs As String)
-myfile$(Index) = rhs
+Public Property Let List(index As Long, RHS As String)
+myfile$(index) = RHS
 End Property
 
 Private Function CheckFile(ByVal expan$) As Boolean
@@ -363,12 +363,12 @@ Else
 End If
 RaiseEvent DirFinished
 End Function
-Public Function FileAttr(A$, attr As Long) As Boolean
+Public Function FileAttr(a$, attr As Long) As Boolean
 Dim wfd As WIN32_FIND_DATA
 On Error GoTo there1
 Dim fhandle As Long
 
-fhandle = FindFirstFile(StrPtr(A$), wfd)
+fhandle = FindFirstFile(StrPtr(a$), wfd)
 
 If (fhandle > 0) Then
 attr = wfd.dwFileAttributes
@@ -377,10 +377,10 @@ FileAttr = True
 FindClose fhandle
 Else
 Dim b$
-If Right$(A$, 1) = "\" Then
-b$ = A$ & "."
+If Right$(a$, 1) = "\" Then
+b$ = a$ & "."
 Else
-b$ = A$ & "\."
+b$ = a$ & "\."
 End If
 fhandle = FindFirstFile(StrPtr(b$), wfd)
 
@@ -390,8 +390,8 @@ lastTimeStamp = FileTimeToDate(wfd.ftLastWriteTime)
 FileAttr = True
 FindClose fhandle
 Else
-If GetLongName(A$) <> "" Then
-attr = CLng(GetAttr(A$))
+If GetLongName(a$) <> "" Then
+attr = CLng(GetAttr(a$))
 lastTimeStamp = 0
 FileAttr = True
 End If
@@ -401,21 +401,21 @@ Exit Function
 there1:
 End Function
 
-Public Function ExistFile(A$) As Boolean
+Public Function ExistFile(a$) As Boolean
 Dim wfd As WIN32_FIND_DATA
 On Error GoTo there2
 Dim fhandle As Long
-fhandle = FindFirstFile(StrPtr(A$), wfd)
+fhandle = FindFirstFile(StrPtr(a$), wfd)
 ExistFile = (fhandle > 0)
 If ExistFile Then FindClose fhandle: lastTimeStamp = FileTimeToDate(wfd.ftLastWriteTime)
 Exit Function
 there2:
 End Function
-Public Function ExistFolder(A$) As Boolean
+Public Function ExistFolder(a$) As Boolean
 Dim wfd As WIN32_FIND_DATA
 On Error GoTo there3
 Dim fhandle As Long
-fhandle = FindFirstFile(StrPtr(A$ & "\*.*"), wfd)
+fhandle = FindFirstFile(StrPtr(a$ & "\*.*"), wfd)
 ExistFolder = (fhandle > 0)
 If ExistFolder Then FindClose fhandle: lastTimeStamp = FileTimeToDate(wfd.ftLastWriteTime): Exit Function
 ExistFolder = ExistFolder And (wfd.dwFileAttributes And 16) > 0
@@ -438,9 +438,9 @@ Public Function Dir1(ByVal ThisFile As String, curdir As String) As String
     If ExtractPath(ThisFile) = "" Then ThisFile = curdir & ThisFile
     If ExistFile(ThisFile) Then Dir1 = ThisFile
 End Function
-Private Function look(ByVal level As Integer, ByVal folder As String, Optional offset As Long = 0, Optional foldersincluded As Boolean = False, Optional foldersonly As Boolean = False) As Long
+Private Function look(ByVal Level As Integer, ByVal folder As String, Optional offset As Long = 0, Optional foldersincluded As Boolean = False, Optional foldersonly As Boolean = False) As Long
 Dim lookpath As String, GUARD As String, mf$(), maxf As Long, k As Long
-If LevelStop > 0 Then If level > LevelStop Then Exit Function
+If LevelStop > 0 Then If Level > LevelStop Then Exit Function
 Dim fold$(), fff As Long, addthis As Long, mlen As Long
 Dim Filter As Long
   Dim wfd As WIN32_FIND_DATA, fhandle As Long
@@ -476,7 +476,7 @@ End If
 
 '' abort = True
 
-If level Mod 3 = 0 Then mywait basestack1, 5
+If Level Mod 3 = 0 Then mywait basestack1, 5
 
 While lookpath <> ""
  
@@ -522,7 +522,7 @@ Wend
 FindClose fhandle
 ' #1
 ' maybe we can hide that witha switch
- If level = 1 And folder <> "" And ((LCase(folder & "\") <> LCase(TopFolder)) Or (TopFolder = "\")) Then AddAFile "...", level: addthis = addthis + 1  '  may we needaswitch here to exclude that
+ If Level = 1 And folder <> "" And ((LCase(folder & "\") <> LCase(TopFolder)) Or (TopFolder = "\")) Then AddAFile "...", Level: addthis = addthis + 1  '  may we needaswitch here to exclude that
 If foldersonly Or foldersincluded Then
      ' #2
     If fff > 0 Then QuickSortExtended fold$(), 1, fff      ' we can sort the folders here
@@ -533,15 +533,15 @@ If maxf > 0 Then
     Select Case SortType
     Case 1
     For k = 1 To maxf
-        AddAFile mf$(k), level
+        AddAFile mf$(k), Level
     Next k
     Case 2
     For k = 1 To maxf
-        AddAFile Mid$(mf$(k), InStr(mf$(k), "#") + 1), level
+        AddAFile Mid$(mf$(k), InStr(mf$(k), "#") + 1), Level
     Next k
     Case Else
     For k = 1 To maxf
-        AddAFile Mid$(mf$(k), 20), level
+        AddAFile Mid$(mf$(k), 20), Level
     Next k
     End Select
   
@@ -553,11 +553,11 @@ If foldersonly Or foldersincluded Then
     Select Case SortType
     Case 1, 2
         For k = 1 To fff
-            AddAFile Chr$(2) + folder & "\" & fold$(k), level
+            AddAFile Chr$(2) + folder & "\" & fold$(k), Level
     Next k
     Case Else
         For k = 1 To fff
-            AddAFile Chr$(2) + folder & "\" & Mid$(fold$(k), 20), level
+            AddAFile Chr$(2) + folder & "\" & Mid$(fold$(k), 20), Level
         Next k
    End Select
         maxf = maxf + fff  'IF FOLDERONLY THEN MAXF=0
@@ -571,17 +571,17 @@ For i = 1 To fff
 If foldersincluded Or foldersonly Then
 Select Case SortType
 Case 1, 2
-AddAFile Chr$(2) + folder & "\" & fold$(i), level: maxf = maxf + 1
+AddAFile Chr$(2) + folder & "\" & fold$(i), Level: maxf = maxf + 1
 Case Else
-AddAFile Chr$(2) + folder & "\" & Mid$(fold$(i), 20), level: maxf = maxf + 1
+AddAFile Chr$(2) + folder & "\" & Mid$(fold$(i), 20), Level: maxf = maxf + 1
 End Select
 End If
 Select Case SortType
 Case 1, 2
-maxf = maxf + look(level + 1, folder & "\" & fold$(i), maxf + offset, IncludedFolders, Nofiles)
+maxf = maxf + look(Level + 1, folder & "\" & fold$(i), maxf + offset, IncludedFolders, Nofiles)
 
 Case Else
-maxf = maxf + look(level + 1, folder & "\" & Mid$(fold$(i), 20), maxf + offset, IncludedFolders, Nofiles)
+maxf = maxf + look(Level + 1, folder & "\" & Mid$(fold$(i), 20), maxf + offset, IncludedFolders, Nofiles)
 End Select
 If abort Then Exit For
 Next i
@@ -637,12 +637,12 @@ Dim Piv As String, Tmp As String '<- adjust types here, when switching to someth
     If LB < M2 Then QuickSortExtended Arr, LB, M2
     If M1 < UB Then QuickSortExtended Arr, M1, UB
 End Sub
-Private Function IsSymbol3(A$, c$) As Boolean
+Private Function IsSymbol3(a$, c$) As Boolean
 Dim b$
-b$ = NLtrim$(A$)
+b$ = NLtrim$(a$)
   If b$ <> "" Then
     If Left$(b$, Len(c$)) = c$ Then
-        A$ = Mid$(b$, Len(c$) + 1)
+        a$ = Mid$(b$, Len(c$) + 1)
         IsSymbol3 = True
 End If
 End If
@@ -782,7 +782,7 @@ End Function
 Public Function isReadOnly(ByVal f$) As Boolean
 Dim v&
 
-Err.clear
+Err.Clear
 On Error Resume Next
 If Right$(f$, 1) = "\" Then f$ = Mid$(f$, 1, Len(f$) - 1)
 If f$ <> "" Then
@@ -798,7 +798,7 @@ isdirP = (wfd.dwFileAttributes And 16) > 0
 End Function
 Public Function isdir(f$) As Boolean
 Dim v&
-Err.clear
+Err.Clear
 If f$ = "" Then Exit Function
 On Error Resume Next
 If FileAttr(f$, v&) Then
@@ -849,11 +849,11 @@ Public Property Get TopFolder() As String
 TopFolder = mTopFolder
 End Property
 
-Public Property Let TopFolder(ByVal rhs As String)
-If Right$(rhs, 1) <> "\" Then
-mTopFolder = rhs & "\"
+Public Property Let TopFolder(ByVal RHS As String)
+If Right$(RHS, 1) <> "\" Then
+mTopFolder = RHS & "\"
 Else
-mTopFolder = rhs
+mTopFolder = RHS
 End If
 End Property
 Function CleanName(ByVal name$) As String

@@ -35,8 +35,8 @@ Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As
 Public Function FindDISPID(pobjTarget As Object, ByVal pstrProcName As Variant) As Long
 
     Dim IDsp        As IDispatch.IDispatchM2000
-    Dim rIid        As IDispatch.IID
-    Dim DISPID      As Long
+    Dim riid        As IDispatch.IID
+    Dim dispid      As Long
 
     Dim lngRet      As Long
     FindDISPID = -1
@@ -45,15 +45,15 @@ Public Function FindDISPID(pobjTarget As Object, ByVal pstrProcName As Variant) 
     myptr(0) = StrPtr(pstrProcName)
     
  Set IDsp = pobjTarget
-If Not getone(Typename(pobjTarget) & "." & pstrProcName, DISPID) Then
-      lngRet = IDsp.GetIDsOfNames(rIid, myptr(0), 1&, cLid, arrdispid(0))
+If Not getone(Typename(pobjTarget) & "." & pstrProcName, dispid) Then
+      lngRet = IDsp.GetIDsOfNames(riid, myptr(0), 1&, cLid, arrdispid(0))
      
-      If lngRet = 0 Then DISPID = arrdispid(0): PushOne Typename(pobjTarget) & "." & pstrProcName, DISPID
+      If lngRet = 0 Then dispid = arrdispid(0): PushOne Typename(pobjTarget) & "." & pstrProcName, dispid
       
       Else
       lngRet = 0
 End If
-If lngRet = 0 Then FindDISPID = DISPID
+If lngRet = 0 Then FindDISPID = dispid
 End Function
 Public Sub ShutEnabledGuiM2000(Optional all As Boolean = False)
 Dim x As Form, bb As Boolean
@@ -75,7 +75,7 @@ Public Function CallByNameFixParamArray _
     (pobjTarget As Object, _
     ByVal pstrProcName As Variant, _
     ByVal CallType As cbnCallTypes, _
-     pArgs(), pargs2() As String, Items As Long, Optional robj As Object, Optional fixnamearg As Long = 0) As Variant
+     pArgs(), pargs2() As String, items As Long, Optional robj As Object, Optional fixnamearg As Long = 0) As Variant
 
 
     ' pobjTarget    :   Class or form object that contains the procedure/property
@@ -87,12 +87,12 @@ Public Function CallByNameFixParamArray _
      ' fixnamearg = the number of named arguments
     
     Dim IDsp        As IDispatch.IDispatchM2000
-    Dim rIid        As IDispatch.IID
-    Dim Params      As IDispatch.DISPPARAMS
+    Dim riid        As IDispatch.IID
+    Dim params      As IDispatch.DISPPARAMS
     Dim Excep       As IDispatch.EXCEPINFO
     ' Do not remove TLB because those types
     ' are also defined in stdole
-    Dim DISPID      As Long
+    Dim dispid      As Long
     Dim lngArgErr   As Long
     Dim VarRet      As Variant
     Dim varArr()    As Variant
@@ -107,12 +107,12 @@ Dim myptr() As Long
     ' Get DISPIP from pstrProcName
     If fixnamearg = 0 Then
         ReDim varDISPID(0 To 0)
-If Not getone(Typename$(pobjTarget) & "." & pstrProcName, DISPID) Then
+If Not getone(Typename$(pobjTarget) & "." & pstrProcName, dispid) Then
             ReDim myptr(0 To 0)
             myptr(0) = StrPtr(pstrProcName)
-            lngRet = IDsp.GetIDsOfNames(rIid, myptr(0), 1&, cLid, varDISPID(0))
+            lngRet = IDsp.GetIDsOfNames(riid, myptr(0), 1&, cLid, varDISPID(0))
             
-            If lngRet = 0 Then DISPID = varDISPID(0): PushOne Typename$(pobjTarget) & "." & pstrProcName, DISPID
+            If lngRet = 0 Then dispid = varDISPID(0): PushOne Typename$(pobjTarget) & "." & pstrProcName, dispid
             Else
             lngRet = 0
 End If
@@ -123,19 +123,19 @@ Else
             myptr(lngLoop) = StrPtr(pargs2(lngLoop))
             Next lngLoop
                 ReDim varDISPID(0 To fixnamearg)
-            lngRet = IDsp.GetIDsOfNames(rIid, myptr(0), fixnamearg + 1, cLid, varDISPID(0))
- DISPID = varDISPID(0)
+            lngRet = IDsp.GetIDsOfNames(riid, myptr(0), fixnamearg + 1, cLid, varDISPID(0))
+ dispid = varDISPID(0)
 End If
     If lngRet = 0 Then
 passhere:
-        If Items > 0 Or fixnamearg > 0 Then
-                ReDim varArr(0 To Items - 1 + fixnamearg)
+        If items > 0 Or fixnamearg > 0 Then
+                ReDim varArr(0 To items - 1 + fixnamearg)
                
-                For lngLoop = 0 To Items - 1 + fixnamearg
-                    SwapVariant varArr(fixnamearg + Items - 1 - lngLoop), pArgs(lngLoop)
+                For lngLoop = 0 To items - 1 + fixnamearg
+                    SwapVariant varArr(fixnamearg + items - 1 - lngLoop), pArgs(lngLoop)
                 Next
-              With Params
-                    .cArgs = Items + fixnamearg
+              With params
+                    .cArgs = items + fixnamearg
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                  If CallType = VbLet Or CallType = VbSet Or fixnamearg > 0 Then
                 
@@ -162,16 +162,18 @@ passhere:
                 End With
                 If lngRet = -1 Then GoTo jumphere
 Else
-With Params
+With params
 .cArgs = 0
 .cNamedArgs = 0
 End With
         End If
 
         ' Invoke method/property
-        
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
+If LastErNum = 0 Then
+        lngRet = IDsp.Invoke(dispid, riid, 0, CallType, params, VarRet, Excep, lngArgErr)
 
+End If
+If LastErNum <> 0 Then GoTo exithere
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then
             ' CallByName pobjTarget, pstrProcName, VbMethod
@@ -186,7 +188,7 @@ jumphere:
            If UCase(pstrProcName) = "SHOW" Then
             CallByName pobjTarget, "ShowmeALl", VbMethod
             
-           If Items = 0 Then
+           If items = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
            ElseIf varArr(0) = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod, 0, GiveForm()
@@ -231,6 +233,7 @@ jumphere:
                      mywait basestack1, 1, True
                      Sleep 1
                      'SleepWaitEdit2 1
+                     If ExTarget Then Exit Do
                 Loop
                  ModalId = mycodeid
               
@@ -252,10 +255,10 @@ jumphere:
           ModalId = oldmoldid
            End If
            
-           ElseIf Items = 0 Then
+           ElseIf items = 0 Then
            CallByName pobjTarget, pstrProcName, VbMethod
            Else
-           Select Case Items
+           Select Case items
            Case 1
            CallByName pobjTarget, pstrProcName, VbMethod, varArr(0)
            Case 2
@@ -290,11 +293,11 @@ jumphere:
 
         Err.Raise lngRet
     End If
-    If Items > 0 Then
+    If items > 0 Then
                 ' Fill parameters arrays. The array must be
                 ' filled in reverse order.
-                For lngLoop = 0 To Items - 1 + fixnamearg
-                    SwapVariant varArr(fixnamearg + Items - 1 - lngLoop), pArgs(lngLoop)
+                For lngLoop = 0 To items - 1 + fixnamearg
+                    SwapVariant varArr(fixnamearg + items - 1 - lngLoop), pArgs(lngLoop)
                 Next
     End If
     On Error Resume Next
@@ -302,24 +305,34 @@ jumphere:
     Set IDsp = Nothing
     If IsObject(VarRet) Then
             Set robj = VarRet
-            CallByNameFixParamArray = CLng(0)
-Else
-            CallByNameFixParamArray = VarRet
+        '    CallByNameFixParamArray = CLng(0)
+'Else
+         '   CallByNameFixParamArray = VarRet
+         VarRet = CLng(0)
 End If
+CallByNameFixParamArray = VarRet
+Exit Function
 exithere:
-    If Err.Number <> 0 Then CallByNameFixParamArray = VarRet
+    If Err.number <> 0 Then CallByNameFixParamArray = VarRet
 Err.Clear
+    If items > 0 Then
+                ' Fill parameters arrays. The array must be
+                ' filled in reverse order.
+                For lngLoop = 0 To items - 1 + fixnamearg
+                    SwapVariant varArr(fixnamearg + items - 1 - lngLoop), pArgs(lngLoop)
+                Next
+    End If
 End Function
 
 
-Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$, VarRet As Variant) As Boolean
+Public Function ReadOneParameter(pobjTarget As Object, dispid As Long, ERrR$, VarRet As Variant) As Boolean
     
     Dim CallType As cbnCallTypes
     
     CallType = VbGet
     Dim IDsp        As IDispatch.IDispatchM2000
-    Dim rIid        As IDispatch.IID
-    Dim Params      As IDispatch.DISPPARAMS
+    Dim riid        As IDispatch.IID
+    Dim params      As IDispatch.DISPPARAMS
     Dim Excep       As IDispatch.EXCEPINFO
     ' Do not remove TLB because those types
     ' are also defined in stdole
@@ -340,7 +353,7 @@ Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$, Va
       
                 ReDim varArr(0 To 0)
                 varArr(0) = True
-                With Params
+                With params
                     .cArgs = 1
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                                     Dim aa As Long
@@ -354,7 +367,7 @@ Public Function ReadOneParameter(pobjTarget As Object, DISPID As Long, ERrR$, Va
         ' Invoke method/property
         Err.Clear
        On Error Resume Next
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(dispid, riid, 0, CallType, params, VarRet, Excep, lngArgErr)
 If Err > 0 Then
 ERrR$ = Err.Description
 Exit Function
@@ -381,14 +394,14 @@ ReadOneParameter = Err = 0
   ''  If Err.Number <> 0 Then ReadOneParameter = varRet
 Err.Clear
 End Function
-Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR$, ThisIndex As Variant) As Variant
+Public Function ReadOneIndexParameter(pobjTarget As Object, dispid As Long, ERrR$, ThisIndex As Variant) As Variant
     
     Dim CallType As cbnCallTypes
     
     CallType = VbGet
     Dim IDsp        As IDispatch.IDispatchM2000
-    Dim rIid        As IDispatch.IID
-    Dim Params      As IDispatch.DISPPARAMS
+    Dim riid        As IDispatch.IID
+    Dim params      As IDispatch.DISPPARAMS
     Dim Excep       As IDispatch.EXCEPINFO
     ' Do not remove TLB because those types
     ' are also defined in stdole
@@ -409,7 +422,7 @@ Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR
                 ReDim varArr(0 To 0)
                 varArr(0) = ThisIndex
                 
-                With Params
+                With params
                     .cArgs = 1
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                                     Dim aa As Long
@@ -424,7 +437,7 @@ Public Function ReadOneIndexParameter(pobjTarget As Object, DISPID As Long, ERrR
   
         Err.Clear
         On Error Resume Next
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(dispid, riid, 0, CallType, params, VarRet, Excep, lngArgErr)
 If Err > 0 Then
 ERrR$ = Err.Description
 Exit Function
@@ -451,14 +464,14 @@ Else
   ''  If Err.Number <> 0 Then ReadOneParameter = varRet
 Err.Clear
 End Function
-Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
+Public Sub ChangeOneParameter(pobjTarget As Object, dispid As Long, VAL1, ERrR$)
     
     Dim CallType As cbnCallTypes
     
     CallType = VbLet
     Dim IDsp        As IDispatch.IDispatchM2000
-    Dim rIid        As IDispatch.IID
-    Dim Params      As IDispatch.DISPPARAMS
+    Dim riid        As IDispatch.IID
+    Dim params      As IDispatch.DISPPARAMS
     Dim Excep       As IDispatch.EXCEPINFO
     ' Do not remove TLB because those types
     ' are also defined in stdole
@@ -480,7 +493,7 @@ Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
       
                 ReDim varArr(0 To 0)
                 varArr(0) = VAL1
-                With Params
+                With params
                     .cArgs = 1
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                                     Dim aa As Long
@@ -493,7 +506,7 @@ Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
 
         ' Invoke method/property
         
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(dispid, riid, 0, CallType, params, VarRet, Excep, lngArgErr)
 
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then
@@ -510,14 +523,14 @@ Public Sub ChangeOneParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$)
     Set IDsp = Nothing
     
 End Sub
-Public Sub ChangeOneIndexParameter(pobjTarget As Object, DISPID As Long, VAL1, ERrR$, ThisIndex As Variant)
+Public Sub ChangeOneIndexParameter(pobjTarget As Object, dispid As Long, VAL1, ERrR$, ThisIndex As Variant)
     
     Dim CallType As cbnCallTypes
     
     CallType = VbLet
     Dim IDsp        As IDispatch.IDispatchM2000
-    Dim rIid        As IDispatch.IID
-    Dim Params      As IDispatch.DISPPARAMS
+    Dim riid        As IDispatch.IID
+    Dim params      As IDispatch.DISPPARAMS
     Dim Excep       As IDispatch.EXCEPINFO
     ' Do not remove TLB because those types
     ' are also defined in stdole
@@ -540,7 +553,7 @@ Public Sub ChangeOneIndexParameter(pobjTarget As Object, DISPID As Long, VAL1, E
                 ReDim varArr(0 To 1)
                 varArr(1) = ThisIndex
                 varArr(0) = VAL1
-                With Params
+                With params
                     .cArgs = 2
                     .rgPointerToVariantArray = VarPtr(varArr(0))
                                     Dim aa As Long
@@ -553,7 +566,7 @@ Public Sub ChangeOneIndexParameter(pobjTarget As Object, DISPID As Long, VAL1, E
 
         ' Invoke method/property
         
-        lngRet = IDsp.Invoke(DISPID, rIid, 0, CallType, Params, VarRet, Excep, lngArgErr)
+        lngRet = IDsp.Invoke(dispid, riid, 0, CallType, params, VarRet, Excep, lngArgErr)
 
         If lngRet <> 0 Then
             If lngRet = DISP_E_EXCEPTION Then
@@ -576,12 +589,12 @@ If Not KnownProp.Find(LCase(KnownPropName)) Then KnownProp.AddKey LCase$(KnownPr
 KnownProp.Value = v
 
 End Sub
-Private Function getone(KnownPropName As String, this As Long) As Boolean
+Private Function getone(KnownPropName As String, This As Long) As Boolean
 On Error Resume Next
 Dim v As Long
 InitMe
 If KnownProp.Find(LCase$(KnownPropName)) Then
-getone = True: this = KnownProp.Value
+getone = True: This = KnownProp.Value
 End If
 End Function
 

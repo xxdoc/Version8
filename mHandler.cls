@@ -12,17 +12,23 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' Generic Handler
-Public ObjRef As Object
-Public T1 As Variant
+Public objref As Object
+Public T1 As Variant, Indirect As Long
 Public ReadOnly As Boolean
+
+Private Sub Class_Initialize()
+Indirect = -1
+End Sub
+
 ''Public Par1 As Variant
 Private Sub Class_Terminate()
-Set ObjRef = Nothing
+Set objref = Nothing
 End Sub
 Public Sub CopyTo(A As mHandler)
 Set A = New mHandler
 A.T1 = T1
 ''A.Par1 = Par1   ' key or index ???
 ' no copy for reference
-Set A.ObjRef = ObjRef
+A.Indirect = Indirect
+Set A.objref = objref
 End Sub

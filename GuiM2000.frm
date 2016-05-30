@@ -197,7 +197,7 @@ End Sub
 Private Sub Form_Activate()
 If PopupOn Then PopupOn = False
 If novisible Then Hide: Unload Me
-If gList2.HeadLine <> "" Then If ttl Then Form3.CaptionW = gList2.HeadLine
+If gList2.HeadLine <> "" Then If ttl Then Form3.CaptionW = gList2.HeadLine: Form3.Refresh
 MarkSize = 4
 ResizeMark.Width = MarkSize * dv15
 ResizeMark.Height = MarkSize * dv15
@@ -354,11 +354,11 @@ ResizeMark.Move Width - ResizeMark.Width, Height - ResizeMark.Height
 End Sub
 
 
-Private Sub gList2_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
+Private Sub gList2_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, Skip As Boolean)
 If item = -1 Then
 FillThere thisHDC, thisrect, gList2.CapColor
 FillThereMyVersion thisHDC, thisrect, &H999999
-skip = True
+Skip = True
 End If
 End Sub
 Private Sub gList2_ExposeItemMouseMove(Button As Integer, ByVal item As Long, ByVal x As Long, ByVal y As Long)
@@ -648,8 +648,8 @@ PopupOn = True
 that.Show , Me
 
 End Sub
-Public Sub hookme(this As gList)
-Set LastGlist = this
+Public Sub hookme(This As gList)
+Set LastGlist = This
 End Sub
 
 Private Sub ResizeMark_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)

@@ -22,18 +22,22 @@ Private Enum CALLINGCONVENTION_ENUM
 End Enum
 
 Private LibHdls As New FastCollection, VType(0 To 63) As Integer, VPtr(0 To 63) As Long
-Public Sub CallLp(where As Long)
-DispCallFunc 0, where, cc_fastcall, vbEmpty, 0, 0, 0, 0
-End Sub
+
 
 Public Function stdCallW(sDll As String, sFunc As String, ByVal RetType As Variant, p() As Variant, j As Long)
 Dim v(), HRes As Long
  
   v = p 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
   For i = 0 To j - 1 ''UBound(V)
-    If VarType(p(i)) = vbString Then v(i) = StrPtr(p(i))
+    If VarType(p(i)) = vbString Then
+    v(i) = CLng(StrPtr(p(i)))
+    VPtr(i) = VarPtr(v(i))
+    VType(i) = vbString
+    Else
     VType(i) = VarType(v(i))
     VPtr(i) = VarPtr(v(i))
+    End If
+    
   Next i
   If Left$(func, 1) = "#" Then
   HRes = DispCallFunc(0, GetFuncPtrOrd(sDll, sFunc), CC_STDCALL, CInt(RetType), j, VType(0), VPtr(0), stdCallW)
@@ -41,6 +45,7 @@ Dim v(), HRes As Long
   HRes = DispCallFunc(0, GetFuncPtr(sDll, sFunc), CC_STDCALL, CInt(RetType), j, VType(0), VPtr(0), stdCallW)
   End If
   If HRes Then Err.Raise HRes
+' p() = v()
  If Typename(stdCallW) = "Null" Then
  stdCallW = vbEmpty
  End If
@@ -188,8 +193,9 @@ On Error Resume Next
 hlib = LoadLibrary("ntdll")
 wwb = GetProcByName(hlib, "wine_get_version") <> 0
 If hlib <> 0 Then FreeLibrary hlib
-If Err.Number > 0 Then wwb = False
+If Err.number > 0 Then wwb = False
 www = True
 End If
 IsWine = wwb
 End Function
+

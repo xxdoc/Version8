@@ -2,26 +2,26 @@ VERSION 5.00
 Begin VB.Form Form3 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
-   BackColor       =   &H80000005&
+   BackColor       =   &H000080FF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "M2000"
-   ClientHeight    =   765
+   ClientHeight    =   570
    ClientLeft      =   -47955
    ClientTop       =   48315
-   ClientWidth     =   1530
+   ClientWidth     =   1365
    Icon            =   "SMALL.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form3"
    MaxButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   765
-   ScaleWidth      =   1530
+   ScaleHeight     =   570
+   ScaleWidth      =   1365
    WindowState     =   1  'Minimized
    Begin VB.Timer Timer1 
       Interval        =   300
-      Left            =   360
-      Top             =   240
+      Left            =   930
+      Top             =   360
    End
 End
 Attribute VB_Name = "Form3"
@@ -33,33 +33,8 @@ Option Explicit
 Private hideme As Boolean
 Private foundform5 As Boolean
 Private reopen4 As Boolean, reopen2 As Boolean
-Private Declare Function GetTextMetrics Lib "gdi32" _
-Alias "GetTextMetricsA" (ByVal hDC As Long, _
-lpMetrics As TEXTMETRIC) As Long
-Private Type TEXTMETRIC
-tmHeight As Long
-tmAscent As Long
-tmDescent As Long
-tmInternalLeading As Long
-tmExternalLeading As Long
-tmAveCharWidth As Long
-tmMaxCharWidth As Long
-tmWeight As Long
-tmOverhang As Long
-tmDigitizedAspectX As Long
-tmDigitizedAspectY As Long
-tmFirstChar As Byte
-tmLastChar As Byte
-tmDefaultChar As Byte
-tmBreakChar As Byte
-tmItalic As Byte
-tmUnderlined As Byte
-tmStruckOut As Byte
-tmPitchAndFamily As Byte
-tmCharSet As Byte
-End Type
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
-Dim tm As TEXTMETRIC
+
 Private Declare Function GetModuleHandleW Lib "KERNEL32" (ByVal lpModuleName As Long) As Long
 
 
@@ -90,7 +65,7 @@ Public Property Let CaptionW(ByRef NewValue As String)
     m_Caption = NewValue
     ' get window procedures if we don't have
     '     them
-
+ttl = True
 
     If WndProc = 0 Then
         ' the default Unicode window procedure
@@ -112,6 +87,7 @@ Public Property Let CaptionW(ByRef NewValue As String)
     Else
         ' no Unicode for us
         Caption = m_Caption
+        
     End If
 End Property
 ' usage sample
@@ -119,13 +95,7 @@ End Property
 
 
 '** Function **
-Public Function InternalLeadingSpace() As Long
-On Error Resume Next
-    GetTextMetrics hDC, tm
-  With tm
-InternalLeadingSpace = (tm.tmInternalLeading = 0) Or Not (tm.tmInternalLeading > 0)
-End With
-End Function
+
 'Private onlyone As Boolean
 Public Function ask(bstack As basetask, A$) As Double
 If ASKINUSE Then Exit Function
@@ -139,9 +109,9 @@ If ASKINUSE Then Exit Function
 Dim oldesc As Boolean
 oldesc = escok
 'using AskTitle$, AskText$, AskCancel$, AskOk$, AskDIB$
-Static Once As Boolean
-If Once Then Exit Function
-Once = True
+Static once As Boolean
+If once Then Exit Function
+once = True
 ASKINUSE = True
 If TypeOf Screen.ActiveForm Is GuiM2000 Then Screen.ActiveForm.UNhookMe
 
@@ -248,7 +218,7 @@ bstack.soros.PushStr AskStrInput$
 End If
 End If
 AskCancel$ = ""
-Once = False
+once = False
 ASKINUSE = False
 INK$ = ""
 On Error Resume Next
@@ -269,7 +239,7 @@ Else
 
 Err.Clear
 p = bstack.Process.Done
-If Err.Number = 0 Then
+If Err.number = 0 Then
 e = True
 If p <> 0 Then
 Exit Sub
@@ -298,7 +268,7 @@ Do
 If SLEEPSHORT Then Sleep 1
 If e Then
 p = bstack.Process.Done
-If Err.Number = 0 Then
+If Err.number = 0 Then
 If p <> 0 Then
 Exit Do
 End If
@@ -323,7 +293,7 @@ Else
 
 Err.Clear
 p = bstack.Process.Done
-If Err.Number = 0 Then
+If Err.number = 0 Then
 e = True
 If p <> 0 Then
 Exit Sub
@@ -348,7 +318,7 @@ Else
         End If
 If e Then
 p = bstack.Process.Done
-If Err.Number = 0 Then
+If Err.number = 0 Then
 If p <> 0 Then
 Exit Do
 End If
@@ -362,6 +332,12 @@ Loop Until PP <= CDbl(timeGetTime) Or NOEXECUTION Or MOUT
             
 End Sub
 
+
+Private Sub Form_Activate()
+If QRY Then
+If Form1.Visible Then Form1.SetFocus
+End If
+End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, shift As Integer)
 If QRY Or GFQRY Then
@@ -381,9 +357,8 @@ End Sub
 Private Sub Form_Load()
 Debug.Assert (InIDECheck = True)
 ttl = True
-CaptionW = ""
+Timer1.Interval = 10000
 End Sub
-
 
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -413,21 +388,22 @@ End Sub
 
 Private Sub Form_Resize()
 
- hideme = Me.WindowState = 1
+ hideme = (Me.WindowState = 1)
  If hideme Then
  reopen2 = False
  reopen4 = False
  If Form4.Visible Then Form4.Visible = False: reopen4 = True
  If Form3.Visible Then If trace Then Form2.Visible = False: reopen2 = True
- 
  End If
-'Debug.Print "RESIZE ME"
- Timer1.enabled = True
+ Timer1.enabled = Timer1.Interval < 10000
+ 
 End Sub
+
+
 
 Private Sub Timer1_Timer()
 ' On Error Resume Next
-Dim x As Form
+Dim x As Form, z As Long
 If DIALOGSHOW Or ASKINUSE Or ModalId <> 0 Then
 Timer1.enabled = False
 Exit Sub
@@ -440,7 +416,14 @@ If foundform5 Then
 Form5.Visible = True
 'DoEvents
 End If
+If Not ttl Then
+ttl = True
+z = Form1.top
+Form1.top = 0
 If Not IsSelectorInUse Then Form1.Show , Form5
+Else
+If Not IsSelectorInUse Then Form1.Show , Form5
+End If
 'DoEvents
 End If
 
@@ -459,10 +442,16 @@ If reopen2 Then Form2.Show , Form1: Form2.Visible = True
        End If
        End If
        Next
- Set x = Nothing
-Form1.SetFocus
-Form1.ZOrder 0
+       
+Sleep 1
+If Forms.Count > 5 Then
 
+Else
+Form1.SetFocus
+End If
+Form1.ZOrder 0
+Sleep 2
+ Set x = Nothing
 End If
 Else
 If Not ((exWnd <> 0) Or AVIRUN Or IsSelectorInUse) Then
@@ -473,21 +462,7 @@ End If
 
 End If
 End Sub
-Sub StoreFont(aName$, aSize As Single, ByVal aCharset As Long)
-On Error Resume Next
-Form3.Font.Size = aSize
-If Err.Number > 0 Then aSize = 12: Form3.Font.Size = aSize
-    Form3.FontName = aName$
-    Form3.Font.bold = True
-    Form3.Font.Italic = True
-    Form3.Font.charset = aCharset
-        Form3.FontName = aName$
-    Form3.Font.bold = True
-    Form3.Font.Italic = True
-    Form3.Font.charset = aCharset
-    Form3.Font.Size = aSize
-    aSize = Form3.Font.Size '' return
-End Sub
+
 Public Function InIDECheck() As Boolean
     m_bInIDE = True
     InIDECheck = True

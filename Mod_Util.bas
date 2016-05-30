@@ -109,7 +109,7 @@ Public ttl As Boolean
 Public Const SRCCOPY = &HCC0020
 Public Release As Boolean
 Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Declare Function RoundRect Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
+Declare Function RoundRect Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal y3 As Long) As Long
 Declare Function UpdateWindow Lib "user32" (ByVal hWnd As Long) As Long
 Declare Function ScrollDC Lib "user32" (ByVal hDC As Long, ByVal dX As Long, ByVal dy As Long, lprcScroll As RECT, lprcClip As RECT, ByVal hrgnUpdate As Long, lprcUpdate As RECT) As Long
 Public LastErName As String
@@ -231,7 +231,7 @@ Private Type LOGFONT
 ' lfFaceName(LF_FACESIZE) As Byte 'THIS WAS DEFINED IN API-CHANGES MY OWN
   lfFaceName As String * 33
 End Type
-Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
+Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal X3 As Long, ByVal y3 As Long) As Long
 
 Private Declare Function PathToRegion Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
@@ -342,7 +342,10 @@ End If
 MOUSEY:
 End Function
 Public Sub MyEr(er$, ergr$)
-
+If Left$(LastErName, 1) = Chr(0) Then
+    LastErName = ""
+    LastErNameGR = ""
+End If
 If er$ = "" Then
 LastErNum = 0
 LastErNum1 = 0
@@ -633,7 +636,7 @@ End Sub
 Sub BoxColorNew(dqq As Object, mb As basket, x1&, y1&, c As Long)
 Dim addpixels As Long
 With mb
-If Form3.InternalLeadingSpace = 0 And .MineLineSpace = 0 Then
+If InternalLeadingSpace() = 0 And .MineLineSpace = 0 Then
 addpixels = 0
 Else
 addpixels = 2
@@ -684,7 +687,7 @@ On Error Resume Next
     End If
 End If
 
-If Err.Number > 0 Then Exit Sub
+If Err.number > 0 Then Exit Sub
 
 If s Then
 scl = (y1& - .currow + 1) * .Yt - df&
@@ -846,7 +849,7 @@ Exit Sub
 End If
 If x1 = 0 Then x1 = p.Width
 If y1 = 0 Then y1 = p.Height * x1 / p.Width
-If Err.Number > 0 Then Exit Sub
+If Err.number > 0 Then Exit Sub
 
 If p.Type = vbPicTypeBitmap Then
 d1.PaintPicture p, .XGRAPH, .YGRAPH, x1, y1, , , , , vbSrcCopy
@@ -1160,10 +1163,10 @@ With mybasket
      ReDim A(Len(WHAT1$) * 2 + 20)
        ReDim a1(Len(WHAT1$) * 2 + 20)
      
-     Dim skip As Boolean
+     Dim Skip As Boolean
      
-     skip = GetStringTypeExW(&HB, 1, StrPtr(WHAT1$), Len(WHAT1$), A(0)) = 0  ' Or IsWine
-     skip = GetStringTypeExW(&HB, 4, StrPtr(WHAT1$), Len(WHAT1$), a1(0)) = 0 Or skip
+     Skip = GetStringTypeExW(&HB, 1, StrPtr(WHAT1$), Len(WHAT1$), A(0)) = 0  ' Or IsWine
+     Skip = GetStringTypeExW(&HB, 4, StrPtr(WHAT1$), Len(WHAT1$), a1(0)) = 0 Or Skip
         Do While (lenw& - r) >= .mx - PX And (.mx - PX) > 0
         
 
@@ -1183,7 +1186,7 @@ With mybasket
       
             If c$ >= " " Then
             
-               If Not skip Then
+               If Not Skip Then
               If A(r * 2 + 2) = 0 And A(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
                           Do
                 p$ = Mid$(WHAT1$, r + 2, 1)
@@ -1280,7 +1283,7 @@ r1 = Len(what$) - 1
         c$ = Mid$(WHAT1$, r + 1, 1)
         If c$ >= " " Then
        ' skip = True
-             If Not skip Then
+             If Not Skip Then
            If A(r * 2 + 2) = 0 And A(r * 2 + 3) <> 0 And a1(r * 2 + 2) < 8 Then
             Do
                 p$ = Mid$(WHAT1$, r + 2, 1)
@@ -1324,7 +1327,7 @@ With players(prive)
 BFONT = ddd.Font.name
 If Font <> "" Then
 If Size = 0 Then Size = ddd.FontSize
-Form3.StoreFont Font, Size, .charset
+StoreFont Font, Size, .charset
 ddd.Font.charset = 0
 ddd.FontSize = 9
 ddd.FontName = .FontName
@@ -1371,7 +1374,7 @@ With players(prive)
 BFONT = ddd.Font.name
 If Font <> "" Then
 If Size = 0 Then Size = ddd.FontSize
-Form3.StoreFont Font, Size, .charset
+StoreFont Font, Size, .charset
 ddd.Font.charset = 0
 ddd.FontSize = 9
 ddd.FontName = .FontName
@@ -1568,7 +1571,7 @@ If Hi& >= 0 And buf$ <> "" Then MyPrintNew ddd, mb.uMineLineSpace, buf$, Not noc
 If Not nocr Then LCTbasket ddd, mb, PY, PX
 End With
 End Sub
-Public Sub wwPlain(bstack As basetask, mybasket As basket, ByVal what As String, ByVal wi As Long, ByVal Hi As Long, Optional scrollme As Boolean = False, Optional nosettext As Boolean = False, Optional frmt As Long = 0, Optional ByVal skip As Long = 0, Optional res As Long, Optional isAcolumn As Boolean = False, Optional collectit As Boolean = False, Optional nonewline As Boolean)
+Public Sub wwPlain(bstack As basetask, mybasket As basket, ByVal what As String, ByVal wi As Long, ByVal Hi As Long, Optional scrollme As Boolean = False, Optional nosettext As Boolean = False, Optional frmt As Long = 0, Optional ByVal Skip As Long = 0, Optional res As Long, Optional isAcolumn As Boolean = False, Optional collectit As Boolean = False, Optional nonewline As Boolean)
 Dim ddd As Object, mdoc As Object
     If collectit Then
                 Set mdoc = New Document
@@ -1697,8 +1700,8 @@ kk& = (help1 + help2) < (w2 - kkl)
                 End If
                 End If
  
-          skip = skip - 1
-        If skip < 0 Then
+          Skip = Skip - 1
+        If Skip < 0 Then
         
             If last Then
              If frmt > 0 Then
@@ -1724,7 +1727,7 @@ kk& = (help1 + help2) < (w2 - kkl)
         If isAcolumn Then Exit Sub
         last = True
         buf$ = b$
-        If skip < 0 Or scrollme Then
+        If Skip < 0 Or scrollme Then
             Hi = Hi - 1
             lCount = lCount + 1
             npy = npy + 1
@@ -1777,9 +1780,9 @@ If Not nopr Then LCTbasket ddd, mybasket, npy, PX: ddd.CurrentX = ddd.CurrentX +
 Case Is = 13
 If nonewline Then Exit For
 paragr = True
- skip = skip - 1
+ Skip = Skip - 1
  
-        If skip < 0 Or scrollme Then
+        If Skip < 0 Or scrollme Then
         
 If last Then
     If frmt > 0 Then
@@ -1808,7 +1811,7 @@ last = False
 buf$ = ""
 '''''''''''''''''''''''''
 If isAcolumn Then Exit Sub
-If skip < 0 Or scrollme Then
+If Skip < 0 Or scrollme Then
 lCount = lCount + 1
     Hi = Hi - 1
     npy = npy + 1
@@ -1860,15 +1863,15 @@ End Select
 If Hi < 0 Then
 ' Exit For
 '
-skip = 1000
+Skip = 1000
 scrollme = False
 End If
  OverDispl = MinDispl
 thmagic:
 Next ttt
 If Hi >= 0 And buf$ <> "" Then
- skip = skip - 1
-        If skip < 0 Then
+ Skip = Skip - 1
+        If Skip < 0 Then
 If frmt = 2 Then
 If Not nopr Then fullPlainWhere ddd, mybasket, RTrim(buf$), w2, frmt, nowait, nonewline
             If collectit Then
@@ -1903,7 +1906,7 @@ End If
 End If
 End If
 End If
-If skip < 0 Or scrollme Then
+If Skip < 0 Or scrollme Then
     Hi = Hi - 1
     lCount = lCount + 1
    If Not isAcolumn Then npy = npy + 1
@@ -1968,18 +1971,18 @@ End With
 End Sub
 
 Public Sub FeedFont2Stack(basestack As basetask, ok As Boolean)
-Dim ms As New mStiva
+Dim mS As New mStiva
 If ok Then
-ms.PushVal CDbl(ReturnBold)
-ms.PushVal CDbl(ReturnItalic)
-ms.PushVal CDbl(ReturnCharset)
-ms.PushVal CDbl(ReturnSize)
-ms.PushStr ReturnFontName
-ms.PushVal CDbl(1)
+mS.PushVal CDbl(ReturnBold)
+mS.PushVal CDbl(ReturnItalic)
+mS.PushVal CDbl(ReturnCharset)
+mS.PushVal CDbl(ReturnSize)
+mS.PushStr ReturnFontName
+mS.PushVal CDbl(1)
 Else
-ms.PushVal CDbl(0)
+mS.PushVal CDbl(0)
 End If
-basestack.soros.MergeTop ms
+basestack.soros.MergeTop mS
 End Sub
 Public Sub nPlain(basestack As basetask, ByVal what As String, ByVal Font As String, ByVal Size As Single, Optional ByVal degree As Double = 0#, Optional ByVal JUSTIFY As Long = 0, Optional ByVal qual As Boolean = True, Optional ByVal ExtraWidth As Long = 0)
 Dim ddd As Object
@@ -2081,9 +2084,9 @@ If ExtraWidth <> 0 Then SetTextCharacterExtra ddd.hDC, 0
 End Sub
 
 Public Sub nForm(bstack As basetask, TheSize As Single, nW As Long, nH As Long, myLineSpace As Long)
-    Form3.StoreFont bstack.Owner.Font.name, TheSize, bstack.myCharSet
-    nH = Form3.TextHeight("Wq") + myLineSpace * 2
-    nW = Form3.TextWidth("W") + dv15
+    StoreFont bstack.Owner.Font.name, TheSize, bstack.myCharSet
+    nH = fonttest.TextHeight("Wq") + myLineSpace * 2
+    nW = fonttest.TextWidth("W") + dv15
 End Sub
 
 Sub crNew(bstack As basetask, mb As basket)
@@ -2207,8 +2210,8 @@ ResetColumns = True
 .charset = dq.Font.charset
 .SZ = dq.FontSize
 Else
-If Not (Form3.FontName = .FontName And Form3.Font.charset = .charset And Form3.Font.Size = .SZ) Then
-Form3.StoreFont .FontName, .SZ, .charset
+If Not (fonttest.FontName = .FontName And fonttest.Font.charset = .charset And fonttest.Font.Size = .SZ) Then
+StoreFont .FontName, .SZ, .charset
 dq.Font.charset = 0
 dq.FontSize = 9
 dq.FontName = .FontName
@@ -2226,8 +2229,8 @@ Else
 End If
 End If
 .SZ = dq.FontSize
-.Xt = Form3.TextWidth("W") + dv15
-.Yt = Form3.TextHeight("fj")
+.Xt = fonttest.TextWidth("W") + dv15
+.Yt = fonttest.TextHeight("fj")
 .mx = Int(dq.Width / .Xt)
 .My = Int(dq.Height / (.Yt + .uMineLineSpace * 2))
 ''.Paper = dq.BackColor
@@ -2287,11 +2290,11 @@ mSz = mSz * factor
 .uMineLineSpace = AddTwipsTop * factor
 .double = factor <> 1
 End If
-Form3.StoreFont dq.Font.name, mSz, dq.Font.charset
+StoreFont dq.Font.name, mSz, dq.Font.charset
 dq.FontSize = mSz
 
-.Yt = Form3.TextHeight("fj")
-.Xt = Form3.TextWidth("W") + dv15
+.Yt = fonttest.TextHeight("fj")
+.Xt = fonttest.TextWidth("W") + dv15
 .mx = Int(dq.Width / .Xt)
 .My = Int(dq.Height / (.Yt + .uMineLineSpace * 2))
 .Yt = .Yt + .uMineLineSpace * 2
@@ -2312,7 +2315,7 @@ With mb
 
 If Not (dq.FontName = .FontName And dq.Font.charset = .charset And dq.Font.Size = .SZ) Then
 
-Form3.StoreFont .FontName, .SZ, .charset
+StoreFont .FontName, .SZ, .charset
 dq.Font.charset = 0
 dq.FontSize = 9
 dq.FontName = .FontName
@@ -2336,7 +2339,7 @@ SetText dq
 mybasket = players(GetCode(dq))
 
 With mybasket
-If Form3.InternalLeadingSpace = 0 And .MineLineSpace = 0 Then
+If InternalLeadingSpace() = 0 And .MineLineSpace = 0 Then
 addpixels = 0
 Else
 addpixels = 2
@@ -2699,7 +2702,7 @@ FrameText d, SzOne, Form1.Width, Form1.Height, PaperOne
 If lckfrm = 0 Then
 SetText d
 bstack.Owner.Font.charset = bstack.myCharSet
- Form3.StoreFont bstack.Owner.Font.name, SzOne, bstack.myCharSet
+ StoreFont bstack.Owner.Font.name, SzOne, bstack.myCharSet
  
  With players(basketcode)
 .mypen = PenOne
@@ -2951,7 +2954,7 @@ End If
 
 .ForeColor = d.ForeColor
 Form1.SetText1
-.glistN.overrideTextHeight = Form3.TextHeight("fj")
+.glistN.overrideTextHeight = fonttest.TextHeight("fj")
 .Font.name = d.Font.name
 .Font.Size = d.Font.Size ' SZ 'Int(d.font.Size) Why
 .Font.charset = d.Font.charset
@@ -3164,7 +3167,7 @@ End If
 .ForeColor = d.ForeColor
 .Font.name = d.Font.name
 Form1.SetText1
-.glistN.overrideTextHeight = Form3.TextHeight("fj")
+.glistN.overrideTextHeight = fonttest.TextHeight("fj")
 .Font.Size = d.Font.Size ' SZ 'Int(d.font.Size) Why
 .Font.charset = d.Font.charset
 .Font.Italic = d.Font.Italic
@@ -3563,7 +3566,7 @@ Else
 
 Err.Clear
 p = bstack.Process.Done
-If Err.Number = 0 Then
+If Err.number = 0 Then
 e = True
 If p <> 0 Then
 Exit Sub
@@ -3587,7 +3590,7 @@ Else
         End If
 If e Then
 p = bstack.Process.Done
-If Err.Number = 0 Then
+If Err.number = 0 Then
 If p <> 0 Then
 Exit Do
 End If
@@ -3714,17 +3717,17 @@ dd.Font.Size = Size
 Size = dd.Font.Size
 
 ''Sleep 1  '' USED TO GIVE TIME TO LOAD FONT
-Form3.StoreFont dd.Font.name, Size, dd.Font.charset
-.Yt = Form3.TextHeight("fj")
-.Xt = Form3.TextWidth("W")
+StoreFont dd.Font.name, Size, dd.Font.charset
+.Yt = fonttest.TextHeight("fj")
+.Xt = fonttest.TextWidth("W")
 
-While TextHeight(Form3, "fj") / (.Yt / 2 + dv15) < dv
+While TextHeight(fonttest, "fj") / (.Yt / 2 + dv15) < dv
 Size = Size + 0.2
-Form3.Font.Size = Size
+fonttest.Font.Size = Size
 Wend
 dd.Font.Size = Size
-.Yt = TextHeight(Form3, "fj")
-.Xt = TextWidth(Form3, "W") + dv15
+.Yt = TextHeight(fonttest, "fj")
+.Xt = TextWidth(fonttest, "W") + dv15
 
 .mx = Int(x / .Xt)
 .My = Int(y / (.Yt + .MineLineSpace * 2))
@@ -3847,7 +3850,7 @@ Dim dX As Long, dy As Long, safe$
 
 If excludechars = "" Then excludechars = Chr$(0)
 If QUERYLIST = "" Then QUERYLIST = Chr$(13): LASTQUERYLIST = 1
-Dim q1 As Long, sp$, Once As Boolean, dq As Object
+Dim q1 As Long, sp$, once As Boolean, dq As Object
  
 Set dq = bstack.Owner
 SetText dq
@@ -3897,7 +3900,7 @@ Dim A$
 s$ = ""
 oldLCTCB dq, prive, 0
 Do
-If Not Once Then
+If Not once Then
 If USELIST Then
  DoEvents
   If Not iamactive Then
@@ -3928,8 +3931,8 @@ If Not QRY Then HideCaret dq.hWnd:   Exit Do
  BLOCKkey = False
  If USELIST Then
 
- If Not Once Then
- Once = True
+ If Not once Then
+ once = True
 
  If QUERYLIST <> "" Then  ' up down
  
@@ -3969,7 +3972,7 @@ If clickMe = 38 Then
  MKEY$ = ""
  Else
  clickMe = 0
- Once = False
+ once = False
  End If
  End If
 
@@ -5264,7 +5267,7 @@ On Error GoTo ErrHandler
     
 ErrHandler:
 If FNr Then Close FNr
-If Err Then Err.Raise Err.Number, Err.Source & ".ReadUnicodeOrANSI", Err.Description
+If Err Then Err.Raise Err.number, Err.Source & ".ReadUnicodeOrANSI", Err.Description
 End Function
 
 Public Function SaveUnicode(ByVal FileName As String, ByVal buf As String, mode2save As Long, Optional Append As Boolean = False) As Boolean
@@ -5278,7 +5281,7 @@ Else
 If Not CanKillFile(FileName$) Then Exit Function
 End If
 f$ = GetDosPath(FileName)
-If Err.Number > 0 Or f$ = "" Then Exit Function
+If Err.number > 0 Or f$ = "" Then Exit Function
 w = FreeFile
 MyDoEvents
 Open f$ For Binary As w
