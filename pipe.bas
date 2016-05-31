@@ -22,29 +22,29 @@ Private Const EM_GETFIRSTVISIBLELINE = &HCE
 Private Const EM_LINESCROLL = &HB6
 Private Const EM_GETLINECOUNT = 186
 Public Const INVALID_HANDLE_VALUE = -1
-Declare Function CreateNamedPipe Lib "KERNEL32" Alias "CreateNamedPipeW" (ByVal lpName As Long, ByVal dwOpenMode As Long, ByVal dwPipeMode As Long, ByVal nMaxInstances As Long, ByVal nOutBufferSize As Long, ByVal nInBufferSize As Long, ByVal nDefaultTimeOut As Long, lpSecurityAttributes As Any) As Long
-Declare Function ConnectNamedPipe Lib "KERNEL32" (ByVal hNamedPipe As Long, lpOverlapped As Long) As Long
-Declare Function DisconnectNamedPipe Lib "KERNEL32" (ByVal hNamedPipe As Long) As Long
-Declare Function WriteFile Lib "KERNEL32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToWrite As Long, lpNumberOfBytesWritten As Long, lpOverlapped As Long) As Long
- Declare Function ReadFile Lib "KERNEL32" (ByVal hFile As Long, lpBuffer As Any, _
+Declare Function CreateNamedPipe Lib "kernel32" Alias "CreateNamedPipeW" (ByVal lpName As Long, ByVal dwOpenMode As Long, ByVal dwPipeMode As Long, ByVal nMaxInstances As Long, ByVal nOutBufferSize As Long, ByVal nInBufferSize As Long, ByVal nDefaultTimeOut As Long, lpSecurityAttributes As Any) As Long
+Declare Function ConnectNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long, lpOverlapped As Long) As Long
+Declare Function DisconnectNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long) As Long
+Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToWrite As Long, lpNumberOfBytesWritten As Long, lpOverlapped As Long) As Long
+ Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, _
       ByVal nNumberOfBytesToRead As Long, _
       lpNumberOfBytesRead As Long, _
       lpOverlapped As Any) As Long
-Declare Function WaitNamedPipe Lib "KERNEL32" Alias "WaitNamedPipeW" (ByVal lpNamedPipeName As Long, ByVal nTimeOut As Long) As Long
+Declare Function WaitNamedPipe Lib "kernel32" Alias "WaitNamedPipeW" (ByVal lpNamedPipeName As Long, ByVal nTimeOut As Long) As Long
       
 'Declare Function CallNamedPipe Lib "KERNEL32" Alias "CallNamedPipeW" (ByVal lpNamedPipeName As Long, lpInBuffer As Any, ByVal nInBufferSize As Long, lpOutBuffer As Any, ByVal nOutBufferSize As Long, lpBytesRead As Long, ByVal nTimeOut As Long) As Long
-Declare Function GetLastError Lib "KERNEL32" () As Long
-Declare Function CopyFile Lib "KERNEL32" Alias "CopyFileW" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal bFailIfExists As Long) As Long
+Declare Function GetLastError Lib "kernel32" () As Long
+Declare Function CopyFile Lib "kernel32" Alias "CopyFileW" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal bFailIfExists As Long) As Long
 '' MoveFile
-Declare Function MoveFile Lib "KERNEL32" Alias "MoveFileW" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long) As Long
-Declare Function FlushFileBuffers Lib "KERNEL32" (ByVal hFile As Long) As Long
-Declare Function CloseHandle Lib "KERNEL32" (ByVal hObject As Long) As Long
-Declare Function CreateFile Lib "KERNEL32" Alias "CreateFileW" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, lpSecurityAttributes As Any, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
+Declare Function MoveFile Lib "kernel32" Alias "MoveFileW" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long) As Long
+Declare Function FlushFileBuffers Lib "kernel32" (ByVal hFile As Long) As Long
+Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+Declare Function CreateFile Lib "kernel32" Alias "CreateFileW" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, lpSecurityAttributes As Any, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
 Public Const GENERIC_READ = &H80000000
 Public Const GENERIC_WRITE = &H40000000
 Public Const OPEN_EXISTING = 3
 Public Const CREATE_NEW = 1
-Private Declare Sub CopyMemoryStr Lib "KERNEL32" Alias "RtlMoveMemory" ( _
+Private Declare Sub CopyMemoryStr Lib "kernel32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, ByVal lpvSource As String, ByVal cbCopy As Long)
     
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -110,7 +110,7 @@ Private Const SND_PURGE = &H40 ' purge non-static events for task
 Private Const SND_RESOURCE = &H40004 ' name is a resource name or atom
 Private Const SND_SYNC = &H0 ' play synchronously (default)
 Private Declare Function PlaySound Lib "winmm.dll" Alias "PlaySoundW" (ByVal lpszName As Long, ByVal hModule As Long, ByVal dwFlags As Long) As Long
-Declare Function GetShortPathName Lib "KERNEL32" Alias _
+Declare Function GetShortPathName Lib "kernel32" Alias _
 "GetShortPathNameW" (ByVal lpszLongPath As Long, _
 ByVal lpszShortPath As Long, ByVal cchBuffer As Long) As Long
 
@@ -162,7 +162,7 @@ Public Enum FOFACTION
 End Enum
    
    
-Private Declare Function CreateDirectory Lib "KERNEL32" Alias "CreateDirectoryW" (ByVal lpszPath As Long, ByVal lpSA As Long) As Long
+Private Declare Function CreateDirectory Lib "kernel32" Alias "CreateDirectoryW" (ByVal lpszPath As Long, ByVal lpSA As Long) As Long
    
 Public Function PathMakeDirs(ByVal Pathd As String) As Boolean
         Pathd = PurifyPath(Pathd)

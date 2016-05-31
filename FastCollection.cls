@@ -43,6 +43,7 @@ Option Explicit
 '* .LastIndex
 '* .Frwd  (for index, exit if not .done)
 '* .Back  (for index, exit if not .done)
+Private mSortstyle As VbCompareMethod
 Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Type item
@@ -57,7 +58,7 @@ Private PriveSpace() As item
 Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
 Private lastfind As String
 Private lastkey As String
 Private Hash() As Long
@@ -70,7 +71,19 @@ Private Sub Class_Initialize()
     ReDim PriveSpace(MaxSpace) As item, Hash(MaxSpace * 2 + 3)
     hashlen = MaxSpace * 2 + 3
     toplim = -1
+    mSortstyle = vbTextCompare
 End Sub
+Public Sub SetBinaryCompare()
+mSortstyle = vbBinaryCompare
+End Sub
+Public Sub SetTextCompare()
+mSortstyle = vbTextCompare
+End Sub
+Public Sub SetDataBaseCompare()
+mSortstyle = vbDatabaseCompare
+End Sub
+
+
 Public Sub AddKey(RHS, Optional aValue As Variant)
     Index = -1
     lastkey = CStr(RHS)
@@ -89,10 +102,12 @@ Public Sub AddKey(RHS, Optional aValue As Variant)
     End If
 End Sub
 Public Sub Sort()
+If toplim = -1 Then Exit Sub
 QuickSortItems PriveSpace(), LBound(PriveSpace()), toplim
 ReHash
 End Sub
 Public Sub SortDes()
+If toplim = -1 Then Exit Sub
 QuickSortItemsRev PriveSpace(), LBound(PriveSpace()), toplim
 ReHash
 End Sub
@@ -425,18 +440,18 @@ Private Sub place(ByVal b, ByVal A)
     PriveSpace(A).lastpos = b
 End Sub
 Private Function HashFunc0(A$) As Long
- Dim i&, p2 As Long, P1 As Integer, p4 As Long, k As Long, p3 As Long
+ Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
   p4 = Len(A$) * 2 '- 2
   p2 = StrPtr(A$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
-  GetMem2 i, P1
-  p3 = UINT(P1)
+  GetMem2 i, p1
+  p3 = UINT(p1)
   HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
   Next i
   k = 2
   For i = p4 - 8 To p2 Step -2
-  GetMem2 i, P1
-  p3 = UINT(P1)
+  GetMem2 i, p1
+  p3 = UINT(p1)
   HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
  i = i - 2 * k
   k = k + 1
@@ -535,26 +550,27 @@ Private Sub Class_Terminate()
 
 Erase PriveSpace()
 End Sub
+
 Private Sub QuickSortItems(Arr() As item, ByVal LB As Long, ByVal UB As Long)
 Dim M1 As Long, M2 As Long
 Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
   If UB - LB = 1 Then
      M1 = LB
 
-     If StrComp(Arr(M1).Key, Arr(UB).Key, vbBinaryCompare) = 1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
+     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = 1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
      Exit Sub
   Else
   ' we have unique names
     M1 = (LB + UB) \ 2
     Piv = Arr(M1)
     M1 = LB
-   Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = -1: M1 = M1 + 1: Loop
+   Do While StrComp(Arr(M1).Key, Piv.Key, mSortstyle) = -1: M1 = M1 + 1: Loop
     
   End If
   
   M2 = UB
   Do
-    Do While StrComp(Arr(M2).Key, Piv.Key, vbBinaryCompare) = 1: M2 = M2 - 1: Loop
+    Do While StrComp(Arr(M2).Key, Piv.Key, mSortstyle) = 1: M2 = M2 - 1: Loop
 
     If M1 <= M2 Then
       Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
@@ -562,7 +578,7 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
       M2 = M2 - 1
     End If
     If M1 > M2 Then Exit Do
-    Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = -1: M1 = M1 + 1: Loop
+    Do While StrComp(Arr(M1).Key, Piv.Key, mSortstyle) = -1: M1 = M1 + 1: Loop
 
   Loop
   If LB < M2 Then QuickSortItems Arr, LB, M2
@@ -574,20 +590,20 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
   If UB - LB = 1 Then
      M1 = LB
 
-     If StrComp(Arr(M1).Key, Arr(UB).Key, vbBinaryCompare) = -1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
+     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = -1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
      Exit Sub
   Else
   ' we have unique names
     M1 = (LB + UB) \ 2
     Piv = Arr(M1)
     M1 = LB
-   Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = 1: M1 = M1 + 1: Loop
+   Do While StrComp(Arr(M1).Key, Piv.Key, mSortstyle) = 1: M1 = M1 + 1: Loop
     
   End If
   
   M2 = UB
   Do
-    Do While StrComp(Arr(M2).Key, Piv.Key, vbBinaryCompare) = -1: M2 = M2 - 1: Loop
+    Do While StrComp(Arr(M2).Key, Piv.Key, mSortstyle) = -1: M2 = M2 - 1: Loop
 
     If M1 <= M2 Then
       Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
@@ -595,7 +611,7 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
       M2 = M2 - 1
     End If
     If M1 > M2 Then Exit Do
-    Do While StrComp(Arr(M1).Key, Piv.Key, vbBinaryCompare) = 1: M1 = M1 + 1: Loop
+    Do While StrComp(Arr(M1).Key, Piv.Key, mSortstyle) = 1: M1 = M1 + 1: Loop
 
   Loop
   If LB < M2 Then QuickSortItemsRev Arr, LB, M2

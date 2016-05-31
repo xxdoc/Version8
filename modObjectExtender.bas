@@ -5,33 +5,34 @@ Option Explicit
 '
 ' event support for Late-Bound objects
 ' low level COM Projekt - by [rm_code] 2005
+Private Declare Function ObjSetAddRef Lib "msvbvm60.dll" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
 
-Public Type UUID
-    Data1       As Long
-    Data2       As Integer
-    Data3       As Integer
-    Data4(7)    As Byte
-End Type
+'Public Type GUID
+'    data1       As Long
+'    data2       As Integer
+'    data3       As Integer
+'    data4(7)    As Byte
+'End Type
 
 Public Type EventSink
     pVTable     As Long     ' VTable pointer
     pClass      As Long     ' ComShinkEvent pointer
     cRef        As Long     ' reference counter
-    IID         As UUID     ' interface IID
+    IID         As GUID     ' interface IID
     hMem        As Long     ' memory address
 End Type
 ' for DEP
-Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
-Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
-Private Declare Function VirtualLock Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long) As Long
-Private Declare Function VirtualUnlock Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long) As Long
+Private Declare Function VirtualAlloc Lib "KERNEL32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
+Private Declare Function VirtualFree Lib "KERNEL32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
+Private Declare Function VirtualLock Lib "KERNEL32" (ByVal lpAddress As Long, ByVal dwSize As Long) As Long
+Private Declare Function VirtualUnlock Lib "KERNEL32" (ByVal lpAddress As Long, ByVal dwSize As Long) As Long
 Private Const MEM_DECOMMIT = &H4000
 Private Const MEM_RELEASE = &H8000
 Private Const MEM_COMMIT = &H1000
 Private Const MEM_RESERVE = &H2000
 Private Const PAGE_EXECUTE_READWRITE = &H40
 
-Public Declare Function CallWindowProcA Lib "user32" ( _
+Private Declare Function CallWindowProcA Lib "user32" ( _
     ByVal adr As Long, ByVal p1 As Long, ByVal p2 As Long, _
     ByVal p3 As Long, ByVal p4 As Long) As Long
 
@@ -47,25 +48,25 @@ Public Declare Function SysReAllocString Lib "oleaut32" ( _
 Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" ( _
     PtrDest() As Any) As Long
 
-Public Declare Sub CpyMem Lib "kernel32" Alias "RtlMoveMemory" ( _
+Public Declare Sub CpyMem Lib "KERNEL32" Alias "RtlMoveMemory" ( _
     pDst As Any, pSrc As Any, ByVal dwLen As Long)
 
-Public Declare Sub FillMem Lib "kernel32" Alias "RtlFillMemory" ( _
+Public Declare Sub FillMem Lib "KERNEL32" Alias "RtlFillMemory" ( _
     pDst As Any, ByVal dlen As Long, ByVal Fill As Byte)
 
 Public Declare Function IsEqualGUID Lib "ole32" ( _
-    rguid1 As UUID, rguid2 As UUID) As Long
+    rguid1 As GUID, rguid2 As GUID) As Long
 
 Public Declare Function CLSIDFromString Lib "ole32" ( _
-    ByVal lpsz As Long, UUID As Any) As Long
+    ByVal lpsz As Long, GUID As Any) As Long
 
-Public Declare Function GlobalAlloc Lib "kernel32" ( _
+Public Declare Function GlobalAlloc Lib "KERNEL32" ( _
     ByVal uFlags As Long, ByVal dwBytes As Long) As Long
 
-Public Declare Function GlobalFree Lib "kernel32" ( _
+Public Declare Function GlobalFree Lib "KERNEL32" ( _
     ByVal hMem As Long) As Long
 
-Public Declare Function LCID_def1 Lib "kernel32" Alias "GetSystemDefaultLCID" ( _
+Public Declare Function LCID_def1 Lib "KERNEL32" Alias "GetSystemDefaultLCID" ( _
     ) As Long
 
 Private Const E_NOINTERFACE As Long = &H80004002
@@ -89,24 +90,18 @@ Public Const IIDSTR_IEnumConnectionPoints As String = _
 Public Const IIDSTR_IConnectionPointContainer As String = _
     "{B196B284-BAB4-101A-B69C-00AA00341D07}"
 
-Public IID_IUnknown     As UUID
-Public IID_IDispatch    As UUID
+Public IID_IUnknown     As GUID
+Public IID_IDispatch    As GUID
 
 Private Const MAXCODE   As Long = &HEC00&
 Private ObjExt_vtbl(6) As Long
-Public Function LCID_DEF() As Long
-Static mmm As Long
-If mmm = 0 Then
-mmm = LCID_def1()
-Else
-LCID_DEF = mmm
-End If
+''get lcid_def1() once
+Public LCID_DEF As Long
 
-End Function
+
 
 Public Sub InitObjExtender()
     Static blnInit  As Boolean
-
     If blnInit Then Exit Sub
 
     CLSIDFromString StrPtr(IIDSTR_IUnknown), IID_IUnknown
@@ -124,7 +119,7 @@ Public Sub InitObjExtender()
 End Sub
 
 ' IUnknown::QueryInterface
-Private Function ObjExt_QueryInterface(This As EventSink, riid As UUID, pObj As Long) As Long
+Private Function ObjExt_QueryInterface(This As EventSink, riid As GUID, pObj As Long) As Long
 
     ' IUnknown
     If IsEqualGUID(riid, IID_IUnknown) Then
@@ -171,21 +166,21 @@ Private Function ObjExt_GetTypeInfoCount(This As EventSink, pctinfo As Long) As 
 End Function
 
 ' IDispatch::GetTypeInfo
-Private Function ObjExt_GetTypeInfo(This As EventSink, ByVal iTInfo As Long, ByVal LCID_DEF As Long, pptInfo As Long) As Long
-    pptInfo = 0
+Private Function ObjExt_GetTypeInfo(This As EventSink, ByVal iTInfo As Long, ByVal LCID As Long, ppTInfo As Long) As Long
+    ppTInfo = 0
     ObjExt_GetTypeInfo = E_NOTIMPL
 End Function
 
 ' IDispatch::GetIDsOfNames
-Private Function ObjExt_GetIDsOfNames(This As EventSink, riid As UUID, rgszNames As Long, ByVal cNames As Long, ByVal LCID_DEF As Long, rgDispId As Long) As Long
+Private Function ObjExt_GetIDsOfNames(This As EventSink, riid As GUID, rgszNames As Long, ByVal cNames As Long, ByVal LCID As Long, rgDispId As Long) As Long
     ObjExt_GetIDsOfNames = E_NOTIMPL
 End Function
 
 ' IDispatch::Invoke
 Private Function ObjExt_Invoke(This As EventSink, _
          ByVal dispIdMember As Long, _
-         riid As UUID, _
-         ByVal LCID_DEF As Long, _
+         riid As GUID, _
+         ByVal LCID As Long, _
          ByVal wFlags As Integer, _
          ByVal pDispParams As Long, _
          ByVal pVarResult As Long, _
@@ -201,7 +196,7 @@ Private Function ObjExt_Invoke(This As EventSink, _
     objext.FireEvent dispIdMember, pDispParams
 End Function
 
-Public Function CreateEventSink(IID As UUID, objext As ComShinkEvent) As Object
+Public Function CreateEventSink(IID As GUID, objext As ComShinkEvent) As Object
     Dim sink    As EventSink
 
     ' our event sink object :)
@@ -227,17 +222,23 @@ End Function
 
 ' Pointer->Object
 Private Function ResolveObjPtr(ByVal Ptr As Long) As IUnknown
-    Dim oUnk As IUnknown
-
-    CpyMem oUnk, Ptr, 4&
-    Set ResolveObjPtr = oUnk
-    CpyMem oUnk, 0&, 4&
+    'Dim oUnk As IUnknown
+ObjSetAddRef ResolveObjPtr, Ptr
+    'CpyMem oUnk, Ptr, 4&
+    'Set ResolveObjPtr = oUnk
+    'CpyMem oUnk, 0&, 4&
 End Function
+' ObjSetAddRef ObjectFromPtr, Ptr
 
 Public Function CallPointer(ByVal fnc As Long, ParamArray params()) As Long
 Dim btASM As Long
 
  btASM = VirtualAlloc(ByVal 0&, MAXCODE, MEM_COMMIT, PAGE_EXECUTE_READWRITE)
+ If btASM = 0 Then
+ MyEr "DEP or memory problem", "Πρόβλημα με την μνήμη"
+ CallPointer = -1
+ Exit Function
+ End If
     VirtualLock btASM, MAXCODE
    ' Dim btASM(MAXCODE - 1)  As Byte
     Dim pASM                As Long

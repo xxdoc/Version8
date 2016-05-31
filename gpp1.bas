@@ -136,12 +136,12 @@ End Type
       Private Declare Function ClosePrinter Lib "winspool.drv" _
       (ByVal hPrinter As Long) As Long
 
-      Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" _
+      Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
       (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
-      Private Declare Function GlobalLock Lib "KERNEL32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "KERNEL32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalAlloc Lib "KERNEL32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "KERNEL32" (ByVal hMem As Long) As Long
+      Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Const GMEM_MOVEABLE = &H2
 Const GMEM_ZEROINIT = &H40
 
@@ -220,7 +220,7 @@ End Sub
       End Function
 
 Sub PrinterDim(pw As Long, ph As Long, psw As Long, psh As Long, lpx As Long, lpy As Long)
-          Dim Ret As Long
+          Dim ret As Long
           Dim LastError As Long
           Dim dummy3 As Object
        '   If mp_hdc <> 0 Then Exit Sub
@@ -239,14 +239,14 @@ psh = GetDeviceCaps(mp_hdc, VERTRES)
 lpx = GetDeviceCaps(mp_hdc, LOGPIXELSX)
 lpy = GetDeviceCaps(mp_hdc, LOGPIXELSY)
 
-          Ret = DeleteDC(mp_hdc)
+          ret = DeleteDC(mp_hdc)
           pDevMode = GlobalUnlock(pDevMode)
           mp_hdc = 0
 End Sub
 
 Function PrinterCap(Cap As Long) As Long
         Dim p_hdc As Long
-          Dim Ret As Long
+          Dim ret As Long
           Dim LastError As Long
           Dim dummy3 As Object
         If UBound(MyDM) = 1 Then
@@ -255,7 +255,7 @@ Function PrinterCap(Cap As Long) As Long
           
           p_hdc = CreateIC(Printer.DriverName, Printer.DeviceName, 0, MyDM(1))
 PrinterCap = GetDeviceCaps(p_hdc, Cap)
-Ret = DeleteDC(p_hdc)
+ret = DeleteDC(p_hdc)
 End Function
 
 Function ChangeOrientation(f As Object, szPrinterName As String, adevmode() As Byte) As Boolean
@@ -370,27 +370,27 @@ b.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" 
 b.regdelete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" & EXT & "\OpenWithList\"
 
 End Sub
-Function signlong(ByVal a As Double) As Double
-If a < 0 Then a = 0
-If a > 4294967295# Then a = 4294967295#
-If a > CDbl(2147483647) Then
-signlong = ((CDbl(&H80000000) + a) + CDbl(&H80000000)) ' And &HFFFFFFFF
+Function signlong(ByVal A As Double) As Double
+If A < 0 Then A = 0
+If A > 4294967295# Then A = 4294967295#
+If A > CDbl(2147483647) Then
+signlong = ((CDbl(&H80000000) + A) + CDbl(&H80000000)) ' And &HFFFFFFFF
 Else
-signlong = a
+signlong = A
 End If
 End Function
-Function uintnew(ByVal a As Double) As Double
-If a > CDbl(2147483647) Then a = CDbl(2147483647)
-If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
-If a < 0 Then
-uintnew = 4294967296# + a
+Function uintnew(ByVal A As Double) As Double
+If A > CDbl(2147483647) Then A = CDbl(2147483647)
+If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
+If A < 0 Then
+uintnew = 4294967296# + A
 Else
-uintnew = a
+uintnew = A
 End If
 End Function
-Function UINT(ByVal a As Long) As Long 'δίνει έναν integer σαν unsign integer σε long
+Function UINT(ByVal A As Long) As Long 'δίνει έναν integer σαν unsign integer σε long
  Dim b As Long
- b = a And &HFFFF
+ b = A And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -398,10 +398,10 @@ Function UINT(ByVal a As Long) As Long 'δίνει έναν integer σαν unsign integer σε
  End If
  
  End Function
-Function cUbyte(ByVal a As Long) As Long
+Function cUbyte(ByVal A As Long) As Long
 Dim c As Long
 
-c = Abs(a) And &HFF&
+c = Abs(A) And &HFF&
 If c > 127 Then
 cUbyte = c - &H100
 Else
@@ -409,10 +409,10 @@ cUbyte = c
 End If
 
 End Function
-Function cUint(ByVal a As Long) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
+Function cUint(ByVal A As Long) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
 Dim c As Long
 
-c = Abs(a) And &HFFFF&
+c = Abs(A) And &HFFFF&
 If c > 32767 Then
 cUint = CInt(c - &H10000)
 Else
@@ -420,32 +420,32 @@ cUint = CInt(c)
 End If
 
 End Function
-Function LowWord(a As Long) As Long
+Function LowWord(A As Long) As Long
 Const bb = 65535
-LowWord = cUint(CLng(bb And a))
+LowWord = cUint(CLng(bb And A))
 End Function
 Function HighLow(h As Long, l As Long) As Long
 Const bb = 65536
 HighLow = h * bb + l
 End Function
-Function HighWord(a As Long) As Long
+Function HighWord(A As Long) As Long
 Dim b As Double
-b = a
+b = A
 Const bb = 65536
 HighWord = Int(b / bb)
 End Function
 Function cUlngFromVariant(ByVal c As Variant) As Long
-Dim a As Double
+Dim A As Double
 On Error GoTo cu1
-a = Abs(Int(c))
-If a > CDbl(2147483647#) Then
-If a > CDbl(4294967296#) Then
+A = Abs(Int(c))
+If A > CDbl(2147483647#) Then
+If A > CDbl(4294967296#) Then
 cUlngFromVariant = 0
 Else
-cUlngFromVariant = a - 4294967296#
+cUlngFromVariant = A - 4294967296#
 End If
 Else
-cUlngFromVariant = CLng(a)
+cUlngFromVariant = CLng(A)
 End If
 Exit Function
 cu1:
@@ -453,13 +453,13 @@ cUlngFromVariant = 0
 
 
 End Function
-Function cUlng(ByVal a As Double) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
+Function cUlng(ByVal A As Double) As Long ' πέρνει έναν unsign integer και τον κάνει νορμάλ χωρίς αλλαγή των bits
 On Error GoTo cu1
-a = Abs(Int(a))
-If a > CDbl(2147483647#) Then
-cUlng = a - 4294967296#
+A = Abs(Int(A))
+If A > CDbl(2147483647#) Then
+cUlng = A - 4294967296#
 Else
-cUlng = CLng(a)
+cUlng = CLng(A)
 End If
 Exit Function
 cu1:
@@ -470,24 +470,24 @@ Function Sput(ByVal Sl As String) As String
 Sput = Chr(2) + Right$("00000000" & Hex$(cUlng(CDbl(Len(Sl)))), 8) + Sl
 End Function
 
-Function PACKLNG$(ByVal a As Double)
-PACKLNG$ = Right$("00000000" & Hex$(cUlng(a)), 8)
+Function PACKLNG$(ByVal A As Double)
+PACKLNG$ = Right$("00000000" & Hex$(cUlng(A)), 8)
 End Function
-Function PACKLNG2$(ByVal a As Double)  ' with error return..
+Function PACKLNG2$(ByVal A As Double)  ' with error return..
 ' this if only for print
 On Error GoTo cu22
 Dim internal As Long
-a = Int(a)
-If a > 4294967296# Then
+A = Int(A)
+If A > 4294967296# Then
 PACKLNG2$ = "???+"
-ElseIf a < 0 Then
+ElseIf A < 0 Then
 ' error
 PACKLNG2$ = "???-"
 Else
-    If a > CDbl(2147483647#) Then
-    internal = a - 4294967296#
+    If A > CDbl(2147483647#) Then
+    internal = A - 4294967296#
     Else
-    internal = CLng(a)
+    internal = CLng(A)
     End If
 
 If internal <= 65535 And internal >= 0 Then
@@ -509,8 +509,8 @@ UNPACKLNG = cUlng(val("&H" & s$))
 End If
 End Function
 
-Function ORGAN(a As Long) As String
-Select Case a
+Function ORGAN(A As Long) As String
+Select Case A
 Case 1
 ORGAN = "Acoustic Grand Piano"
 Case 2

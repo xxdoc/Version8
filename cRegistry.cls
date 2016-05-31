@@ -106,7 +106,7 @@ Private Declare Function RegCreateKeyEx Lib "advapi32" Alias "RegCreateKeyExW" _
 
 Private Declare Function RegEnumKeyEx Lib "advapi32.dll" Alias "RegEnumKeyExW" _
   (ByVal hKey As Long, ByVal dwIndex As Long, ByVal lpName As Long, _
-   lpcbName As Long, ByVal lpReserved As Long, ByVal lpClass As Long, _
+  ByVal lpcbName As Long, ByVal lpReserved As Long, ByVal lpClass As Long, _
    lpcbClass As Long, lpftLastWriteTime As FILETIME) As Long
 
 Private Declare Function RegEnumKey Lib "advapi32.dll" Alias "RegEnumKeyW" ( _
@@ -115,20 +115,20 @@ Private Declare Function RegEnumKey Lib "advapi32.dll" Alias "RegEnumKeyW" ( _
 
 Private Declare Function RegEnumValue Lib "advapi32.dll" Alias "RegEnumValueW" _
   (ByVal hKey As Long, ByVal dwIndex As Long, ByVal lpValueName As Long, _
-   lpcbValueName As Long, ByVal lpReserved As Long, ByVal lpType As Long, _
+   ByVal lpcbValueName As Long, ByVal lpReserved As Long, ByVal lpType As Long, _
    ByVal lpData As Long, ByVal lpcbData As Long) As Long
    
 Private Declare Function RegEnumValueLong Lib "advapi32.dll" Alias "RegEnumValueW" _
   (ByVal hKey As Long, ByVal dwIndex As Long, ByVal lpValueName As Long, _
-   lpcbValueName As Long, ByVal lpReserved As Long, lpType As Long, _
+  ByVal lpcbValueName As Long, ByVal lpReserved As Long, lpType As Long, _
    lpData As Long, lpcbData As Long) As Long
 Private Declare Function RegEnumValueStr Lib "advapi32.dll" Alias "RegEnumValueW" _
   (ByVal hKey As Long, ByVal dwIndex As Long, ByVal lpValueName As Long, _
-   lpcbValueName As Long, ByVal lpReserved As Long, lpType As Long, _
+  ByVal lpcbValueName As Long, ByVal lpReserved As Long, lpType As Long, _
    ByVal lpData As Long, lpcbData As Long) As Long
 Private Declare Function RegEnumValueByte Lib "advapi32.dll" Alias "RegEnumValueW" _
   (ByVal hKey As Long, ByVal dwIndex As Long, ByVal lpValueName As Long, _
-   lpcbValueName As Long, ByVal lpReserved As Long, lpType As Long, _
+   ByVal lpcbValueName As Long, ByVal lpReserved As Long, lpType As Long, _
    lpData As Byte, lpcbData As Long) As Long
 
 Private Declare Function RegQueryInfoKey Lib "advapi32.dll" Alias "RegQueryInfoKeyW" _
@@ -145,10 +145,12 @@ Private Declare Function RegDeleteValue Lib "advapi32.dll" Alias "RegDeleteValue
   (ByVal hKey As Long, ByVal lpValueName As Long) As Long
 
 ' Other declares:
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
+Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function ExpandEnvironmentStrings Lib "kernel32" Alias "ExpandEnvironmentStringsA" (ByVal lpSrc As Long, ByVal lpDst As Long, ByVal nsize As Long) As Long
-
+Private Declare Function ExpandEnvironmentStrings _
+   Lib "KERNEL32" Alias "ExpandEnvironmentStringsW" _
+   (ByVal lpSrc As Long, ByVal lpDst As Long, _
+   ByVal nsize As Long) As Long
 
 Public Enum ERegistryClassConstants
     HKEY_CLASSES_ROOT = &H80000000
@@ -248,6 +250,7 @@ Dim hKey As Long
     'ApiRaiseIf e
 
     e = RegQueryValueExLong(hKey, StrPtr(m_sValueKey), 0&, ordType, 0&, cData)
+    
     If e And e <> ERROR_MORE_DATA Then
         Value = m_vDefault
         Exit Property
@@ -268,15 +271,17 @@ Dim hKey As Long
         vValue = SwapEndian(dwData)
         
     Case REG_SZ, REG_MULTI_SZ ' Same thing to Visual Basic
-        sData = String$(cData + 20, 0)
+        
+        sData = String$(cData / 2 - 1, 0)
         e = RegQueryValueExStr(hKey, StrPtr(m_sValueKey), 0&, _
                                ordType, StrPtr(sData), cData)
         vValue = StripTerminator(sData)
         
     Case REG_EXPAND_SZ
-        sData = String$(cData + 20, 0)
+        sData = String$(cData / 2 - 1, 0)
         e = RegQueryValueExStr(hKey, StrPtr(m_sValueKey), 0&, _
                                ordType, StrPtr(sData), cData)
+                               
         vValue = ExpandEnvStr(StripTerminator(sData))
         
     ' Catch REG_BINARY and anything else
@@ -348,7 +353,7 @@ Dim nulla$
         If Not e Then
             m_vValue = vValue
         Else
-        Err.clear
+        Err.Clear
         '            Err.Raise vbObjectError + 1048 + 26001, App.EXEName & ".cRegistry", "Failed to set registry value Key: '" & m_hClassKey & "',Section: '" & m_sSectionKey & "',Key: '" & m_sValueKey & "' to value: '" & m_vValue & "'"
         End If
         
@@ -388,7 +393,7 @@ Dim ft As Currency
    
            'Set buffer space
            lNameSize = cNameMax + 1
-           sName = String$(lNameSize + 20, 0)
+           sName = String$(lNameSize / 2 - 1, 0)
            If (lNameSize = 0) Then lNameSize = 1
            
            ' Log "Requesting Next Value"
@@ -457,7 +462,7 @@ On Error GoTo EnumerateSectionsError
        lBuffSize = Len(szBuffer)
       
       'Get next value
-       lResult = RegEnumKey(hKey, lIndex, Str(szBuffer), lBuffSize)
+       lResult = RegEnumKey(hKey, lIndex, StrPtr(szBuffer), lBuffSize)
                              
        If (lResult = ERROR_SUCCESS) Then
            iSectCount = iSectCount + 1
@@ -483,7 +488,7 @@ EnumerateSectionsError:
    If (hKey <> 0) Then
       RegCloseKey hKey
    End If
-   Err.Raise vbObjectError + 1048 + 26002, App.EXENAME & ".cRegistry", Err.Description
+   'Err.Raise vbObjectError + 1048 + 26002, App.EXENAME & ".cRegistry", Err.Description
    Exit Function
 End Function
 Public Sub CreateEXEAssociation( _
@@ -585,15 +590,14 @@ Private Function SwapEndian(ByVal dw As Long) As Long
     CopyMemory ByVal VarPtr(SwapEndian) + 1, ByVal VarPtr(dw) + 2, 1
     CopyMemory SwapEndian, ByVal VarPtr(dw) + 3, 1
 End Function
-Private Function ExpandEnvStr(sData As String) As String
-    Dim c As Long, s As String
-    ' Get the length
-    s = "" ' Needed to get around Windows 95 limitation
-    c = ExpandEnvironmentStrings(StrPtr(sData), StrPtr(s), c)
-    ' Expand the string
-    s = String$(c + 20, 0)
-    c = ExpandEnvironmentStrings(StrPtr(sData), StrPtr(s), c)
-    ExpandEnvStr = StripTerminator(s)
+Private Function ExpandEnvStr(strInput) As String
+Dim result As Long
+Dim strOutput As String
+strOutput = Space$(1000)
+result = ExpandEnvironmentStrings(StrPtr(strInput), StrPtr(strOutput), result)
+strOutput = Space$(result)
+result = ExpandEnvironmentStrings(StrPtr(strInput), StrPtr(strOutput), result)
+ExpandEnvStr = StripTerminator(strOutput)
 End Function
 Function StripTerminator(ByVal strString As String) As String
     Dim intZeroPos As Long

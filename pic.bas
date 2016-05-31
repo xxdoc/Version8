@@ -106,7 +106,7 @@ Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
 Private Const Pi = 3.14159265359
 Private Type SAFEARRAYBOUND
     cElements As Long
-    lLbound As Long
+    lLBound As Long
 End Type
 Private Type SAFEARRAY2D
     cDims As Integer
@@ -629,9 +629,9 @@ On Error Resume Next
     With tSA1
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer0.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer0.BytesPerScanLine()
         .pvData = cDIBbuffer0.DIBSectionBitsPtr
     End With
@@ -749,9 +749,9 @@ Dim tSA As SAFEARRAY2D
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = backdib.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = backdib.BytesPerScanLine()
         .pvData = backdib.DIBSectionBitsPtr
     End With
@@ -762,9 +762,9 @@ Dim tSA1 As SAFEARRAY2D
     With tSA1
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = maskdib.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = maskdib.BytesPerScanLine()
         .pvData = maskdib.DIBSectionBitsPtr
     End With
@@ -775,9 +775,9 @@ Dim tSA2 As SAFEARRAY2D
     With tSA2
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = frontdib.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = frontdib.BytesPerScanLine()
         .pvData = frontdib.DIBSectionBitsPtr
     End With
@@ -909,9 +909,9 @@ On Error Resume Next
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer1.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer1.BytesPerScanLine()
         .pvData = cDIBbuffer1.DIBSectionBitsPtr
     End With
@@ -921,9 +921,9 @@ On Error Resume Next
     With tSA1
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer0.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer0.BytesPerScanLine()
         .pvData = cDIBbuffer0.DIBSectionBitsPtr
     End With
@@ -1055,9 +1055,9 @@ On Error Resume Next
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer1.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer1.BytesPerScanLine()
         .pvData = cDIBbuffer1.DIBSectionBitsPtr
     End With
@@ -1067,9 +1067,9 @@ On Error Resume Next
     With tSA1
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer0.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer0.BytesPerScanLine()
         .pvData = cDIBbuffer0.DIBSectionBitsPtr
     End With
@@ -1204,9 +1204,9 @@ Dim tSA2 As SAFEARRAY2D
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer1.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer1.BytesPerScanLine()
         .pvData = cDIBbuffer1.DIBSectionBitsPtr
     End With
@@ -1214,9 +1214,9 @@ Dim tSA2 As SAFEARRAY2D
     With tSA1
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer0.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer0.BytesPerScanLine()
         .pvData = cDIBbuffer0.DIBSectionBitsPtr
     End With
@@ -1265,9 +1265,9 @@ End With
                    With tSA2
                    .cbElements = 1
                    .cDims = 2
-                   .Bounds(0).lLbound = 0
+                   .Bounds(0).lLBound = 0
                    .Bounds(0).cElements = cDIBbuffer2.Height
-                   .Bounds(1).lLbound = 0
+                   .Bounds(1).lLBound = 0
                    .Bounds(1).cElements = cDIBbuffer2.BytesPerScanLine()
                    .pvData = cDIBbuffer2.DIBSectionBitsPtr
                    End With
@@ -1424,9 +1424,9 @@ Dim tSA2 As SAFEARRAY2D
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer1.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer1.BytesPerScanLine()
         .pvData = cDIBbuffer1.DIBSectionBitsPtr
     End With
@@ -1434,9 +1434,9 @@ Dim tSA2 As SAFEARRAY2D
     With tSA1
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = cDIBbuffer0.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = cDIBbuffer0.BytesPerScanLine()
         .pvData = cDIBbuffer0.DIBSectionBitsPtr
     End With
@@ -1926,9 +1926,9 @@ Dim tSA As SAFEARRAY2D
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = picSource.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = picSource.BytesPerScanLine()
         .pvData = picSource.DIBSectionBitsPtr
     End With
@@ -2016,9 +2016,9 @@ Dim tSA As SAFEARRAY2D
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = picSource.Height
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = picSource.BytesPerScanLine()
         .pvData = picSource.DIBSectionBitsPtr
     End With
@@ -2628,18 +2628,18 @@ Dim b$, i&
 If A$ <> "" Then
 For i& = 1 To Len(A$)
 ' change 1032 to lcid_def
-b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(A$, i, 1) + Chr$(0), 128, localeid), 1))), 64, LCID_def), 1)
+b$ = b$ + Left$(StrConv(ChrW$(AscW(Left$(StrConv(Mid$(A$, i, 1) + Chr$(0), 128, localeid), 1))), 64, LCID_DEF), 1)
 
 Next i&
 Convert2Ansi = b$
 End If
 End Function
 Function GetCodePage(Optional localeid As Long = 1032) As Long
-  Dim Buffer As String, Ret&
+  Dim Buffer As String, ret&
    Buffer = String$(100, 0)
 
-        Ret = GetLocaleInfoW(localeid, LOCALE_IDEFAULTANSICODEPAGE, StrPtr(Buffer), 10)
-If Ret > 0 Then
+        ret = GetLocaleInfoW(localeid, LOCALE_IDEFAULTANSICODEPAGE, StrPtr(Buffer), 10)
+If ret > 0 Then
 GetCodePage = val(Mid$(Buffer, 1, 41))
 End If
 End Function
@@ -2762,7 +2762,7 @@ Case "ARRAY$(", "ARRAY(", "AS", "ASC(", "ASCENDING", "ASK$(", "ASK(", "ATN("
 Case "BACK", "BACKGROUND", "BACKWARD(", "BASE", "BEEP", "BINARY", "BINARY.AND(", "BINARY.NEG("
 Case "BINARY.OR(", "BINARY.ROTATE(", "BINARY.SHIFT(", "BINARY.XOR(", "BITMAPS", "BMP$(", "BOLD"
 Case "BOOLEAN", "BORDER", "BREAK", "BROWSER", "BROWSER$", "BUFFER", "BYTE", "CALL", "CASE", "CAT"
-Case "CDATE(", "CENTER", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.ORGAN"
+Case "CDATE(", "CENTER", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.OBJECT", "CHOOSE.ORGAN"
 Case "CHR$(", "CHRCODE$(", "CHRCODE(", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLIPBOARD$", "CLIPBOARD.IMAGE$"
 Case "CLOSE", "CLS", "CODE", "CODEPAGE", "COLLIDE(", "COLOR", "COLOR(", "COLORS"
 Case "COLOUR(", "COMMAND", "COMMAND$", "COMMIT", "COMPARE(", "COMPRESS", "COMPUTER", "COMPUTER$", "CONCURRENT"
@@ -2816,7 +2816,7 @@ Case "TWIPSY", "TYPE", "TYPE$(", "UCASE$(", "UINT(", "UNDER", "UNION.DATA$(", "U
 Case "UP", "UPDATABLE", "UPDATE", "USE", "USER", "USER.NAME$", "USGN("
 Case "VAL(", "VALID(", "VERSION", "VIEW", "VOID", "VOLUME"
 Case "WAIT", "WCHAR", "WEAK", "WEAK$(", "WHILE", "WIDE", "WIDTH", "WIN", "WINDOW"
-Case "WITH", "WORDS", "WRITABLE(", "WRITE", "WRITER", "X.TWIPS", "XOR", "Y.TWIPS", "адеиас"
+Case "WITH", "WITHEVENTS", "WORDS", "WRITABLE(", "WRITE", "WRITER", "X.TWIPS", "XOR", "Y.TWIPS", "адеиас"
 Case "адеиасе", "ай(", "айеяаио.дуадийо(", "айеяаиос", "акгхес", "акгхгс", "аккацг", "аккацг$("
 Case "аккане", "аккиыс", "аккиыс.ам", "ам", "ама", "амафгтгсг", "амахеыягсг", "амайтгсг", "амакоцио"
 Case "амакоцио$", "амакусг.охомгс", "амакусг.у", "амакусг.в", "амакутгс", "амаломг", "амамеысг", "амажояа", "амаье"
@@ -2837,7 +2837,7 @@ Case "еийома", "еийома.у(", "еийома.у.сглеиа(", "еийома.в(", "еийома.в.сглеиа(",
 Case "еисацыцг", "еисацыцг$(", "еисацыцгс", "ейдосг", "ейтекесг", "ейтупысг", "ейтупысгс", "ейтупытгс", "ейтупытгс$", "ейжя(", "ейжя$("
 Case "ейжяасг(", "ейжяасг$(", "екецвос", "еккгмийа", "емаомола$", "емхесг", "емйол$", "емйол(", "емтасг", "емтокг$"
 Case "емы", "емысе", "емысг.сеияас$(", "енацыцг", "енодос", "енытеяийг", "епам$(", "епамакабе", "епамекабе"
-Case "епамы", "епекене", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.цяаллатосеияа"
+Case "епамы", "епекене", "епекене.амтийеилемо", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.амтийеилемо", "епикене.цяаллатосеияа"
 Case "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцес$(", "епикоцес.жамеяес", "епикоцг", "епикоцг$(", "епикоцгс", "епипедо"
 Case "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяеиа", "еуяесг", "еуяиа", "ежап(", "ежаялоцг.аявеиоу$(", "ежаялоцг.йат$", "ежаялоцг"
 Case "еыс", "г", "гл(", "глеяа$(", "глеяа(", "глеяолгмиа", "гво$(", "гвоцяажгсг"
@@ -2850,7 +2850,7 @@ Case "йкилан.в", "йол$", "йомсока", "йяата", "йяатгсе", "йяужо$(", "йяуье", "йуй
 Case "йукисг", "йуяио", "йуяио.еяцо", "йыд(", "йыдийа", "йыдийосекида", "кабг", "кабг(", "кабг.амакоцийо.у("
 Case "кабг.амакоцийо.в(", "кабг.йатеухумсг(", "кахос", "кахос$", "кахос.таимиас$", "калда", "калда$", "катимийа", "кенеис", "киста", "коц("
 Case "коцийос", "коцистийо", "коцос", "коцос$(", "кс$", "кж(", "лайяус", "ле", "лецако("
-Case "лецако.сеияас$(", "лецако.сеияас(", "лецехос", "лецехос.сыяоу", "лецехос.у(", "лецехос.в(", "леходос", "лекос$(", "лекоус.тупос$("
+Case "лецако.сеияас$(", "лецако.сеияас(", "лецецомота", "лецехос", "лецехос.сыяоу", "лецехос.у(", "лецехос.в(", "леходос", "лекос$(", "лекоус.тупос$("
 Case "лекыдиа", "леяос", "лес$(", "лета", "летахесг", "летахесг(", "левяи", "лгйос", "лгйос(", "лгйос.елж("
 Case "лийяо(", "лийяо.сеияас$(", "лийяо.сеияас(", "лийяос.йатакоцос$(", "лмглг", "лояжг$(", "лоусийг", "лоусийг.летягтгс", "лпип"
 Case "лпяоста(", "маи", "меа", "мео", "меои", "меос", "мгла", "мглата", "мглата$"
@@ -3707,7 +3707,7 @@ End Function
 
 Public Function allcommands(aHash As sbHash) As Boolean
 Dim mycommands(), i As Long
-mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROUND", "BASE", "BEEP", "BITMAPS", "BOLD", "BREAK", "BROWSER", "BUFFER", "CALL", "CASE", "CAT", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.ORGAN", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLOSE", "CLS", "CODEPAGE", "COLOR", "COMMIT", "COMPRESS", "CONTINUE", "COPY", "CURSOR", "CURVE", "DATA", "DB.PROVIDER", "DB.USER" _
+mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROUND", "BASE", "BEEP", "BITMAPS", "BOLD", "BREAK", "BROWSER", "BUFFER", "CALL", "CASE", "CAT", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.OBJECT", "CHOOSE.ORGAN", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLOSE", "CLS", "CODEPAGE", "COLOR", "COMMIT", "COMPRESS", "CONTINUE", "COPY", "CURSOR", "CURVE", "DATA", "DB.PROVIDER", "DB.USER" _
 , "DECLARE", "DEF", "DELETE", "DESKTOP", "DIM", "DIR", "DIV", "DO", "DOCUMENT", "DOS", "DOUBLE", "DRAW", "DRAWINGS", "DROP", "DURATION", "EDIT", "EDIT.DOC", "ELSE", "ELSE.IF", "EMPTY", "END", "ERASE", "ERROR", "ESCAPE", "EVENT", "EVERY", "EXECUTE", "EXIT", "EXPORT", "FAST", "FIELD", "FILES", "FILL", "FIND", "FKEY", "FLOODFILL", "FLUSH", "FONT", "FOR", "FORM", "FORMLABEL", "FRAME", "FUNCTION", "GET", "GLOBAL" _
 , "GOSUB", "GOTO", "GRADIENT", "GREEK", "GROUP", "HEIGHT", "HELP", "HEX", "HIDE", "HOLD", "HTML", "ICON", "IF", "IMAGE", "INLINE", "INPUT", "INSERT", "INVENTORY", "ITALIC", "JOYPAD", "KEYBOARD", "LATIN", "LAYER", "LEGEND", "LET", "LINE", "LINESPACE", "LINK", "LIST", "LOAD", "LOAD.DOC", "LOCAL", "LOCALE", "LONG", "LOOP", "MAIN.TASK", "MARK", "MEDIA", "MENU", "MERGE.DOC", "METHOD", "MODE", "MODULE" _
 , "MODULES", "MONITOR", "MOTION", "MOTION.W", "MOUSE.ICON", "MOVE", "MOVIE", "MOVIES", "MUSIC", "NAME", "NEW", "NEXT", "NORMAL", "ON", "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPTIMIZATION", "ORDER", "OVER", "OVERWRITE", "PAGE", "PART", "PATH", "PEN", "PIPE", "PLAY", "PLAYER", "POLYGON", "PRINT", "PRINTER", "PRINTING", "PROFILER", "PROPERTIES", "PUSH", "PUT", "READ", "RECURSION.LIMIT" _
@@ -3715,7 +3715,7 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 , "SUB", "SUBDIR", "SWAP", "SWEEP", "SWITCHES", "TAB", "TABLE", "TARGET", "TARGETS", "TASK.MAIN", "TEST", "TEXT", "THEN", "THREAD", "THREAD.PLAN", "THREADS", "TITLE", "TONE", "TRY", "TUNE", "UPDATE", "USE", "USER", "VERSION", "VIEW", "VOLUME", "WAIT", "WHILE", "WIDTH", "WIN", "WINDOW", "WITH", "WORDS", "WRITE", "WRITER", "адеиасе", "аккацг", "аккане", "аккиыс", "аккиыс.ам", "ам", "амафгтгсг" _
 , "амахеыягсг", "амайтгсг", "амакоцио", "амакусг.охомгс", "амакутгс", "амаломг", "амамеысг", "амажояа", "амаье", "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "апедысе", "апо", "апохгйеусг.ыс", "апойопг", "аяца", "аявеиа", "аявеио", "аявг", "аукос", "ауноуса", "ажаияесг", "ажгсе", "баке", "басг", "басг.паяовос", "басг.вягстгс", "баье", "бектистопоигсг" _
 , "бгла", "богхеиа", "цецомос", "целисе", "цемийес", "цемийг", "цемийо", "циа", "цяаллатосеияа", "цяаллг", "цяаье", "цягцояа", "деийтг.лояжг", "деине", "дейаен", "дес", "диабасе", "диацяажг", "диайопг", "диайоптес", "диалесоу", "диаяхяысг", "диаяйеиа", "диастиво", "диажамеиа", "диажамо", "диажуцг", "диейоье", "диояхысе", "дипка", "дипкос", "дойилг", "долг", "дяолеас", "дысе", "еццяажо", "еийома", "еийомес", "еийомидио" _
-, "еисацыцг", "ейдосг", "ейтекесг", "ейтупысг", "ейтупытгс", "екецвос", "еккгмийа", "емхесг", "емтасг", "емы", "емысе", "енацыцг", "енодос", "епамакабе", "епамекабе", "епекене", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.цяаллатосеияа", "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцг", "епикоцгс" _
+, "еисацыцг", "ейдосг", "ейтекесг", "ейтупысг", "ейтупытгс", "екецвос", "еккгмийа", "емхесг", "емтасг", "емы", "емысе", "енацыцг", "енодос", "епамакабе", "епамекабе", "епекене", "епекене.амтийеилемо", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.амтийеилемо", "епикене.цяаллатосеияа", "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцг", "епикоцгс" _
 , "епипедо", "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяесг", "глеяолгмиа", "гвоцяажгсг", "гвои", "гвос", "хесе", "хесг", "идиотгтес", "исвмг", "ивмос", "йахаяг", "йахаяо", "йахе", "йакесе", "йалпукг", "йаме", "йамомийа", "йат", "йатакоцои", "йатакоцос", "йатастасг", "йатавыягсг", "йеилемо", "йемг", "йимгсг", "йимгсг.п", "йкасг", "йкеиди", "йкеисе", "йомсока", "йяата", "йяатгсе", "йяуье" _
 , "йуйкийа", "йуйкос", "йукисг", "йуяио.еяцо", "кабг", "кахос", "катимийа", "кенеис", "киста", "коцос", "лайяус", "ле", "леходос", "лекыдиа", "леяос", "лета", "летахесг", "лоусийг", "лпип", "мео", "мгла", "мглата", "нейима", "охомг", "олада", "омола", "ояио.амадяолгс", "ояисе", "паийтгс", "паине", "памы", "паяахуяо", "паяе", "паяелбокг", "павос", "педио", "пема", "пеяи" _
 , "пеяихыяио", "пета", "пимайас", "пимайес", "пкациа", "пкаисио", "пкгйтяокоцио", "покуцымо", "пяос", "пяосхесе.еццяажо", "пяосхгйг", "пяовеияо", "яоутима", "яухлисеис", "с", "саяысе", "сбгсе", "сеияа", "секида", "семаяио", "сгл", "сглади", "сглеио", "статийг", "статийес", "стг", "стгм", "сто", "стой", "стовои", "стовос", "суццяажеас", "суццяажг", "суцвымеусе.еццяажо", "сулпиесг" _
@@ -3810,6 +3810,8 @@ Case "PRINT", "тупысе", "?"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoPrint)
 Case "CALL", "йакесе"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoCall)
+Case "CHOOSE.OBJECT", "епекене.амтийеилемо", "епикене.амтийеилемо"
+    aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoChooseObj)
 Case "CHOOSE.FONT", "епекене.цяаллатосеияа", "епикене.цяаллатосеияа"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoChooseFont)
 Case "REM", "сгл"

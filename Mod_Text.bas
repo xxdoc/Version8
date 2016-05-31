@@ -1,5 +1,6 @@
 Attribute VB_Name = "Module1"
 Option Explicit
+Dim ObjectCatalog As FastCollection
 Private Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
 Private Declare Sub GetMem1 Lib "msvbvm60" (ByVal addr As Long, retval As Byte)
 Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
@@ -11,7 +12,7 @@ Private Declare Sub PutMem4 Lib "msvbvm60" (ByVal addr As Long, ByVal NewVal As 
 Private Declare Sub PutMem8 Lib "msvbvm60" (ByVal addr As Long, ByVal NewVal As Double)
 Private Declare Function CopyBytes Lib "msvbvm60.dll" Alias "__vbaCopyBytes" (ByVal ByteLen As Long, ByVal Destination As Long, ByVal Source As Long) As Long
 Private Declare Function ObjSetAddRef Lib "msvbvm60.dll" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
-Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Long
+Private Declare Function IsBadCodePtr Lib "KERNEL32" (ByVal lpfn As Long) As Long
 Private Declare Function CallWindowProc _
  Lib "user32.dll" Alias "CallWindowProcW" ( _
  ByVal lpPrevWndFunc As Long, _
@@ -50,7 +51,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 22
+Global Const Revision = 23
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -79,10 +80,10 @@ Private Const LOCALE_SLANGUAGE& = &H2 '  localized name of language
 Public shortlang As Boolean
 Public LEVCOLMENU As Long
  Declare Function ExpandEnvironmentStrings _
-   Lib "kernel32" Alias "ExpandEnvironmentStringsW" _
+   Lib "KERNEL32" Alias "ExpandEnvironmentStringsW" _
    (ByVal lpSrc As Long, ByVal lpDst As Long, _
    ByVal nsize As Long) As Long
-Private Declare Function GetTempFileNameW Lib "kernel32" _
+Private Declare Function GetTempFileNameW Lib "KERNEL32" _
     (ByVal lpszPath As Long, ByVal lpPrefixString As Long, _
      ByVal wUnique As Long, ByVal lpTempFileName As Long) _
      As Long
@@ -94,7 +95,7 @@ Public sRec As Object
 Public defFontname As String
 Private pnum As Long
 Public my_system As Enum_OperatingPlatform
-Public Declare Function Beeper Lib "kernel32" Alias "Beep" _
+Public Declare Function Beeper Lib "KERNEL32" Alias "Beep" _
   (ByVal dwFreq As Long, ByVal dwDuration As Long) As Long
 Private oprinter As New cDIBSection
 Const MAX_FILENAME_LEN As Long = 260 * 2 - 1
@@ -102,7 +103,7 @@ Public beeperBEAT As Long
 Public funcdeep As Double
 Private deep As Double
 Private mys As String
-Private Declare Function WinExec Lib "kernel32" (ByVal lpCmdLine As String, ByVal nCmdShow As Long) As Long
+Private Declare Function WinExec Lib "KERNEL32" (ByVal lpCmdLine As String, ByVal nCmdShow As Long) As Long
 Public needset As Boolean
 Public cnt As Boolean
 Public exWnd As Long
@@ -176,10 +177,10 @@ Const GFSR_USERRESOURCES = 2
 Declare Function MessageBeep Lib "user32" (ByVal wType As Long) As Long
 
 
-Declare Function SetLocaleInfo Lib "kernel32" Alias "SetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String) As Long
-Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, lpLCData As String, ByVal cchData As Long) As Long
-Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathW" (ByVal nBufferLength As Long, ByVal lpBuffer As Long) As Long
-Public Declare Function GetWindowsDirectory Lib "kernel32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nsize As Long) As Long
+Declare Function SetLocaleInfo Lib "KERNEL32" Alias "SetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String) As Long
+Declare Function GetLocaleInfo Lib "KERNEL32" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, lpLCData As String, ByVal cchData As Long) As Long
+Declare Function GetTempPath Lib "KERNEL32" Alias "GetTempPathW" (ByVal nBufferLength As Long, ByVal lpBuffer As Long) As Long
+Public Declare Function GetWindowsDirectory Lib "KERNEL32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nsize As Long) As Long
 
 
 Private Const LOCALE_USER_DEFAULT = 0
@@ -220,7 +221,7 @@ End Type
 Private Declare Function SHGetSpecialFolderLocation Lib "shell32.dll" (ByVal hWndOwner As Long, ByVal nFolder As Long, pidl As ITEMIDLIST) As Long
 Private Declare Function SHGetPathFromIDList Lib "shell32.dll" Alias "SHGetPathFromIDListA" (ByVal pidl As Long, ByVal pszPath As String) As Long
 
-Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Public Declare Sub Sleep Lib "KERNEL32" (ByVal dwMilliseconds As Long)
 
 Public Declare Function SetTimer Lib "user32" _
        (ByVal hWnd As Long, ByVal nIDEvent As Long, _
@@ -245,9 +246,9 @@ Public mute As Boolean
 Public beat As Long
 Public baseNote As Long
 Public prof As New clsProfiler
-Public Declare Function GetACP Lib "kernel32" () As Long  ' 1253 in my computer
+Public Declare Function GetACP Lib "KERNEL32" () As Long  ' 1253 in my computer
 
-Public Declare Function GetLocaleInfoW Lib "kernel32" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
+Public Declare Function GetLocaleInfoW Lib "KERNEL32" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
 Private Const DWL_ANYTHREAD& = 0
 Const LOCALE_ILANGUAGE = 1
@@ -976,7 +977,7 @@ With players(GetCode(scr))
     DisableTargets q(), 0
     
     ElseIf scr.name = "dSprite" Then
-    DisableTargets q(), val(scr.Index)
+    DisableTargets q(), val(scr.index)
     End If
     End If
     If .SZ < 4 Then .SZ = 4
@@ -1012,7 +1013,7 @@ pa$ = s$: s$ = ""
 End If
 
 If x1 <> 0 Then
-        If subHash.Count = 0 Or pa$ = "" Then MyEr "Nothing to save", "ƒÂÌ ı‹Ò˜ÂÈ Í‹ÙÈ Ì· Û˛Û˘":              Exit Function
+        If subHash.count = 0 Or pa$ = "" Then MyEr "Nothing to save", "ƒÂÌ ı‹Ò˜ÂÈ Í‹ÙÈ Ì· Û˛Û˘":              Exit Function
         If ExtractType(pa$) = "gsb" Then pa$ = ExtractPath(pa$) + ExtractNameOnly(pa$)
         If ExtractPath(pa$) <> "" Then
                 If InStr(ExtractPath(pa$), mcd) <> 1 Then pa$ = pa$ & ".gsb" Else pa$ = pa$ & ".gsb"
@@ -1022,7 +1023,7 @@ If x1 <> 0 Then
         If Not WeCanWrite(pa$) Then Exit Function
         
       
-           For i = subHash.Count - 1 To 0 Step -1
+           For i = subHash.count - 1 To 0 Step -1
        subHash.ReadVar i, s$, col
                 If Right$(s$, 2) = "()" Then
                 s$ = Left$(s$, Len(s$) - 2)
@@ -1293,8 +1294,8 @@ Public Sub PushStage(basestack As basetask, dummy As Boolean)
                         .PushVal -2
                 Else
                         .PushVal 0   ' Len(arrname$)
-                        .PushVal CDbl(subHash.Count)
-                        .PushVal CDbl(varhash.Count)
+                        .PushVal CDbl(subHash.count)
+                        .PushVal CDbl(varhash.count)
                         .PushVal 0 'CDbl(neoArray.Count)
                         .PushVal CDbl(sb2used)
                         .PushVal CDbl(var2used)
@@ -2255,8 +2256,8 @@ Dim Vars As Long, vname As Long, y1 As Long, subs As Long, snames As Long, i As 
 Dim depth As Long, loopthis As Boolean, subspoint As Boolean, RetStackSize As Long
 
 Dim kolpo As Boolean, bb$, once As Boolean, dd As Variant
-Vars = var2used: vname = varhash.Count
-subs = sb2used: snames = subHash.Count
+Vars = var2used: vname = varhash.count
+subs = sb2used: snames = subHash.count
 Dim mm As mStiva, tempRef As Object
 If Prefix = "VAL" Then
 ' we stand as right value...
@@ -3096,7 +3097,7 @@ If d.name = "DIS" Then
 ElseIf d.name = "Form1" Then
 .layer = -1
 ElseIf d.name = "dSprite" Then
-.layer = d.Index
+.layer = d.index
 End If
 End With
 If f <> -1 Then BoxBigNew d, prive, xl& - 1, yl&, f
@@ -3192,6 +3193,9 @@ End Sub
 Public Sub NeoSubMain()
 ' need to read registry form sub main
 On Error Resume Next
+'' ADDITION
+Set ObjectCatalog = New FastCollection
+LCID_DEF = LCID_def1()
 If dv15 <> 0 Then
 l_complete = False
 s_complete = False
@@ -5196,6 +5200,10 @@ ElseIf IsExp(bstack, n$, p) Then
                 Set bstack.lastobj = New mHandler
                 On Error Resume Next
                 Err.Clear
+                ' maybe we want the typelib
+                If FastSymbol(n$, ",") Then
+                
+                End If
                 Set bstack.lastobj.objref = MakeATypeLib(var(anything.Indirect))
                 If Err Then
                    MyEr "Can't Read TypeLib", "ƒÂÌ ÏÔÒ˛ Ì· ‰È·‚‹Û˘ ÙÔıÚ Ù˝ÔıÚ Ù˘Ì ·Ò·Ï›ÙÒ˘Ì"
@@ -6036,7 +6044,7 @@ Case "EVAL(", "≈ ÷—(", "≈ ÷—¡”«("
                     On Error GoTo there12
                     If .objref.Done Then
                          If FastSymbol(n$, "!") Then
-                            r = SG * .objref.Index
+                            r = SG * .objref.index
                             Set bstack.lastobj = Nothing
                         Else
                             If .objref.IsObj Then
@@ -7175,7 +7183,7 @@ Case "LEN.DISP(", "Ã« œ”.≈Ã÷("
     With bstack.lastobj
     If .Indirect < 0 Then
     If TypeOf .objref Is FastCollection Then
-        r = SG * .objref.Count
+        r = SG * .objref.count
         A$ = n$
         IsNumber = FastSymbol(A$, ")", True)
         Exit Function
@@ -7215,7 +7223,7 @@ Case "LEN(", "Ã« œ”("
                             If .objref.StructLen > 0 Then
                                 r = SG * .objref.StructLen
                             Else
-                                r = SG * .objref.Count
+                                r = SG * .objref.count
                             End If
                             A$ = n$
                             IsNumber = FastSymbol(A$, ")", True)
@@ -7976,7 +7984,7 @@ If GetSub(s1$, V1&) Then
 contAr1:
 s1$ = Trim$(s1$)
 Set nBstack = New basetask
-nBstack.reflimit = varhash.Count
+nBstack.reflimit = varhash.count
 Set nBstack.Parent = bstack
 If bstack.IamThread Then Set nBstack.Process = bstack.Process
 Set nBstack.Owner = bstack.Owner
@@ -8018,10 +8026,10 @@ End If
 If Left$(n$, 1) = "." Then
 ' LOOK FOR GROUP
 
-w2 = -pppp.GroupRef.objref.Index - 2
+w2 = -pppp.GroupRef.objref.index - 2
 GoTo contgroup
 ElseIf FastSymbol(n$, "(") Then
-w2 = -pppp.GroupRef.objref.Index - 2
+w2 = -pppp.GroupRef.objref.index - 2
 GoTo contlambdahere
 Else
 Set bstack.lastobj = pppp
@@ -8180,8 +8188,8 @@ contlambdahere:
                     
                     p = Int(p)
                     
-                    If p >= 0 And p < .Count Then
-                       .Index = p
+                    If p >= 0 And p < .count Then
+                       .index = p
                        .Done = True
                        '' what??? here here here
                        IsNumber = FastSymbol(n$, ")")
@@ -8192,7 +8200,7 @@ contlambdahere:
                        ElseIf FastSymbol(n$, "(") Then
                        If .IsObj Then
                        
-                       w2 = -.Index - 2
+                       w2 = -.index - 2
                        If TypeOf .ValueObj Is lambda Then GoTo contlambdahere
                        If TypeOf .ValueObj Is mArray Then
                         Set pppp = .ValueObj
@@ -8237,12 +8245,12 @@ contlabel:
                        IsNumber = FastSymbol(n$, ")")
                        If Left$(n$, 1) = "." Then
                        
-                       w2 = -.Index - 2
+                       w2 = -.index - 2
                        GoTo contgroup
                        ElseIf FastSymbol(n$, "(") Then
                        If .IsObj Then
                        
-                       w2 = -.Index - 2
+                       w2 = -.index - 2
                        If TypeOf .ValueObj Is lambda Then GoTo contlambdahere
                        If TypeOf .ValueObj Is mArray Then
                         Set pppp = .ValueObj
@@ -8282,9 +8290,9 @@ contlabel:
             End If
      Else
             If IsExp(bstack, n$, p) Then
-                pppp.GroupRef.Index = p
+                pppp.GroupRef.index = p
                 ElseIf IsStrExp(bstack, n$, s$) Then
-                pppp.GroupRef.Index = s$
+                pppp.GroupRef.index = s$
             End If
          End If
         r = SG * pppp.GroupRef.Value
@@ -10824,8 +10832,8 @@ Case "EVAL$(", "≈ ÷—$(", "≈ ÷—¡”«$("
             If FastSymbol(A$, ",") Then
                 If IsExp(bstackstr, A$, p) Then
                 p = Int(p)
-                If p >= 0 And p < .objref.Count Then
-                .objref.Index = p
+                If p >= 0 And p < .objref.count Then
+                .objref.index = p
                 .objref.Done = True
                 r$ = .objref.KeyToString
                   Else
@@ -11649,7 +11657,12 @@ If Trim$(r$ + q2$) <> "" Then
     Else
     Nosuchvariable s$
     End If
+    ElseIf IsStrExp(bstackstr, A$, s$) Then
+                r$ = strProgIDfromSrting(s$)
+                    IsString = FastSymbol(A$, ")")
+    
     Else
+    
     SyntaxError
     End If
     Exit Function
@@ -11966,7 +11979,7 @@ Else
     p = Abs(CLng(p))
     With Form1.List1
         If p > 0 And .listcount >= p Then
-            r$ = .List(CLng(p) - 1)
+            r$ = .list(CLng(p) - 1)
             IsString = True
         End If
     End With
@@ -12452,7 +12465,7 @@ itisarrayorfunction:
         If GetSub(q1$, w1&) Then
 contStrFun:
             Set nBstack = New basetask
-            nBstack.reflimit = varhash.Count
+            nBstack.reflimit = varhash.count
             Set nBstack.Parent = bstackstr
             Set nBstack.Owner = bstackstr.Owner
             nBstack.UseGroupname = sbf(w1&).sbgroup
@@ -12568,8 +12581,8 @@ contlambdastr:
         With pppp.GroupRef.objref
             If IsExp(bstackstr, A$, p) Then
             If FastSymbol(A$, "!") Then
-              If p >= 0 And p < .Count Then
-                .Index = p
+              If p >= 0 And p < .count Then
+                .index = p
                 Else
                 MyEr "Index out of limits", "ƒÂﬂÍÙÁÚ ÂÍÙ¸Ú ÔÒﬂ˘Ì"
                 Exit Function
@@ -12583,7 +12596,7 @@ contlambdastr:
             If .Done Then
             If .IsObj Then
             If TypeOf .ValueObj Is lambda Then
-            w2 = -.Index - 1
+            w2 = -.index - 1
             If FastSymbol(A$, ")(", , 2) Then GoTo contlambdastr
             ElseIf TypeOf .ValueObj Is mArray Then
             Set pppp = .ValueObj
@@ -12603,9 +12616,9 @@ contlambdastr:
             End With
         Else
             If IsExp(bstackstr, A$, p) Then
-                pppp.GroupRef.Index = p
+                pppp.GroupRef.index = p
             ElseIf IsStrExp(bstackstr, A$, r$) Then
-                pppp.GroupRef.Index = r$
+                pppp.GroupRef.index = r$
             End If
         
         r$ = pppp.GroupRef.Value
@@ -16679,9 +16692,9 @@ varonly:
                         If Typename$(var(v)) = "PropReference" Then
                         If FastSymbol(b$, "@") Then
                             If IsExp(bstack, b$, sp) Then
-                            var(v).Index = p: sp = 0
+                            var(v).index = p: sp = 0
                         ElseIf IsStrExp(bstack, b$, ss$) Then
-                        var(v).Index = ss$: ss$ = ""
+                        var(v).index = ss$: ss$ = ""
                         End If
                          var(v).UseIndex = True
                         End If
@@ -16950,9 +16963,9 @@ again123456:
                         If Typename(var(v)) = "PropReference" Then
                         If FastSymbol(b$, "@") Then
                             If IsExp(bstack, b$, sp) Then
-                            var(v).Index = p: sp = 0
+                            var(v).index = p: sp = 0
                         ElseIf IsStrExp(bstack, b$, ss$) Then
-                        var(v).Index = ss$: ss$ = ""
+                        var(v).index = ss$: ss$ = ""
                         End If
                          var(v).UseIndex = True
                         End If
@@ -17225,9 +17238,9 @@ If ss$ <> "" Then
                   If Typename(var(v)) = "PropReference" Then
                         If FastSymbol(b$, "@") Then
                             If IsExp(bstack, b$, sp) Then
-                            var(v).Index = p: sp = 0
+                            var(v).index = p: sp = 0
                         ElseIf IsStrExp(bstack, b$, sw$) Then
-                        var(v).Index = sw$: sw$ = ""
+                        var(v).index = sw$: sw$ = ""
                         End If
                          var(v).UseIndex = True
                         End If
@@ -17287,9 +17300,9 @@ again12345:
                  If Typename(var(v)) = "PropReference" Then
                         If FastSymbol(b$, "@") Then
                             If IsExp(bstack, b$, sp) Then
-                            var(v).Index = p: sp = 0
+                            var(v).index = p: sp = 0
                             ElseIf IsStrExp(bstack, b$, sw$) Then
-                            var(v).Index = sw$: sw$ = ""
+                            var(v).index = sw$: sw$ = ""
                             End If
                              var(v).UseIndex = True
                         End If
@@ -17358,9 +17371,9 @@ If MaybeIsSymbol(b$, "=-+*/<~") Then
                 If Typename(var(v)) = "PropReference" Then
                   If FastSymbol(b$, "@") Then
                             If IsExp(bstack, b$, sp) Then
-                            var(v).Index = p: sp = 0
+                            var(v).index = p: sp = 0
                         ElseIf IsStrExp(bstack, b$, ss$) Then
-                        var(v).Index = ss$: ss$ = ""
+                        var(v).index = ss$: ss$ = ""
                         End If
                          var(v).UseIndex = True
                         End If
@@ -18093,9 +18106,9 @@ If HERE$ <> ohere$ Or mystack.IamChild Then     ' so now we check that we are in
 ' this system must change.. and become member of a basetask
 
 ' these are for safety
-vname = varhash.Count
+vname = varhash.count
 Vars = var2used
-subs = sb2used: snames = subHash.Count
+subs = sb2used: snames = subHash.count
 i = 1: FK$(13) = ""
 
 
@@ -19254,6 +19267,9 @@ Case "MODE", "‘’–œ”"
     Exit Function
 Case "GRADIENT", "÷œÕ‘œ"
     Identifier = ProcGradient(basestack, rest$)
+    Exit Function
+Case "CHOOSE.OBJECT", "≈–≈À≈Œ≈.¡Õ‘… ≈…Ã≈Õœ", "≈–…À≈Œ≈.¡Õ‘… ≈…Ã≈Õœ"
+    ProcChooseObj basestack, rest$, lang
     Exit Function
 Case "CHOOSE.FONT", "≈–≈À≈Œ≈.√—¡ÃÃ¡‘œ”≈…—¡", "≈–…À≈Œ≈.√—¡ÃÃ¡‘œ”≈…—¡"
     ProcChooseFont basestack, lang
@@ -21450,7 +21466,7 @@ Dim w1 As Long, w2 As Long, DUM As Boolean, virtualtop As Long
 pn& = 0
 ' DELETE ARRNAME$
 Dim arrname$
-virtualtop = varhash.Count - 1
+virtualtop = varhash.count - 1
 For pn& = virtualtop To 0 Step -1
 varhash.ReadVar pn&, s$, h&
 If InStr(s$, ChrW(&H1FFF)) = 0 And InStr(s$, ChrW(&HFFBF)) = 0 Then Exit For
@@ -21458,7 +21474,7 @@ virtualtop = virtualtop - 1
 Next pn&
 pn& = 0
 With players(prive)
-Do While pn& < varhash.Count
+Do While pn& < varhash.count
 varhash.ReadVar pn&, s$, h&
 
 If h& = -1 Then
@@ -21701,9 +21717,9 @@ Dim ppp$
      With PP.GroupRef.objref
      If Not FastSymbol(rst$, "!") Then ppp$ = CStr(p): GoTo contlabel1
      p = Int(p)
-     If p >= 0 And p < .Count Then
-        .Index = p
-         offset = -.Index - 2
+     If p >= 0 And p < .count Then
+        .index = p
+         offset = -.index - 2
         .Done = True
      Else
         MyEr "Index out of limits", "ƒÂﬂÍÙÁÚ ÂÍÙ¸Ú ÔÒﬂ˘Ì"
@@ -21717,7 +21733,7 @@ contlabel1:
             
                MyEr "Index out of limits", "ƒÂﬂÍÙÁÚ ÂÍÙ¸Ú ÔÒﬂ˘Ì"
                Else
-               offset = -.Index - 2
+               offset = -.index - 2
             End If
             End With
     End If
@@ -21725,9 +21741,9 @@ contlabel1:
     Dim aprop As PropReference
     Set aprop = PP.GroupRef
     If IsExp(bstack, rst$, p) Then
-    aprop.Index = p
+    aprop.index = p
     ElseIf IsStrExp(bstack, rst$, ppp$) Then
-    aprop.Index = ppp$
+    aprop.index = ppp$
     End If
     aprop.UseIndex = True
      Set aprop = Nothing
@@ -21999,11 +22015,11 @@ Public Sub Quit()
   ' Insure all but 1 form is unloaded.
   ' (When called from Form_Unload, that form
   '  cannot be removed, so 1 is allowed)
-  Do While Forms.Count > 1
+  Do While Forms.count > 1
     Unload Forms(1)
   Loop
   ' Notification if there are problems with demo
-  Debug.Assert Forms.Count = 1
+  Debug.Assert Forms.count = 1
 End Sub
 
 
@@ -22042,8 +22058,11 @@ If p$ <> "" Then
     Do While i < Len(p$)
     i = i + 1
     j = AscW(st.StackItemType(i))
-  
+If j <> 62 Then
     Select Case AscW(Mid$(p$, i, 1))
+    Case 62
+    ' OPTIONAL IS OK ??
+
     Case 66, 98, 916, 948
         If j <> 42 Then Exit Function
         If Typename$(st.StackItem(i)) = "mHandler" Then
@@ -22080,7 +22099,8 @@ If p$ <> "" Then
     Case Else
         Exit Function
     End Select
-    ''r$ = r$ + ChrW(j)
+    End If
+    
     Loop
     s$ = " "
     VALIDATEmStiva = True
@@ -22605,23 +22625,32 @@ Private Function GetShink(ev As ComShinkEvent, v As Long, objname$) As Boolean
 Dim aa As Object
     Set ev = New ComShinkEvent
     Set aa = var(v)
-                         ev.Attach aa
                          ev.VarIndex = v
                          If HERE$ <> "" Then
                          ev.modulename = HERE$ + "." + objname$
+                         ev.modulenameonly = HERE$
                          Else
                          ev.modulename = objname$
+                         ev.modulenameonly = ""
                          End If
-                         
+                         ev.Attach aa
    Set aa = Nothing
    GetShink = ev.Attached()
 End Function
-Sub CreateitObject(var As Variant, THISOBECT As String, Optional ByVal cc As Variant)
-Dim aa As Object
+Sub CreateitObject(var As Variant, THISOjBECT As String, Optional ByVal cc As Variant)
+Dim aa As Object, b As GUID
 If IsMissing(cc) Then
-Set aa = CreateObject(THISOBECT)
+If Left$(THISOjBECT, 1) = "{" Then
+    THISOjBECT = strProgIDfromSrting(THISOjBECT)
+End If
+On Error Resume Next
+Set aa = CreateObject(THISOjBECT)
+If Err Then
+MyEr Err.Description, Err.Description
+End If
+
 Else
-Set aa = CreateObject(THISOBECT, CStr(cc))
+Set aa = CreateObject(THISOjBECT, CStr(cc))
 End If
 Set var = aa
 End Sub
@@ -22792,7 +22821,7 @@ Dim f$
 Dim pppp As mArray
 
 
-OvarnameLen = varhash.Count + 1 ' new way
+OvarnameLen = varhash.count + 1 ' new way
 
 
    
@@ -23144,7 +23173,7 @@ If w$ = "GROUP" Or w$ = "œÃ¡ƒ¡" Then
                                                                                         bstack.priveflag = prv
                                                                                          ExecuteVarOnly = Abs(ExecuteVarOnly(bstack, bstack.GroupName & w$, y1, ss$, lang, glob))
                                                                                         bstack.priveflag = False
-                                                                                            OvarnameLen = varhash.Count + 1 'Len(VarName$) + 1   'we record ...
+                                                                                            OvarnameLen = varhash.count + 1 'Len(VarName$) + 1   'we record ...
                                                                                       
                                                                                         
                                                                                          bstack.GroupName = frm$
@@ -23162,7 +23191,7 @@ If w$ = "GROUP" Or w$ = "œÃ¡ƒ¡" Then
                                                                                     Else
                                                                                         ExecuteVarOnly = FastSymbol(rest$, "}")
                                                                                     End If
-                                                                                        OvarnameLen = varhash.Count + 1  'we record ...
+                                                                                        OvarnameLen = varhash.count + 1  'we record ...
                                                                               
                                                                                      bstack.GroupName = frm$
                                                                                      If Typename(var(y1)) <> "Group" Then Set var(y1) = New Group
@@ -23250,7 +23279,7 @@ If FastSymbol(rest$, "=") Then
                                             Else
                                                 GlobalSub HERE$ & "." & w$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
                                             End If
-                                             OvarnameLen = varhash.Count + 1
+                                             OvarnameLen = varhash.count + 1
                                              
                                 ElseIf TypeOf bstack.lastobj Is Group Then
                                             Set myobject = bstack.lastobj
@@ -23263,7 +23292,7 @@ againgroup:
                                                 
                                                 UnFloatGroup bstack, nm$, v, myobject
 
-                                              OvarnameLen = varhash.Count + 1  'we record ...
+                                              OvarnameLen = varhash.count + 1  'we record ...
                                                                                       
                                             End If
                                             If FastSymbol(rest$, ",") Then
@@ -23471,7 +23500,7 @@ If ss$ <> "" Then
                                                 GlobalSub HERE$ & "." & w$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
                                             End If
 
-                                             OvarnameLen = varhash.Count + 1
+                                             OvarnameLen = varhash.count + 1
                                              Else
                                      NoValueForvariable w$
                        End If
@@ -23764,11 +23793,11 @@ Dim thisref(0 To 63) As Long
 
 Set that = var(i)
 
-If that.ReadType(that.Count - 1) = -100 Then
-Up = that.Count - 1
+If that.ReadType(that.count - 1) = -100 Then
+Up = that.count - 1
 getparam = True
 Else
-Up = that.Count
+Up = that.count
 End If
 
 For k = 1 To Up
@@ -23879,7 +23908,7 @@ Else
 
 Exit Sub
 End If
-For k = 1 To that.Count
+For k = 1 To that.count
 If that.IsByRef(k - 1) Then
 ' RESTORE VALUES...
     If that.ReadType(k - 1) < 5 Then
@@ -23923,9 +23952,11 @@ Else
 End If
  Indirect = True
 End If
-ReDim var1(0 To 0)
-
 Do
+ReDim var1(0 To 0)
+Erase var2()
+Set pppp = Nothing
+
 If FastSymbol(rest$, ",") Then
 If IsExp(bstack, rest$, r) Then
 
@@ -24203,8 +24234,14 @@ Dim s$, l$
 Dim trap As Long, ss$, p As Double, items As Long
 Do
 again:
+If FastSymbol(rest$, ",") Then
+' second, or more is optional
+        var2(items) = vbError
+        items = items + 1
+        If UBound(var2()) < items Then ReDim Preserve var2(items + 1)
+        GoTo again
+End If
 s$ = aheadstatus(rest$, True) + " "
-
 Select Case Left$(s$, 1)
 Case "S"
 If (trap Mod 2 = 0) And namedargument > 0 Then Exit Do  ' is a fault
@@ -25178,9 +25215,9 @@ Dim s() As String
         Else
         w$ = UCase(ohere$ & ".")
         End If
-            If OvarnameLen <= varhash.Count Then
+            If OvarnameLen <= varhash.count Then
                     
-            For i = OvarnameLen To varhash.Count  ' or not
+            For i = OvarnameLen To varhash.count  ' or not
             
                  varhash.ReadVar i - 1, ss$, dropit
                  
@@ -25225,7 +25262,7 @@ Dim s() As String
            
 
 End With
-OvarnameLen = varhash.Count + 1 'Len(VarName$) + 1   'we record ...AGAIN
+OvarnameLen = varhash.count + 1 'Len(VarName$) + 1   'we record ...AGAIN
 
 End Sub
 Function FindNameForGroup(bstack As basetask, w$) As Boolean
@@ -25718,7 +25755,7 @@ For Each xp In Printers
 Form1.List1.additemFast xp.DeviceName & " (" & xp.port & ")"
 Next xp
 For i = 0 To Form1.List1.listcount - 1
-If pName & " (" & port & ")" = Form1.List1.List(i) Then Form1.List1.ListIndex = i
+If pName & " (" & port & ")" = Form1.List1.list(i) Then Form1.List1.ListIndex = i
 Next i
 If interpret(basestack, "menu !") Then
 i = InStr(Form1.List1, " (")
@@ -27172,13 +27209,13 @@ i = 1
 
         Set bs = New basetask
        With bs
-        .reflimit = varhash.Count
+        .reflimit = varhash.count
         Set .Parent = basestack
         Set .Sorosref = basestack.soros   'same stack
         Set .Owner = .Parent.Owner
         .OriginalName$ = ohere$
-        .Vars = var2used: vname = varhash.Count
-        subs = sb2used: snames = subHash.Count
+        .Vars = var2used: vname = varhash.count
+        subs = sb2used: snames = subHash.count
 
         .UseGroupname = sbf(x1).sbgroup
         .OriginalCode = x1
@@ -27407,7 +27444,10 @@ Dim ParentStack As basetask
 Set ParentStack = basestack.Parent
     Set ps = New mStiva
                 Do
-                If FastSymbol(rest$, "!") Then
+                 If FastSymbol(rest$, "?") Then
+                        ps.DataOptional
+                        basestack.soros.MergeTop ps
+            ElseIf FastSymbol(rest$, "!") Then
                 If IsExp(ParentStack, rest$, p) Then
                 ps.DataValLong p
                 End If
@@ -27426,6 +27466,9 @@ Set ParentStack = basestack.Parent
         Else
         ps.DataStr s$
         End If
+    ElseIf MaybeIsSymbol(rest$, ",") Then
+        ps.DataOptional
+    ' here
     End If
     Else
   If LastErNum <> 0 Then
@@ -27446,8 +27489,15 @@ Function PushParamGeneral(basestack As basetask, rest$) As Boolean
 PushParamGeneral = True
 Dim ps As mStiva, p As Double, s$
     Set ps = New mStiva
+    
+        
+
+    
                 Do
- If FastSymbol(rest$, "!") Then
+        If FastSymbol(rest$, "?") Then
+                        ps.DataOptional
+                        basestack.soros.MergeTop ps
+            ElseIf FastSymbol(rest$, "!") Then
                 If IsExp(basestack, rest$, p) Then
                 ps.DataValLong p
                 End If
@@ -27457,6 +27507,7 @@ Dim ps As mStiva, p As Double, s$
        Set basestack.lastobj = Nothing
         Else
             ps.DataVal p
+            
          End If
     ElseIf Not LastErNum <> 0 Then
     If IsStrExp(basestack, rest$, s$) Then
@@ -27466,6 +27517,9 @@ Dim ps As mStiva, p As Double, s$
         Else
         ps.DataStr s$
         End If
+    ElseIf MaybeIsSymbol(rest$, ",") Then
+        ps.DataOptional
+    ' here
     End If
     Else
   If LastErNum <> 0 Then
@@ -27479,7 +27533,7 @@ Dim ps As mStiva, p As Double, s$
       End If
     If Not FastSymbol(rest$, ",") Then Exit Do
                 Loop
-             
+            
             basestack.soros.MergeTop ps
 End Function
 Sub PushParamGeneraOLD(basestack As basetask, rest$)
@@ -28230,7 +28284,7 @@ againhere:
             
 End Function
 Public Function SubsExist() As Boolean
-SubsExist = subHash.Count > 0
+SubsExist = subHash.count > 0
 End Function
 Function preProcessor(bstack As basetask, b$) As Long
 Dim ec$, ss$, w$, backup, p As Double, backupstr$
@@ -28592,7 +28646,7 @@ GetCode = -1
 Case "PrinterDocument1"
 GetCode = -2
 Case Else
-GetCode = val("0" & Form1.dSprite(dq.Index).Tag)
+GetCode = val("0" & Form1.dSprite(dq.index).Tag)
 End Select
 End If
 End Function
@@ -28612,7 +28666,7 @@ If scr.name = "Form1" Then
 ElseIf scr.name = "DIS" Then
     DisableTargets q(), 0
 ElseIf scr.name = "dSprite" Then
-    DisableTargets q(), val(scr.Index)
+    DisableTargets q(), val(scr.index)
 End If
 End If
 With players(GetCode(scr))
@@ -29049,7 +29103,7 @@ Dim j As Long, k, s1$, klm As Long
 Set oldbstack = bstack.soros
 Dim ohere$
 ohere$ = HERE$
-For j = 0 To A.Count - 1
+For j = 0 To A.count - 1
 HERE$ = "EV" + CStr(i) + "." + CStr(j)
 If A.enabled Then
 A.ReadVar j, n$, f$
@@ -29099,8 +29153,8 @@ Dim i As Long
 If A Is Nothing Then GoTo conthere1
 i = A.VarIndex
 bstack.soros.DataStr aString$
-If gui.Index >= 0 Then
-bstack.soros.DataVal gui.Index
+If gui.index >= 0 Then
+bstack.soros.DataVal gui.index
 End If
 bstack.soros.DataObj gui
 
@@ -29108,7 +29162,7 @@ Set oldbstack = bstack.soros
 Dim j As Long, s1$, klm As Long
 Dim ohere$
 ohere$ = HERE$
-For j = 0 To A.Count - 1
+For j = 0 To A.count - 1
 HERE$ = "EV" + CStr(i) + "." + CStr(j)
 If A.enabled Then
 A.ReadVar j, n$, f$
@@ -29161,7 +29215,7 @@ bstack.IamAnEvent = True
 Dim i As Long
 If A Is Nothing Then GoTo conthere0
 i = A.VarIndex
-uIndex = gui.Index
+uIndex = gui.index
 If uIndex >= 0 Then
 bstack.soros.DataVal CDbl(uIndex)
 uIndex = 1
@@ -29341,7 +29395,7 @@ what$ = Left$(what$, Len(what$) - 1)
                                  .MyName = what$
                                  .modulename = h$
                                  .TITLE = what$ + "(" + LTrim(Str$(i)) + ")"
-                                 .Index = i
+                                 .index = i
                                 End With
 Case "GuiButton"
                                 CreateFormObject aVar, 2
@@ -29491,7 +29545,7 @@ ElseIf IsLabelSymbolNew(rest$, "÷œ—Ã¡", "FORM", lang) Then
                                 CreateFormObject var(i), 1
                                   Set alfa = var(i)
                                   Set alfa.EventObj = var(y1)
-                                  alfa.Index = -1
+                                  alfa.index = -1
                                   alfa.MyName = what$
                                   alfa.modulename = HERE$
                                   alfa.TITLE = what$
@@ -29510,13 +29564,13 @@ ElseIf IsLabelSymbolNew(rest$, "÷œ—Ã¡", "FORM", lang) Then
                                   Set alfa.EventObj = mmmm
                                   With mmmm
                                     .BypassInit 10
-                                    .VarIndex = i * 1000 + varhash.Count
+                                    .VarIndex = i * 1000 + varhash.count
                                     .enabled = True
                                     .ParamBlock "Read msg$, &obj", 2
                                     .GenItemCreator LTrim(Str(i * 456)), "{ Module " + HERE$ + vbCrLf + "try { Call local " + HERE$ + "." + bstack.GroupName + what$ + "() } }" + HERE$ + "." + bstack.GroupName
                                  End With
                                   alfa.MyName = what$
-                                  alfa.Index = -1
+                                  alfa.index = -1
                                   alfa.modulename = HERE$
                                   alfa.ByPass = bp
                                   alfa.TITLE = what$
@@ -29530,7 +29584,7 @@ contEvArray:
                               If y1 = 0 Then
                                  With mmmm
                                     .BypassInit 10
-                                    .VarIndex = i * 1000 + varhash.Count
+                                    .VarIndex = i * 1000 + varhash.count
                                     .enabled = True
                                     .ParamBlock "Read Index, msg$, &obj", 3
                                     .GenItemCreator LTrim(Str(i * 3456)), "{ Module " + HERE$ + vbCrLf + "try { call local " + HERE$ + "." + bstack.GroupName + what$ + "() } }" + HERE$ + "." + bstack.GroupName
@@ -29548,7 +29602,7 @@ contEvArray:
                                  .modulename = HERE$
                                  .ByPass = bp
                                  .TITLE = what$ + "(" + LTrim(Str$(i)) + ")"
-                                 .Index = i
+                                 .index = i
                                 End With
                                 Next i
                          End If
@@ -29838,17 +29892,17 @@ ElseIf IsLabelSymbolNew(rest$, "≈…”¡√Ÿ√«", "TEXTBOX", lang) Then
     End If
 End Function
 
-Sub ProcMethodArray(bstack As basetask, pppp As mArray, Index As Long, co$, rest$, lang As Long, ifier0 As Boolean)
+Sub ProcMethodArray(bstack As basetask, pppp As mArray, index As Long, co$, rest$, lang As Long, ifier0 As Boolean)
 Dim VR(1)
-Set VR(0) = pppp.item(Index)
+Set VR(0) = pppp.item(index)
 On Error Resume Next
 ProcMethod bstack, VR(), 0, co$, rest$, lang
  ifier0 = Err = 0
           Err.Clear
 End Sub
-Sub ProcPropertyArray(bstack As basetask, pppp As mArray, Index As Long, co$, rest$, lang As Long, ifier0 As Boolean)
+Sub ProcPropertyArray(bstack As basetask, pppp As mArray, index As Long, co$, rest$, lang As Long, ifier0 As Boolean)
         Dim VR(1)
-        Set VR(0) = pppp.item(Index)
+        Set VR(0) = pppp.item(index)
         On Error Resume Next
           ProcProperty bstack, VR(), 0, co$, rest$, lang, True
   ifier0 = Err = 0
@@ -30017,7 +30071,7 @@ reenter2:
 PushStage basestack, False
 x1 = GlobalSub("A_()", ss$, Trim$(s$))
  Set bs = New basetask
-     bs.reflimit = varhash.Count
+     bs.reflimit = varhash.count
         Set bs.Parent = basestack
         If basestack.IamThread Then Set bs.Process = basestack.Process
         Set bs.Sorosref = basestack.soros  ' same stack
@@ -30096,7 +30150,7 @@ If i = 1 Then
 
     If it Then
      Set bs = New basetask
-     bs.reflimit = varhash.Count
+     bs.reflimit = varhash.count
         Set bs.Parent = basestack
         If basestack.IamThread Then Set bs.Process = basestack.Process
         Set bs.Sorosref = basestack.soros  ' same stack
@@ -30176,7 +30230,7 @@ ElseIf i > 3 Then
  
     If it Then
         Set bs = New basetask
-        bs.reflimit = varhash.Count
+        bs.reflimit = varhash.count
         Set bs.Parent = basestack
         If basestack.IamThread Then Set bs.Process = basestack.Process
         If Not TheSame(HERE$, ss$) Then Set bs.Sorosref = basestack.soros
@@ -30687,6 +30741,9 @@ Sub NeoBold(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 ProcBold ObjFromPtr(basestackLP), rest$
 resp = True
 End Sub
+Sub NeoChooseObj(basestackLP As Long, rest$, lang As Long, resp As Boolean)
+    resp = ProcChooseObj(ObjFromPtr(basestackLP), rest$, lang)
+End Sub
 Sub NeoChooseFont(basestackLP As Long, rest$, lang As Long, resp As Boolean)
     ProcChooseFont ObjFromPtr(basestackLP), lang
     resp = True
@@ -30927,7 +30984,7 @@ ElseIf scr.name = "DIS" Then
 DisableTargets q(), 0
 
 ElseIf scr.name = "dSprite" Then
-DisableTargets q(), val(scr.Index)
+DisableTargets q(), val(scr.index)
 End If
 End If
 If IsExp(bstack, rest$, p) Then
@@ -31452,7 +31509,7 @@ Exit Function
 End Function
 Function MyRead(jump As Long, bstack As basetask, rest$, lang As Long) As Boolean
 Dim ps As mStiva, bs As basetask, f As Long, ohere$, par As Boolean, flag As Boolean, flag2 As Boolean
-Dim s$, ss$, pa$, what$, x1 As Long, y1 As Long, i As Long, myobject As Object, it As Long
+Dim s$, ss$, pa$, what$, x1 As Long, y1 As Long, i As Long, myobject As Object, it As Long, useoptionals As Boolean
 MyRead = True
 Dim p As Double, x As Double
 Dim pppp As mArray
@@ -31476,6 +31533,10 @@ col = 1
 GoTo read123
 
 read:
+If FastSymbol(rest$, "?") Then
+useoptionals = True
+
+End If
 flag2 = IsLabelSymbolNew(rest$, "Õ≈œ", "NEW", lang)
 If Not flag2 Then flag = IsLabelSymbolNew(rest$, "‘œ–… ¡", "LOCAL", lang)
 read123:
@@ -31762,7 +31823,10 @@ Case Else
 End Select
 Else
 x1 = Abs(IsLabel(bstack, rest$, what$))
-what$ = myUcase(what$)
+If x1 <> 0 Then
+    If useoptionals Then If bstack.soros.IsEmpty Then bstack.soros.DataOptional
+    what$ = myUcase(what$)
+End If
 Select Case x1
 Case 1
     If bs.IsObjectRef(myobject) Then
@@ -31843,6 +31907,18 @@ Case 1
         Else
                 GlobalVar what$, p
         End If
+        
+    ElseIf bs.IsOptional Then
+        MyRead = True
+        p = 0
+        If flag2 Then
+            GlobalVar what$, p
+        ElseIf GetVar(bstack, what$, i, , , flag) Then
+        ElseIf i = -1 Then
+        Else
+                GlobalVar what$, p
+        End If
+    
     Else
         MissStackNumber
         MyRead = False
@@ -31857,6 +31933,17 @@ Case 3
             CheckVar var(i), s$
         ElseIf i = -1 Then
             bstack.SetVar what$, s$
+        Else
+            GlobalVar what$, s$
+        End If
+    ElseIf bs.IsOptional Then
+       MyRead = True
+       s$ = ""
+        If flag2 Then
+            GlobalVar what$, s$
+        ElseIf GetVar(bstack, what$, i, , , flag) Then
+        ElseIf i = -1 Then
+      
         Else
             GlobalVar what$, s$
         End If
@@ -31893,6 +31980,18 @@ Case 4
             var(i) = Int(p)
         ElseIf i = -1 Then
             bstack.SetVar what$, p
+        Else
+            GlobalVar what$, Int(p)
+        End If
+    ElseIf bs.IsOptional Then
+        MyRead = True
+        p = 0
+        If flag2 Then
+            GlobalVar what$, p
+        ElseIf GetVar(bstack, what$, i, , , flag) Then
+            
+        ElseIf i = -1 Then
+            
         Else
             GlobalVar what$, Int(p)
         End If
@@ -31944,6 +32043,8 @@ Case 5
                             MyRead = True
                             GoTo loopcont123
                     End If
+        ElseIf bs.IsOptional Then
+        MyRead = True
         ElseIf Not bs.IsNumber(p) Then
             MissStackNumber
             MyRead = False
@@ -31975,6 +32076,8 @@ Case 5
                 MissStackStr
                 Exit Do
             End If
+        ElseIf bs.IsOptional Then
+            MyRead = True
         Else
             If Not IsObject(pppp.item(it)) Then
                 pppp.item(it) = s$
@@ -31995,7 +32098,12 @@ Case 7
         Else
             Exit Do
         End If
-        If Not bs.IsNumber(p) Then MissStackNumber: Exit Do
+        If bs.IsOptional Then
+        MyRead = True
+        ElseIf Not bs.IsNumber(p) Then
+            MissStackNumber
+            Exit Do
+        End If
         MyRead = True
         pppp.item(it) = Int(p)
     End If
@@ -32269,6 +32377,7 @@ goNothing:
                         BadObjectDecl
                         MyDeclare = False
                    Else
+                   If var(i) Is Nothing Then Exit Function
                       If TypeOf var(i) Is GuiM2000 Then
                       var(i).CloseNow
                       Unload var(i)
@@ -33856,10 +33965,101 @@ f = 0
 For i = 1 To 127
 s$ = ORGAN(i)
 Form1.List1.additemFast s$
-If TextWidth(bstack.Owner, s$) > f Then f = TextWidth(bstack.Owner, s$)
+'If TextWidth(bstack.Owner, s$) > f Then f = TextWidth(bstack.Owner, s$)
 Next i
 ProcChooseOrgan = MyMenu(1, bstack, rest$, lang)
 End Function
+Function ProcChooseObj(bstack As basetask, rest$, lang As Long) As Boolean
+Dim f As Long, i As Long, s$, p As Double
+    Dim iSectCount As Long, iSect As Long, sSections() As String
+    Dim iVerCount As Long, iVer As Long, sVersions() As String
+      Dim iExeSectCount As Long, iExeSect As Long, sExeSect() As String
+
+If Form4.Visible Then
+Form4.Visible = False
+    If Form1.TEXT1.Visible Then
+        Form1.TEXT1.SetFocus
+    Else
+        Form1.SetFocus
+    End If
+End If
+ Form1.List1.Clear
+    If MaybeIsSymbol(rest$, "!") Then
+            ObjectCatalog.Done = True
+            For i = 0 To ObjectCatalog.count - 1
+                ObjectCatalog.index = i
+                Form1.List1.additemFast ObjectCatalog.KeyToString
+                
+            Next i
+        ProcChooseObj = MyMenu(2, bstack, rest$, lang)
+    Else
+      
+       Set ObjectCatalog = New FastCollection
+       Dim cr As New cRegistry, first$, k As Long
+       Dim bFoundExeSect As Boolean, ss$, mmdir As New recDir
+       '' some code here are copies from VbScriptEditor
+       '' http://www.codeproject.com/Articles/19986/VbScript-Editor-With-Intellisense
+       cr.ClassKey = HKEY_CLASSES_ROOT
+       cr.ValueType = REG_SZ
+       cr.SectionKey = "TypeLib"
+        If cr.EnumerateSections(sSections(), iSectCount) Then
+            For iSect = 1 To iSectCount
+                cr.SectionKey = "TypeLib\" & sSections(iSect)
+                If cr.EnumerateSections(sVersions(), iVerCount) Then
+             
+                    For iVer = 1 To iVerCount
+                    
+                            cr.SectionKey = "TypeLib\" & sSections(iSect) & "\" & sVersions(iVer)
+                            first$ = cr.Value
+                            cr.EnumerateSections sExeSect(), iExeSectCount
+                           ''    ObjectCatalog.AddKey cR.Value + sVersions(iVer) + CStr(k), cR.Value + " (" + sVersions(iVer) + ")" + CLSIDToProgID(sSections(iSect))
+                            If iExeSectCount > 0 Then
+                                       bFoundExeSect = False
+                                        For iExeSect = 1 To iExeSectCount
+                                            If IsNumeric(sExeSect(iExeSect)) Then
+                                            
+                                            cr.SectionKey = cr.SectionKey & "\" & sExeSect(iExeSect) & "\win32"
+                                                bFoundExeSect = True
+                                            Exit For
+                     
+                                            End If
+                                    Next iExeSect
+                                                
+                                       If bFoundExeSect Then
+                                            ss$ = cr.Value
+                                            
+'
+                                             ss$ = ExtractPath(ss$, , True) + ExtractName(ss$)
+                                             If mmdir.ExistFile(ss$) Then
+                                             
+                                                ObjectCatalog.AddKey first$ + " (" + sVersions(iVer) + ")", ss$
+ 
+                                               
+                                          End If
+                                        End If
+               
+                            End If
+                            
+                       Next iVer
+                     End If
+            Next iSect
+            ObjectCatalog.Sort
+            ObjectCatalog.Done = True
+            For i = 0 To ObjectCatalog.count - 1
+                ObjectCatalog.index = i
+                Form1.List1.additemFast ObjectCatalog.KeyToString
+                
+            Next i
+            
+            ProcChooseObj = MyMenu(2, bstack, rest$, lang)
+        
+        Else
+            OutOfLimit
+            ProcChooseObj = False
+        End If
+    End If
+End Function
+
 Function ProcBrowser(bstack As basetask, rest$, lang As Long) As Boolean
 Dim s$, w$, x As Double
 ProcBrowser = True
@@ -33917,7 +34117,7 @@ If bstack.toprinter Then oxiforPrinter: Exit Function
 If Typename(bstack.Owner) Like "Gui*" Then oxiforforms: Exit Function
 GetNames bstack, rest$, Form1.List1, lang
 mywait bstack, CDbl(100)
-If Not FastSymbol(rest$, ";") Then ProcView = MyMenu(1, bstack, rest$, lang) Else ProcView = True
+If Not FastSymbol(rest$, ";") Then ProcView = MyMenu(2, bstack, rest$, lang) Else ProcView = True
 End Function
 
 Function ProcTone(bstack As basetask, rest$) As Boolean
@@ -34326,16 +34526,97 @@ crNew basestack, players(prive)
 ProcWriter = True
 End Function
 Function ProcList(basestack As basetask, rest$, lang As Long) As Boolean
-Dim p As Double
+Dim p As Double, again$, Clsid() As GUID, LNames() As String, clsNumber As Long, i As Long, probe$, what$
+Dim usemodule As Boolean, where As Long, page$
 If FastSymbol(rest$, "!") Then
 mylist basestack, -2  ' proportional
+ElseIf IsLabelSymbolNew(rest$, "¡–œ", "LIB", lang) Then
+
+If IsLabelSymbolNew(rest$, "”‘œ", "TO", lang) Then
+If HERE$ <> "" Then
+    MyEr "Only in command line interpreter", "Ã¸ÌÔ ÛÙÔÌ ÏÂÙ·ˆÒ·ÛÙﬁ „Ò·ÏÏﬁÚ"
+    Exit Function
+End If
+
+If IsLabelOnly(rest$, what$) = 0 Then
+    MyEr "Expect a module name", "–ÂÒﬂÏÂÌ· ›Ì· ¸ÌÔÏ· ÙÏﬁÏ·ÙÔÚ"
+    Exit Function
+End If
+what$ = myUcase(what$, True)
+If Not subHash.Find(what$, where) Then
+If lang = 1 Then
+where = GlobalSub(what$, "\\ End for Automatic list" + vbCrLf)
+Else
+where = GlobalSub(what$, "\\ ‘›ÎÔÚ ¡ıÙ¸Ï·ÙÁÚ ÎﬂÛÙ·" + vbCrLf)
+End If
+End If
+usemodule = True
+
+End If
+
+'' read a name and give a list
+'' use Choose.Object
+'' List Lib ?
+If ObjectCatalog.count <> 0 Then again$ = "!"
+' use Choose.object + to make it again
+If ProcChooseObj(basestack, again$, lang) Then
+' list1 is a glist control
+If Form1.List1.ListIndex = -1 Then ProcList = True: Exit Function
+    If Form1.List1.listcount > 0 Then
+                ObjectCatalog.index = Form1.List1.ListIndex
+        If Not usemodule Then
+                basestack.soros.PushStr ObjectCatalog.Value
+                ProcList = MyReport(basestack, "letter$", lang)
+        End If
+        On Error GoTo there
+        If GetAllCoclasses(ObjectCatalog.Value, Clsid(), LNames(), clsNumber) Then
+        If Not usemodule Then If clsNumber > 0 Then ProcList = MyReport(basestack, "{CoClasses - Objects}", lang)
+        For i = 0 To clsNumber - 1
+        If usemodule Then
+            If lang = 1 Then
+                page$ = page$ + "Declare "
+            Else
+                page$ = page$ + "ºÒÈÛÂ "
+            End If
+            page$ = page$ + LNames(i) + " " + Chr$(34) + GetGUIDstr(Clsid(i)) + Chr$(34) + vbCrLf
+        Else
+        probe$ = strProgID(Clsid(i))
+        basestack.soros.PushStr GetGUIDstr(Clsid(i))
+        If probe$ = "" Then
+        basestack.soros.PushStr LNames(i)
+        Else
+        basestack.soros.PushStr probe$
+        End If
+        
+        ProcList = MyReport(basestack, "quote$(letter$)+{, }+quote$(letter$)", lang)
+        End If
+        Next i
+         If usemodule Then
+         sbf(where).sb = page$ + sbf(where).sb
+         
+         End If
+       ' If Not UnloadLibrary(ObjectCatalog.Value) Then
+        'MyEr "Can't Unload library", "ƒÂÌ ÏÔÒ˛ Ì· ÓÂˆÔÒÙ˛Û˘ ÙÁÌ ‚È‚ÎÈÔËﬁÍÁ"
+        'End If
+        End If
+      ProcList = True
+    End If
+Else
+ProcList = True
+End If
+Exit Function
 ElseIf IsExp(basestack, rest$, p) Then
 mylist basestack, CLng(p)
+
 Else
 mylist basestack
 End If
 MyDoEvents1 basestack.Owner
 ProcList = True
+Exit Function
+there:
+MyEr Err.Description, Err.Description
+Err.Clear
 End Function
 Function ProcFKey(bstack As basetask, rest$, lang As Long) As Boolean
 Dim i As Long, p As Double, s$, prive
@@ -34735,9 +35016,19 @@ ss$ = .StackItem(i)
     Else
     s$ = s$ & Chr(34) + ss$ & Chr(34)
     End If
+Case ">"
+If lang = 1 Then
+ss$ = "[optional]"
+Else
+ss$ = "[ÒÔ·ÈÒÂÙÈÍ¸]"
+End If
+    
+    s$ = s$ & ss$
+    
 
 Case Else
 Set myobject = .StackItem(i)
+If Not myobject Is Nothing Then
 If TypeOf myobject Is mHandler Then
 
 Select Case myobject.T1
@@ -34748,6 +35039,7 @@ Case 2
 Case Else
     s$ = s$ + "*[" + Typename(myobject.objref) + "]"
 End Select
+End If
 Else
     s$ = s$ + "*[" + Typename(myobject) + "]"
     End If
@@ -35393,7 +35685,7 @@ prive = GetCode(bstack.Owner)
                         If p <> -1 Then
                             If IsLabelSymbolNew(rest$, "Ÿ”", "AS", lang) Then  ' CHANGE MENU ITEM IN AN OPEN MENU
                                 If IsStrExp(bstack, rest$, s$) Then
-                                    Form1.List1.List(CLng(p)) = s$
+                                    Form1.List1.list(CLng(p)) = s$
                                 Else
                                    MissStringExpr
                                   MyMenu = False
@@ -35415,7 +35707,7 @@ prive = GetCode(bstack.Owner)
                                 If IsLabelSymbolNew(rest$, "Ÿ”", "AS", lang) Then  ' CHANGE MENU ITEM IN AN OPEN MENU
                                 ' IN A THREAD OR IN A @ VARIANT
                                     If IsStrExp(bstack, rest$, s$) Then
-                                        Form1.List1.List(CLng(p)) = s$
+                                        Form1.List1.list(CLng(p)) = s$
                                     Else
                                         MissStringExpr
                                         MyMenu = False
@@ -35498,7 +35790,7 @@ If FastSymbol(rest$, "@") Then
     Form1.List1.Visible = False
     If Not par Then Form1.List1.HeadLine = ""
     End If
-    
+    If entrypoint = 2 Then GoTo ekei
     Form1.List1.enabled = False
     
     Form1.List1.Clear
@@ -35525,7 +35817,7 @@ ekei:
     With Form1.List1
             
             For it = it - 1 To 0 Step -1
-            If TextWidth(bstack.Owner, .List(it)) > f Then f = TextWidth(bstack.Owner, .List(it))
+            If TextWidth(bstack.Owner, .list(it)) > f Then f = TextWidth(bstack.Owner, .list(it))
             
             Next
     End With
@@ -37756,7 +38048,7 @@ ElseIf IsStrExp(basestack, rest$, ss$) Then
 RemoveDll ss$
 Else
 If sb2used > 0 Then
-If subHash.Count > 0 Then subHash.ReduceHash subHash.Count - 1, sbf()
+If subHash.count > 0 Then subHash.ReduceHash subHash.count - 1, sbf()
     If UBound(sbf()) / 2 > sb2used And UBound(sbf()) > 19 Then
        ReDim Preserve sbf(UBound(sbf()) / 2 + 1) As modfun
          
@@ -38786,7 +39078,7 @@ Set bstack.Sorosref = bb
             'f$ = aString$
             
            '' WE ARE GOING TO OUR MODULE
-            HERE$ = F1$
+            HERE$ = evCom.modulenameonly
             If FastCallModule(bstack, klm) <> 1 Then
             
             
@@ -38873,37 +39165,16 @@ Dim i As Long, frm$
  
 End Function
 
-Function MakeATypeLib(v As Variant) As FastCollection
+Function MakeATypeLib(v As Variant, Optional usetypelib As Boolean = False) As FastCollection
     Dim obj             As Object
-    Dim Members()       As enmeinf
-
-    Dim i               As Integer
-    Dim strName         As String
-
     ' create the requested object
     
     Set obj = v
+    If usetypelib Then
+        ' find typelib and load it
 
-    ' get its members (properties, functions)
-    Members = GetObjMembers(obj)
-    For i = 0 To UBound(Members) - 1
-        strName = Members(i).name
-        Select Case Members(i).invkind
-            Case INVOKE_FUNC:
-                strName = "Function"
-            Case INVOKE_PROPERTY_GET:
-                strName = "Property Get"
-            Case INVOKE_PROPERTY_PUT:
-                strName = "Property Let"
-            Case INVOKE_PROPERTY_PUTREF:
-                strName = "Property Set"
-        End Select
-        If MakeATypeLib Is Nothing Then Set MakeATypeLib = New FastCollection
-        If Members(i).params > 0 Then
-            MakeATypeLib.AddKey Members(i).name, strName + " {" + Str$(Members(i).params) + " }"
-        Else
-            MakeATypeLib.AddKey Members(i).name, strName
-        End If
-    Next
+    Else
+    Call GetObjMembers(MakeATypeLib, obj)
+    End If
     Set obj = Nothing
 End Function

@@ -123,7 +123,7 @@ End Type
 
 Private Type SAFEARRAYBOUND
     cElements                   As Long
-    lLbound                     As Long
+    lLBound                     As Long
 End Type
 
 Private Type SAFEARRAY_1D
@@ -135,7 +135,7 @@ Private Type SAFEARRAY_1D
    Bounds(0 To 0)               As SAFEARRAYBOUND
 End Type
 
-Private Enum VARENUM
+Private Enum Varenum
     VT_EMPTY = 0
     VT_NULL = 1
     VT_I2 = 2
@@ -215,11 +215,12 @@ Private pVTblTarget As Long
 Private oSink       As Object
 Private dwCookie    As Long
 
-Private iid_event   As UUID
+Private iid_event   As GUID
 
 Private blnAttached As Boolean
 ' m2000 connect
 Public modulename$  ' module name plus name of object
+Public modulenameonly$
 Public VarIndex As Long
 ' by Edanmo
 Private Sub pvSetParamArray(ByVal Ptr As Long, aParams() As Variant)
@@ -321,7 +322,7 @@ Private Function pvGetParamArray(ByVal Ptr As Long, numArg As Long) As Variant()
     ' array pointing to the param array
     With SafeArray
         .Bounds(0).cElements = tDPAR.cArgs
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .cDims = 1
         .cbElements = 16
         .pvData = tDPAR.rgPointerToVariantArray
@@ -342,7 +343,7 @@ Private Function pvGetParamArray(ByVal Ptr As Long, numArg As Long) As Variant()
  
 End Function
 
-Private Function GetMemberName(obj As Object, ByVal dispid As Long, IID As UUID, first$) As String
+Private Function GetMemberName(obj As Object, ByVal dispid As Long, IID As GUID, first$) As String
     Dim oTypeLib    As ITypeLib
     Dim pTypeLib    As Long
     Dim pVTblTpLib  As Long
@@ -366,7 +367,7 @@ Private Function GetMemberName(obj As Object, ByVal dispid As Long, IID As UUID,
 
     ' get ITypeInfo
     hRet = CallPointer(oDispatch.GetTypeInfo, ObjPtr(obj), 0, LCID_DEF, VarPtr(pTypeInfo))
-    If hRet Then Exit Function
+    If hRet Then GoTo finalize
 
     ' ITypeInfo VTable
     CpyMem pVTblTpInfo, ByVal pTypeInfo, 4
@@ -377,10 +378,7 @@ Private Function GetMemberName(obj As Object, ByVal dispid As Long, IID As UUID,
     hRet = CallPointer(oTypeInfo.GetNames, pTypeInfo, dispid, VarPtr(strName), 1, VarPtr(pcNames))
     If Len(strName) > 0 Then first$ = strName$: strName = ""
     hRet = CallPointer(oTypeInfo.GetContainingTypeLib, pTypeInfo, VarPtr(pTypeLib), VarPtr(dwIndex))
-    ''If hRet Then
-      '  GetMemberName = dispid
-       ' Exit Function
-    ''End If
+    If hRet Then GoTo finalize
 
     ' ITypeLib VTable
     CpyMem pVTblTpLib, ByVal pTypeLib, 4
@@ -388,10 +386,8 @@ Private Function GetMemberName(obj As Object, ByVal dispid As Long, IID As UUID,
 
     ' GetTypeInfoOfGUID
     hRet = CallPointer(oTypeLib.GetTypeInfoOfGuid, pTypeLib, VarPtr(iid_event), VarPtr(pTypeInfo))
-    If hRet Then
-'        GetMemberName = dispid
- '       Exit Function
-    End If
+    If hRet Then GoTo finalize
+
 
     ' ITypeInfo VTable
     CpyMem pVTblTpInfo, ByVal pTypeInfo, 4
@@ -399,7 +395,7 @@ Private Function GetMemberName(obj As Object, ByVal dispid As Long, IID As UUID,
 
     ' GetNames
     hRet = CallPointer(oTypeInfo.GetNames, pTypeInfo, dispid, VarPtr(strName), 1, VarPtr(pcNames))
-
+finalize:
     If Len(strName) = 0 Then
         ' no string... :(
         ' instead return the dispip
@@ -429,7 +425,7 @@ Public Sub FireEvent(ByVal dispid As Long, ByVal params As Long)
     ' forward the event
    ' RaiseEvent EventRaised(strEvent, vParams)
    On Error Resume Next
-    Debug.Print "FireEvent", strEvent, what$
+ ''   Debug.Print "FireEvent", strEvent, what$
  If Not CallEventFromCOM(Me, strEvent, what$, NumVar, vParams()) Then
     MyEr "Problem With Event: " + strEvent, "Πρόβλημα με το γεγονός: " + strEvent
  End If
@@ -454,7 +450,7 @@ End Sub
 Public Function Attach(obj As Object) As Boolean
     Dim cReturned   As Long
     Dim hRet        As Long
-    Dim iid_ICP     As UUID
+    Dim iid_ICP     As GUID
 
     ' already connected to an object?
     If blnAttached Then Detach

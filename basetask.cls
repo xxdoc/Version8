@@ -173,28 +173,28 @@ Public Sub DropNdot(n As Long)
 ''On Error Resume Next
 If n = 0 Then Exit Sub
 Dim i As Long
-If dotcollection.Count - n < 0 Then
+If dotcollection.count - n < 0 Then
 Set dotcollection = New Collection
 Else
-For i = dotcollection.Count To dotcollection.Count - n + 1 Step -1
-dotcollection.Remove dotcollection.Count
+For i = dotcollection.count To dotcollection.count - n + 1 Step -1
+dotcollection.Remove dotcollection.count
 Next i
 End If
 End Sub
 
 Public Sub MoveNameDot(A$)
 If A$ = "" Then Exit Sub
-If dotcollection.Count = 0 Then
+If dotcollection.count = 0 Then
 dotcollection.Add A$
 Else
-dotcollection.Add A$, , , dotcollection.Count
+dotcollection.Add A$, , , dotcollection.count
 End If
 End Sub
 Public Function GetDotNew(A$, dotnum&) As Boolean
 If Look2Parent Then GetDotNew = Parent.GetDotNew(A$, dotnum&): Exit Function
 
 On Error Resume Next
-If dotcollection.Count = 0 Then
+If dotcollection.count = 0 Then
 If UseGroupname <> "" Then
  If InStr(A$, "(") > 0 Then
  If AscW(Left$(A$, 1)) > 255 Then
@@ -211,7 +211,7 @@ If UseGroupname <> "" Then
 Else
 newrun:
 On Error Resume Next
-If dotcollection.Count < dotnum Then
+If dotcollection.count < dotnum Then
 '' wrong
 If UseGroupname = "" Then
 
@@ -249,7 +249,7 @@ Public Function GetDot(A$, st&) As Boolean
 On Error Resume Next
 Dim i&
 Err.Clear
-If dotcollection.Count = 0 Then A$ = Mid$(A$, 2): Exit Function
+If dotcollection.count = 0 Then A$ = Mid$(A$, 2): Exit Function
 Do While Mid$(A$, st&, 1) = " "
 st& = st& + 1
 If st& > Len(A$) Then Exit Function
@@ -437,7 +437,7 @@ End Function
 Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 '' use threadsnames
 Dim aa As mThreadref, A$
-If threadsnames.Count > 0 Then
+If threadsnames.count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
 ' For Each aa In threadsnames
@@ -469,7 +469,7 @@ End Function
 Public Function ThreadsNumber() As Long
 '' use threadsnames
 Dim aa As mThreadref, kk
-If threadsnames.Count > 0 Then
+If threadsnames.count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
 Set aa = threadsnames.ValueObj
@@ -486,7 +486,7 @@ Dim aa As mThreadref, Tid As Long
 Dim thatProcess As TaskInterface
 Dim thatBasetask As basetask
 
-If threadsnames.Count > 0 Then
+If threadsnames.count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
 Set aa = threadsnames.ValueObj
@@ -515,6 +515,14 @@ Set lastobj = Nothing
 Set FuncObj = Nothing
 End Sub
 
+Public Function IsOptional() As Boolean
+If parentSoros.LookNull Then
+    IsOptional = False
+ElseIf parentSoros.PopType = ">" Then
+    parentSoros.drop 1
+    IsOptional = True
+End If
+End Function
 Public Function IsNumber(r As Double) As Boolean
 If parentSoros.LookNull Then
 r = parentSoros.PopVal

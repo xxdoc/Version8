@@ -1,13 +1,13 @@
 Attribute VB_Name = "Fcall"
 ' This is a module from Olaf Schmidt changed for M2000 needs
-Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef RETVAR As Variant) As Long
-Private Declare Function GetProcByName Lib "KERNEL32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function GetProcByOrdinal Lib "KERNEL32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal nOrdinal As Long) As Long
-Private Declare Function LoadLibrary Lib "KERNEL32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
-Private Declare Function FreeLibrary Lib "KERNEL32" (ByVal hLibModule As Long) As Long
-Private Declare Function lstrlenA Lib "KERNEL32" (ByVal lpString As Long) As Long
-Private Declare Function lstrlenW Lib "KERNEL32" (ByVal lpString As Long) As Long
-Private Declare Sub RtlMoveMemory Lib "KERNEL32" (dst As Any, src As Any, ByVal BLen As Long)
+Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal callconv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef RETVAR As Variant) As Long
+Private Declare Function GetProcByName Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GetProcByOrdinal Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal nOrdinal As Long) As Long
+Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
+Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
+Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
+Private Declare Sub RtlMoveMemory Lib "kernel32" (dst As Any, src As Any, ByVal BLen As Long)
 
 Private Enum CALLINGCONVENTION_ENUM
   cc_fastcall
@@ -124,18 +124,18 @@ End Function
 
 Public Function GetFuncPtr(sLib As String, sFunc As String) As Long
 
-Dim hlib As Long
+Dim hLib As Long
 
     If LibHdls.Find(sLib) Then
-        hlib = LibHdls.Value
+        hLib = LibHdls.Value
     Else
      
-      hlib = LoadLibrary(sLib)
-      If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
-      LibHdls.AddKey sLib, hlib
+      hLib = LoadLibrary(StrPtr(sLib))
+      If hLib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
+      LibHdls.AddKey sLib, hLib
     End If
   'End If
-  GetFuncPtr = GetProcByName(hlib, sFunc)
+  GetFuncPtr = GetProcByName(hLib, sFunc)
   If GetFuncPtr = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
 End Function
 Public Sub RemoveDll(sLib As String)
@@ -146,20 +146,20 @@ End If
 End Sub
 
 Public Function GetFuncPtrOrd(sLib As String, sFunc As String) As Long
-Dim hlib As Long
+Dim hLib As Long
 Dim lfunc As Long
 
 lfunc = val(Mid$(sFunc, 2))
 
     If LibHdls.Find(sLib) Then
-        hlib = LibHdls.Value
+        hLib = LibHdls.Value
     Else
-      hlib = LoadLibrary(sLib)
-      If hlib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
-      LibHdls.AddKey sLib, hlib
+      hLib = LoadLibrary(StrPtr(sLib))
+      If hLib = 0 Then Err.Raise vbObjectError, , "Dll not found (or loadable): " & sLib
+      LibHdls.AddKey sLib, hLib
     End If
    ' End If
-  GetFuncPtrOrd = GetProcByOrdinal(hlib, lfunc)
+  GetFuncPtrOrd = GetProcByOrdinal(hLib, lfunc)
   If GetFuncPtrOrd = 0 Then MyEr "EntryPoint not found: " & sFunc & " in: " & sLib, "EntryPoint not found: " & sFunc & " στο: " & sLib
 End Function
 Public Function GetBStrFromPtr(lpSrc As Long, Optional ByVal ANSI As Boolean) As String
@@ -185,14 +185,16 @@ Wend
   Set LibHdls = Nothing
 End Sub
 Function IsWine()
-Static www As Boolean, wwb As Boolean, hlib As Long
+Static www As Boolean, wwb As Boolean, hLib As Long, ntdll As String
+
 If www Then
 Else
 Err.Clear
 On Error Resume Next
-hlib = LoadLibrary("ntdll")
-wwb = GetProcByName(hlib, "wine_get_version") <> 0
-If hlib <> 0 Then FreeLibrary hlib
+ntdll = "ntdll"
+hLib = LoadLibrary(StrPtr(ntdll))
+wwb = GetProcByName(hLib, "wine_get_version") <> 0
+If hLib <> 0 Then FreeLibrary hLib
 If Err.number > 0 Then wwb = False
 www = True
 End If

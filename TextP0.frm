@@ -224,7 +224,7 @@ Public Point2Me As Object
 Private Declare Function GetCommandLineW Lib "KERNEL32" () As Long
 
 Private Declare Sub PutMem4 Lib "msvbvm60" (ByVal Ptr As Long, ByVal Value As Long)
-Private Declare Function SysAllocStringLen Lib "oleaut32" (ByVal Ptr As Long, ByVal Length As Long) As Long
+Private Declare Function SysAllocStringLen Lib "oleaut32" (ByVal Ptr As Long, ByVal length As Long) As Long
 
 Public Function commandW() As String
 Static mm$
@@ -339,7 +339,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
+.Form1sdnEnabled = i > 0 And (.length - .SelStart) > i
 .Form1supEnabled = i > 0 And .SelStart > i
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -357,7 +357,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
+.Form1sdnEnabled = i > 0 And (.length - .SelStart) > i
 .Form1supEnabled = i > 0 And .SelStart > i
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -379,7 +379,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > .SelLength
+.Form1sdnEnabled = i > 0 And (.length - .SelStart) > .SelLength
 .Form1supEnabled = i > 0 And .SelStart > .SelLength
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -408,7 +408,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
+.Form1sdnEnabled = i > 0 And (.length - .SelStart) > i
 .Form1supEnabled = i > 0 And .SelStart > i
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -430,7 +430,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > .SelLength
+.Form1sdnEnabled = i > 0 And (.length - .SelStart) > .SelLength
 .Form1supEnabled = i > 0 And .SelStart > .SelLength
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -582,9 +582,9 @@ TEXT1.SelStartSilent = TEXT1.SelStart  'MOVE CHARPOS TO SELSTART
 
 el = TEXT1.Charpos  ' charpos maybe is in the start or the end of block
 s$ = TEXT1.SelText
-OldLcid = TEXT1.mdoc.lcid
+OldLcid = TEXT1.mdoc.LCID
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
 
 l = el + 1
 If EditTextWord Then
@@ -618,7 +618,7 @@ End If
 Loop Until (w = eW And l = el) Or SAFETY = 2
 
 End If
-TEXT1.mdoc.lcid = OldLcid
+TEXT1.mdoc.LCID = OldLcid
 'TEXT1.mdoc.WrapAgainColor
 TEXT1.mdoc.WrapAgain
 
@@ -643,9 +643,9 @@ Else
 neo$ = InputBoxN("Replace Word (use Shift for Stop)", "Text Editor", s$)
 End If
 If neo$ = "" Then Exit Sub
-OldLcid = TEXT1.mdoc.lcid
+OldLcid = TEXT1.mdoc.LCID
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
 If Len(neo$) >= Len(s$) Then
     Set mDoc10 = New Document
     mDoc10 = neo$
@@ -751,7 +751,7 @@ End If
 Loop Until SAFETY = 2 Or KeyPressed(16)
 TEXT1.glistN.dropkey = False
 End If
-TEXT1.mdoc.lcid = OldLcid
+TEXT1.mdoc.LCID = OldLcid
 If w2 > 0 Then TEXT1.mdoc.WrapAgainBlock w2, w2:  TEXT1.mdoc.ColorThis w2
 
 'TEXT1.mdoc.WrapAgainColor
@@ -771,9 +771,9 @@ w = TEXT1.mdoc.MarkParagraphID   ' this is the not the order
 TEXT1.SelStartSilent = TEXT1.SelStart
 l = TEXT1.Charpos + 1
 
-OldLcid = TEXT1.mdoc.lcid
+OldLcid = TEXT1.mdoc.LCID
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
 If EditTextWord Or anystr Then
     If anystr Then
   If Not TEXT1.mdoc.FindStrDown(s$, w, l) Then GoTo sdnOut
@@ -790,7 +790,7 @@ TEXT1.ParaSelStart = l
 TEXT1.glistN.enabled = True
 TEXT1.SelLength = Len(s$)
 sdnOut:
-TEXT1.mdoc.lcid = OldLcid
+TEXT1.mdoc.LCID = OldLcid
 End Sub
 
 Public Sub supsub()
@@ -804,9 +804,9 @@ Dim l As Long, w As Long, TempLcid As Long, OldLcid As Long
 w = TEXT1.mdoc.MarkParagraphID
 TEXT1.SelStartSilent = TEXT1.SelStart - (TEXT1.SelLength > 1)
 l = TEXT1.Charpos + 1
-OldLcid = TEXT1.mdoc.lcid
+OldLcid = TEXT1.mdoc.LCID
 TempLcid = FoundLocaleId(s$)
-If TempLcid <> 0 Then TEXT1.mdoc.lcid = TempLcid
+If TempLcid <> 0 Then TEXT1.mdoc.LCID = TempLcid
 If EditTextWord Or anystr Then
    If anystr Then
    If Not TEXT1.mdoc.FindStrUp(s$, w, l) Then GoTo sdupOut
@@ -823,7 +823,7 @@ TEXT1.ParaSelStart = l
 TEXT1.glistN.enabled = True
 TEXT1.SelLength = Len(s$)
 sdupOut:
-TEXT1.mdoc.lcid = OldLcid
+TEXT1.mdoc.LCID = OldLcid
 End Sub
 Public Function InIDECheck() As Boolean
     m_bInIDE = True
