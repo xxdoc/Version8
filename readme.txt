@@ -1,11 +1,10 @@
 Version 8.1
-Revision 22
+Revision 25
 
-Latest language reference
+
+http://georgekarras.blogspot.gr/
+
+
+https://github.com/M2000Interpreter/Version8
+
 https://drive.google.com/open?id=0BwSrrDW66vvvdER4bzd0OENvWlU
-latest code
-(you can find m2000.exe/m2000.dll also)
-https://www.dropbox.com/sh/xq8j8t7kbj37ms0/AABKIv4d9qXTLbEFPvfjPLb0a?dl=0
-
-
-

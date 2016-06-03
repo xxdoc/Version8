@@ -158,13 +158,6 @@ Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
 If toplim < 0 Then Stop
 top1 = toplim
 Done = Find(RHS)
-If Not Done Then
-problem "BAD Enter Remove" + Str$(RHS)
-Stop
-Exit Sub
-Else
-        If problem("Enter Remove" + Str$(RHS) + " count" + Str$(toplim)) Then Stop
-        End If
 If Done Then
         If ParentIndex > -1 Then
             PriveSpace(ParentIndex).Pleft = PriveSpace(index).Pleft
@@ -172,9 +165,7 @@ If Done Then
         Else
         
         Hash(PriveSpace(index).lastpos) = PriveSpace(index).Pleft
-'        If PriveSpace(index).Pleft Then
-'GoTo HERE
- '       End If
+
         End If
         SwapVariant vvv, PriveSpace(top1).iValue
         PriveSpace(index).iValue = -1
@@ -198,18 +189,14 @@ If k >= 0 Then
 
         End If
   
-HERE:
+here:
        toplim = toplim - 1
-         
-       If toplim <> top1 - 1 Then Stop
-        
+      
         
        
         
   ReduceHash toplim
-      
-    '  If top1 = toplim Then Stop
-   '   If problem("after reduce toplim") Then Stop
+
 End If
 End Sub
 Property Let Value(RHS As Variant)
@@ -440,13 +427,13 @@ End If
 End Function
 
 Private Sub ItemCreator(Key As String, nValue As Variant)
-Dim a As Long, kk As Long
+Dim A As Long, kk As Long
 Done = False
 kk = HashFunc0(Key)
 If ExistKey2(Key, kk) Then Exit Sub  ' done is false
-a = Malloc()
+A = Malloc()
 
-With PriveSpace(a)
+With PriveSpace(A)
     .Key = Key
     If IsObject(nValue) Then
     Set .iValue = nValue
@@ -455,25 +442,25 @@ With PriveSpace(a)
     End If
     .firsthash = kk
 End With
-place HashFunc1(kk, Key), a
-index = a
+place HashFunc1(kk, Key), A
+index = A
 Done = True
 End Sub
 
 Property Get Percent()
 Percent = 100 * count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal a)
+Private Sub place(ByVal b, ByVal A)
     Dim k As Long
     k = Hash(b)
-    Hash(b) = a + 1
-    PriveSpace(a).Pleft = k
-    PriveSpace(a).lastpos = b
+    Hash(b) = A + 1
+    PriveSpace(A).Pleft = k
+    PriveSpace(A).lastpos = b
 End Sub
-Private Function HashFunc0(a$) As Long
+Private Function HashFunc0(A$) As Long
  Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
-  p4 = Len(a$) * 2 '- 2
-  p2 = StrPtr(a$): p4 = p2 + p4
+  p4 = Len(A$) * 2 '- 2
+  p2 = StrPtr(A$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, p1
   p3 = UINT(p1)
@@ -491,15 +478,15 @@ End Function
 Private Function HashFunc2(where As Long)
 HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFAFF7) + Len(PriveSpace(where).Key) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc1(nkey As Long, a$)
-HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
+Private Function HashFunc1(nkey As Long, A$)
+HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + Len(A$) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc(a$)
-HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
+Private Function HashFunc(A$)
+HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFAFF7) + Len(A$) + hashlen + 1, hashlen)
 End Function
-Private Function UINT(ByVal a As Integer) As Long
+Private Function UINT(ByVal A As Integer) As Long
  Dim b As Integer
- b = a And &HFFFF
+ b = A And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -511,20 +498,20 @@ Private Function UINT(ByVal a As Integer) As Long
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal a As Double) As Double
-If a > CDbl(2147483647) Then a = CDbl(2147483647)
-If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
-If a < 0 Then
-uintnew = 4294967296# + a
+Private Function uintnew(ByVal A As Double) As Double
+If A > CDbl(2147483647) Then A = CDbl(2147483647)
+If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
+If A < 0 Then
+uintnew = 4294967296# + A
 Else
-uintnew = a
+uintnew = A
 End If
 End Function
 
-Private Sub SwapVariant(ByRef a As Variant, ByRef b As Variant)
+Private Sub SwapVariant(ByRef A As Variant, ByRef b As Variant)
    Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
-   CopyMemory t(0), ByVal VarPtr(a), 16
-   CopyMemory ByVal VarPtr(a), ByVal VarPtr(b), 16
+   CopyMemory t(0), ByVal VarPtr(A), 16
+   CopyMemory ByVal VarPtr(A), ByVal VarPtr(b), 16
    CopyMemory ByVal VarPtr(b), t(0), 16
 End Sub
 ' only for tests
