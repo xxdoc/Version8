@@ -279,6 +279,7 @@ Dim btASM As Long
             VirtualUnlock btASM, MAXCODE
         VirtualFree btASM, MAXCODE, MEM_DECOMMIT
         VirtualFree btASM, 0, MEM_RELEASE
+        Debug.Print btASM
 End Function
 
 Private Sub AddPush(pASM As Long, lng As Long)

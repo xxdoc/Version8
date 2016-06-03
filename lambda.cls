@@ -24,6 +24,8 @@ Private myVar() As Vars, myHash As New Hash
 
 Sub CopyToVar(bstack As basetask, glb As Boolean, v() As Variant)
 Dim i As Long, nm$, where As Long, dummy As Variant, x1 As Long
+bstack.IamLambda = True
+
 If used > 0 Then
 For i = 0 To used - 1
     myHash.ReadVar i, nm$, where
@@ -36,7 +38,7 @@ For i = 0 To used - 1
                         If glb Then
                         GlobalSub nm$ + "()", "CALL EXTERN " & CStr(myVar(where).there)
                     Else
-                        GlobalSub HERE$ & "." & bstack.GroupName & nm$ + "()", "CALL EXTERN " & CStr(myVar(where).there)
+                        GlobalSub here$ & "." & bstack.GroupName & nm$ + "()", "CALL EXTERN " & CStr(myVar(where).there)
                 End If
     Set v(myVar(where).there) = myVar(where).Value
     ElseIf Typename(myVar(where).Value) = "Group" Then
@@ -45,6 +47,7 @@ For i = 0 To used - 1
      UnFloatGroup bstack, nm$, myVar(where).there, aa
      Set aa = Nothing
      Else
+     
      Set v(myVar(where).there) = myVar(where).Value
     End If
     
@@ -57,6 +60,7 @@ End Sub
 
 Sub CopyFromVar(bstack As basetask, v() As Variant)
 Dim i As Long, aa As Group
+bstack.IamLambda = False
 For i = 0 To used - 1
     If IsObject(v(myVar(i).there)) Then
         If Typename(myVar(where).Value) = "Group" Then
@@ -78,7 +82,7 @@ Next i
 
 End Sub
 
-Sub FeedNonLocal(aName$, val As Variant)
+Sub FeedNonLocal(aName$, val As Variant, v() As Variant)
 Dim where As Long
 If Not myHash.Find(aName$, where) Then
 where = GetFree()
@@ -87,6 +91,12 @@ End If
 If IsObject(val) Then
 '' maybe here we can copy
 '' check first the type
+If TypeOf val Is mHandler Then
+If val.Indirect > -1 Then
+Set myVar(where).Value = v(val.Indirect)
+Exit Sub
+End If
+End If
     Set myVar(where).Value = val
 Else
     myVar(where).Value = val
@@ -132,21 +142,22 @@ If Typename(v(myVar(where).there)) = "lambda" Then
     .CopyTo b, v()
     End With
     Set VR = b
-    A.FeedNonLocal nm$, VR
+    A.FeedNonLocal nm$, VR, v()
     Set VR = Nothing
     Set b = Nothing
 Else
-    A.FeedNonLocal nm$, v(myVar(where).there)
+    A.FeedNonLocal nm$, v(myVar(where).there), v()
 End If
 Else
 If Typename(myVar(where).Value) = "lambda" Then
+On Error Resume Next
     myVar(where).Value.CopyTo b, v()
     Set VR = b
-    A.FeedNonLocal nm$, VR
+    A.FeedNonLocal nm$, VR, v()
     Set VR = Nothing
     Set b = Nothing
 Else
-    A.FeedNonLocal nm$, myVar(where).Value
+    A.FeedNonLocal nm$, myVar(where).Value, v()
 End If
 End If
 Next i

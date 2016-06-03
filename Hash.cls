@@ -26,7 +26,7 @@ Private PriveSpace() As item
 Dim MaxSpace As Long
 Dim hashlen As Long
 Dim toplim As Long
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal Addr As Long, retval As Integer)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
 
 Private Hash() As Long
 Private Sub Class_Initialize()
@@ -107,8 +107,8 @@ Private Function Malloc() As Long
         toplim = toplim + 1
         Malloc = toplim
 End Function
-Property Get Count()
-Count = toplim + 1
+Property Get count()
+count = toplim + 1
 End Property
 Friend Function Find(Key As String, num As Long) As Boolean
 Dim k As Long
@@ -163,9 +163,9 @@ Loop Until k < 0
 End If
 End Function
 Friend Sub ItemCreator(Key As String, num As Long, Optional isref As Boolean = False)
-Dim A As Long
-A = Malloc()
-With PriveSpace(A)
+Dim a As Long
+a = Malloc()
+With PriveSpace(a)
     .Key = Key
     .NDX = num
     If isref Then
@@ -175,44 +175,44 @@ With PriveSpace(A)
     End If
     .firsthash = HashFunc0(Key)
 End With
-place HashFunc(Key), A
+place HashFunc(Key), a
 End Sub
 Property Get Percent()
-Percent = Count / hashlen
+Percent = count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal A)
+Private Sub place(ByVal b, ByVal a)
 Dim k As Long
 
     k = Hash(b)
-    Hash(b) = A + 1
-    PriveSpace(A).Pleft = k
-    PriveSpace(A).lastpos = b
+    Hash(b) = a + 1
+    PriveSpace(a).Pleft = k
+    PriveSpace(a).lastpos = b
 End Sub
-Private Sub ab(ByVal A As Long, b As Long)
-b = (b + A + 1024 * A) Xor &H83F3CF
+Private Sub ab(ByVal a As Long, b As Long)
+b = (b + a + 1024 * a) Xor &H83F3CF
 End Sub
-Public Function HashFunc0(A$) As Long
-Dim i&, p2 As Long, P1 As Integer, p4 As Long, k As Long, p3 As Long
-  p4 = Len(A$) * 2 '- 2
-  p2 = StrPtr(A$): p4 = p2 + p4
+Public Function HashFunc0(a$) As Long
+Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
+  p4 = Len(a$) * 2 '- 2
+  p2 = StrPtr(a$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
-  GetMem2 i, P1
-  p3 = UINT(P1)
+  GetMem2 i, p1
+  p3 = UINT(p1)
   HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
   Next i
   k = 2
   For i = p4 - 8 To p2 Step -2
-  GetMem2 i, P1
-  p3 = UINT(P1)
+  GetMem2 i, p1
+  p3 = UINT(p1)
   HashFunc0 = (HashFunc0 + p3 + 1024& * p3) Xor &H83F3CF
  i = i - 2 * k
   k = k + 1
   Next i
  
 End Function
-Private Function UINT(ByVal A As Integer) As Long 'δίνει έναν integer σαν unsign integer σε long
+Private Function UINT(ByVal a As Integer) As Long 'δίνει έναν integer σαν unsign integer σε long
  Dim b As Integer
- b = A And &HFFFF
+ b = a And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -221,22 +221,22 @@ Private Function UINT(ByVal A As Integer) As Long 'δίνει έναν integer σαν unsign
  
  End Function
 Private Function HashFunc2(where As Long)
-HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFA000 + Len(PriveSpace(where).Key) + hashlen + 1), hashlen)
+HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFAFF7 + Len(PriveSpace(where).Key) + hashlen + 1), hashlen)
 End Function
 
-Private Function HashFunc(A$)
-HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFA000 + Len(A$) + hashlen + 1), hashlen)
+Private Function HashFunc(a$)
+HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFAFF7 + Len(a$) + hashlen + 1), hashlen)
 End Function
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal A As Double) As Double
-If A > CDbl(2147483647) Then A = CDbl(2147483647)
-If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
-If A < 0 Then
-uintnew = 4294967296# + A
+Private Function uintnew(ByVal a As Double) As Double
+If a > CDbl(2147483647) Then a = CDbl(2147483647)
+If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
+If a < 0 Then
+uintnew = 4294967296# + a
 Else
-uintnew = A
+uintnew = a
 End If
 End Function
 

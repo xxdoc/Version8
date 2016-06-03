@@ -45,7 +45,7 @@ Public Function FindDISPID(pobjTarget As Object, ByVal pstrProcName As Variant) 
     myptr(0) = StrPtr(pstrProcName)
     
  Set IDsp = pobjTarget
-If Not getone(Typename(pobjTarget) & "." & pstrProcName, dispid) Then
+ If Not getone(Typename(pobjTarget) & "." & pstrProcName, dispid) Then
       lngRet = IDsp.GetIDsOfNames(riid, myptr(0), 1&, cLid, arrdispid(0))
      
       If lngRet = 0 Then dispid = arrdispid(0): PushOne Typename(pobjTarget) & "." & pstrProcName, dispid

@@ -63,7 +63,7 @@ Private lastfind As String
 Private lastkey As String
 Private Hash() As Long
 Public Done As Boolean
-Public Index As Long
+Public index As Long
 Public StructLen As Long
 Private ParentIndex As Long
 Private Sub Class_Initialize()
@@ -85,7 +85,7 @@ End Sub
 
 
 Public Sub AddKey(RHS, Optional aValue As Variant)
-    Index = -1
+    index = -1
     lastkey = CStr(RHS)
     Done = False
     If Not IsMissing(aValue) Then
@@ -124,31 +124,32 @@ top1 = toplim
 If Done Then
 
         If ParentIndex > 0 Then
-            PriveSpace(ParentIndex).Pleft = PriveSpace(Index).Pleft
+            PriveSpace(ParentIndex).Pleft = PriveSpace(index).Pleft
         Else
-            Hash(PriveSpace(Index).lastpos) = PriveSpace(Index).Pleft
+            Hash(PriveSpace(index).lastpos) = PriveSpace(index).Pleft
         End If
         SwapVariant vvv, PriveSpace(top1).iValue
-        PriveSpace(Index).iValue = -1
-        PriveSpace(Index) = PriveSpace(top1)
+        PriveSpace(index).iValue = -1
+        PriveSpace(index) = PriveSpace(top1)
         Dim new_item As item
         PriveSpace(top1) = new_item
-        SwapVariant vvv, PriveSpace(Index).iValue
-        If Hash(PriveSpace(Index).lastpos) - 1 = top1 Then
-            Hash(PriveSpace(Index).lastpos) = Index + 1
+        SwapVariant vvv, PriveSpace(index).iValue
+        If Hash(PriveSpace(index).lastpos) - 1 = top1 Then
+            Hash(PriveSpace(index).lastpos) = index + 1
         Else
-            k = Hash(PriveSpace(Index).lastpos) - 1
+            k = Hash(PriveSpace(index).lastpos) - 1
             If k < 1 Then
-                Hash(PriveSpace(Index).lastpos) = Index + 1
+                Hash(PriveSpace(index).lastpos) = index + 1
             Else
                 Do
                 k1 = k
                 k = PriveSpace(k).Pleft - 1
                 Loop Until k = top1 Or k < 0
-                PriveSpace(k1).Pleft = Index + 1
+                PriveSpace(k1).Pleft = index + 1
             End If
         End If
         toplim = toplim - 1
+
       ReduceHash toplim
 End If
 End Sub
@@ -157,77 +158,100 @@ Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
 If toplim < 0 Then Stop
 top1 = toplim
 Done = Find(RHS)
+If Not Done Then
+problem "BAD Enter Remove" + Str$(RHS)
+Stop
+Exit Sub
+Else
+        If problem("Enter Remove" + Str$(RHS) + " count" + Str$(toplim)) Then Stop
+        End If
 If Done Then
+        If ParentIndex > -1 Then
+            PriveSpace(ParentIndex).Pleft = PriveSpace(index).Pleft
 
-        If ParentIndex > 0 Then
-            PriveSpace(ParentIndex).Pleft = PriveSpace(Index).Pleft
         Else
-            Hash(PriveSpace(Index).lastpos) = PriveSpace(Index).Pleft
+        
+        Hash(PriveSpace(index).lastpos) = PriveSpace(index).Pleft
+'        If PriveSpace(index).Pleft Then
+'GoTo HERE
+ '       End If
         End If
         SwapVariant vvv, PriveSpace(top1).iValue
-        PriveSpace(Index).iValue = -1
-        PriveSpace(Index) = PriveSpace(top1)
+        PriveSpace(index).iValue = -1
+        PriveSpace(index) = PriveSpace(top1)
         Dim new_item As item
         PriveSpace(top1) = new_item
-        SwapVariant vvv, PriveSpace(Index).iValue
-        If Hash(PriveSpace(Index).lastpos) - 1 = top1 Then
-            Hash(PriveSpace(Index).lastpos) = Index + 1
+        SwapVariant vvv, PriveSpace(index).iValue
+        If Hash(PriveSpace(index).lastpos) - 1 = top1 Then
+        
+            Hash(PriveSpace(index).lastpos) = index + 1
         Else
-            k = Hash(PriveSpace(Index).lastpos) - 1
-            If k < 1 Then
-                Hash(PriveSpace(Index).lastpos) = Index + 1
-            Else
+        
+            k = Hash(PriveSpace(index).lastpos) - 1
+If k >= 0 Then
                 Do
                 k1 = k
                 k = PriveSpace(k).Pleft - 1
                 Loop Until k = top1 Or k < 0
-                PriveSpace(k1).Pleft = Index + 1
-            End If
+                PriveSpace(k1).Pleft = index + 1
         End If
-        toplim = toplim - 1
-      ReduceHash toplim
+
+        End If
+  
+HERE:
+       toplim = toplim - 1
+         
+       If toplim <> top1 - 1 Then Stop
+        
+        
+       
+        
+  ReduceHash toplim
+      
+    '  If top1 = toplim Then Stop
+   '   If problem("after reduce toplim") Then Stop
 End If
 End Sub
 Property Let Value(RHS As Variant)
 Done = False
-If Index = -1 Then
+If index = -1 Then
 ItemCreator lastkey, RHS
 
 Else
-    PriveSpace(Index).iValue = RHS
+    PriveSpace(index).iValue = RHS
 End If
 Done = True
 End Property
 Property Set ValueObj(RHS As Variant)
 Done = False
-If Index = -1 Then
+If index = -1 Then
     ItemCreator lastkey, RHS
 Else
-    Set PriveSpace(Index).iValue = RHS
+    Set PriveSpace(index).iValue = RHS
 End If
 Done = True
 End Property
 Property Get sValue() As Long
 Done = False
-If Index = -1 Then
+If index = -1 Then
 Else
     Done = True
-    sValue = PriveSpace(Index).sValue
+    sValue = PriveSpace(index).sValue
 End If
 End Property
 Property Let sValue(RHS As Long)
-If Index = -1 Then
+If index = -1 Then
 Else
     Done = True
-    PriveSpace(Index).sValue = RHS
+    PriveSpace(index).sValue = RHS
 End If
 End Property
 Property Get Value() As Variant
 Done = False
-If Index = -1 Then
-ElseIf Not IsObject(PriveSpace(Index).iValue) Then
+If index = -1 Then
+ElseIf Not IsObject(PriveSpace(index).iValue) Then
     Done = True
-    Value = PriveSpace(Index).iValue
+    Value = PriveSpace(index).iValue
     
     If Typename(Value) = "Error" Then
     Value = KeyToString
@@ -237,9 +261,9 @@ End Property
 
 Property Get ValueObj() As Variant
 Done = False
-If Index = -1 Then
-ElseIf IsObject(PriveSpace(Index).iValue) Then
-    Set ValueObj = PriveSpace(Index).iValue
+If index = -1 Then
+ElseIf IsObject(PriveSpace(index).iValue) Then
+    Set ValueObj = PriveSpace(index).iValue
     Done = True
 End If
 
@@ -257,9 +281,16 @@ Private Sub ReHash()
 End Sub
 
 Private Sub ReduceHash(newTop As Long)
-    If newTop <= 40 Then
-            If MaxSpace > 40 Then
-                MaxSpace = 40
+    If newTop <= 5 Then
+            If newTop < 0 Then
+            newTop = -1
+                MaxSpace = 5
+                ReDim PriveSpace(MaxSpace) As item
+                
+                ReDim Hash(MaxSpace * 2 + 3)
+                hashlen = MaxSpace * 2 + 3
+            ElseIf MaxSpace > 40 Then
+                MaxSpace = 5
                 ReDim Preserve PriveSpace(MaxSpace) As item
                 
                 ReDim Hash(MaxSpace * 2 + 3)
@@ -307,11 +338,11 @@ End Function
 Sub Swap(key1, key2)
 Dim k As Long, c As item
 If Find(key1) Then
-k = Index
+k = index
 If Find(key2) Then
 
-    c = PriveSpace(k): PriveSpace(k) = PriveSpace(Index): PriveSpace(Index) = c
-    Index = k
+    c = PriveSpace(k): PriveSpace(k) = PriveSpace(index): PriveSpace(index) = c
+    index = k
     ReHash
 End If
 End If
@@ -319,9 +350,9 @@ End Sub
 Sub SwapValues(key1, key2)
 Dim k As Long
 If Find(key1) Then
-k = Index
+k = index
 If Find(key2) Then
-    SwapVariant PriveSpace(k).iValue, PriveSpace(Index).iValue
+    SwapVariant PriveSpace(k).iValue, PriveSpace(index).iValue
 End If
 End If
 End Sub
@@ -329,17 +360,17 @@ Sub SwapNext(key1)
 Dim k As Long
 On Error Resume Next
 If Done Then
-    k = Index
+    k = index
     If Find(key1) Then
-        SwapVariant PriveSpace(k).iValue, PriveSpace(Index).iValue
+        SwapVariant PriveSpace(k).iValue, PriveSpace(index).iValue
     End If
 End If
 End Sub
 Sub SwapByIndex(RHS As Long)
 On Error Resume Next
 If Done Then
-    SwapVariant PriveSpace(RHS).iValue, PriveSpace(Index).iValue
-    Index = RHS
+    SwapVariant PriveSpace(RHS).iValue, PriveSpace(index).iValue
+    index = RHS
 End If
 End Sub
 
@@ -353,22 +384,22 @@ Private Function Malloc() As Long
     toplim = toplim + 1
     Malloc = toplim
 End Function
-Property Get Count()
-    Count = toplim + 1
+Property Get count()
+    count = toplim + 1
 End Property
 Property Get LastKnown() As String
     LastKnown = lastfind
 End Property
 Function IsObj() As Boolean
-If Index = -1 Then
+If index = -1 Then
 Else
-IsObj = IsObject(PriveSpace(Index).iValue)
+IsObj = IsObject(PriveSpace(index).iValue)
 End If
 End Function
 Function Find(RHS) As Boolean
 Dim k As Long, Key As String
 Key = CStr(RHS)
-ParentIndex = 0
+ParentIndex = -1
 Done = False
 If Len(Key) = 0 Then Exit Function
 k = Hash(HashFunc(Key)) - 1
@@ -376,7 +407,7 @@ k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then
 Do
     If PriveSpace(k).Key = Key Then
-    Find = True: lastfind = Key: Index = k: Done = True: Exit Function
+    Find = True: lastfind = Key: index = k: Done = True: Exit Function
     End If
      ParentIndex = k
      k = PriveSpace(k).Pleft - 1
@@ -390,7 +421,7 @@ If Len(Key) = 0 Then Exit Function
 k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then
 Do
-    If PriveSpace(k).Key = Key Then ExistKey = True: Index = k: Exit Function
+    If PriveSpace(k).Key = Key Then ExistKey = True: index = k: Exit Function
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
@@ -409,13 +440,13 @@ End If
 End Function
 
 Private Sub ItemCreator(Key As String, nValue As Variant)
-Dim A As Long, kk As Long
+Dim a As Long, kk As Long
 Done = False
 kk = HashFunc0(Key)
 If ExistKey2(Key, kk) Then Exit Sub  ' done is false
-A = Malloc()
+a = Malloc()
 
-With PriveSpace(A)
+With PriveSpace(a)
     .Key = Key
     If IsObject(nValue) Then
     Set .iValue = nValue
@@ -424,25 +455,25 @@ With PriveSpace(A)
     End If
     .firsthash = kk
 End With
-place HashFunc1(kk, Key), A
-Index = A
+place HashFunc1(kk, Key), a
+index = a
 Done = True
 End Sub
 
 Property Get Percent()
-Percent = Count / hashlen
+Percent = 100 * count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal A)
+Private Sub place(ByVal b, ByVal a)
     Dim k As Long
     k = Hash(b)
-    Hash(b) = A + 1
-    PriveSpace(A).Pleft = k
-    PriveSpace(A).lastpos = b
+    Hash(b) = a + 1
+    PriveSpace(a).Pleft = k
+    PriveSpace(a).lastpos = b
 End Sub
-Private Function HashFunc0(A$) As Long
+Private Function HashFunc0(a$) As Long
  Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
-  p4 = Len(A$) * 2 '- 2
-  p2 = StrPtr(A$): p4 = p2 + p4
+  p4 = Len(a$) * 2 '- 2
+  p2 = StrPtr(a$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, p1
   p3 = UINT(p1)
@@ -458,17 +489,17 @@ Private Function HashFunc0(A$) As Long
   Next i
 End Function
 Private Function HashFunc2(where As Long)
-HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFA000) + Len(PriveSpace(where).Key) + hashlen + 1, hashlen)
+HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFAFF7) + Len(PriveSpace(where).Key) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc1(nkey As Long, A$)
-HashFunc1 = MyMod(uintnew(nkey Or &HAFFA000) + Len(A$) + hashlen + 1, hashlen)
+Private Function HashFunc1(nkey As Long, a$)
+HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc(A$)
-HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFA000) + Len(A$) + hashlen + 1, hashlen)
+Private Function HashFunc(a$)
+HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
 End Function
-Private Function UINT(ByVal A As Integer) As Long
+Private Function UINT(ByVal a As Integer) As Long
  Dim b As Integer
- b = A And &HFFFF
+ b = a And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -480,20 +511,20 @@ Private Function UINT(ByVal A As Integer) As Long
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal A As Double) As Double
-If A > CDbl(2147483647) Then A = CDbl(2147483647)
-If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
-If A < 0 Then
-uintnew = 4294967296# + A
+Private Function uintnew(ByVal a As Double) As Double
+If a > CDbl(2147483647) Then a = CDbl(2147483647)
+If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
+If a < 0 Then
+uintnew = 4294967296# + a
 Else
-uintnew = A
+uintnew = a
 End If
 End Function
 
-Private Sub SwapVariant(ByRef A As Variant, ByRef b As Variant)
+Private Sub SwapVariant(ByRef a As Variant, ByRef b As Variant)
    Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
-   CopyMemory t(0), ByVal VarPtr(A), 16
-   CopyMemory ByVal VarPtr(A), ByVal VarPtr(b), 16
+   CopyMemory t(0), ByVal VarPtr(a), 16
+   CopyMemory ByVal VarPtr(a), ByVal VarPtr(b), 16
    CopyMemory ByVal VarPtr(b), t(0), 16
 End Sub
 ' only for tests
@@ -510,39 +541,40 @@ Public Property Get ReferCount() As Long
 ReferCount = GetRefCount(Me)
 End Property
 Public Property Get KeyToString2() As Variant
-If Index > -1 Then
-    KeyToString2 = PriveSpace(Index).Key + Str$(PriveSpace(Index).lastpos) + Str$(Int(Percent * 1000) / 100) + Str$(hashlen) + Str$(Count)
+If index > -1 Then
+
+    KeyToString2 = PriveSpace(index).Key + Str$(PriveSpace(index).lastpos < toplim) + Str$(PriveSpace(index).Pleft) ' + Str$(Int(Percent * 1000) / 100) + Str$(hashlen) + Str$(count)
 End If
 End Property
 Public Property Get KeyToString() As Variant
-If Index > -1 Then
-    KeyToString = PriveSpace(Index).Key
+If index > -1 Then
+    KeyToString = PriveSpace(index).Key
 End If
 End Property
 Public Sub ToStart()
-Index = 0
-Done = Count > 0
+index = 0
+Done = count > 0
 End Sub
 Public Sub ToEnd()
-Index = Count - 1
-Done = Count > 0
+index = count - 1
+Done = count > 0
 End Sub
 
 Public Sub NextIndex()
 Done = False
-    If Index = -1 Then
+    If index = -1 Then
  
     Else
-        If Index < toplim Then Done = True: Index = Index + 1
+        If index < toplim Then Done = True: index = index + 1
     End If
 
 End Sub
 Public Sub PrevIndex()
 Done = False
-    If Index = -1 Then
+    If index = -1 Then
     
     Else
-        If Index > 0 Then Done = True: Index = Index - 1
+        If index > 0 Then Done = True: index = index - 1
     End If
 
 End Sub
@@ -617,3 +649,61 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
   If LB < M2 Then QuickSortItemsRev Arr, LB, M2
   If M1 < UB Then QuickSortItemsRev Arr, M1, UB
 End Sub
+Function problem(Speak$) As Boolean
+Dim i As Long, k As Long, n As Long, haveproblem As Boolean, countme As Long, countinqueues As Long
+Dim noprint As Boolean
+noprint = True
+If Not noprint Then Debug.Print "************ " + Speak$ + " ***************"
+For i = 0 To toplim
+If i <> countme Then
+If Not noprint Then Debug.Print "----------->Problem<----------"
+Exit For
+End If
+If Hash(PriveSpace(i).lastpos) - 1 = i Then
+
+If Not noprint Then Debug.Print i, PriveSpace(i).Key, PriveSpace(i).lastpos, (Hash(PriveSpace(i).lastpos) - 1) = i, PriveSpace(i).Pleft - 1
+countme = countme + 1
+If PriveSpace(i).Pleft - 1 >= 0 Then
+k = i
+Do
+If PriveSpace(i).lastpos <> PriveSpace(PriveSpace(k).Pleft - 1).lastpos Then
+If Not noprint Then Debug.Print "No link"
+problem = True
+Exit Function
+Else
+k = PriveSpace(k).Pleft - 1
+If Not noprint Then Debug.Print ">\\\\\\\\\\\\ ", k, PriveSpace(k).Key
+countinqueues = countinqueues + 1
+End If
+If Not PriveSpace(k).Pleft Then Exit Do
+Loop
+End If
+Else
+k = Hash(PriveSpace(i).lastpos) - 1  ' top of the list
+n = 0
+If k < 0 Then
+If Not noprint Then Debug.Print "Lost Link"
+haveproblem = True
+
+Else
+Do While PriveSpace(k).Pleft > 0
+
+n = n + 1
+If PriveSpace(k).Pleft - 1 = i Then
+If Not noprint Then Debug.Print i, PriveSpace(i).Key, "Hash(" + CStr(PriveSpace(i).lastpos) + ") at queue list(" + Str$(n) + ")"
+countme = countme + 1
+Exit Do
+End If
+k = PriveSpace(k).Pleft - 1
+If k < 0 Then
+If Not noprint Then Debug.Print "Lost Link"
+haveproblem = True
+Exit Do
+End If
+Loop
+End If
+End If
+Next i
+Debug.Print count, countme, countinqueues, hashlen, Me.Percent, (countme - countinqueues) / countme * 100
+problem = haveproblem
+End Function

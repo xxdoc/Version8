@@ -4,11 +4,36 @@ Attribute VB_Name = "modUnregCOM"
 
 Option Explicit
 
+
+Private Declare Function ObjSetAddRef Lib "msvbvm60.dll" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
+Private Declare Function ObjSetNoRef Lib "msvbvm60.dll" Alias "__vbaObjSet" (dstObject As Any, ByVal srcObjPtr As Long) As Long
 Public Type GUID
     data1       As Long
     data2       As Integer
     data3       As Integer
     data4(7)    As Byte
+End Type
+Private Type ITypeInfo
+    iunk                        As IUnknown
+    GetTypeAttr                 As Long
+    GetTypeComp                 As Long
+    GetFuncDesc                 As Long
+    GetVarDesc                  As Long
+    GetNames                    As Long
+    GetRefTypeOfImplType        As Long
+    GetImplTypeFlags            As Long
+    GetIDsOfNames               As Long
+    Invoke                      As Long
+    GetDocumentation            As Long
+    GetDllEntry                 As Long
+    GetRefTypeInfo              As Long
+    AddressOfMember             As Long
+    CreateInstance              As Long
+    GetMops                     As Long
+    GetContainingTypeLib        As Long
+    ReleaseTypeAttr             As Long
+    ReleaseFuncDesc             As Long
+    ReleaseVarDesc              As Long
 End Type
 Private Declare Function ProgIDFromCLSID Lib "ole32.dll" ( _
                          ByRef Clsid As GUID, _
@@ -16,7 +41,7 @@ Private Declare Function ProgIDFromCLSID Lib "ole32.dll" ( _
 Private Declare Function StringFromCLSID Lib "ole32.dll" ( _
                          ByRef Clsid As GUID, _
                          lpszProgID As Long) As Long
-Private Declare Sub CoTaskMemFree Lib "ole32.dll" _
+Public Declare Sub CoTaskMemFree Lib "ole32.dll" _
                             (ByVal hMem As Long)
 Private Declare Function CLSIDFromString Lib "ole32.dll" ( _
                          ByVal lpszCLSID As Long, _
@@ -26,15 +51,15 @@ Private Declare Function GetMem4 Lib "msvbvm60" ( _
                          ByRef dst As Any) As Long
 Private Declare Function SysFreeString Lib "oleaut32" ( _
                          ByVal lpbstr As Long) As Long
-Private Declare Function LoadLibrary Lib "kernel32" _
+Private Declare Function LoadLibrary Lib "KERNEL32" _
                          Alias "LoadLibraryW" ( _
                          ByVal lpLibFileName As Long) As Long
-Private Declare Function GetModuleHandle Lib "kernel32" _
+Private Declare Function GetModuleHandle Lib "KERNEL32" _
                          Alias "GetModuleHandleW" ( _
                          ByVal lpModuleName As Long) As Long
-Private Declare Function FreeLibrary Lib "kernel32" ( _
+Private Declare Function FreeLibrary Lib "KERNEL32" ( _
                          ByVal hLibModule As Long) As Long
-Private Declare Function GetProcAddress Lib "kernel32" ( _
+Private Declare Function GetProcAddress Lib "KERNEL32" ( _
                          ByVal hModule As Long, _
                          ByVal lpProcName As String) As Long
 Private Declare Function DispCallFunc Lib "oleaut32" ( _
@@ -50,7 +75,7 @@ Private Declare Function LoadTypeLibEx Lib "oleaut32" ( _
                          ByVal szFile As Long, _
                          ByVal regkind As Long, _
                          ByRef pptlib As IUnknown) As Long
-Private Declare Function memcpy Lib "kernel32" _
+Private Declare Function memcpy Lib "KERNEL32" _
                          Alias "RtlMoveMemory" ( _
                          ByRef Destination As Any, _
                          ByRef Source As Any, _
@@ -72,6 +97,175 @@ Private Const TKIND_INTERFACE     As Long = 3
 Dim iidClsFctr      As GUID
 Dim iidUnk          As GUID
 Dim isInit          As Boolean
+'' ADDED BY GEORGE
+' parameter description by [rm] 2005
+Public Type TPARAMDESC
+    pPARAMDESCEX            As Long     ' valid if PARAMFLAG_FHASDEFAULT
+    wParamFlags             As Integer  ' parameter flags (in,out,...)
+End Type
+
+' extended parameter description
+Public Type TPARAMDESCEX
+    cBytes                  As Long     ' size of structure
+    varDefaultValue         As Variant  ' default value of parameter
+End Type
+Public Type TTYPEDESC
+    pTypeDesc               As Long     ' vt = VT_PTR: points to another TYPEDESC
+                                        ' vt = VT_CARRAY: points to another TYPEDESC
+                                        ' vt = VT_USERDEFINED: pTypeDesc is a HREFTYPE instead of a pointer
+    vt                      As Integer  ' vartype
+End Type
+Public Type TELEMDESC
+    tdesc                   As TTYPEDESC    ' type description
+    pdesc                   As TPARAMDESC   ' parameter description
+End Type
+
+Public Type TYPEATTR
+    GUID(15)                As Byte
+    tLCID                   As Long
+    dwReserved              As Long
+    memidConstructor        As Long
+    memidDestructor         As Long
+    pstrSchema              As Long
+    cbSizeInstance          As Long
+    typekind                As Long
+    cFuncs                  As Integer
+    cVars                   As Integer
+    cImplTypes              As Integer
+    cbSizeVft               As Integer
+    cbAlignment             As Integer
+    wTypeFlags              As Integer
+    wMajorVerNum            As Integer
+    wMinorVerNum            As Integer
+    tdescAlias              As Long
+    idldescType             As Long
+End Type
+
+Public Type FUNCDESC
+    memid                   As Long
+    lprgscode               As Long
+    lprgelemdescParam       As Long
+    funcking                As Long
+    invkind                 As Long
+    callconv                As Long
+    cParams                 As Integer
+    cParamsOpt              As Integer
+    oVft                    As Integer
+    cScodes                 As Integer
+    elemdesc                As TELEMDESC ' Contains the return type of the function
+    wFuncFlags              As Integer  ' function flags
+End Type
+
+' array description
+Private Type TARRAYDESC
+    tdescElem               As TTYPEDESC    ' type description
+    cDims                   As Integer      ' number of dimensions
+End Type
+Private Type SAFEARRAYBOUND
+    cElements               As Long
+    lLBound                 As Long
+End Type
+
+Public Enum VARKIND
+    VAR_PERSISTANCE = 0             '
+    VAR_STATIC                      '
+    VAR_CONST                       '
+    VAR_DISPATCH                    '
+End Enum
+
+Private Type VARDESC
+    memid                   As Long     ' member ID
+    lpstrSchema             As Long     '
+    uInstVal                As Long     ' vkind = VAR_PERINSTANCE: offset of this variable within the instance
+                                        ' vkind = VAR_CONST: value of it as a variant
+    elemdescVar             As TELEMDESC ' variable type
+    wVarFlags               As Integer  ' variable flags
+    vkind                   As Long     ' variable kind
+End Type
+
+' parameter flags
+Public Enum PARAMFLAGS
+    PARAMFLAG_NONE = &H0            ' ...
+    PARAMFLAG_FIN = &H1             ' in
+    PARAMFLAG_FOUT = &H2            ' out
+    PARAMFLAG_FLCID = &H4           ' lcid
+    PARAMFLAG_FRETVAL = &H8         ' return value
+    PARAMFLAG_FOPT = &H10           ' optional
+    PARAMFLAG_FHASDEFAULT = &H20    ' default value
+    PARAMFLAG_FHASCUSTDATA = &H40   ' custom data
+End Enum
+
+Public Type fncinf
+    name                    As String
+    addr                    As Long
+    params                  As Integer
+End Type
+
+Public Type enmeinf
+    name                    As String
+    invkind                 As invokekind
+    params                  As Integer
+    
+End Type
+Public Enum invokekind
+    INVOKE_FUNC = &H1
+    INVOKE_PROPERTY_GET = &H2
+    INVOKE_PROPERTY_PUT = &H4
+    INVOKE_PROPERTY_PUTREF = &H8
+End Enum
+Public Const DISP_E_PARAMNOTFOUND = &H80020004
+Public Enum Varenum
+    VT_EMPTY = 0&                   '
+    VT_NULL = 1&                    ' 0
+    VT_I2 = 2&                      ' signed 2 bytes integer
+    VT_I4 = 3&                      ' signed 4 bytes integer
+    VT_R4 = 4&                      ' 4 bytes float
+    VT_R8 = 5&                      ' 8 bytes float
+    VT_CY = 6&                      ' currency
+    VT_DATE = 7&                    ' date
+    VT_BSTR = 8&                    ' BStr
+    VT_DISPATCH = 9&                ' IDispatch
+    VT_ERROR = 10&                  ' error value
+    VT_BOOL = 11&                   ' boolean
+    VT_VARIANT = 12&                ' variant
+    VT_UNKNOWN = 13&                ' IUnknown
+    VT_DECIMAL = 14&                ' decimal
+    VT_I1 = 16&                     ' signed byte
+    VT_UI1 = 17&                    ' unsigned byte
+    VT_UI2 = 18&                    ' unsigned 2 bytes integer
+    VT_UI4 = 19&                    ' unsigned 4 bytes integer
+    VT_I8 = 20&                     ' signed 8 bytes integer
+    VT_UI8 = 21&                    ' unsigned 8 bytes integer
+    VT_INT = 22&                    ' integer
+    VT_UINT = 23&                   ' unsigned integer
+    VT_VOID = 24&                   ' 0
+    VT_HRESULT = 25&                ' HRESULT
+    VT_PTR = 26&                    ' pointer
+    VT_SAFEARRAY = 27&              ' safearray
+    VT_CARRAY = 28&                 ' carray
+    VT_USERDEFINED = 29&            ' userdefined
+    VT_LPSTR = 30&                  ' LPStr
+    VT_LPWSTR = 31&                 ' LPWStr
+    VT_RECORD = 36&                 ' Record
+    VT_FILETIME = 64&               ' File Time
+    VT_BLOB = 65&                   ' Blob
+    VT_STREAM = 66&                 ' Stream
+    VT_STORAGE = 67&                ' Storage
+    VT_STREAMED_OBJECT = 68&        ' Streamed Obj
+    VT_STORED_OBJECT = 69&          ' Stored Obj
+    VT_BLOB_OBJECT = 70&            ' Blob Obj
+    VT_CF = 71&                     ' CF
+    VT_CLSID = 72&                  ' Class ID
+    VT_BSTR_BLOB = &HFFF&           ' BStr Blob
+    VT_VECTOR = &H1000&             ' Vector
+    VT_ARRAY = &H2000&              ' Array
+    VT_BYREF = &H4000&              ' ByRef
+    VT_RESERVED = &H8000&           ' Reserved
+    VT_ILLEGAL = &HFFFF&            ' illegal
+End Enum
+
+
+
 Public Function GetGUIDstr(g As GUID) As String
 Dim ret As Long, here As Long
 
@@ -180,6 +374,90 @@ Public Function GetAllCoclasses( _
     
     GetAllCoclasses = True
     
+End Function
+Private Function ResolveObjPtr(ByVal Ptr As Long) As IUnknown
+ObjSetAddRef ResolveObjPtr, Ptr
+End Function
+Public Function ResolveObjPtrNoRef(ByVal Ptr As Long) As IUnknown
+ObjSetNoRef ResolveObjPtrNoRef, Ptr
+End Function
+
+Public Function GetAllMembers(mList As FastCollection, obj As Object _
+               ) As Boolean
+ Dim IDsp        As IDispatch.IDispatchM2000
+ Dim riid        As IDispatch.IID
+Dim params      As IDispatch.DISPPARAMS
+Dim Excep       As IDispatch.EXCEPINFO
+Dim mAttr As TYPEATTR
+Set mList = New FastCollection
+Dim ppFuncDesc As Long, fncdsc As FUNCDESC, cFuncs As Long
+ 'Dim aaa As IDispatch.EXCEPINFO
+ Dim ret As Long, pctinfo As Long, ppTInfo As Long, typeInf As IUnknown
+     Dim pAttr   As Long
+    Dim tKind   As Long
+ Set IDsp = obj
+ Dim cFncs           As Long
+    Dim i As Long
+
+
+  ret = IDsp.GetTypeInfo(ByVal 0, ByVal 0, ppTInfo)
+    Set typeInf = ResolveObjPtrNoRef(ppTInfo)
+     ITypeInfo_GetTypeAttr typeInf, pAttr
+    memcpy mAttr, ByVal pAttr, Len(mAttr)
+   
+       If TKIND_DISPATCH = mAttr.typekind Then
+         cFuncs = mAttr.cFuncs '' mAttr.cVars
+
+    Dim listOfNames() As String, strNames() As String, strName As String
+    ReDim listOfNames(1) As String
+    Dim j As Long
+    For j = 0 To mAttr.cFuncs - 1
+    ITypeInfo_GetFuncDesc typeInf, j, ppFuncDesc
+    CpyMem fncdsc, ByVal ppFuncDesc, Len(fncdsc)
+    ITypeInfo_ReleaseFuncDesc typeInf, ppFuncDesc
+     ret = ITypeInfo_GetDocumentation(typeInf, fncdsc.memid, listOfNames(0), vbNullString, 0, vbNullString)
+     strName = listOfNames(0)
+     
+           mList.AddKey UCase(strName), ""
+        Select Case fncdsc.invkind
+            Case INVOKE_FUNC:
+                strName = "Function " + strName
+            Case INVOKE_PROPERTY_GET:
+                strName = "Property Get " + strName
+            Case INVOKE_PROPERTY_PUT:
+                strName = "Property Let " + strName
+            Case INVOKE_PROPERTY_PUTREF:
+                strName = "Property Set " + strName
+        End Select
+        mList.ToEnd  ' move to last
+    
+        If fncdsc.cParams > 0 Then
+        cFncs = 0
+        ReDim strNames(fncdsc.cParams + 1) As String
+ ret = ITypeInfo_GetDocumentation(typeInf, fncdsc.memid, listOfNames(0), vbNullString, 0, vbNullString)
+        ret = ITypeInfo_GetNames(typeInf, fncdsc.memid, strNames(), 1 + fncdsc.cParams, cFncs)
+        If Not ret Then
+         strName = strName + "("
+            For i = 1 To fncdsc.cParams
+            strName = strName + strNames(i)
+            If i < fncdsc.cParams Then strName = strName + ", "
+            Next i
+        strName = strName + ")"
+        End If
+        End If
+    
+        mList.Value = strName
+    
+    
+    Next j
+    End If
+   
+ 
+ ITypeInfo_ReleaseTypeAttr typeInf, pAttr
+ 
+   Set typeInf = Nothing
+    Set IDsp = Nothing
+
 End Function
 
 ' // Create IDispach implementation described in type library.
@@ -367,7 +645,7 @@ Public Function UnloadLibrary( _
 End Function
 
 ' // Call "DllGetClassObject" function using a pointer.
-Private Function DllGetClassObject( _
+Public Function DllGetClassObject( _
                  ByVal funcAddr As Long, _
                  ByRef Clsid As GUID, _
                  ByRef IID As GUID, _
@@ -412,7 +690,7 @@ Private Function DllCanUnloadNow( _
 End Function
 
 ' // Call "IClassFactory:CreateInstance" method.
-Private Function IClassFactory_CreateInstance( _
+Public Function IClassFactory_CreateInstance( _
                  ByVal obj As IUnknown, _
                  ByVal punkOuter As Long, _
                  ByRef riid As GUID, _
@@ -457,7 +735,7 @@ Private Function ITypeLib_GetTypeInfoCount( _
 End Function
 
 ' // Call "ITypeLib:GetTypeInfo" method.
-Private Function ITypeLib_GetTypeInfo( _
+Public Function ITypeLib_GetTypeInfo( _
                  ByVal obj As IUnknown, _
                  ByVal index As Long, _
                  ByRef ppTInfo As IUnknown) As Long
@@ -485,7 +763,7 @@ Private Function ITypeLib_GetTypeInfo( _
 End Function
 
 ' // Call "ITypeLib:FindName" method.
-Private Function ITypeLib_FindName( _
+Public Function ITypeLib_FindName( _
                  ByVal obj As IUnknown, _
                  ByRef szNameBuf As String, _
                  ByVal lHashVal As Long, _
@@ -519,7 +797,7 @@ Private Function ITypeLib_FindName( _
 End Function
 
 ' // Call "ITypeInfo:GetTypeAttr" method.
-Private Sub ITypeInfo_GetTypeAttr( _
+Public Sub ITypeInfo_GetTypeAttr( _
             ByVal obj As IUnknown, _
             ByRef ppTypeAttr As Long)
     
@@ -533,9 +811,31 @@ Private Sub ITypeInfo_GetTypeAttr( _
     If resultCall Then Err.Raise resultCall: Exit Sub
 
 End Sub
+Public Sub ITypeInfo_GetFuncDesc( _
+            ByVal obj As IUnknown, _
+            ByVal index As Long, _
+            ByRef ppFuncAttr As Long)
+    
+    Dim resultCall  As Long
+    Dim pReturn     As Variant
+    Dim params(1)   As Variant
+    Dim types(1)    As Integer
+    Dim list(1)     As Long
+        Dim pIndex      As Long
+     params(0) = index
+    params(1) = VarPtr(ppFuncAttr)
+   
+       For pIndex = 0 To UBound(params)
+        list(pIndex) = VarPtr(params(pIndex)):   types(pIndex) = VarType(params(pIndex))
+    Next
+    resultCall = DispCallFunc(obj, &H14, CC_STDCALL, vbLong, 2, types(0), list(0), pReturn)
+          
+    If resultCall Then Err.Raise resultCall: Exit Sub
+
+End Sub
 
 ' // Call "ITypeInfo:GetDocumentation" method.
-Private Function ITypeInfo_GetDocumentation( _
+Public Function ITypeInfo_GetDocumentation( _
                  ByVal obj As IUnknown, _
                  ByVal memid As Long, _
                  ByRef pBstrName As String, _
@@ -567,15 +867,55 @@ Private Function ITypeInfo_GetDocumentation( _
     ITypeInfo_GetDocumentation = pReturn
     
 End Function
+Public Function ITypeInfo_GetNames( _
+                 ByVal obj As IUnknown, _
+                 ByVal memid As Long, _
+                 pBstrName() As String, _
+                 ByVal cMaxNames As Long, _
+                 ByRef pcNames As Long) As Long
+    
+    Dim params(3)   As Variant
+    Dim types(3)    As Integer
+    Dim list(3)     As Long
+    Dim resultCall  As Long
+    Dim pIndex      As Long
+    Dim pReturn     As Variant
+    
+    params(0) = memid
+    params(1) = VarPtr(pBstrName(0))
+    params(2) = cMaxNames
+    params(3) = VarPtr(pcNames)
+    
+    For pIndex = 0 To UBound(params)
+        list(pIndex) = VarPtr(params(pIndex)):   types(pIndex) = VarType(params(pIndex))
+    Next
 
+    resultCall = DispCallFunc(obj, &H1C, CC_STDCALL, vbLong, 4, types(0), list(0), pReturn)
+          
+    If resultCall Then Err.Raise resultCall: Exit Function
+     
+    ITypeInfo_GetNames = pReturn
+    
+End Function
 ' // Call "ITypeInfo:ReleaseTypeAttr" method.
-Private Sub ITypeInfo_ReleaseTypeAttr( _
+Public Sub ITypeInfo_ReleaseTypeAttr( _
             ByVal obj As IUnknown, _
             ByVal ppTypeAttr As Long)
     
     Dim resultCall  As Long
     
     resultCall = DispCallFunc(obj, &H4C, CC_STDCALL, vbEmpty, 1, vbLong, VarPtr(CVar(ppTypeAttr)), 0)
+          
+    If resultCall Then Err.Raise resultCall: Exit Sub
+
+End Sub
+Public Sub ITypeInfo_ReleaseFuncDesc( _
+            ByVal obj As IUnknown, _
+            ByVal ppFuncAttr As Long)
+    
+    Dim resultCall  As Long
+    
+    resultCall = DispCallFunc(obj, &H50, CC_STDCALL, vbEmpty, 1, vbLong, VarPtr(CVar(ppFuncAttr)), 0)
           
     If resultCall Then Err.Raise resultCall: Exit Sub
 

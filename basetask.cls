@@ -54,6 +54,7 @@ Public reflimit As Long
 Public IndexSub As Long
 Public lastobj As Object
 Public FuncObj As Object
+Public FuncRec As String
 Public FuncValue As Variant
 Public LastValue As Variant
 Public LastMouse1 As Variant
@@ -63,6 +64,7 @@ Private RetSoros As New mStiva  ' for basic mimic functions- for education only
 Public SubLevel As Long
 Public OriginalCode As Long
 Public StaticInUse$
+Private mIamlambda As Boolean
 Private mIamAnEvent As Boolean
 Public Sub SetVar(ByVal name$, var As Variant)
 
@@ -267,44 +269,44 @@ End Function
 
 
 
-Public Property Let myitalic(ByVal RHS As Boolean)
-mitalic = RHS
+Public Property Let myitalic(ByVal rhs As Boolean)
+mitalic = rhs
 End Property
 
 Public Property Get myitalic() As Boolean
 myitalic = mitalic
 End Property
-Public Property Let myCharSet(ByVal RHS As Integer)
-mCharSet = RHS
+Public Property Let myCharSet(ByVal rhs As Integer)
+mCharSet = rhs
 End Property
 
 Public Property Get myCharSet() As Integer
 myCharSet = mCharSet
 End Property
-Public Property Let myBold(ByVal RHS As Boolean)
-mBold = RHS
+Public Property Let myBold(ByVal rhs As Boolean)
+mBold = rhs
 End Property
 
 Public Property Get myBold() As Boolean
 myBold = mBold
 End Property
-Public Property Let toprinter(ByVal RHS As Boolean)
-mtoprinter = RHS
+Public Property Let toprinter(ByVal rhs As Boolean)
+mtoprinter = rhs
 End Property
 
 Public Property Get toprinter() As Boolean
 toprinter = mtoprinter
 End Property
-Public Property Let tolayer(ByVal RHS As Long)
-mtolayer = RHS
+Public Property Let tolayer(ByVal rhs As Long)
+mtolayer = rhs
 End Property
 
 Public Property Get tolayer() As Long
 tolayer = mtolayer
 End Property
 
-Public Property Let toback(ByVal RHS As Boolean)
-mtoback = RHS
+Public Property Let toback(ByVal rhs As Boolean)
+mtoback = rhs
 End Property
 
 Public Property Get toback() As Boolean
@@ -660,3 +662,11 @@ End If
 
 End Function
 
+
+Public Property Get IamLambda() As Variant
+IamLambda = mIamlambda
+End Property
+
+Public Property Let IamLambda(ByVal rhs As Variant)
+mIamlambda = rhs
+End Property

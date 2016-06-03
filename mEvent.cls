@@ -24,11 +24,11 @@ Dim StartPoint As Long
 Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
 Private mParamBlock As String, mParams As Long
 Private Hash() As Long
-Public Function Extern(ParamArray A()) As Long
+Public Function Extern(ParamArray a()) As Long
 Attribute Extern.VB_UserMemId = 0
 ' default function
 Dim ohere$, objref As New basetask
-If Forms.Count >= 4 Then
+If Forms.count >= 4 Then
     Set objref.Owner = Form1.DIS
 Else
 Exit Function
@@ -38,13 +38,13 @@ Dim i As Long, ar As mArray, j As Long
 Dim manydim As Long, maxitems As Long, probe As Long, v() As Variant, probelow As Long
 Dim mS As mStiva
 Set mS = objref.soros
-For i = 0 To UBound(A())
-Select Case VarType(A(i))
+For i = 0 To UBound(a())
+Select Case VarType(a(i))
 Case Is >= vbArray
 ' only with error control
-If Typename(A(i)) = "Variant()" Then
+If Typename(a(i)) = "Variant()" Then
 Set ar = New mArray
-v() = A(i)
+v() = a(i)
 On Error Resume Next
 For j = 1 To 60
     probe = UBound(v, j)
@@ -72,9 +72,9 @@ End If
 Case vbEmpty
 mS.DataValLong 0
 Case vbVariant, vbString
-mS.DataStr CStr(A(i))
+mS.DataStr CStr(a(i))
 Case Else
-mS.DataVal CDbl(A(i))
+mS.DataVal CDbl(a(i))
 End Select
 Next i
 objref.soros.MergeTop mS
@@ -216,8 +216,8 @@ End Function
 Property Get CurMaxSpace()
 CurMaxSpace = MaxSpace
 End Property
-Property Get Count()
-Count = toplim + 1
+Property Get count()
+count = toplim + 1
 End Property
 Friend Function Find(Key As String, func As String) As Boolean
 Dim k As Long
@@ -279,33 +279,33 @@ End Function
 
 
 Friend Sub GenItemCreator(Key As String, func As String)
-Dim A As Long
-A = Malloc()
-With PriveSpace(A)
+Dim a As Long
+a = Malloc()
+With PriveSpace(a)
     .Key = Key
     .NDX = func
     .firsthash = HashFunc0(Key)
 End With
-place HashFunc(Key), A
+place HashFunc(Key), a
 End Sub
 Property Get Percent()
-Percent = Count / hashlen
+Percent = count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal A)
+Private Sub place(ByVal b, ByVal a)
 Dim k As Long
 
     k = Hash(b)
-    Hash(b) = A + 1
-    PriveSpace(A).Pleft = k
-    PriveSpace(A).lastpos = b
+    Hash(b) = a + 1
+    PriveSpace(a).Pleft = k
+    PriveSpace(a).lastpos = b
 End Sub
-Private Sub ab(ByVal A As Long, b As Long)
-b = (b + A + 1024 * A) Xor &H83F3CF
+Private Sub ab(ByVal a As Long, b As Long)
+b = (b + a + 1024 * a) Xor &H83F3CF
 End Sub
-Public Function HashFunc0(A$) As Long
+Public Function HashFunc0(a$) As Long
  Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
-  p4 = Len(A$) * 2 '- 2
-  p2 = StrPtr(A$): p4 = p2 + p4
+  p4 = Len(a$) * 2 '- 2
+  p2 = StrPtr(a$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, p1
   p3 = UINT(p1)
@@ -321,9 +321,9 @@ Public Function HashFunc0(A$) As Long
   Next i
  
 End Function
-Private Function UINT(ByVal A As Integer) As Long 'δίνει έναν integer σαν unsign integer σε long
+Private Function UINT(ByVal a As Integer) As Long 'δίνει έναν integer σαν unsign integer σε long
  Dim b As Integer
- b = A And &HFFFF
+ b = a And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -332,32 +332,32 @@ Private Function UINT(ByVal A As Integer) As Long 'δίνει έναν integer σαν unsign
  
  End Function
 Private Function HashFunc2(where As Long)
-HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFA000 + Len(PriveSpace(where).Key) + hashlen + 1), hashlen)
+HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFAFF7 + Len(PriveSpace(where).Key) + hashlen + 1), hashlen)
 End Function
 
-Private Function HashFunc(A$)
-HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFA000 + Len(A$) + hashlen + 1), hashlen)
+Private Function HashFunc(a$)
+HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFAFF7 + Len(a$) + hashlen + 1), hashlen)
 End Function
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal A As Double) As Double
-If A > CDbl(2147483647) Then A = CDbl(2147483647)
-If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
-If A < 0 Then
-uintnew = 4294967296# + A
+Private Function uintnew(ByVal a As Double) As Double
+If a > CDbl(2147483647) Then a = CDbl(2147483647)
+If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
+If a < 0 Then
+uintnew = 4294967296# + a
 Else
-uintnew = A
+uintnew = a
 End If
 End Function
 Public Sub Upgrade(usethis$)
-Dim i As Long, A$
+Dim i As Long, a$
 For i = 0 To toplim
-A$ = PriveSpace(i).NDX
-If A$ <> "" Then
-A$ = Left$(A$, rinstr(A$, "}", 0))
-If A$ <> "" Then
-PriveSpace(i).NDX = A$ + usethis$
+a$ = PriveSpace(i).NDX
+If a$ <> "" Then
+a$ = Left$(a$, rinstr(a$, "}", 0))
+If a$ <> "" Then
+PriveSpace(i).NDX = a$ + usethis$
 End If
 End If
 Next i
