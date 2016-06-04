@@ -51,7 +51,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 26
+Global Const Revision = 27
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -18094,7 +18094,13 @@ mystack.Look2Parent = True  ' new workaround for passing &this to function
 If choosethis >= 0 Then
 x1 = choosethis
 'ohere$ = HERE$
-If what$ = "" Then here$ = RVAL(here$, 1) + mystack.OriginalName
+''If what$ = "" Then here$ = RVAL(here$, 1) + mystack.OriginalName
+
+If what$ = "" Then
+here$ = RVAL(here$, 1) + mystack.OriginalName
+Else
+'here$ = RVAL(here$, 1)
+End If
 Else
 If InStr(what$, "(") > 0 Then
 If GetSub(what$, x1) Then  'get the reference x1 for function (functions and modules are in an array)
@@ -30162,9 +30168,9 @@ x1 = GlobalSub("A_()", ss$, Trim$(s$))
        Set basestack = Nothing:  Exit Sub
        End If
        End If
-        If Not bs.StaticCollection Is Nothing Then
-        basestack.SetVarobJ "%_" + what$, bs.StaticCollection
-        End If
+       ' If Not bs.StaticCollection Is Nothing Then
+       ' basestack.SetVarobJ "%_" + what$, bs.StaticCollection
+       ' End If
         ''
         Set bs = Nothing
         basestack.nokillvars = False
@@ -30221,7 +30227,25 @@ If i = 1 Then
         Set bs.Owner = basestack.Owner
         bs.UseGroupname = sbf(x1).sbgroup
         bs.OriginalCode = x1
-       Call GoFunc(bs, what$, rest$, vvl, , x1)
+
+        If here$ = "" Then
+        here$ = what$
+        Call GoFunc(bs, what$, rest$, vvl, , x1)
+        here$ = ""
+        ElseIf x1 >= 0 Then
+       ' Call GoFunc(bs, "", rest$, vvl, , x1)
+          If flag Then
+             bs.UseGroupname = basestack.UseGroupname
+             bs.GroupName = basestack.GroupName
+             Call GoFunc(bs, "()", rest$, vvl, , x1)
+             Else
+             bs.UseGroupname = sbf(x1).sbgroup
+        Call GoFunc(bs, "", rest$, vvl, , x1)
+        End If
+        Else
+       Call GoFunc(bs, what$, rest$, vvl)
+       End If
+
         If Not bs.StaticCollection Is Nothing Then
         basestack.SetVarobJ "%_" + what$, bs.StaticCollection
         End If
@@ -37432,8 +37456,8 @@ If IsLabelSymbolNew(rest$, "ауто", "THIS", lang) Then
     End If
 Else
     x1 = Abs(IsLabel(basestack, rest$, what$))
-    '' no same name allowed with module
-    If here$ = what$ Then NameConflict: Exit Function
+  '' changed  '' no same name allowed with module
+ '   If here$ = what$ Then NameConflict: Exit Function
 End If
  
 If x1 = 1 Then
