@@ -51,7 +51,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 25
+Global Const Revision = 26
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -898,7 +898,7 @@ If MaybeIsSymbol(rest$, ")") Then rest$ = "0" + rest$
     Case 5, 6, 7
     If lcl Then
     
-      GlobalArr basestack, HERE$ & "." + basestack.GroupName & frm$, rest$, i, f, True
+      GlobalArr basestack, here$ & "." + basestack.GroupName & frm$, rest$, i, f, True
     Else
     GlobalArr basestack, basestack.GroupName & frm$, rest$, i, f, True
     End If
@@ -1107,7 +1107,7 @@ If x1 <> 0 Then
                         MakeACopy pa$, ExtractPath(pa$) & ExtractNameOnly(pa$) & ".bck"
                 End If
                 ProcSave = SaveUnicode(pa$, prg$, 2)  ' 2 = utf-8 standard save mode for version 7
-                If HERE$ = "" Then LASTPROG$ = pa$
+                If here$ = "" Then LASTPROG$ = pa$
         End If
  ProcSave = True
 Else
@@ -2266,7 +2266,7 @@ ec$ = w$ + ")"
 If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr(Abs(v))
 
         
-        y1 = GlobalVar(w$, 0, HERE$ = "")
+        y1 = GlobalVar(w$, 0, here$ = "")
 
         UnFloatGroup bstack, w$, y1, pppp.item(v)
         
@@ -2393,7 +2393,7 @@ If FastSymbol(b$, "{") Then
                 kolpo = False
                 once = True
                 i = 1
-                ohere$ = HERE$
+                ohere$ = here$
                 Do
                     bb$ = Mid$(ec$, i)
 subsentry10:
@@ -2415,7 +2415,7 @@ subsentry10:
                                    b$ = Right$(ec$, Len(bb$)) + b$
                                 ''   MyDoEvents
                                    End If
-                                    HERE$ = ohere$
+                                    here$ = ohere$
                                    Exit Do
                       Case 2
                             If Not kolpo Then
@@ -2536,11 +2536,11 @@ subsentry10:
                                      Else
                                    b$ = Right$(ec$, Len(bb$)) + b$
                                    End If
-                                    HERE$ = ohere$
+                                    here$ = ohere$
                                    Exit Do
                             
                             End Select
-                            HERE$ = ohere$
+                            here$ = ohere$
                               If myexit(bstack) Then SpeedGroup = 1: Exit Do
                             Loop
             Else
@@ -7972,7 +7972,7 @@ If GetSub(s1$, V1&) Then GoTo contAr1
 End If
 End If
 If Right$(s1$, 1) = ")" Then
-If HERE$ Like "*." + s1$ Then
+If here$ Like "*." + s1$ Then
 subHash.ItemCreator s1$, bstack.OriginalCode, True
 
  GoTo contAr1
@@ -8155,10 +8155,10 @@ contlambdahere:
                          w1 = GlobalVar("A_" + CStr(Abs(w2)), 0)
                        
                          Set var(w1) = pppp.item(w2)
-                                    If HERE$ = "" Then
+                                    If here$ = "" Then
                                             GlobalSub "A_" + CStr(Abs(w2)) + "()", "CALL EXTERN " & CStr(w1)
                                         Else
-                                            GlobalSub HERE$ & "." & bstack.GroupName & "A_" + CStr(Abs(w2)) + "()", "CALL EXTERN " & CStr(w1)
+                                            GlobalSub here$ & "." & bstack.GroupName & "A_" + CStr(Abs(w2)) + "()", "CALL EXTERN " & CStr(w1)
                                     End If
                                     n$ = "A_" + CStr(Abs(w2)) + "(" + n$
                                  IsNumber = IsNumber(bstack, n$, p)
@@ -8867,14 +8867,14 @@ Case Is >= "A"
             Dim i As Long
          
                     If GetlocalVar(r$, i) Then
-                        a$ = Chr(34) + HERE$ & "." & r$ & Chr(34) + a$
+                        a$ = Chr(34) + here$ & "." & r$ & Chr(34) + a$
                     ElseIf Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
                         If bstack.UseGroupname <> "" Then
                                  c$ = bstack.UseGroupname + Mid$(r$, 6)
                                  
                          Else
-                             c$ = StripThis2(HERE$)
-                             If c$ <> "" Then c$ = c$ & "." & Mid(r$, 6) Else c$ = HERE$ & "." & r$
+                             c$ = StripThis2(here$)
+                             If c$ <> "" Then c$ = c$ & "." & Mid(r$, 6) Else c$ = here$ & "." & r$
                          End If
                     a$ = Chr(34) + c$ + Chr(34) + a$
                     
@@ -8911,8 +8911,8 @@ Case Is >= "A"
                                     Else
                                     rr& = 2
                                     End If
-                                ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
-                               a$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
+                                ElseIf varhash.ExistKey(here$ & "." & r$) Then
+                               a$ = Chr(34) + here$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
   
                                 ElseIf varhash.ExistKey(r$) Then
                                     a$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
@@ -9174,14 +9174,14 @@ Case Is >= "A"
             Dim i As Long
          
                     If GetlocalVar(r$, i) Then
-                        a$ = Chr(34) + HERE$ & "." & r$ & Chr(34) + a$
+                        a$ = Chr(34) + here$ & "." & r$ & Chr(34) + a$
                     ElseIf Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
                         If bstack.UseGroupname <> "" Then
                                  c$ = bstack.UseGroupname + Mid$(r$, 6)
                                  
                          Else
-                             c$ = StripThis2(HERE$)
-                             If c$ <> "" Then c$ = c$ & "." & Mid(r$, 6) Else c$ = HERE$ & "." & r$
+                             c$ = StripThis2(here$)
+                             If c$ <> "" Then c$ = c$ & "." & Mid(r$, 6) Else c$ = here$ & "." & r$
                          End If
                     a$ = Chr(34) + c$ + Chr(34) + a$
                     
@@ -9217,8 +9217,8 @@ Case Is >= "A"
                                     Else
                                     rr& = 2
                                     End If
-                                ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
-                                     a$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
+                                ElseIf varhash.ExistKey(here$ & "." & r$) Then
+                                     a$ = Chr(34) + here$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 ElseIf varhash.ExistKey(r$) Then
                                     a$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 Else
@@ -9476,14 +9476,14 @@ Case Is >= "A"
             Dim i As Long
          
                     If GetlocalVar(r$, i) Then
-                        a$ = Chr(34) + HERE$ & "." & r$ & Chr(34) + a$
+                        a$ = Chr(34) + here$ & "." & r$ & Chr(34) + a$
                     ElseIf Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
                         If bstack.UseGroupname <> "" Then
                                  c$ = bstack.UseGroupname + Mid$(r$, 6)
                                  
                          Else
-                             c$ = StripThis2(HERE$)
-                             If c$ <> "" Then c$ = c$ & "." & Mid(r$, 6) Else c$ = HERE$ & "." & r$
+                             c$ = StripThis2(here$)
+                             If c$ <> "" Then c$ = c$ & "." & Mid(r$, 6) Else c$ = here$ & "." & r$
                          End If
                     a$ = Chr(34) + c$ + Chr(34) + a$
                     
@@ -9519,8 +9519,8 @@ Case Is >= "A"
                                     Else
                                     rr& = 1
                                     End If
-                                ElseIf varhash.ExistKey(HERE$ & "." & r$) Then
-                                     a$ = Chr(34) + HERE$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
+                                ElseIf varhash.ExistKey(here$ & "." & r$) Then
+                                     a$ = Chr(34) + here$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 ElseIf varhash.ExistKey(r$) Then
                                     a$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
                                 Else
@@ -10461,7 +10461,7 @@ If w1& = -100 Then
            r$ = Left$(r$, Len(r$) - 9)
            If r$ + "." = bstackstr.UseGroupname Then
            ElseIf InStr(r$, ".") = 0 Then
-            If HERE$ <> "" Then r$ = HERE$ + "." + r$
+            If here$ <> "" Then r$ = here$ + "." + r$
            End If
            
        Else
@@ -10472,7 +10472,7 @@ If w1& = -100 Then
                      If Len(r$) = 8 Then
                      Set bs = bs.Parent
                      Else
-                     r$ = HERE$ + "." + Left$(r$, Len(r$) - 9)
+                     r$ = here$ + "." + Left$(r$, Len(r$) - 9)
                      Set bs = Nothing
                      Exit Do
                      End If
@@ -10482,7 +10482,7 @@ Exit Do
         End If
        Loop
        Else
-  r$ = HERE$ + "." + Left$(r$, Len(r$) - 9)
+  r$ = here$ + "." + Left$(r$, Len(r$) - 9)
   End If
   End If
            IsString = True
@@ -10656,7 +10656,7 @@ rvalObjectstring:
                     IsString = True
                     Exit Function
     Case "MODULE$", "ΤΜΗΜΑ$"
-                    r$ = HERE$ ''''''''''''' ανάγνωση του Here$ (προσοχή κίνδυνος)
+                    r$ = here$ ''''''''''''' ανάγνωση του Here$ (προσοχή κίνδυνος)
                                 '''''''''''' γιατί μπορεί η τιμή να μην είναι αυτή που περιμέναμε
                                 '''''''''''' να δοκιμάσω διπλό νήμα, όπου το δεύτερο είναι σε τμήμα
                                 '''''''''''' που κάλεσε το τμήμα του πρώτου νήματος.
@@ -11266,16 +11266,16 @@ If Trim$(r$ + q2$) <> "" Then
        Else
    If q$ = "ΟΚΝ$(" Then
 
-   If HERE$ = "" Then
+   If here$ = "" Then
     r$ = "{" + s$ + "ΤΜΗΜΑ {}" + vbCrLf + r$ + q2$
    Else
-    r$ = "{" + s$ + "ΤΜΗΜΑ " + HERE$ + vbCrLf + r$ + q2$
+    r$ = "{" + s$ + "ΤΜΗΜΑ " + here$ + vbCrLf + r$ + q2$
     End If
     Else
-    If HERE$ = "" Then
+    If here$ = "" Then
     r$ = "{" + s$ + "MODULE {}" + vbCrLf + r$ + q2$
    Else
-    r$ = "{" + s$ + "MODULE " + HERE$ + vbCrLf + r$ + q2$
+    r$ = "{" + s$ + "MODULE " + here$ + vbCrLf + r$ + q2$
     End If
     End If
     End If
@@ -11384,8 +11384,8 @@ If Trim$(r$ + q2$) <> "" Then
                   If Typename(var(w1)) = "Group" Then
                 If FastSymbol(a$, ",") Then
                 If IsExp(bstackstr, a$, p) Then
-                If HERE$ <> "" Then
-                Set mS = var(w1).PrepareSoros(var(), HERE$ + "." + Left$(s$, Len(s$) - Len(var(w1).GroupName) + 1))
+                If here$ <> "" Then
+                Set mS = var(w1).PrepareSoros(var(), here$ + "." + Left$(s$, Len(s$) - Len(var(w1).GroupName) + 1))
                 Else
                 Set mS = var(w1).PrepareSoros(var(), Left$(s$, Len(s$) - Len(var(w1).GroupName) + 1))
                 End If
@@ -12563,10 +12563,10 @@ contlambdastr:
     PushStage bstackstr, False
      w1 = GlobalVar("A_" + CStr(Abs(w2)), 0)
      Set var(w1) = pppp.item(w2)
-                If HERE$ = "" Then
+                If here$ = "" Then
                         dd = GlobalSub("A_" + CStr(Abs(w2)) + "$()", "CALL EXTERN " & CStr(w1))
                     Else
-                        dd = GlobalSub(HERE$ & "." & bstackstr.GroupName & "A_" + CStr(Abs(w2)) + "$()", "CALL EXTERN " & CStr(w1))
+                        dd = GlobalSub(here$ & "." & bstackstr.GroupName & "A_" + CStr(Abs(w2)) + "$()", "CALL EXTERN " & CStr(w1))
                 End If
              
                 a$ = "A_" + CStr(Abs(w2)) + "$(" + a$
@@ -12664,7 +12664,7 @@ contlambdastr:
             
 skiperrorStr:
             If Right$(q1$, 1) = ")" Then
-            If HERE$ Like "*." + q1$ Then
+            If here$ Like "*." + q1$ Then
             subHash.ItemCreator q1$, bstackstr.OriginalCode, True
             
  GoTo contStrFun
@@ -13186,8 +13186,8 @@ Dim pppp As mArray, i1 As Long, lang As Long
 Dim r1 As Long, r2 As Long
 ' uink$ = ""
 di.FontTransparent = True
-ohere$ = HERE$
-HERE$ = ""
+ohere$ = here$
+here$ = ""
 
 sss = Len(b$)
 Do While Len(b$) <> LLL
@@ -13197,7 +13197,7 @@ LLL = Len(b$)
 
 
 If FastSymbol(b$, "{") Then
-If Not interpret(bstack, block(b$)) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not interpret(bstack, block(b$)) Then interpret = False: here$ = ohere$: Exit Function
 If FastSymbol(b$, "}") Then
 sss = Len(b$)
 GoTo loopcontinue1
@@ -13205,7 +13205,7 @@ GoTo loopcontinue1
 
 
 Else
-interpret = False: HERE$ = ohere$: Exit Function
+interpret = False: here$ = ohere$: Exit Function
 End If
 End If
 jumpforCR1:
@@ -13225,18 +13225,18 @@ If FastSymbol(b$, ":") Then
 sss = LLL
 UINK$ = ""
 End If
-If NOEXECUTION Then interpret = False: HERE$ = ohere$: Exit Function
+If NOEXECUTION Then interpret = False: here$ = ohere$: Exit Function
 
-If NocharsInLine(b$) Then interpret = True: HERE$ = ohere$: Exit Function
+If NocharsInLine(b$) Then interpret = True: here$ = ohere$: Exit Function
 If IsSymbol(b$, "@") Then
-i1 = IsLabelAnew(HERE$, b$, w$, lang)
+i1 = IsLabelAnew(here$, b$, w$, lang)
 w$ = "@" + w$
 GoTo PROCESSCOMMAND   'IS A COMMAND
 Else
-i1 = IsLabelAnew(HERE$, b$, w$, lang)
+i1 = IsLabelAnew(here$, b$, w$, lang)
 End If
   If trace And (bstack.Process Is Nothing) Then
-    Form2.Label1(0) = HERE$
+    Form2.Label1(0) = here$
     Form2.Label1(1) = w$
     Form2.Label1(2) = GetStrUntil(vbCrLf, b$ & vbCrLf, False)
  TestShowSub = ""
@@ -13482,13 +13482,13 @@ PROCESSCOMMAND:
             extreme = False
             SLOW = True
             interpret = True
-            HERE$ = ohere$
+            here$ = ohere$
             Exit Function
             Case "FAST", "ΓΡΗΓΟΡΑ"
             If FastSymbol(b$, "!") Then extreme = True Else extreme = False
             SLOW = False
             interpret = True
-            HERE$ = ohere$
+            here$ = ohere$
             Exit Function
             Case "USER", "ΧΡΗΣΤΗΣ"
       
@@ -13533,13 +13533,13 @@ PROCESSCOMMAND:
                       End If
                 Else
                     interpret = False
-                   HERE$ = ohere$: Exit Function
+                   here$ = ohere$: Exit Function
                 End If
                 If Not FastSymbol(b$, ",") Then
                   interpret = False
                   Exit Do
                 ElseIf IsStrExp(bstack, b$, ss$) Then  ' COMMAND
-                If ss$ = "" Then interpret = False: HERE$ = ohere$: Exit Function
+                If ss$ = "" Then interpret = False: here$ = ohere$: Exit Function
                 x1 = 1
                 y1 = 1
                 x2 = -1
@@ -13552,7 +13552,7 @@ PROCESSCOMMAND:
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then x2 = CLng(p)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then y2 = CLng(p)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then nd& = Abs(p)
-                If FastSymbol(b$, ",") Then If Not IsStrExp(bstack, b$, SBR$) Then interpret = False: HERE$ = ohere$: Exit Function
+                If FastSymbol(b$, ",") Then If Not IsStrExp(bstack, b$, SBR$) Then interpret = False: here$ = ohere$: Exit Function
                 Targets = False
              
              
@@ -13567,7 +13567,7 @@ PROCESSCOMMAND:
                   RTarget bstack, q(var(v))
                 Else
                 interpret = False
-                HERE$ = ohere$:             Exit Function
+                here$ = ohere$:             Exit Function
                 End If
                 Case "ΔΙΑΚΟΠΤΕΣ", "SWITCHES"
                     If IsStrExp(bstack, b$, ss$) Then
@@ -13620,7 +13620,7 @@ PROCESSCOMMAND:
                             MyEr "No proper command for command line interpreter", "Δεν είναι η κατάλληλη εντολή για τον διερμηνευτή γραμμής"
                             interpret = False
                           
-                            HERE$ = ohere$: Exit Function
+                            here$ = ohere$: Exit Function
                             End If
                     If i <> 0 Then
                      If Not IsBadCodePtr(i) Then
@@ -13629,7 +13629,7 @@ PROCESSCOMMAND:
                                     MyEr "", ""
                                     interpret = False
                                     End If
-                                    HERE$ = ohere$: Exit Function
+                                    here$ = ohere$: Exit Function
                         End If
                         End If
                     Else
@@ -13639,7 +13639,7 @@ PROCESSCOMMAND:
                                     MyEr "", ""
                                     interpret = False
                                     End If
-                                    HERE$ = ohere$: Exit Function
+                                    here$ = ohere$: Exit Function
                             End If
                     End If
                     
@@ -13649,7 +13649,7 @@ PROCESSCOMMAND:
                             MyEr "", ""
                             interpret = False
                             End If
-                            HERE$ = ohere$: Exit Function
+                            here$ = ohere$: Exit Function
                     End If
                     
                 End Select
@@ -13841,7 +13841,7 @@ If neoGetArray(bstack, w$, pppp) Then
             Exit Function
         End If
         End If
-If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: here$ = ohere$: Exit Function
 On Error Resume Next
 If MaybeIsSymbol(b$, ":+-*/!") Then
 With pppp
@@ -13852,16 +13852,16 @@ With pppp
             .item(v) = .item(v) - 1
             GoTo loopcontinue1
         ElseIf IsOperator(b$, "+=", 2) Then
-            If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+            If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
             .item(v) = .item(v) + p
         ElseIf IsOperator(b$, "-=", 2) Then
-            If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+            If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
             .item(v) = .item(v) - p
         ElseIf IsOperator(b$, "*=", 2) Then
-            If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+            If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
             .item(v) = .item(v) * p
         ElseIf IsOperator(b$, "/=", 2) Then
-            If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+            If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
             If p = 0 Then
              MyEr "division by zero", "διαίρεση με το μηδέν"
              Else
@@ -13905,22 +13905,22 @@ GoTo loopcontinue1
 End If
 
 ElseIf Not FastSymbol(b$, "=") Then
-HERE$ = ohere$: Exit Function
+here$ = ohere$: Exit Function
 End If
 
-If Not IsExp(bstack, b$, p) Then HERE$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then here$ = ohere$: Exit Function
 pppp.item(v) = p
 Do While FastSymbol(b$, ",")
 If pppp.UpperMonoLimit > v Then
 v = v + 1
-If Not IsExp(bstack, b$, p) Then HERE$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then here$ = ohere$: Exit Function
 pppp.item(v) = p
 Else
 Exit Do
 End If
 Loop
 Else
-interpret = False: HERE$ = ohere$: Exit Function
+interpret = False: here$ = ohere$: Exit Function
 End If
 Case 6
 If neoGetArray(bstack, w$, pppp) Then
@@ -13940,16 +13940,16 @@ If neoGetArray(bstack, w$, pppp) Then
             Exit Function
         End If
         End If
-If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: here$ = ohere$: Exit Function
 On Error Resume Next
 If Not FastSymbol(b$, "=") Then
     If FastSymbol(b$, ":=", , 2) Then
 contarr1:
     ss$ = Left$(aheadstatus(b$), 1)
         If ss$ = "S" Then
-        If Not IsStrExp(bstack, b$, ss$) Then interpret = False: HERE$ = ohere$: Exit Function
+        If Not IsStrExp(bstack, b$, ss$) Then interpret = False: here$ = ohere$: Exit Function
         Else
-        If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+        If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
         ss$ = Trim$(Str$(p))
         End If
              If Not IsObject(pppp.item(v)) Then
@@ -13963,9 +13963,9 @@ contarr1:
         v = v + 1
           ss$ = Left$(aheadstatus(b$), 1)
                         If ss$ = "S" Then
-        If Not IsStrExp(bstack, b$, ss$) Then interpret = False: HERE$ = ohere$: Exit Function
+        If Not IsStrExp(bstack, b$, ss$) Then interpret = False: here$ = ohere$: Exit Function
         Else
-        If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+        If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
         ss$ = Trim$(Str$(p))
         End If
         
@@ -13983,10 +13983,10 @@ contarr1:
      
         
     Else
-    interpret = False: HERE$ = ohere$: Exit Function
+    interpret = False: here$ = ohere$: Exit Function
     End If
 Else
-        If Not IsStrExp(bstack, b$, ss$) Then interpret = False: HERE$ = ohere$: Exit Function
+        If Not IsStrExp(bstack, b$, ss$) Then interpret = False: here$ = ohere$: Exit Function
         
         
         If Not IsObject(pppp.item(v)) Then
@@ -13998,7 +13998,7 @@ Else
         Do While FastSymbol(b$, ",")
         If pppp.UpperMonoLimit > v Then
         v = v + 1
-                If Not IsStrExp(bstack, b$, ss$) Then HERE$ = ohere$: Exit Function
+                If Not IsStrExp(bstack, b$, ss$) Then here$ = ohere$: Exit Function
         
                 If Not IsObject(pppp.item(v)) Then
                   pppp.item(v) = ss$
@@ -14012,7 +14012,7 @@ Else
         Loop
 End If
 Else
-interpret = 0: HERE$ = ohere$: Exit Function
+interpret = 0: here$ = ohere$: Exit Function
 End If
 Case 7
 If neoGetArray(bstack, w$, pppp) Then
@@ -14032,7 +14032,7 @@ If neoGetArray(bstack, w$, pppp) Then
             Exit Function
         End If
         End If
-If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: here$ = ohere$: Exit Function
 On Error Resume Next
 If MaybeIsSymbol(b$, "+-*/!") Then
 If IsOperator(b$, "++", 2) Then
@@ -14040,16 +14040,16 @@ pppp.item(v) = pppp.item(v) + 1
 ElseIf IsOperator(b$, "--", 2) Then
 pppp.item(v) = pppp.item(v) - 1
 ElseIf IsOperator(b$, "+=", 2) Then
-If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
 pppp.item(v) = pppp.item(v) + Int(p)
 ElseIf IsOperator(b$, "-=", 2) Then
-If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
 pppp.item(v) = pppp.item(v) - Int(p)
 ElseIf IsOperator(b$, "*=", 2) Then
-If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
 pppp.item(v) = pppp.item(v) * Int(p)
 ElseIf IsOperator(b$, "/=", 2) Then
-If Not IsExp(bstack, b$, p) Then interpret = False: HERE$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
 If p = 0 Then
  MyEr "division by zero", "διαίρεση με το μηδέν"
  Else
@@ -14062,22 +14062,22 @@ pppp.item(v) = -1 - (pppp.item(v) <> 0)
 End If
 GoTo loopcontinue1
 End If
-If Not FastSymbol(b$, "=") Then HERE$ = ohere$: Exit Function
-If Not IsExp(bstack, b$, p) Then HERE$ = ohere$: Exit Function
+If Not FastSymbol(b$, "=") Then here$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then here$ = ohere$: Exit Function
 p = Int(p)
-If Err.number > 0 Then interpret = False: HERE$ = ohere$: Exit Function
+If Err.number > 0 Then interpret = False: here$ = ohere$: Exit Function
 pppp.item(v) = p
 Do While FastSymbol(b$, ",")
 If pppp.UpperMonoLimit > v Then
 v = v + 1
-If Not IsExp(bstack, b$, p) Then HERE$ = ohere$: Exit Function
+If Not IsExp(bstack, b$, p) Then here$ = ohere$: Exit Function
 pppp.item(v) = p
 Else
 Exit Do
 End If
 Loop
 Else
-interpret = False: HERE$ = ohere$: Exit Function
+interpret = False: here$ = ohere$: Exit Function
 End If
 Case Else
 If MaybeIsSymbol(b$, ",-+*/_!@()[];<>|~`'\") Then
@@ -14086,7 +14086,7 @@ End If
 End Select
 loopcontinue1:
 Loop
-HERE$ = ohere$
+here$ = ohere$
 If LastErNum = -2 Then
 sss = CLng(Execute(bstack, b$, True))
 b$ = ""
@@ -14188,7 +14188,7 @@ If linebyline Then IFCTRL = bstack.IFCTRL: jump = bstack.jump
 Dim w$, LLL As Long, sss As Long, v As Long, p As Double, ss$, lbl As Boolean, DUM As Boolean, st As Double, bs As basetask
 Dim y As Double, sx As Double, VarStat As Boolean, NewStat As Boolean
 Dim x1 As Long, y1 As Long, x2 As Long, y2 As Long, sbb$, nd&, lang As Long, kolpo As Boolean, iscom As Boolean
-ohere$ = HERE$   ' here$ is global but i want to include to the basetask class some day...
+ohere$ = here$   ' here$ is global but i want to include to the basetask class some day...
 UINK$ = ""  ' εδώ θέλω να σβήνω...τι;
 If loopthis Then Execute = 2 Else Execute = 1
 If NocharsInLine(b$) Then
@@ -14369,7 +14369,7 @@ If VarStat Or NewStat Then
 
 If FastSymbol(b$, ",") Then sss = LLL: lbl = False: jump = False
 iscom = True
-Select Case IsLabelDotSub(HERE$, b$, w$, ss$, lang)
+Select Case IsLabelDotSub(here$, b$, w$, ss$, lang)
 Case 1234, 0
 VarStat = False
 NewStat = False
@@ -14407,7 +14407,7 @@ again2:
 If MaybeIsSymbol(b$, "@") Then w$ = "": GoTo parsecommand
 again3:
 
-Select Case IsLabelDotSub(HERE$, b$, w$, ss$, lang)
+Select Case IsLabelDotSub(here$, b$, w$, ss$, lang)
 Case 1234
 GoTo jumpforCR
 Case 2
@@ -14442,7 +14442,7 @@ End If
  ' trace here...And Not bstack.IamAnEvent And Not bstack.IamThread
  If trace Then
   If (bstack.Process Is Nothing) Then
-    Form2.Label1(0) = HERE$
+    Form2.Label1(0) = here$
     Form2.Label1(1) = w$
     Form2.Label1(2) = GetStrUntil(vbCrLf, b$ & vbCrLf, False)
     sbb$ = GetNextLine((sbf(bstack.OriginalCode).sb))
@@ -14834,7 +14834,7 @@ dothesame:
          Exit Do
         End If
             If Not MyThread(bstack, b$, lang) Then Execute = 0: Exit Function
-               If Left$(HERE$ & "#", 1) = "!" Then HERE$ = Mid$(HERE$, 2): ohere$ = HERE$
+               If Left$(here$ & "#", 1) = "!" Then here$ = Mid$(here$, 2): ohere$ = here$
             End If
         Case "LOOP", "ΚΥΚΛΙΚΑ"
 contLoop:
@@ -15419,12 +15419,12 @@ contNext:
 ContInline:
                If once = True Then Execute = 0: Exit Function
         If IsLabelSymbolNew(b$, "ΚΩΔΙΚΑ", "CODE", lang) Then
-        If IsLabelDot(HERE$, b$, sw$) = 1 Then
+        If IsLabelDot(here$, b$, sw$) = 1 Then
                 If GetSub(myUcase(sw$, True), nd&) Then
                                 b$ = vbCrLf + sbf(nd&).sb & b$
                    sss = Len(b$)
                    GoTo AGAIN1
-                    ElseIf GetSub(HERE$ + sw$, nd&) Then
+                    ElseIf GetSub(here$ + sw$, nd&) Then
                                 b$ = vbCrLf + sbf(nd&).sb & b$
                    sss = Len(b$)
                         GoTo AGAIN1
@@ -15469,7 +15469,7 @@ contAfter:
             bs.reflimit = bstack.reflimit
                         Set bs.Parent = bstack
          bstack.PushThread CLng(sp), "after"
-        sThreadInternal bs, sp, 0, ss$, uintnew(p), HERE$, True
+        sThreadInternal bs, sp, 0, ss$, uintnew(p), here$, True
         Set bs = Nothing
        LLL = 0
        Execute = 1
@@ -15775,7 +15775,7 @@ contTask:
             bs.reflimit = bstack.reflimit
                         Set bs.Parent = bstack
               bstack.PushThread CLng(sp), "_multi"
-         sThreadInternal bs, sp, 10, ss$, uintnew(-1), HERE$, True
+         sThreadInternal bs, sp, 10, ss$, uintnew(-1), here$, True
          TaskMaster.Message CLng(sp), 3, CLng(uintnew(p))
       On Error Resume Next
         bstack.TaskMain = True
@@ -16904,10 +16904,10 @@ cont5689:
                                             Exit Function
                                         Else
                                             If Not GetVar(bstack, w$, x1, True) Then x1 = GlobalVar(w$, p, , VarStat)
-                                            If HERE$ = "" Or VarStat Then
+                                            If here$ = "" Or VarStat Then
                                                 GlobalSub w$ + "()", "CALL EXTERN " & CStr(x1)
                                             Else
-                                                GlobalSub HERE$ & "." & bstack.GroupName & w$ + "()", "CALL EXTERN " & CStr(x1)
+                                                GlobalSub here$ & "." & bstack.GroupName & w$ + "()", "CALL EXTERN " & CStr(x1)
                                             End If
                                         End If
                                         Set myobject = bstack.lastobj
@@ -17032,10 +17032,10 @@ again123456:
                                 If TypeOf bstack.lastobj Is Group Then
                                   Set myobject = bstack.lastobj
                                         Set bstack.lastobj = Nothing
-                             ss$ = HERE$
-                                  HERE$ = ""
+                             ss$ = here$
+                                  here$ = ""
                                     UnFloatGroupReWriteVars basestack1, w$, v, myobject
-                                    HERE$ = ss$
+                                    here$ = ss$
 
                              
                                 Else
@@ -17197,7 +17197,7 @@ conthere111:
             
 conthere222:
           If bstack.connectnow Then
-            ohere$ = HERE$
+            ohere$ = here$
            ' ConnectStatic bstack, HERE$
              bstack.connectnow = False
           End If
@@ -17247,7 +17247,7 @@ End If
              Else
              ' maybe is a
              b$ = var(v) + "." + b$
-             IsLabelDot HERE$, b$, w$
+             IsLabelDot here$, b$, w$
             
               If MaybeIsSymbol(b$, "=") Then
               b$ = w$ + "<" + b$
@@ -17325,10 +17325,10 @@ cont184575:
                                             Exit Function
                                         Else
                                             If Not GetVar(bstack, w$, x1, True) Then x1 = GlobalVar(w$, p, , VarStat)
-                                            If HERE$ = "" Or VarStat Then
+                                            If here$ = "" Or VarStat Then
                                                 GlobalSub w$ + "()", "CALL EXTERN " & CStr(x1) ' & " : = NUMBER"
                                             Else
-                                                GlobalSub HERE$ & "." & bstack.GroupName & w$ + "()", "CALL EXTERN " & CStr(x1) '& " : = NUMBER"
+                                                GlobalSub here$ & "." & bstack.GroupName & w$ + "()", "CALL EXTERN " & CStr(x1) '& " : = NUMBER"
                                             End If
                                         End If
                                         Set myobject = bstack.lastobj
@@ -17466,10 +17466,10 @@ abc2345:
                                             MyEr "No New statement for lambda", "Όχι δήλωση νέου για λαμδα"
                                             Exit Function
                                         Else
-                                               If HERE$ = "" Or VarStat Then
+                                               If here$ = "" Or VarStat Then
                                                 GlobalSub w$ + "()", "CALL EXTERN " & CStr(v)
                                             Else
-                                                GlobalSub HERE$ & "." & bstack.GroupName & w$ + "()", "CALL EXTERN " & CStr(v)
+                                                GlobalSub here$ & "." & bstack.GroupName & w$ + "()", "CALL EXTERN " & CStr(v)
                                             End If
                                         End If
                                 Set var(v) = bstack.lastobj
@@ -18029,7 +18029,7 @@ Exit Function
 End If
 End Select
 loopcontinue:
-HERE$ = ohere$
+here$ = ohere$
 If once And Not jump Then Exit Do
 loopagain:
 If linebyline Then Exit Do
@@ -18068,9 +18068,9 @@ Dim threads As Long, vvv As Variant
 Dim basestack As basetask
 ' get a reference to Parent task
 Set basestack = mystack.Parent
-ohere$ = HERE$
+ohere$ = here$
 
-If iRVAL(HERE$, 1) > funcdeep Then
+If iRVAL(here$, 1) > funcdeep Then
     MyEr "Function's Stack is Full - 15", "Η στοίβα των συναρτήσεων έχει γεμίσει - 15"
     Set basestack = Nothing
     GoFunc = False: Exit Function
@@ -18094,40 +18094,40 @@ mystack.Look2Parent = True  ' new workaround for passing &this to function
 If choosethis >= 0 Then
 x1 = choosethis
 'ohere$ = HERE$
-If what$ = "" Then HERE$ = RVAL(HERE$, 1) + mystack.OriginalName
+If what$ = "" Then here$ = RVAL(here$, 1) + mystack.OriginalName
 Else
 If InStr(what$, "(") > 0 Then
 If GetSub(what$, x1) Then  'get the reference x1 for function (functions and modules are in an array)
     ' here we change NameSpace
-    If HERE$ = "" Then  ' from the command line
-If ohere$ = "" Then HERE$ = what$
+    If here$ = "" Then  ' from the command line
+If ohere$ = "" Then here$ = what$
     Else  ' from other...maybe the same... so make an increment by 1 to an index in the name.
     
 
-    HERE$ = RVAL(HERE$, 1) & "." & Trim$(what$)
+    here$ = RVAL(here$, 1) & "." & Trim$(what$)
     End If
 End If
 Else
-If HERE$ = "" Then
+If here$ = "" Then
 If GetSub(what$, x1) Then
-  HERE$ = RVAL(HERE$, 1)
+  here$ = RVAL(here$, 1)
 End If
 ElseIf GetlocalSub(what$, x1) Then
- HERE$ = RVAL(HERE$, 1)
+ here$ = RVAL(here$, 1)
 'ElseIf GetSub(StripThis(basestack.OriginalName) + "." + what$, x1) Then
  ' HERE$ = RVAL(HERE$, 1)
  ElseIf GetSub(what$, x1) Then
-  HERE$ = RVAL(HERE$, 1)
+  here$ = RVAL(here$, 1)
  ' ElseIf RVAL2(HERE$, -1) = what$ Then
  ElseIf recursive > 0 Then
-  HERE$ = RVAL(HERE$, 1)
+  here$ = RVAL(here$, 1)
   x1 = recursive
 End If
 End If
 End If
 If Not basestack.StaticCollection Is Nothing Then
 If what$ <> mystack.StaticInUse Then
-If StripRVAL(HERE$) & "." & mystack.StaticInUse = what$ Then
+If StripRVAL(here$) & "." & mystack.StaticInUse = what$ Then
     Set mystack.StaticCollection = basestack.StaticCollection
      mystack.StaticInUse$ = what$
     
@@ -18158,7 +18158,7 @@ Else
                 mystack.StaticInUse$ = what$
 End If
  End If
-If HERE$ <> ohere$ Or mystack.IamChild Then     ' so now we check that we are in an new namespace...
+If here$ <> ohere$ Or mystack.IamChild Then     ' so now we check that we are in an new namespace...
 
 ' this system must change.. and become member of a basetask
 
@@ -18171,12 +18171,12 @@ i = 1: FK$(13) = ""
 
 Dim ok As Boolean, nokillvars As Boolean
 nokillvars = basestack.nokillvars: basestack.nokillvars = False
-'i = preProcessor(mystack, sbf(x1).sb)
+
 If Mid$(sbf(x1).sb, i) = "" Then
 GoFunc = True
-GoTo there1234
+GoTo emptyfunc
 End If
-   mystack.OriginalName$ = HERE$
+   mystack.OriginalName$ = here$
 Do
 If choosethis >= 0 Then
  mystack.UseGroupname = pa$
@@ -18204,21 +18204,21 @@ End If
 
         End If
     ''pa$ = "EDIT " & what$ & ", 1" ''& CStr(Len(sbf(x1).sb))
-     pa$ = "EDIT " & StripRVAL(HERE$) & ", " + CStr(Len(sbf(x1).sb))
+     pa$ = "EDIT " & StripRVAL(here$) & ", " + CStr(Len(sbf(x1).sb))
         If Left$(sbf(x1).sb, 10) = "'11001EDIT" Then
           pa$ = Mid$(GetNextLine(sbf(x1).sb), 7) ''+ "+1"
              sbf(x1).sb = Mid$(sbf(x1).sb, 3) ' needed because we measure length...look the preparation of Shift F1 below
-            If InStrRev(HERE$, ".") > 0 Then
+            If InStrRev(here$, ".") > 0 Then
             ' any fucntion defined inside module or function has this direction
                 MyEr "in function " & Mid$(what$, InStrRev(what$, ".") + 1), "στη συνάρτηση " & Mid$(what$, InStrRev(what$, ".") + 1)
             Else
                 MyEr "in function " & what$, "στη συνάρτηση " & what$
             End If
         Else
-        If Right$(HERE$, 1) = ")" Then
+        If Right$(here$, 1) = ")" Then
         MyEr "in function " & Left$(what$, Len(what$) - 1), "στη συνάρτηση " & Left$(what$, Len(what$) - 1)
         Else
-        MyEr "in module " & HERE$, "στο τμημα " & HERE$
+        MyEr "in module " & here$, "στο τμημα " & here$
         End If
         
         End If
@@ -18266,7 +18266,7 @@ there1234:
    basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
    End If
 
-    HERE$ = ohere$
+    here$ = ohere$
 
     var2used = Vars
          varhash.ReduceHash vname, var()
@@ -18290,7 +18290,8 @@ End If
 
     Exit Do
 Case 1, 3
-HERE$ = mystack.OriginalName$
+emptyfunc:
+here$ = mystack.OriginalName$
   mystack.ThrowThreads
 ''''  If Not mystack.FuncObj Is Nothing Then
 Set mystack.lastobj = mystack.FuncObj
@@ -18317,7 +18318,7 @@ Set mystack.FuncObj = Nothing
   ' basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
   ' End If
  '  End If
-    HERE$ = ohere$
+    here$ = ohere$
     If FastSymbol(rest$, ")") Then GoFunc = True
      If Not nokillvars Then
     var2used = Vars
@@ -18936,7 +18937,7 @@ End If
 End If
 ''Debug.Print what$
 On Error GoTo NERR
-ohere$ = HERE$
+ohere$ = here$
 
 If what$ = "" Then
     Identifier = IsLabel(basestack, rest$, what$)
@@ -19579,12 +19580,12 @@ conthereplease:
             what$ = myUcase(what$):   MakeThisSub basestack, what$
             
             If it = 0 Then
-                HERE$ = what$
+                here$ = what$
             Else
-                HERE$ = ohere$ & "." & what$
+                here$ = ohere$ & "." & what$
             End If
             
-            If HERE$ <> ohere$ Then
+            If here$ <> ohere$ Then
 
             If Not ProcModuleEntry(basestack, ohere$, x1, rest$) Then GoTo NERR
    
@@ -19802,10 +19803,10 @@ name$ = myUcase(name$)
 If Left$(name$, 5) = "ΑΥΤΟ." Or Left$(name$, 5) = "THIS." Then
     ss$ = bstack.UseGroupname & Mid(name$, 6)
 Else
-    If HERE$ = "" Then
+    If here$ = "" Then
         ss$ = name$
     Else
-        ss$ = HERE$ & "." & name$
+        ss$ = here$ & "." & name$
     End If
 End If
 
@@ -19819,10 +19820,10 @@ name$ = myUcase(name$)
 If Left$(name$, 5) = "ΑΥΤΟ." Or Left$(name$, 5) = "THIS." Then
     ss$ = bstack.UseGroupname & Mid(name$, 6)
 Else
-    If HERE$ = "" Then
+    If here$ = "" Then
         ss$ = name$
     Else
-        ss$ = HERE$ & "." & name$
+        ss$ = here$ & "." & name$
     End If
 End If
 
@@ -19852,10 +19853,10 @@ Else
     j = CLng(q)
 End If
 End If
-If HERE$ = "" Or makeitglobal Then
+If here$ = "" Or makeitglobal Then
 varhash.ItemCreator myUcase(name$), j, Link
 Else
-varhash.ItemCreator HERE$ & "." & myUcase(name$), j, Link
+varhash.ItemCreator here$ & "." & myUcase(name$), j, Link
 End If
 GlobalVar = j
 End Function
@@ -19864,10 +19865,10 @@ On Error GoTo 0
 Dim j As Long
 j = AllocVar() ' var2used
  var(j) = CLng(0)  ' like an empty...
-If HERE$ = "" Or gl Then
+If here$ = "" Or gl Then
 varhash.ItemCreator myUcase(name$), j
 Else
-varhash.ItemCreator HERE$ & "." & myUcase(name$), j
+varhash.ItemCreator here$ & "." & myUcase(name$), j
 
 End If
 GlobalVarRefOnly = j
@@ -19878,10 +19879,10 @@ Dim s() As String
 If Typename(q) <> "Group" Then Exit Function
 'Debug.Print "link to ", name$
 If Not usefinal Then
-If HERE$ = "" Then
+If here$ = "" Then
 name$ = myUcase(name$) + "."
 Else
- name$ = HERE$ & "." & myUcase(name$) + "."
+ name$ = here$ & "." & myUcase(name$) + "."
 End If
 End If
 With q
@@ -19963,12 +19964,12 @@ dummyarray:
     NewKey = AllocVar()  ' version 8.1
     ' check if is already in ucase
     name$ = myUcase(name$)
-    If HERE$ = "" Or useglobalname Then
+    If here$ = "" Or useglobalname Then
         varhash.ItemCreator bstack.GroupName + name$, NewKey
         afto.arrname = name$
     Else
-        varhash.ItemCreator HERE$ + "." + bstack.GroupName + name$, NewKey
-        afto.arrname = HERE$ & "." & name$
+        varhash.ItemCreator here$ + "." + bstack.GroupName + name$, NewKey
+        afto.arrname = here$ & "." & name$
     End If
     If q = -1 Then
 ' Stop
@@ -20030,13 +20031,13 @@ Dim n$
 nm$ = myUcase(nm$)
 
 'If Right$(nm$, 1) = "(" Then nm$ = nm$ + ")"
-If useglobalname Or HERE$ = "" Then
+If useglobalname Or here$ = "" Then
 n$ = bstack.GroupName + nm$
 
 ElseIf Left$(nm$, 5) = "ΑΥΤΟ." Or Left$(nm$, 5) = "THIS." Then
 GoTo here12
 Else
-n$ = HERE$ & "." + bstack.GroupName + nm$
+n$ = here$ & "." + bstack.GroupName + nm$
 
 End If
 
@@ -20086,7 +20087,7 @@ here12:
      End If
     Else
     n$ = Mid$(nm$, 5)
-      If bstack.GetDot(n$, 1) Then varhash.Find HERE$ + "." + n$, k Else Exit Function
+      If bstack.GetDot(n$, 1) Then varhash.Find here$ + "." + n$, k Else Exit Function
     End If
 
 ElseIf varhash.Find(n$, k) = False Then
@@ -20180,7 +20181,7 @@ ElseIf k = 0 Then
      End If
     Else
     n$ = Mid$(nm$, 5)
-      If bstack.GetDot(n$, 1) Then varhash.Find HERE$ + "." + n$, k Else Exit Function
+      If bstack.GetDot(n$, 1) Then varhash.Find here$ + "." + n$, k Else Exit Function
     End If
 End If
         If varhash.Find(n$, k) Then
@@ -20204,17 +20205,17 @@ If Len(nm$) > 5 And False Then
            ' not used any more
                 If Left$(nm$, 5) = "THIS." Then
                
-                    n$ = StripThis2(HERE$)
-                    If n$ <> "" Then n$ = n$ & "." & bstack.GroupName & Mid(nm$, 6) Else n$ = HERE$ & "." & nm$
+                    n$ = StripThis2(here$)
+                    If n$ <> "" Then n$ = n$ & "." & bstack.GroupName & Mid(nm$, 6) Else n$ = here$ & "." & nm$
                 ElseIf Left$(nm$, 5) = "ΑΥΤΟ." Then
            
-                    n$ = StripThis2(HERE$)
-                    If n$ <> "" Then n$ = n$ & "." & bstack.GroupName & Mid(nm$, 6) Else n$ = HERE$ & "." & nm$
+                    n$ = StripThis2(here$)
+                    If n$ <> "" Then n$ = n$ & "." & bstack.GroupName & Mid(nm$, 6) Else n$ = here$ & "." & nm$
                 Else
                 If useglobalname Then
                     n$ = nm$
                     Else
-                    n$ = HERE$ & "." & bstack.GroupName & nm$
+                    n$ = here$ & "." & bstack.GroupName & nm$
                     End If
                 End If
 
@@ -20223,10 +20224,10 @@ If useglobalname Then
 n$ = bstack.GroupName + nm$
 
 Else
-If HERE$ = "" Then
+If here$ = "" Then
 n$ = bstack.GroupName & nm$
 Else
-n$ = HERE$ & "." & bstack.GroupName & nm$
+n$ = here$ & "." & bstack.GroupName & nm$
 End If
 End If
 End If
@@ -20365,15 +20366,15 @@ If Len(nm$) > 5 Then
                 If varhash.Find(n$, cc) Then GoTo there12
         Else
         
-            n$ = StripThis2(HERE$)
+            n$ = StripThis2(here$)
             If n$ <> "" Then
                 n$ = n$ & "." & Mid(nm$, 6)
             
             Else
                 If IsLabel(bstack, Mid$(nm$, 6), n$) Then ' NO NEED DOT ANY MORE..(WE USE DOTNEW)
-                        n$ = HERE$ & "." & n$
+                        n$ = here$ & "." & n$
                 Else
-                        n$ = HERE$ & "." & nm$
+                        n$ = here$ & "." & nm$
                 End If
             End If
         End If
@@ -20381,7 +20382,7 @@ If Len(nm$) > 5 Then
     If lookglobalonly Then
      n$ = nm$
     Else
-        n$ = HERE$ & "." & nm$
+        n$ = here$ & "." & nm$
         End If
     End If
 Else
@@ -20396,7 +20397,7 @@ End If
          n$ = nm$
         Else
 
-   n$ = HERE$ & "." & bstack.GroupName & nm$
+   n$ = here$ & "." & bstack.GroupName & nm$
     End If
 End If
 
@@ -20446,15 +20447,15 @@ If Len(nm$) > 5 Then
                 If varhash.Find(n$, cc) Then GoTo there12
         Else
         
-            n$ = StripThis2(HERE$)
+            n$ = StripThis2(here$)
             If n$ <> "" Then
                 n$ = n$ & "." & Mid(nm$, 6)
             
             Else
             If IsLabel(bstack, Mid$(nm$, 6), n$) Then ' NO NEED DOT ANY MORE..(WE USE DOTNEW)
-                    n$ = HERE$ & "." & n$
+                    n$ = here$ & "." & n$
             Else
-                    n$ = HERE$ & "." & nm$
+                    n$ = here$ & "." & nm$
             End If
             End If
         End If
@@ -20462,7 +20463,7 @@ If Len(nm$) > 5 Then
     If lookglobalonly Then
      n$ = nm$
     Else
-        n$ = HERE$ & "." & nm$
+        n$ = here$ & "." & nm$
         End If
     End If
 Else
@@ -20477,7 +20478,7 @@ End If
          n$ = nm$
         Else
 
-   n$ = HERE$ & "." & bstack.GroupName & nm$
+   n$ = here$ & "." & bstack.GroupName & nm$
     End If
 End If
 
@@ -20504,7 +20505,7 @@ End If
 
 End Function
 Function GetlocalVar(nm$, i As Long) As Boolean
-If varhash.Find(HERE$ & "." & myUcase(nm$), i) Then
+If varhash.Find(here$ & "." & myUcase(nm$), i) Then
 GetlocalVar = True
 End If
 End Function
@@ -20584,26 +20585,26 @@ End If
 End Function
 Function LookFastForModule(w$) As Boolean
 Dim a As Long
-If Len(HERE$) = 0 Then
+If Len(here$) = 0 Then
 LookFastForModule = subHash.Find(w$, a)
 Else
-LookFastForModule = subHash.Find(HERE$ + w$, a)
+LookFastForModule = subHash.Find(here$ + w$, a)
 End If
 End Function
 Function GetSubFullName(nm$, fullname$) As Boolean
 
-If Len(HERE$) > 0 Then
-    If Len(HERE$) > Len(nm$) Then
-        If Mid$(HERE$, Len(HERE$) - Len(nm$)) = "." + nm$ Then
+If Len(here$) > 0 Then
+    If Len(here$) > Len(nm$) Then
+        If Mid$(here$, Len(here$) - Len(nm$)) = "." + nm$ Then
             GetSubFullName = subHash.ExistKey(nm$)
           fullname = nm$: Exit Function
         End If
     End If
 End If
 
-If HERE$ <> "" Then
-     GetSubFullName = subHash.ExistKey(HERE$ & "." & nm$)
-  If GetSubFullName Then fullname$ = HERE$ & "." & nm$: Exit Function
+If here$ <> "" Then
+     GetSubFullName = subHash.ExistKey(here$ & "." & nm$)
+  If GetSubFullName Then fullname$ = here$ & "." & nm$: Exit Function
 End If
 
     GetSubFullName = subHash.ExistKey(nm$)
@@ -20616,18 +20617,18 @@ End If
 End Function
 Function GetSubFullName2(nm$, fullname$, retnum As Long) As Boolean
 Dim dummy As Long
-If Len(HERE$) > 0 Then
-    If Len(HERE$) > Len(nm$) Then
-        If Mid$(HERE$, Len(HERE$) - Len(nm$)) = "." + nm$ Then
+If Len(here$) > 0 Then
+    If Len(here$) > Len(nm$) Then
+        If Mid$(here$, Len(here$) - Len(nm$)) = "." + nm$ Then
             GetSubFullName2 = subHash.Find2(nm$, retnum, dummy)
           fullname = nm$: Exit Function
         End If
     End If
 End If
 
-If HERE$ <> "" Then
-     GetSubFullName2 = subHash.Find2(HERE$ & "." & nm$, retnum, dummy)
-  If GetSubFullName2 Then fullname$ = HERE$ & "." & nm$: Exit Function
+If here$ <> "" Then
+     GetSubFullName2 = subHash.Find2(here$ & "." & nm$, retnum, dummy)
+  If GetSubFullName2 Then fullname$ = here$ & "." & nm$: Exit Function
 End If
 
     GetSubFullName2 = subHash.Find2(nm$, retnum, dummy)
@@ -20644,9 +20645,9 @@ Function GetSubFullNameB(nm$, fullname$) As Boolean
 Dim i&, n$
 Dim subname$  '
 subname$ = subHash.Show
-If Len(HERE$) > 0 Then
-If Len(HERE$) > Len(nm$) Then
-If Mid$(HERE$, Len(HERE$) - Len(nm$)) = "." + nm$ Then
+If Len(here$) > 0 Then
+If Len(here$) > Len(nm$) Then
+If Mid$(here$, Len(here$) - Len(nm$)) = "." + nm$ Then
 n$ = "." & nm$ & " "
 i& = InStr(subname$, n$)
 Dim j&
@@ -20663,7 +20664,7 @@ End If
 End If
 
 If i& = 0 Then
-n$ = Chr(1) + HERE$ & "." & nm$ & " "
+n$ = Chr(1) + here$ & "." & nm$ & " "
 i& = InStr(subname$, n$)
 End If
 If i& = 0 Then
@@ -20684,20 +20685,20 @@ End If
 End Function
 Function GetSub(nm$, i&) As Boolean
 i& = 0
-If Len(HERE$) > 0 Then
-    If Len(HERE$) > Len(nm$) Then
-        If Mid$(HERE$, Len(HERE$) - Len(nm$)) = "." + nm$ Then
+If Len(here$) > 0 Then
+    If Len(here$) > Len(nm$) Then
+        If Mid$(here$, Len(here$) - Len(nm$)) = "." + nm$ Then
                 
-            GetSub = subHash.Find(StripRVAL(HERE$) + "." + nm$, i&)
+            GetSub = subHash.Find(StripRVAL(here$) + "." + nm$, i&)
        
         End If
-   ElseIf Right$(HERE$, 1) = "]" Then
-   GetSub = subHash.Find(StripRVAL(HERE$) + "." + nm$, i&)
+   ElseIf Right$(here$, 1) = "]" Then
+   GetSub = subHash.Find(StripRVAL(here$) + "." + nm$, i&)
     End If
 End If
 
-If i& = 0 And HERE$ <> "" Then
-     GetSub = subHash.Find(HERE$ & "." & nm$, i&)
+If i& = 0 And here$ <> "" Then
+     GetSub = subHash.Find(here$ & "." & nm$, i&)
 ElseIf i& <> 0 Then
     Exit Function
 End If
@@ -20716,12 +20717,12 @@ End Function
 
 Function GetlocalSub(nm$, i&) As Boolean
 
-If subHash.Find(HERE$ & "." & nm$, i&) Then GetlocalSub = True
+If subHash.Find(here$ & "." & nm$, i&) Then GetlocalSub = True
 
 End Function
 Function GetGlobalSubAfterHere(basestack As basetask, nm$, i&) As Boolean
 Dim j&
-If Not subHash.Find(HERE$, j&) Then
+If Not subHash.Find(here$, j&) Then
 
 If basestack.OriginalName <> "" Then
 If Not subHash.Find(basestack.OriginalName + "." + nm$, j&) Then Exit Function
@@ -22539,10 +22540,9 @@ If RRCOUNTER = 1 Then
 k1 = 0
 mybreakkey = Form1.mybreak1()
 End If
-RRCOUNTER = 2
 End If
-               
-
+RRCOUNTER = RRCOUNTER + 1
+If RRCOUNTER > 10000 Then If Not extreme Then MyDoEvents: RRCOUNTER = RRCOUNTER And &HFFFF
 
 End Function
 Sub ResetBreak()
@@ -22685,9 +22685,9 @@ Dim aa As Object
     Set ev = New ComShinkEvent
     Set aa = var(v)
                          ev.VarIndex = v
-                         If HERE$ <> "" Then
-                         ev.modulename = HERE$ + "." + objname$
-                         ev.modulenameonly = HERE$
+                         If here$ <> "" Then
+                         ev.modulename = here$ + "." + objname$
+                         ev.modulenameonly = here$
                          Else
                          ev.modulename = objname$
                          ev.modulenameonly = ""
@@ -22842,7 +22842,7 @@ Sub prepareGroup(bstack As basetask, ByVal ohere$, vvv As Long, Optional glob As
 Dim hv As Boolean
 '' ohere$ = myUcase(ohere$)
 If Not glob Then
-If HERE$ = "" Then
+If here$ = "" Then
     hv = GetVar(bstack, bstack.GroupName & ohere$, vvv)
 Else
     hv = GetlocalVar(bstack.GroupName & ohere$, vvv)
@@ -22906,7 +22906,7 @@ End If
 Loop
 there12345:
 If NocharsInLine(rest$) Then Exit Do
-v = IsLabelA(HERE$, rest$, w$)
+v = IsLabelA(here$, rest$, w$)
 'Debug.Print w$
 
 If v = 0 Then Exit Do
@@ -22943,7 +22943,7 @@ End If
                     ExecuteVarOnly = False
                     Exit Function
                     End If
-                If HERE$ = "" Then
+                If here$ = "" Then
                 f$ = bstack.GroupName + w$
                 Else
                 f$ = w$
@@ -23025,12 +23025,12 @@ If x1 <> 0 Then
                           End If
              End If
  
-   If HERE$ <> "" Then
+   If here$ <> "" Then
 
              If lang = 1 Then
-                rest$ = "GLOBAL " + Chr(34) + HERE$ + "." + bstack.GroupName + f$ + Chr(34) + " { " + ss$ + "} " + rest$
+                rest$ = "GLOBAL " + Chr(34) + here$ + "." + bstack.GroupName + f$ + Chr(34) + " { " + ss$ + "} " + rest$
                   Else
-                  rest$ = "ΓΕΝΙΚΗ " + Chr(34) + HERE$ + "." + bstack.GroupName + f$ + Chr(34) + " { " + ss$ + "} " + rest$ ''sbf(I).sbGROUP +  " { " + ss$ + "} " + Rest$
+                  rest$ = "ΓΕΝΙΚΗ " + Chr(34) + here$ + "." + bstack.GroupName + f$ + Chr(34) + " { " + ss$ + "} " + rest$ ''sbf(I).sbGROUP +  " { " + ss$ + "} " + Rest$
                   End If
    GoTo BYPASS3
    Else
@@ -23061,7 +23061,7 @@ If x1 <> 0 Then
 
 
   End If
-  If HERE$ = "" Then
+  If here$ = "" Then
   If w$ = "" Then
   If lang = 1 Then
     rest$ = "NEW " + f$ & " " & rest$
@@ -23101,10 +23101,10 @@ BYPASS3:
    Else
    var(vvv).LocalList = var(vvv).LocalList + vbCrLf + "Local Function " + f$ + "{" + sbf(i).sb + "}"
    End If
-   If HERE$ = "" Then
+   If here$ = "" Then
    sbf(i).sbgroup = bstack.GroupName
    Else
-    sbf(i).sbgroup = HERE$ + "." + bstack.GroupName
+    sbf(i).sbgroup = here$ + "." + bstack.GroupName
   End If
 Else
 
@@ -23144,12 +23144,12 @@ If x1 <> 0 Then
              End If
 
  
-   If HERE$ <> "" Then
+   If here$ <> "" Then
 v = 123
              If lang = 1 Then
-                rest$ = "GLOBAL " + Chr(34) + HERE$ + "." + bstack.GroupName + f$ + Chr(34) + " {'11001EDIT " + CStr(bstack.OriginalCode) + ", 3" + vbCrLf + ss$ + "} " + rest$
+                rest$ = "GLOBAL " + Chr(34) + here$ + "." + bstack.GroupName + f$ + Chr(34) + " {'11001EDIT " + CStr(bstack.OriginalCode) + ", 3" + vbCrLf + ss$ + "} " + rest$
                   Else
-                  rest$ = "ΓΕΝΙΚΟ " + Chr(34) + HERE$ + "." + bstack.GroupName + f$ + Chr(34) + " {'11001EDIT " + CStr(bstack.OriginalCode) + ", 3" + vbCrLf + ss$ + "} " + rest$
+                  rest$ = "ΓΕΝΙΚΟ " + Chr(34) + here$ + "." + bstack.GroupName + f$ + Chr(34) + " {'11001EDIT " + CStr(bstack.OriginalCode) + ", 3" + vbCrLf + ss$ + "} " + rest$
                   End If
    GoTo BYPASS4
    Else
@@ -23180,7 +23180,7 @@ v = 123
 
 
   End If
-  If HERE$ = "" Then
+  If here$ = "" Then
   
   rest$ = bstack.GroupName + f$ & " " & rest$
   Else
@@ -23205,10 +23205,10 @@ BYPASS4:
   var(vvv).LocalList = var(vvv).LocalList + vbCrLf + "Local Module " + f$ + "{" + sbf(i).sb + "}"
  End If
 
-        If HERE$ = "" Then
+        If here$ = "" Then
    sbf(i).sbgroup = bstack.GroupName
    Else
-    sbf(i).sbgroup = HERE$ + "." + bstack.GroupName
+    sbf(i).sbgroup = here$ + "." + bstack.GroupName
   End If
   End If
 
@@ -23297,14 +23297,14 @@ If Not MaybeIsSymbol(rest$, TT$) Then
     If GetSub(w$ + "()", j) Then
         f$ = "=" + w$ + "()"
         
-            If IsLabelA(HERE$, rest$, w$) <> 1 Then Exit Do
+            If IsLabelA(here$, rest$, w$) <> 1 Then Exit Do
             ''w$ = myUcase(w$)
             rest$ = f$ + rest$
             nm$ = w$
             ''
     ElseIf GetSub(bstack.GroupName + w$ + "()", j) Then   '' why not here??
         f$ = "=" + bstack.GroupName + w$ + "()"
-        If IsLabelA(HERE$, rest$, w$) <> 1 Then Exit Do
+        If IsLabelA(here$, rest$, w$) <> 1 Then Exit Do
         ''w$ = myUcase(w$)
         rest$ = f$ + rest$
         nm$ = w$
@@ -23318,7 +23318,7 @@ Case 1
 p = 0
 If glob Then
  v = GlobalVar(w$, p, , True)
-ElseIf HERE$ = "" Then
+ElseIf here$ = "" Then
 
     If Not GetVar(bstack, w$, v) Then v = GlobalVar(w$, p) ': GetVar bstack, W$, v
 Else
@@ -23333,10 +23333,10 @@ If FastSymbol(rest$, "=") Then
                                 Set var(v) = bstack.lastobj
                                 Set bstack.lastobj = Nothing
                                 LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
-                                 If HERE$ = "" Or glob Then
+                                 If here$ = "" Or glob Then
                                                 GlobalSub w$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
                                             Else
-                                                GlobalSub HERE$ & "." & w$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
+                                                GlobalSub here$ & "." & w$ + "()", "CALL EXTERN " & CStr(v), here$ + "." + bstack.GroupName
                                             End If
                                              OvarnameLen = varhash.count + 1
                                              
@@ -23357,8 +23357,8 @@ againgroup:
                                             If FastSymbol(rest$, ",") Then
                                             
                                           
-                                                If IsLabelA(HERE$, rest$, nm$) = 1 Then
-                                                    If HERE$ = "" Then
+                                                If IsLabelA(here$, rest$, nm$) = 1 Then
+                                                    If here$ = "" Then
                                                         If Not GetVar(bstack, ohere$ & "." & nm$, v) Then v = GlobalVar(ohere$ & "." & nm$, p)   ': GetVar bstack, nm$, v
                                                     Else
                                                         If Not GetlocalVar(ohere$ & "." & nm$, v) Then v = GlobalVar(ohere$ & "." & nm$, p)   ': GetlocalVar W$, v
@@ -23531,7 +23531,7 @@ If ss$ <> "" Then
 
     If ss$ = "=" Then
     
-    If HERE$ = "" Then
+    If here$ = "" Then
             If glob Then
            If IsStrExp(bstack, rest$, ss$) Then GlobalVar w$, ss$
           ElseIf GetVar(bstack, w$, v) Then
@@ -23552,11 +23552,11 @@ If ss$ <> "" Then
                                 Set var(v) = bstack.lastobj
                                 Set bstack.lastobj = Nothing
                                 LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
-                                 If HERE$ = "" Or glob Then
+                                 If here$ = "" Or glob Then
                                                 GlobalSub w$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
                                             Else
                                             
-                                                GlobalSub HERE$ & "." & w$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
+                                                GlobalSub here$ & "." & w$ + "()", "CALL EXTERN " & CStr(v), here$ + "." + bstack.GroupName
                                             End If
 
                                              OvarnameLen = varhash.count + 1
@@ -23594,7 +23594,7 @@ End If
 Case 4
 If glob Then
  v = GlobalVar(w$, p, , True)
-ElseIf HERE$ = "" Then
+ElseIf here$ = "" Then
 If Not GetVar(bstack, w$, v) Then v = GlobalVar(w$, p) '': GetVar bstack, W$, v
 Else
 If Not GetlocalVar(w$, v) Then v = GlobalVar(w$, p) '': GetlocalVar W$, v
@@ -23981,11 +23981,11 @@ End Sub
 
 Sub CallGlobal(s$)
 Dim ohere$
-ohere$ = HERE$
-HERE$ = "@"
+ohere$ = here$
+here$ = "@"
  Execute basestack1, s$, False
  s$ = ""
-HERE$ = ohere$
+here$ = ohere$
 End Sub
 
 
@@ -24127,7 +24127,7 @@ Else
 
 
 
- If neoGetArray(bstack, s$, pppp, HERE$ <> "") Then
+ If neoGetArray(bstack, s$, pppp, here$ <> "") Then
 
  
 If NeoGetArrayItem(pppp, bstack, s$, newref, rest$) Then
@@ -24165,7 +24165,7 @@ ElseIf FastSymbol(rest$, ")") Then
 If pppp Is Nothing Then
 
 GlobalArr bstack, s$, "0)", (1), (y1)
- If Not neoGetArray(bstack, s$, pppp, HERE$ <> "") Then GoTo there
+ If Not neoGetArray(bstack, s$, pppp, here$ <> "") Then GoTo there
 End If
 
 
@@ -24680,10 +24680,10 @@ If Trim$(what$) = "" Then Exit Sub
  Set ps = var(i).soros
  Dim subgroup As Object, pppp As mArray
  Dim ohere$, oldgroupname$
- ohere$ = HERE$
+ ohere$ = here$
 
 If bstack.UseGroupname <> "" Then
-HERE$ = ""
+here$ = ""
 End If
  oldgroupname$ = bstack.GroupName
     If bstack.GroupName <> "" Then
@@ -24703,10 +24703,10 @@ With myobject
                             s$ = vvl
 
                             
-                                     If HERE$ = "" Then
+                                     If here$ = "" Then
                                         ps2push = bstack.GroupName + s$
                                         Else
-                                        ps2push = HERE$ + "." + bstack.GroupName + s$
+                                        ps2push = here$ + "." + bstack.GroupName + s$
                                         End If
               
                             
@@ -24732,10 +24732,10 @@ With myobject
                                             ps.DataStr s$ + Str$(j)
                             ElseIf Typename(vvl) = "lambda" Then
                             v = GlobalVar(bstack.GroupName & s$, 0)
-                                               If HERE$ = "" Then
+                                               If here$ = "" Then
                                                 GlobalSub bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
                                             Else
-                                                GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
+                                                GlobalSub here$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), here$ + "." + bstack.GroupName
                                             End If
                             GoTo conthere2
                             ElseIf Typename(vvl) = "mHandler" Then
@@ -24746,10 +24746,10 @@ With myobject
                             ElseIf Typename(vvl) = "mEvent" Then
                             CopyEvent vvl, bstack
                             Set vvl = bstack.lastobj
-                            If HERE$ = "" Then
+                            If here$ = "" Then
                                    vvl.Upgrade bstack.GroupName
                             Else
-                            vvl.Upgrade HERE$ + "." + bstack.GroupName
+                            vvl.Upgrade here$ + "." + bstack.GroupName
                             End If
                         
                             GoTo conthere1
@@ -24806,9 +24806,9 @@ conthere2:
                  Next x1
            
                         If ohere$ = "" Or bstack.UseGroupname <> "" Then
-                        HERE$ = ""
+                        here$ = ""
                         Else
-                        HERE$ = ohere$
+                        here$ = ohere$
                         End If
               
               .PeekItem x1, vvl
@@ -24826,9 +24826,9 @@ conthere2:
                 bstack.GroupName = ""
               While s$ <> ""
                  If ohere$ = "" Or bstack.UseGroupname <> "" Then
-               HERE$ = oldgroupname$ + what$
+               here$ = oldgroupname$ + what$
               Else
-              HERE$ = ohere$ + "." + oldgroupname$ + what$
+              here$ = ohere$ + "." + oldgroupname$ + what$
               End If
               
               ''Execute bstack, s$, (True)
@@ -24841,7 +24841,7 @@ conthere2:
                         If MyFunction(0, bstack, sss$, 1) Then '' >6 len for function
                         x1 = bstack.IndexSub
                                               var(i).FuncList = Chr$(1) + Chr$(2) + ss$ + "()" + Str(x1) + Chr$(1) + var(i).FuncList
-                                              sbf(x1).sbgroup = HERE$ + "."
+                                              sbf(x1).sbgroup = here$ + "."
                         Else
                         x1 = 0
                          End If
@@ -24852,7 +24852,7 @@ conthere2:
                         If MyModule(bstack, sss$, 1) Then
                          x1 = bstack.IndexSub
                               var(i).FuncList = Chr$(1) + Chr$(2) + ss$ + Str(x1) + Chr$(1) + var(i).FuncList
-                              sbf(x1).sbgroup = HERE$ + "."
+                              sbf(x1).sbgroup = here$ + "."
                       Else
                         x1 = 0
                        End If
@@ -24865,9 +24865,9 @@ conthere2:
                     sss$ = NLtrim$(sss$) + " "
                 Wend
                     If bstack.UseGroupname <> "" Then
-                                HERE$ = ""
+                                here$ = ""
                     Else
-                            HERE$ = ohere$
+                            here$ = ohere$
                     End If
                
                 s$ = sss$
@@ -24888,7 +24888,7 @@ conthere2:
          
                 End With
             
-            HERE$ = ohere$
+            here$ = ohere$
              bstack.GroupName = oldgroupname$
 End Sub
 Sub UnFloatGroupReWriteVars(bstack As basetask, what$, i As Long, myobject As Object)
@@ -24901,10 +24901,10 @@ If Trim$(what$) = "" Then Exit Sub
  Set ps = var(i).soros
  Dim subgroup As Object, pppp As mArray
  Dim ohere$, oldgroupname$
- ohere$ = HERE$
+ ohere$ = here$
 If bstack.UseGroupname <> "" Then
 ' check this please..
-HERE$ = ""
+here$ = ""
 End If
  oldgroupname$ = bstack.GroupName
  
@@ -24929,10 +24929,10 @@ End If
                             
                             s$ = vvl
                             
-                                        If HERE$ = "" Then
+                                        If here$ = "" Then
                                         ps2push = bstack.GroupName + s$
                                         Else
-                                        ps2push = HERE$ + "." + bstack.GroupName + s$
+                                        ps2push = here$ + "." + bstack.GroupName + s$
                                         End If
                             
                             .PeekItem x1 + 1, vvl  'here is the value
@@ -24960,14 +24960,14 @@ End If
                                             
                             ElseIf Typename(vvl) = "lambda" Then
                           
-                             If GetVar(bstack, bstack.GroupName & s$, v) And HERE$ = "" Then
+                             If GetVar(bstack, bstack.GroupName & s$, v) And here$ = "" Then
                              ElseIf Not GetVar(bstack, s$, v) Then
                         
                              v = GlobalVar(bstack.GroupName & s$, 0)
-                              If HERE$ = "" Then
+                              If here$ = "" Then
                                                 GlobalSub bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
                                             Else
-                                                GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), HERE$ + "." + bstack.GroupName
+                                                GlobalSub here$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(v), here$ + "." + bstack.GroupName
                                             End If
                              End If
                              Set var(v) = vvl
@@ -24978,7 +24978,7 @@ End If
                             Else  ' is not array so...
                             '' drop *
                             If Asc(s$) = 42 Then s$ = Mid$(s$, 2)
-                                  If GetVar(bstack, bstack.GroupName & s$, v) And HERE$ = "" Then
+                                  If GetVar(bstack, bstack.GroupName & s$, v) And here$ = "" Then
                                   ' this needed for "a<=b"  a copy to a global group
                                 
                                                 ElseIf Not GetVar(bstack, s$, v) Then
@@ -25010,10 +25010,10 @@ End If
                                                                     CopyEvent vvl, bstack
                                                                     Set vvl = bstack.lastobj
                                                                     Set bstack.lastobj = Nothing
-                                                                    If HERE$ = "" Then
+                                                                    If here$ = "" Then
                                                                            vvl.Upgrade bstack.GroupName
                                                                     Else
-                                                                    vvl.Upgrade HERE$ + "." + bstack.GroupName
+                                                                    vvl.Upgrade here$ + "." + bstack.GroupName
                                                                     End If
                                                                     End If
                                                                     Set var(v) = vvl
@@ -25031,9 +25031,9 @@ End If
                  Next x1
                 End If
                  If ohere$ = "" Or bstack.UseGroupname <> "" Then
-                                HERE$ = ""
+                                here$ = ""
               Else
-                                 HERE$ = ohere$
+                                 here$ = ohere$
               End If
               
               .PeekItem x1, vvl
@@ -25049,9 +25049,9 @@ End If
                 bstack.GroupName = ""
               While s$ <> ""
                  If ohere$ = "" Or bstack.UseGroupname <> "" Then
-               HERE$ = oldgroupname$ + what$
+               here$ = oldgroupname$ + what$
               Else
-     HERE$ = ohere$ + "." + oldgroupname$ + what$
+     here$ = ohere$ + "." + oldgroupname$ + what$
               End If
               
               ''Execute bstack, s$, (True)
@@ -25064,7 +25064,7 @@ End If
                         If MyFunction(0, bstack, sss$, 1) Then '' >6 len for function
                         x1 = bstack.IndexSub
                                               var(i).FuncList = Chr$(1) + Chr$(2) + ss$ + "()" + Str(x1) + Chr$(1) + var(i).FuncList
-                                              sbf(x1).sbgroup = HERE$ + "."
+                                              sbf(x1).sbgroup = here$ + "."
                         Else
                         x1 = 0
                          End If
@@ -25075,7 +25075,7 @@ End If
                         If MyModule(bstack, sss$, 1) Then
                          x1 = bstack.IndexSub
                               var(i).FuncList = Chr$(1) + Chr$(2) + ss$ + Str(x1) + Chr$(1) + var(i).FuncList
-                              sbf(x1).sbgroup = HERE$ + "."
+                              sbf(x1).sbgroup = here$ + "."
                       Else
                         x1 = 0
                        End If
@@ -25088,9 +25088,9 @@ End If
                     sss$ = NLtrim$(sss$) + " "
                 Wend
                         If bstack.UseGroupname <> "" Then
-                    HERE$ = ""
+                    here$ = ""
                     Else
-                                  HERE$ = ohere$
+                                  here$ = ohere$
                     End If
                
                 s$ = sss$
@@ -25113,7 +25113,7 @@ End If
          
                 End With
 exithere1:
-            HERE$ = ohere$
+            here$ = ohere$
              bstack.GroupName = oldgroupname$
 
 End Sub
@@ -25164,14 +25164,14 @@ Dim x1 As Long, ss$, i As Long, s$, what$, par As Boolean
 Do
 x1 = Abs(IsLabel(basestack, rest$, what$))
 If x1 <> 1 Then GlobalHandler = False: Exit Function
-ss$ = HERE$
-HERE$ = ""
+ss$ = here$
+here$ = ""
 
 i = GlobalVar(basestack.GroupName & what$, s$, , True)
 Select Case typeHandler
 Case 1
 MakeitObjectInventory var(i)
-HERE$ = ss$
+here$ = ss$
 If FastSymbol(rest$, "=") Then
 Set basestack.lastobj = var(i)
 GlobalHandler = AddInventory(basestack, rest$)
@@ -25179,9 +25179,9 @@ Exit Function
 End If
 Case 2
 MakeitObjectBuffer var(i)
-HERE$ = ss$
+here$ = ss$
 Case Else
-HERE$ = ss$
+here$ = ss$
 End Select
 Loop Until Not FastSymbol(rest$, ",")
 If rest$ <> "" Then
@@ -25203,11 +25203,11 @@ Dim x1 As Long, ss$, i As Long, s$, what$
 
 x1 = Abs(IsLabel(basestack, rest$, what$))
 If x1 <> 1 Then GlobalEVENT = False: Exit Function
-ss$ = HERE$
-HERE$ = ""
+ss$ = here$
+here$ = ""
 i = GlobalVar(basestack.GroupName & what$, s$, , True)
 MakeitObjectEvent var(i)
-HERE$ = ss$
+here$ = ss$
 GlobalEVENT = ProcEvent(basestack, rest$, lang, i)
  
 
@@ -25269,8 +25269,8 @@ Dim s() As String
 
   
         
-        If HERE$ <> "" Then
-        w$ = UCase(HERE$ & "." & ohere$ & ".")
+        If here$ <> "" Then
+        w$ = UCase(here$ & "." & ohere$ & ".")
         Else
         w$ = UCase(ohere$ & ".")
         End If
@@ -25438,7 +25438,7 @@ If pagio$ = "GREEK" Then
 Else
 .gList2.HeadLine = "Control"
 End If
-If TestShowCode And HERE$ <> "" Then
+If TestShowCode And here$ <> "" Then
     Form2.gList3(2).BackColor = &H606060
 Else
     Form2.gList3(2).BackColor = &H3B3B3B
@@ -25463,7 +25463,7 @@ STEXIT = False
 STbyST = True
 Form2.Show , Form1
 If ISSTRINGA(rest$, ss$) Then IsSymbol rest$, ","
-If HERE$ = "" Then
+If here$ = "" Then
 
  TestShowSub = ""
  TestShowStart = 0
@@ -25475,11 +25475,11 @@ If HERE$ = "" Then
 MyDoEvents
 ' gList2.HeadLine
 If ss$ <> "" Then Form2.gList2.HeadLine = Form2.gList2.HeadLine + ": " + ss$: TestShowCode = True
-Form2.Label1(0) = HERE$
+Form2.Label1(0) = here$
 Form2.Label1(1) = what$
 Form2.Label1(2) = GetStrUntil(vbCrLf, rest$ & vbCrLf, False)
 
-If TestShowCode And HERE$ <> "" Then
+If TestShowCode And here$ <> "" Then
 
 Form2.gList3(2).BackColor = &H606060
 ss$ = GetNextLine((sbf(bstack.OriginalCode).sb))
@@ -27279,17 +27279,17 @@ i = 1
         .UseGroupname = sbf(x1).sbgroup
         .OriginalCode = x1
         If Not basestack.StaticCollection Is Nothing Then
-           If basestack.ExistVar("%_" + HERE$) Then
-                   basestack.ReadVar "%_" + HERE$, vvv
+           If basestack.ExistVar("%_" + here$) Then
+                   basestack.ReadVar "%_" + here$, vvv
                    If IsObject(vvv) Then Set bs.StaticCollection = vvv
                     Set vvv = Nothing
 
         End If
         End If
-       .StaticInUse$ = HERE$
+       .StaticInUse$ = here$
        End With
        i = 1
-       ' i = preProcessor(bs, sbf(x1).sb)
+
 If myexit(bs) Then ProcModuleEntry = False: Exit Function
 
  Do
@@ -27315,7 +27315,7 @@ End If
 
         End If
                      
-                    pa$ = "EDIT " & StripRVAL(HERE$) & ", " + CStr(Len(sbf(x1).sb))
+                    pa$ = "EDIT " & StripRVAL(here$) & ", " + CStr(Len(sbf(x1).sb))
                     If ohere$ <> "" Then
                     
                     If Left$(sbf(x1).sb, 10) = "'11001EDIT" Then
@@ -27323,12 +27323,12 @@ End If
                     pa$ = Mid$(GetNextLine(sbf(x1).sb), 7)
                     sbf(x1).sb = Mid$(sbf(x1).sb, 3)
                     
-                    MyEr "in module " & ohere$ & "." & HERE$, "στο τμημα " & ohere$ & "." & HERE$
+                    MyEr "in module " & ohere$ & "." & here$, "στο τμημα " & ohere$ & "." & here$
                     Else
                     
                     End If
                     Else
-                    MyEr "in module " & HERE$, "στο τμημα " & HERE$
+                    MyEr "in module " & here$, "στο τμημα " & here$
                     
                     End If
                     If InStr(FK$(13), ",") > 0 Then
@@ -27353,7 +27353,7 @@ GoTo thh
                     
                     Else
                     If sb2used > 0 Then
-                    MyEr "in module " & HERE$, "στο τμημα " & HERE$
+                    MyEr "in module " & here$, "στο τμημα " & here$
                     Else
                     MyEr "", ""
                     End If
@@ -27397,7 +27397,7 @@ thh1:
                    End If
                    End With
                     Set bs = Nothing
-                    HERE$ = ohere$
+                    here$ = ohere$
                 
                
                     Exit Do
@@ -28347,7 +28347,10 @@ SubsExist = subHash.count > 0
 End Function
 Function preProcessor(bstack As basetask, b$) As Long
 Dim ec$, ss$, w$, backup, p As Double, backupstr$
-If Left$(b$, 10) = "'11001EDIT" Then backup = InStr(b$, vbCrLf) + 2 Else backup = 1
+If Len(b$) = 0 Then
+preProcessor = 1: Exit Function
+End If
+If AscW(b$) = 39 Then backup = InStr(b$, vbCrLf) + 2 Else backup = 1
 ' backup show first char for code
 While Mid$(b$, backup, 2) = vbCrLf
 backup = backup + 2
@@ -28850,10 +28853,10 @@ If w = 2 Then
  ww1$ = ww1$ + ")"
 GetSubFullName ww1$, ww$
 If FastSymbol(s$, ")") Then
-If HERE$ = "" Then
+If here$ = "" Then
 Funcweak = ww1$
 Else
-Funcweak = HERE$ + "." + ww1$
+Funcweak = here$ + "." + ww1$
 End If
 End If
 ElseIf w = 0 Then
@@ -29029,7 +29032,7 @@ ElseIf IsLabelSymbolNew(ss$, "ΣΥΝΑΡΤΗΣΗ", "FUNCTION", lang) Then
 '' check only for blocks
 pf = pf + 1
 If FastSymbol(ss$, "{") Then
-s$ = "{" + rd$ + vbCrLf + block(ss$) + "}" + HERE$ + "." + bstack.GroupName
+s$ = "{" + rd$ + vbCrLf + block(ss$) + "}" + here$ + "." + bstack.GroupName
 If Not FastSymbol(ss$, "}") Then ProcEvent = False: Exit Function
 aa.GenItemCreator LTrim(Str(pf * 123)), s$
 While ss$ <> ""
@@ -29080,7 +29083,7 @@ Do
 dd = 1
       ss$ = aheadstatus(rest$, , dd)
       If ss$ = "S" Then
-       LastName$ = HERE$ + "." + NLtrim(myUcase(Left(rest$, dd - 1), True))
+       LastName$ = here$ + "." + NLtrim(myUcase(Left(rest$, dd - 1), True))
         If Not IsStrExp(bstack, rest$, s$) Then
           ProcEvent = False: Exit Function
         End If
@@ -29161,9 +29164,9 @@ End If
 Dim j As Long, k, s1$, klm As Long
 Set oldbstack = bstack.soros
 Dim ohere$
-ohere$ = HERE$
+ohere$ = here$
 For j = 0 To a.count - 1
-HERE$ = "EV" + CStr(i) + "." + CStr(j)
+here$ = "EV" + CStr(i) + "." + CStr(j)
 If a.enabled Then
 a.ReadVar j, n$, f$
 If f$ <> "" Then
@@ -29191,7 +29194,7 @@ Set oldbstack = Nothing
 bstack.soros.drop a.params
 Set bb = Nothing
 
-HERE$ = ohere$
+here$ = ohere$
 End Function
 Public Function CallEventFromGui(gui As Object, a As mEvent, aString$) As Boolean
 Dim tr As Boolean, extr As Boolean, olescok As Boolean
@@ -29220,9 +29223,9 @@ bstack.soros.DataObj gui
 Set oldbstack = bstack.soros
 Dim j As Long, s1$, klm As Long
 Dim ohere$
-ohere$ = HERE$
+ohere$ = here$
 For j = 0 To a.count - 1
-HERE$ = "EV" + CStr(i) + "." + CStr(j)
+here$ = "EV" + CStr(i) + "." + CStr(j)
 If a.enabled Then
 a.ReadVar j, n$, f$
 If f$ <> "" Then
@@ -29249,7 +29252,7 @@ Set bstack.Sorosref = oldbstack
 Set oldbstack = Nothing
 bstack.soros.drop a.params
 Set bb = Nothing
-HERE$ = ohere$
+here$ = ohere$
 conthere1:
 extreme = extr
 If tr Then
@@ -29285,8 +29288,8 @@ bstack.soros.DataObj gui
 
 Dim j As Long, k As Long, s1$, klm As Long, s2$
 Dim ohere$
-ohere$ = HERE$
-HERE$ = "EV" + CStr(i)
+ohere$ = here$
+here$ = "EV" + CStr(i)
 If a.enabled Then
             PushStage bstack, False
             IsLabelOnly (aString$), f$
@@ -29315,7 +29318,7 @@ If a.enabled Then
 End If
 conthere:
 Set bstack = Nothing
-HERE$ = ohere$
+here$ = ohere$
 conthere0:
 If tr Then
 If STEXIT Then trace = tr
@@ -29344,10 +29347,10 @@ F1$ = gui.modulename$
 Set oldbstack = bstack.soros
 Dim j As Long, k As Long, s1$, klm As Long, s2$
 Dim ohere$
-ohere$ = HERE$
+ohere$ = here$
 'For j = 0 To a.Count - 1
 
-HERE$ = "EV" + CStr(i)
+here$ = "EV" + CStr(i)
 
 If a.enabled Then
 a.ReadVar 0, n$, f$
@@ -29358,10 +29361,10 @@ Set bstack.Sorosref = bb
             For k = LBound(vrs()) To UBound(vrs()) - 1
             If VarType(vrs(k)) = vbString Then
             GlobalVar "EV" + CStr(i + k) + "$", vrs(k)
-            bb.DataStr HERE$ + "." + "EV" + CStr(i + k) + "$"
+            bb.DataStr here$ + "." + "EV" + CStr(i + k) + "$"
             Else
             GlobalVar "EV" + CStr(i + k), vrs(k)
-            bb.DataStr HERE$ + "." + "EV" + CStr(i + k)
+            bb.DataStr here$ + "." + "EV" + CStr(i + k)
             End If
             
             
@@ -29395,7 +29398,7 @@ Set bstack.Sorosref = bb
                 bb.Flush
                 GoTo conthere
             End If
-                  HERE$ = "EV" + CStr(i)
+                  here$ = "EV" + CStr(i)
        For k = LBound(vrs()) To UBound(vrs()) - 1
         If VarType(vrs(k)) = vbString Then
             GetlocalVar "EV" + CStr(i + k) + "$", j
@@ -29415,7 +29418,7 @@ End If
 conthere:
 
 Set bstack.Sorosref = oldbstack
-HERE$ = ohere$
+here$ = ohere$
 conthere0:
 Set oldbstack = Nothing
 Set bb = Nothing
@@ -29431,7 +29434,7 @@ Function ExpandGui(bstack As basetask, what$, rest$, ifier As Boolean, lang As L
 Dim pppp As mArray, aVar As Variant, h$
 '' add new GuiItems but not visible
 what$ = Left$(what$, Len(what$) - 1)
- If neoGetArray(bstack, oName$, pppp, HERE$ <> "") Then
+ If neoGetArray(bstack, oName$, pppp, here$ <> "") Then
  If Not pppp.IHaveGui Then ifier = False: Exit Function
  Dim i As Long
  i = pppp.UpperMonoLimit + 1
@@ -29571,7 +29574,7 @@ Dim pppp As mArray, mmmm As mEvent
 ElseIf IsLabelSymbolNew(rest$, "ΤΜΗΜΑ", "MODULE", lang) Then
          Set mm = New CallBack2
                      With mm
-                     .NoPublic bstack, HERE$
+                     .NoPublic bstack, here$
                     End With
                      Set var(i) = mm
                      Set mm = Nothing
@@ -29606,7 +29609,7 @@ ElseIf IsLabelSymbolNew(rest$, "ΦΟΡΜΑ", "FORM", lang) Then
                                   Set alfa.EventObj = var(y1)
                                   alfa.index = -1
                                   alfa.MyName = what$
-                                  alfa.modulename = HERE$
+                                  alfa.modulename = here$
                                   alfa.TITLE = what$
                                   Set alfa = Nothing
                             Else
@@ -29626,11 +29629,11 @@ ElseIf IsLabelSymbolNew(rest$, "ΦΟΡΜΑ", "FORM", lang) Then
                                     .VarIndex = i * 1000 + varhash.count
                                     .enabled = True
                                     .ParamBlock "Read msg$, &obj", 2
-                                    .GenItemCreator LTrim(Str(i * 456)), "{ Module " + HERE$ + vbCrLf + "try { Call local " + HERE$ + "." + bstack.GroupName + what$ + "() } }" + HERE$ + "." + bstack.GroupName
+                                    .GenItemCreator LTrim(Str(i * 456)), "{ Module " + here$ + vbCrLf + "try { Call local " + here$ + "." + bstack.GroupName + what$ + "() } }" + here$ + "." + bstack.GroupName
                                  End With
                                   alfa.MyName = what$
                                   alfa.index = -1
-                                  alfa.modulename = HERE$
+                                  alfa.modulename = here$
                                   alfa.ByPass = bp
                                   alfa.TITLE = what$
                                   Set mmmm = Nothing
@@ -29646,7 +29649,7 @@ contEvArray:
                                     .VarIndex = i * 1000 + varhash.count
                                     .enabled = True
                                     .ParamBlock "Read Index, msg$, &obj", 3
-                                    .GenItemCreator LTrim(Str(i * 3456)), "{ Module " + HERE$ + vbCrLf + "try { call local " + HERE$ + "." + bstack.GroupName + what$ + "() } }" + HERE$ + "." + bstack.GroupName
+                                    .GenItemCreator LTrim(Str(i * 3456)), "{ Module " + here$ + vbCrLf + "try { call local " + here$ + "." + bstack.GroupName + what$ + "() } }" + here$ + "." + bstack.GroupName
                                  End With
                                  End If
                                 For i = 0 To ar - 1
@@ -29658,7 +29661,7 @@ contEvArray:
                                 Set aaa = Nothing
                                 With aVar
                                  .MyName = what$
-                                 .modulename = HERE$
+                                 .modulename = here$
                                  .ByPass = bp
                                  .TITLE = what$ + "(" + LTrim(Str$(i)) + ")"
                                  .index = i
@@ -30051,9 +30054,9 @@ ElseIf Typename(var(i)) = "lambda" Then
             it = 1
             rest$ = ""
             Dim aa As lambda
-            var(i).name = HERE$
+            var(i).name = here$
             
-            var(i).CopyToVar basestack, HERE$ = "", var()
+            var(i).CopyToVar basestack, here$ = "", var()
             'sbf(0).sb = var(i).code$
             basestack.OriginalCode = 0
             basestack.FuncRec = subHash.LastKnown
@@ -30193,17 +30196,17 @@ If i = 1 Then
   
     If Not it Then it = GetSub(what$, x1)
  If Not it Then
- If HERE$ = what$ Then
+ If here$ = what$ Then
   it = True: x1 = basestack.OriginalCode
  Else
- For i = -iRVAL(HERE$, 0) To -1
+ For i = -iRVAL(here$, 0) To -1
  
-    it = GetSub(RVAL2(HERE$, i) + what$, x1)
+    it = GetSub(RVAL2(here$, i) + what$, x1)
     If it Then Exit For
     Next i
    End If
   If it = 0 Then
- If StripThis(HERE$) = what$ Then
+ If StripThis(here$) = what$ Then
  it = True: x1 = basestack.OriginalCode
  End If
  End If
@@ -30294,7 +30297,7 @@ ElseIf i > 3 Then
         bs.reflimit = varhash.count
         Set bs.Parent = basestack
         If basestack.IamThread Then Set bs.Process = basestack.Process
-        If Not TheSame(HERE$, ss$) Then Set bs.Sorosref = basestack.soros
+        If Not TheSame(here$, ss$) Then Set bs.Sorosref = basestack.soros
         Set bs.Owner = basestack.Owner
             ' bs.UseGroupname = sbf(x1).sbgroup
              bs.OriginalCode = x1
@@ -30918,7 +30921,7 @@ MyThread = True
       
                         bs.reflimit = bstack.reflimit
                         bstack.PushThread CLng(p), what$  'push thread id and Ifier to threads collection in current basetask
-                        sThreadInternal bs, p, 0, frm$, uintnew(-1), HERE$, False ' thread construction - also we have a connection to
+                        sThreadInternal bs, p, 0, frm$, uintnew(-1), here$, False ' thread construction - also we have a connection to
                         
                         
                         Set bs = Nothing
@@ -31574,7 +31577,7 @@ Dim s$, ss$, pa$, what$, x1 As Long, y1 As Long, i As Long, myobject As Object, 
 MyRead = True
 Dim p As Double, x As Double
 Dim pppp As mArray
-ohere$ = HERE$
+ohere$ = here$
 Dim col As Long
 On jump GoTo read, refer, commit
 Exit Function
@@ -31822,15 +31825,15 @@ Case 5, 6, 7
             Else
                 s$ = Left$(what$, Len(what$) - 1) + " " + s$
                 If f Then
-                    ss$ = HERE$
-                    HERE$ = ""
+                    ss$ = here$
+                    here$ = ""
                     If Not MyFunction(0, bstack, s$, 1) Then
                         MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
                         Exit Do
                     Else
                         sbf(bstack.IndexSub).sbgroup = s$
                     End If
-                    HERE$ = ss$
+                    here$ = ss$
                 Else
                     If Not MyFunction(0, bstack, s$, 1) Then
                         MyEr "No function definition founded", "Δεν βρέθηκε ορισμός συνάρτησης"
@@ -32491,16 +32494,16 @@ goNothing:
                 
                 s$ = w$
                 If x1 = 3 Then
-                    If HERE$ = "" Or y1 Then
+                    If here$ = "" Or y1 Then
                         GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = LETTER$"
                     Else
-                        GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = LETTER$"
+                        GlobalSub here$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = LETTER$"
                     End If
                 Else
-                    If HERE$ = "" Or y1 Then
+                    If here$ = "" Or y1 Then
                         GlobalSub s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
                     Else
-                        GlobalSub HERE$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
+                        GlobalSub here$ & "." & bstack.GroupName & s$ + "()", "CALL EXTERN " & CStr(i) & " : = NUMBER"
                     End If
                 End If
                Set photo = Nothing
@@ -32540,7 +32543,7 @@ goNothing:
                     Exit Function
         End If
         If ML >= 0 Then
-         If neoGetArray(bstack, w$, pppp, HERE$ <> "") Then
+         If neoGetArray(bstack, w$, pppp, here$ <> "") Then
                 MyDeclare = False
                 Exit Function
          Else
@@ -33346,14 +33349,14 @@ End If
 Loop
 
 If pa$ <> "" Then
-If HERE$ <> "" Then If FastSymbol(rest$, "?") Then GoTo ponly
+If here$ <> "" Then If FastSymbol(rest$, "?") Then GoTo ponly
 If lang Then
 
 pa$ = "In Memory: " & pa$ & vbCrLf & "        Use REMOVE to remove the left most, EDIT module_name to edit"
 Else
 pa$ = "Στη Μνήμη: " & pa$ & vbCrLf & "        Με τη ΔΙΑΓΡΑΦΗ θα σβήσεις το τελευταίο, με ΣΥΓΓΡΑΦΗ ή Σ όνομα_τμήματος θα γράψεις"
 End If
-If HERE$ = "" Then If FastSymbol(rest$, "?") Then GoTo ponly
+If here$ = "" Then If FastSymbol(rest$, "?") Then GoTo ponly
 End If
 IsSymbol3 rest$, "?"
 
@@ -33383,7 +33386,7 @@ Loop
 Set mDir = Nothing
 pa$ = pa$ & ss$
 If ss$ <> "" Then
-If HERE$ = "" Then
+If here$ = "" Then
 If lang Then
 pa$ = pa$ & vbCrLf + ReplaceStr$("'", Chr(34), "        Use LOAD 'module_name' to load, EDIT 'module_name.gsb' to edit on disk")
 If IsSupervisor Then pa$ = pa$ & ", WIN DIR$ for folders tasks"
@@ -33738,7 +33741,7 @@ End Function
 Function MyFunction(entrypoint As Long, bstack As basetask, rest$, lang As Long) As Boolean
 Dim y1 As Long, par As Boolean, what$, s$, ss$, pa$, x1 As Long, i As Long
 Dim ohere$
-ohere$ = HERE$
+ohere$ = here$
 MyFunction = True
         If entrypoint = 1 Then
                 par = True
@@ -33768,7 +33771,7 @@ MyFunction = True
                                 ''*****************************************************************************
                                       If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
                                                 If Left$(sbf(bstack.OriginalCode).sb, 10) = "'11001EDIT" Then
-                                                        If InStr(HERE$, ChrW(&H1FFF)) > 0 Then
+                                                        If InStr(here$, ChrW(&H1FFF)) > 0 Then
                                                                 s$ = ""
                                                         Else
                                                                 pa$ = sbf(bstack.OriginalCode).sb
@@ -33802,7 +33805,7 @@ MyFunction = True
                                         Else
                                                   If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
                                                   If Left$(sbf(bstack.OriginalCode).sb, 10) = "'11001EDIT" Then
-                                                        If InStr(HERE$, ChrW(&H1FFF)) > 0 Then
+                                                        If InStr(here$, ChrW(&H1FFF)) > 0 Then
                                                                 s$ = ""
                                                         Else
                                                                 pa$ = sbf(bstack.OriginalCode).sb
@@ -33827,6 +33830,7 @@ MyFunction = True
                                         If Not FastSymbol(rest$, "}") Then
                                                 MyFunction = False
                                         Else
+                                                Call preProcessor(bstack, what$)
                                                 If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                                 sbf(x1).sb = what$: bstack.IndexSub = x1
                                         End If
@@ -33839,7 +33843,7 @@ MyFunction = True
                 If par Then
                 x1 = GlobalSub(what$, "", "")
                 GoTo jump1
-                        ElseIf HERE$ = "" And GetSub(what$, x1) Then
+                        ElseIf here$ = "" And GetSub(what$, x1) Then
 jump1:
                                 If x1 >= lckfrm And lckfrm <> 0 Then   ' when we load a scrabled program..we have locked functions/modules
                                             MyEr what$ & " is locked", what$ & " είναι κλειδωμένο"
@@ -33856,6 +33860,7 @@ jump1:
                                             If Not FastSymbol(rest$, "}") Then
                                                     MyFunction = False
                                             Else
+                                                    Call preProcessor(bstack, what$)
                                                     If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                                     sbf(x1).sb = what$: bstack.IndexSub = x1
                                             End If
@@ -33880,6 +33885,7 @@ jump1:
                                             If Not FastSymbol(rest$, "}") Then
                                                     MyFunction = False
                                             Else
+                                                    Call preProcessor(bstack, what$)
                                                     If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                                     sbf(x1).sb = what$
                                                     bstack.IndexSub = x1
@@ -33890,7 +33896,7 @@ jump1:
                                     End If
                                     Exit Function
                         ElseIf FastSymbol(rest$, "{") Then
-                                    If HERE$ = "" Then
+                                    If here$ = "" Then
                                                 s$ = block(rest$)
                                                 If Right$(s$, 2) <> vbCrLf Then s$ = s$ + vbCrLf
                                                 ' NEED TO HAVE A HEADER ******************************************************************************
@@ -33900,7 +33906,7 @@ jump1:
                                                 i = Len(rest$)
                                                 If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
                                                 If Left$(sbf(bstack.OriginalCode).sb, 10) = "'11001EDIT" Then
-                                                        If InStr(HERE$, ChrW(&H1FFF)) > 0 Then
+                                                        If InStr(here$, ChrW(&H1FFF)) > 0 Then
                                                                 s$ = ""
                                                         Else
                                                                 pa$ = sbf(bstack.OriginalCode).sb
@@ -33916,7 +33922,7 @@ jump1:
                                                         End If
                                                 End If
 
-                                                bstack.IndexSub = GlobalSub(HERE$ & "." & bstack.GroupName & what$, s$ + ss$)
+                                                bstack.IndexSub = GlobalSub(here$ & "." & bstack.GroupName & what$, s$ + ss$)
                                                 
                                     End If
                                     If Not FastSymbol(rest$, "}") Then MyFunction = False
@@ -34595,7 +34601,7 @@ mylist basestack, -2  ' proportional
 ElseIf IsLabelSymbolNew(rest$, "ΑΠΟ", "LIB", lang) Then
 
 If IsLabelSymbolNew(rest$, "ΣΤΟ", "TO", lang) Then
-If HERE$ <> "" Then
+If here$ <> "" Then
     MyEr "Only in command line interpreter", "Μόνο στον μεταφραστή γραμμής"
     Exit Function
 End If
@@ -37427,7 +37433,7 @@ If IsLabelSymbolNew(rest$, "ΑΥΤΟ", "THIS", lang) Then
 Else
     x1 = Abs(IsLabel(basestack, rest$, what$))
     '' no same name allowed with module
-    If HERE$ = what$ Then NameConflict: Exit Function
+    If here$ = what$ Then NameConflict: Exit Function
 End If
  
 If x1 = 1 Then
@@ -37445,11 +37451,11 @@ If x1 = 1 Then
             '' GROUP
                 s$ = basestack.GroupName
                 prepareGroup basestack, what$, y1, flag
-                If flag Then ss$ = HERE$: HERE$ = ""
+                If flag Then ss$ = here$: here$ = ""
                 If ExecuteVarOnly(basestack, basestack.GroupName & what$, y1, rest$, lang, flag) = 0 Then
-                    var(y1).edittag = "'11001EDIT " + HERE$ + ", " + CStr(Len(rest$))
+                    var(y1).edittag = "'11001EDIT " + here$ + ", " + CStr(Len(rest$))
                 End If
-                If flag Then HERE$ = ss$
+                If flag Then here$ = ss$
                 ProcGroup = FastSymbol(rest$, "}")
             Else
             '' CLASS
@@ -37473,9 +37479,9 @@ If x1 = 1 Then
                     If IsExp(basestack, rest$, p) Then
                         If Not basestack.lastobj Is Nothing Then
                             If Typename(basestack.lastobj) = "Group" Then
-                                s$ = HERE$: HERE$ = ""
+                                s$ = here$: here$ = ""
                                 UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj
-                                HERE$ = s$
+                                here$ = s$
                                 Set basestack.lastobj = Nothing
                             End If
                         End If
@@ -37490,7 +37496,7 @@ End If
 End Function
 Function MyModule(basestack As basetask, rest$, lang As Long) As Boolean
 Dim s$, pa$, ss$, x1 As Long, par As Boolean, what$, ohere$, i As Long, x3 As Long
-ohere$ = HERE$
+ohere$ = here$
 MyModule = True
 x1 = IsLabelSymbolNew(rest$, "ΓΕΝΙΚΟ", "GLOBAL", lang)
         par = IsLabelSymbolNew(rest$, "ΝΕΟ", "NEW", lang)
@@ -37518,7 +37524,7 @@ BYPASS1:
                 i = Len(rest$)
                 If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
                 If Left$(sbf(basestack.OriginalCode).sb, 10) = "'11001EDIT" Then
-                        If InStr(HERE$, ChrW(&H1FFF)) > 0 Then
+                        If InStr(here$, ChrW(&H1FFF)) > 0 Then
                                 s$ = ""
                         Else
                                 pa$ = sbf(basestack.OriginalCode).sb
@@ -37542,7 +37548,7 @@ BYPASS1:
           If par Then
                 x1 = GlobalSub(what$, "", "")
                 GoTo JUMP0
-                ElseIf HERE$ = "" And GetSub(what$, x1) Then
+                ElseIf here$ = "" And GetSub(what$, x1) Then
 JUMP0:
                         If x1 >= lckfrm And lckfrm <> 0 Then
                                 MyEr what$ & " is locked", what$ & " είναι κλειδωμένο"
@@ -37555,7 +37561,9 @@ JUMP0:
                                    If Not FastSymbol(rest$, "}") Then
                                            MyModule = False
                                       Else
-                                                If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
+                                     Call preProcessor(basestack, what$)
+                                    If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
+                                                      
                                             sbf(x1).sb = what$: basestack.IndexSub = x1
                                 End If
                                
@@ -37581,6 +37589,7 @@ JUMP0:
                                 If Not FastSymbol(rest$, "}") Then
                                         MyModule = False
                                 Else
+                                Call preProcessor(basestack, what$)
                                 If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                 sbf(x1).sb = what$
                                 basestack.IndexSub = x1
@@ -37590,16 +37599,18 @@ JUMP0:
                         End If
                         Exit Function
                 ElseIf FastSymbol(rest$, "{") Then
-                        If HERE$ = "" Then
+                        If here$ = "" Then
                                 pa$ = block(rest$)
+                                Call preProcessor(basestack, pa$)
                                 If Right$(pa$, 2) <> vbCrLf Then pa$ = pa$ + vbCrLf
                                 basestack.IndexSub = GlobalSub(what$, pa$)
                         Else
                                 ss$ = block(rest$)
+                                Call preProcessor(basestack, ss$)
                                 i = Len(rest$)
                                 If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
                                 If Left$(sbf(basestack.OriginalCode).sb, 10) = "'11001EDIT" Then
-                                        If InStr(HERE$, ChrW(&H1FFF)) > 0 Then
+                                        If InStr(here$, ChrW(&H1FFF)) > 0 Then
                                                 s$ = ""
                                         Else
                                                 pa$ = sbf(basestack.OriginalCode).sb
@@ -37612,14 +37623,14 @@ JUMP0:
                                                 s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
                                         End If
                                 End If
-                                basestack.IndexSub = GlobalSub(HERE$ & "." & basestack.GroupName & what$, s$ + ss$) 's$ + block(Rest$)
+                                basestack.IndexSub = GlobalSub(here$ & "." & basestack.GroupName & what$, s$ + ss$) 's$ + block(Rest$)
                         End If
                         If Not FastSymbol(rest$, "}") Then MyModule = False
                         Exit Function
                 Else
                 If basestack.StaticCollection Is Nothing Then ConnectStatic basestack, myUcase(what$)
                    basestack.connectnow = True
-                        HERE$ = what$
+                        here$ = what$
                 End If
         End If
 Else
@@ -37628,7 +37639,7 @@ Else
          
                 If basestack.StaticCollection Is Nothing Then ConnectStatic basestack, myUcase(s$)
                  basestack.connectnow = True
-                HERE$ = myUcase(s$)
+                here$ = myUcase(s$)
         Else
                 rest$ = what$ & " " & rest$
                 MyModule = False
@@ -38135,7 +38146,7 @@ End If
 End Function
 Function ProcClass(basestack As basetask, rest$, lang As Long) As Boolean
 Dim i As Long, ss$, y1 As Long, what$, w$, ohere$
-ohere$ = HERE$
+ohere$ = here$
 ProcClass = True
 y1 = IsLabelSymbolNew(rest$, "ΓΕΝΙΚΗ", "GLOBAL", lang)
 If IsLabelA("", rest$, w$) = 1 Then
@@ -38228,7 +38239,7 @@ Exit Function
 End If
 ss$ = ReadUnicodeOrANSI(s$, True)
 If ss$ <> "" Then
-If Err.number = 0 And HERE$ = "" Then LASTPROG$ = s$
+If Err.number = 0 And here$ = "" Then LASTPROG$ = s$
 If FastSymbol(rest$, ",") Then
         If IsStrExp(basestack, rest$, w$) Then
                 ss$ = mycoder.decryptline(ss$, w$, (Len(ss$) / 2) Mod 33)
@@ -38333,7 +38344,7 @@ there1:
             End If
         Else
             ' ARRAYf
-            If neoGetArray(basestack, what$, pppp, HERE$ <> "") Then   ' basestack.GroupName &
+            If neoGetArray(basestack, what$, pppp, here$ <> "") Then   ' basestack.GroupName &
                 If Not NeoGetArrayItem(pppp, basestack, what$, it, rest$) Then MyDocument = False: Exit Function
                 x1 = 0
                 If Not IsObject(pppp.item(it)) Then
@@ -38428,7 +38439,7 @@ End Function
 Function MyLink(basestack As basetask, rest$, lang As Long) As Boolean
 MyLink = True
 Dim myobject As mStiva, ohere$, s$, ss$, x1 As Long, it As Long
-ohere$ = HERE$
+ohere$ = here$
 Set myobject = basestack.soros
 Set basestack.Sorosref = New mStiva
 s$ = ""
@@ -38540,7 +38551,7 @@ Do
     If MaybeIsSymbol(rest$, ")") Then rest$ = "0" + rest$
 
     ''*********************
-    If neoGetArray(basestack, w$, pppp, HERE$ <> "") And Not par Then
+    If neoGetArray(basestack, w$, pppp, here$ <> "") And Not par Then
     If pppp.IHaveClass And pppp.GroupRef Is Nothing Then Set pppp = Nothing: Exit Function
    ' If reverse Then pppp.RevOrder = True
     Select Case it
@@ -39114,10 +39125,10 @@ F1$ = evCom.modulename$
 Set oldbstack = bstack.soros
 Dim j As Long, k As Long, s1$, s2$
 Dim ohere$
-ohere$ = HERE$
+ohere$ = here$
 'For j = 0 To a.Count - 1
 ' GO GLOBAL
-HERE$ = "" ' "EV" + CStr(i)
+here$ = "" ' "EV" + CStr(i)
 
 If evCom.Attached Then
 Set bb = New mStiva
@@ -39146,7 +39157,7 @@ Set bstack.Sorosref = bb
             'f$ = aString$
             
            '' WE ARE GOING TO OUR MODULE
-            HERE$ = evCom.modulenameonly
+            here$ = evCom.modulenameonly
             If FastCallModule(bstack, klm) <> 1 Then
             
             
@@ -39155,7 +39166,7 @@ Set bstack.Sorosref = bb
                 bb.Flush
                 GoTo conthere
             End If
-                  HERE$ = ""
+                  here$ = ""
                   If NumVar > 0 Then
        For k = LBound(vrs()) To UBound(vrs()) - 1
        Select Case VarType(vrs(k))
@@ -39182,7 +39193,7 @@ End If
 conthere:
 
 Set bstack.Sorosref = oldbstack
-HERE$ = ohere$
+here$ = ohere$
 conthere0:
 Set oldbstack = Nothing
 Set bb = Nothing
