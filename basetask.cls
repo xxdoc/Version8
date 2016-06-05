@@ -40,14 +40,15 @@ Private mtolayer As Long
 Private myRun As Boolean
 Private mprocess As TaskInterface ' reference to current process maybe same to parrent...
 Private mprocessOk As Boolean ' if i have a process class
-Private threadsnames As New FastCollection  ' δουλεύει
+Private threadsnames As FastCollection   ' δουλεύει
 Public TaskMain As Boolean
 Public OriginalName$
 Private mGroupName$
 Public UseGroupname$
 Public LastClick As Long
 Public Look2Parent As Boolean
-Private dotcollection As Collection
+Private Const dotcolmax = 10
+Private dotcol(dotcolmax) As String, curdotcol As Long
 Public StaticCollection As FastCollection
 Private topdotlevel As Long
 Public reflimit As Long
@@ -60,7 +61,7 @@ Public LastValue As Variant
 Public LastMouse1 As Variant
 Public LastMouse2 As String
 Public LastState As Boolean
-Private RetSoros As New mStiva  ' for basic mimic functions- for education only
+Private RetSoros As mStiva  ' for basic mimic functions- for education only
 Public SubLevel As Long
 Public OriginalCode As Long
 Public StaticInUse$
@@ -159,7 +160,6 @@ Public Function ExistVar(ByVal name$) As Boolean
 End Function
 Public Sub ReadVar(ByVal name$, var As Variant)
     Dim i As Long, vv As Variant
-    On Error Resume Next
     With StaticCollection
         If .Find(name$) Then
             If .IsObj Then
@@ -172,141 +172,133 @@ Public Sub ReadVar(ByVal name$, var As Variant)
     End With
 End Sub
 Public Sub DropNdot(n As Long)
-''On Error Resume Next
 If n = 0 Then Exit Sub
-Dim i As Long
-If dotcollection.count - n < 0 Then
-Set dotcollection = New Collection
+If curdotcol - n < 0 Then
+    curdotcol = 0
 Else
-For i = dotcollection.count To dotcollection.count - n + 1 Step -1
-dotcollection.Remove dotcollection.count
-Next i
+    curdotcol = curdotcol - n
 End If
 End Sub
 
-Public Sub MoveNameDot(A$)
-If A$ = "" Then Exit Sub
-If dotcollection.count = 0 Then
-dotcollection.Add A$
+Public Sub MoveNameDot(a$)
+If a$ = "" Then Exit Sub
+If curdotcol < dotcolmax Then
+    curdotcol = curdotcol + 1
+    dotcol(curdotcol) = a$
+    
 Else
-dotcollection.Add A$, , , dotcollection.count
+    MyEr "Max count for dot names", "Μέγιστος αριθμός τελείας"
 End If
 End Sub
-Public Function GetDotNew(A$, dotnum&) As Boolean
-If Look2Parent Then GetDotNew = Parent.GetDotNew(A$, dotnum&): Exit Function
+Public Function GetDotNew(a$, dotnum&) As Boolean
+If Look2Parent Then GetDotNew = Parent.GetDotNew(a$, dotnum&): Exit Function
 
-On Error Resume Next
-If dotcollection.count = 0 Then
+If curdotcol = 0 Then
 If UseGroupname <> "" Then
- If InStr(A$, "(") > 0 Then
- If AscW(Left$(A$, 1)) > 255 Then
- A$ = "ΑΥΤΟ." + A$
+ If InStr(a$, "(") > 0 Then
+ If AscW(Left$(a$, 1)) > 255 Then
+ a$ = "ΑΥΤΟ." + a$
  Else
- A$ = "THIS." + A$
+ a$ = "THIS." + a$
  End If
  Else
- A$ = UseGroupname + A$
+ a$ = UseGroupname + a$
  End If
 
  
  End If
 Else
 newrun:
-On Error Resume Next
-If dotcollection.count < dotnum Then
+If curdotcol < dotnum Then
 '' wrong
 If UseGroupname = "" Then
 
 Else
 
             
-            A$ = UseGroupname + A$
+            a$ = UseGroupname + a$
  End If
 Else
 
-  If dotcollection(dotnum) = "THIS" Then
+  If dotcol(dotnum) = "THIS" Then
     If UseGroupname <> "" Then
-      A$ = UseGroupname + A$
+      a$ = UseGroupname + a$
     Else
-    A$ = "THIS." + A$
+    a$ = "THIS." + a$
     End If
   Else
-    A$ = dotcollection(dotnum) + "." + A$
+    a$ = dotcol(dotnum) + "." + a$
 
     End If
-    If Asc(A$) = 46 Then
+    If Asc(a$) = 46 Then
     dotnum = 1
-    While Asc(Mid$(A$, dotnum + 1) + " ") = 46
+    While Asc(Mid$(a$, dotnum + 1) + " ") = 46
     dotnum = dotnum + 1
     Wend
-    A$ = Mid$(A$, dotnum + 1)
+    a$ = Mid$(a$, dotnum + 1)
     GoTo newrun
     End If
     End If
     End If
-    GetDotNew = Err.number = 0
+    GetDotNew = True
 End Function
 
-Public Function GetDot(A$, st&) As Boolean
-On Error Resume Next
+Public Function GetDot(a$, st&) As Boolean
 Dim i&
-Err.Clear
-If dotcollection.count = 0 Then A$ = Mid$(A$, 2): Exit Function
-Do While Mid$(A$, st&, 1) = " "
+If curdotcol = 0 Then a$ = Mid$(a$, 2): Exit Function
+Do While Mid$(a$, st&, 1) = " "
 st& = st& + 1
-If st& > Len(A$) Then Exit Function
+If st& > Len(a$) Then Exit Function
 Loop
 
-For i& = st& + 1 To Len(A$)
-If Mid$(A$, i&, 1) <> "." Then i& = i& + 1: Exit For
+For i& = st& + 1 To Len(a$)
+If Mid$(a$, i&, 1) <> "." Then i& = i& + 1: Exit For
 Next i&
 i& = i& - 2
-' from st& to i& replace name
-A$ = Left$(A$, st& - 1) + dotcollection(i& - st& + 1) + Mid$(A$, i&)
-
+a$ = Left$(a$, st& - 1) + dotcol(i& - st& + 1) + Mid$(a$, i&)
 If Not Err Then GetDot = True
 End Function
 
 
 
-Public Property Let myitalic(ByVal rhs As Boolean)
-mitalic = rhs
+Public Property Let myitalic(ByVal RHS As Boolean)
+mitalic = RHS
 End Property
 
 Public Property Get myitalic() As Boolean
 myitalic = mitalic
 End Property
-Public Property Let myCharSet(ByVal rhs As Integer)
-mCharSet = rhs
+Public Property Let myCharSet(ByVal RHS As Integer)
+mCharSet = RHS
 End Property
 
 Public Property Get myCharSet() As Integer
 myCharSet = mCharSet
 End Property
-Public Property Let myBold(ByVal rhs As Boolean)
-mBold = rhs
+Public Property Let myBold(ByVal RHS As Boolean)
+mBold = RHS
 End Property
 
 Public Property Get myBold() As Boolean
 myBold = mBold
 End Property
-Public Property Let toprinter(ByVal rhs As Boolean)
-mtoprinter = rhs
+Public Property Let toprinter(ByVal RHS As Boolean)
+mtoprinter = RHS
 End Property
 
 Public Property Get toprinter() As Boolean
 toprinter = mtoprinter
 End Property
-Public Property Let tolayer(ByVal rhs As Long)
-mtolayer = rhs
+Public Property Let tolayer(ByVal RHS As Long)
+mtolayer = RHS
 End Property
 
 Public Property Get tolayer() As Long
 tolayer = mtolayer
 End Property
 
-Public Property Let toback(ByVal rhs As Boolean)
-mtoback = rhs
+Public Property Let toback(ByVal RHS As Boolean)
+mtoback = RHS
 End Property
 
 Public Property Get toback() As Boolean
@@ -334,17 +326,31 @@ Public Property Get Parent() As basetask
 Set Parent = MyParent
 
 End Property
-Public Property Set Sorosref(A As mStiva)
-Set parentSoros = A
+Public Property Set Sorosref(a As mStiva)
+Set parentSoros = a
 End Property
+Public Property Get RetStackTotal() As Long
+If RetSoros Is Nothing Then
+Else
+RetStackTotal = RetSoros.Total
+End If
+End Property
+
 Public Property Get RetStack() As mStiva
+If RetSoros Is Nothing Then Set RetSoros = New mStiva
 Set RetStack = RetSoros
 End Property
+Public Function SorosNothing() As Boolean
+SorosNothing = parentSoros Is Nothing
+End Function
 Public Property Get soros() As mStiva
+If parentSoros Is Nothing Then
+Set parentSoros = New mStiva
+End If
 Set soros = parentSoros
 End Property
-Public Property Set Owner(A As Object)
-Set myOwner = A
+Public Property Set Owner(a As Object)
+Set myOwner = a
 End Property
 Public Property Get Owner() As Object
 If mtoprinter Then
@@ -372,31 +378,35 @@ Public Sub EndRun()
 ' μόνο από το Myprocess.tick
 myRun = False
 End Sub
-Public Property Set Process(A As TaskInterface)
-If mprocess Is A Then
+Public Property Set Process(a As TaskInterface)
+If mprocess Is a Then
 Set mprocess = Nothing
 mprocessOk = True
 Else
-Set mprocess = A
+Set mprocess = a
 
 mprocessOk = True
 End If
 End Property
 Public Property Get Process() As TaskInterface
 Set Process = mprocess
-
 End Property
-Public Property Set LinkThread(Threadid As Long, A As TaskInterface)
+Private Sub checkialive()
+If threadsnames Is Nothing Then Set threadsnames = New FastCollection
+End Sub
+
+Public Property Set LinkThread(Threadid As Long, a As TaskInterface)
 Dim aa As mThreadref
+checkialive
 If threadsnames.Find(Threadid) Then
 Set aa = threadsnames.ValueObj
-Set aa.thread = A
+Set aa.thread = a
 End If
 End Property
 
 Public Sub PushThread(Threadid As Long, threadvar As String)
 Dim aa As New mThreadref
-
+checkialive
 Set aa.thread = Nothing  ' no thread
 aa.Id = Threadid
 aa.VarName = threadvar
@@ -406,6 +416,7 @@ Set threadsnames.ValueObj = aa
 End Sub
 Public Function Exist(Threadid As Long, ThreadName As String) As Boolean
 'Dim aa As mThreadref
+If threadsnames Is Nothing Then Exist = False: Exit Function
 If threadsnames.Find(Threadid) Then
  With threadsnames.ValueObj
     Exist = .VarName = ThreadName
@@ -417,6 +428,7 @@ End Function
 Public Function ThrowOne(Threadid As Long) As Boolean
 Dim aa As mThreadref
 On Error Resume Next
+If threadsnames Is Nothing Then Exit Function
 ' this is mandatory
 If TaskMaster Is Nothing Then Exit Function
 If TaskMaster.ThrowOne(Threadid) Then ThrowOne = True
@@ -438,7 +450,10 @@ Set aa = Nothing
 End Function
 Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 '' use threadsnames
-Dim aa As mThreadref, A$
+
+Dim aa As mThreadref, a$
+If threadsnames Is Nothing Then Exit Function
+
 If threadsnames.count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
@@ -446,12 +461,12 @@ While threadsnames.Done
 Set aa = threadsnames.ValueObj
 If Left$(aa.VarName, 1) = "_" Then
 If lang = 0 Then
-A$ = A$ & "ΕΣΩΤΕΡΙΚΟ ΝΗΜΑ "
+a$ = a$ & "ΕΣΩΤΕΡΙΚΟ ΝΗΜΑ "
 Else
-A$ = A$ & "INTERNAL THREAD "
+a$ = a$ & "INTERNAL THREAD "
 End If
 Else
-A$ = A$ & aa.VarName + Str$(aa.Id) & " "
+a$ = a$ & aa.VarName + Str$(aa.Id) & " "
 End If
 threadsnames.NextIndex
 Wend
@@ -460,17 +475,18 @@ Set aa = Nothing
 End If
 If Me.IamChild Then
 If Not Me.Parent Is Nothing Then
-ThreadsStr = Trim$(A$ & Me.Parent.ThreadsStr(lang))
+ThreadsStr = Trim$(a$ & Me.Parent.ThreadsStr(lang))
 Else
 ThreadsStr = ""
 End If
 Else
-ThreadsStr = Trim$(A$)
+ThreadsStr = Trim$(a$)
 End If
 End Function
 Public Function ThreadsNumber() As Long
 '' use threadsnames
 Dim aa As mThreadref, kk
+If threadsnames Is Nothing Then ThreadsNumber = kk: Exit Function
 If threadsnames.count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
@@ -483,7 +499,7 @@ End If
 ThreadsNumber = kk
 End Function
 Public Sub ThrowThreads(Optional idexclude As Long = -1)
-
+If threadsnames Is Nothing Then Exit Sub
 Dim aa As mThreadref, Tid As Long
 Dim thatProcess As TaskInterface
 Dim thatBasetask As basetask
@@ -509,9 +525,7 @@ End If
 End Sub
 
 Private Sub Class_Initialize()
-Set parentSoros = New mStiva ' maybe this will change
-Set dotcollection = New Collection
-'Set StaticCollection = New FastCollection
+'Set parentSoros = New mStiva ' maybe this will change
 Set Owner = Nothing
 Set lastobj = Nothing
 Set FuncObj = Nothing
@@ -565,6 +579,7 @@ IsInStackObject = True
 End If
 End Function
 Public Function IsInRetStackNumber(r As Double) As Boolean
+If RetSoros Is Nothing Then Exit Function
 If RetSoros.LookNull Then
 r = RetSoros.PopVal
 IsInRetStackNumber = True
@@ -574,6 +589,7 @@ IsInRetStackNumber = True
 End If
 End Function
 Public Function IsInRetStackString(r As String) As Boolean
+If RetSoros Is Nothing Then Exit Function
 If RetSoros.LookNull Then
 r = RetSoros.PopStr
 IsInRetStackString = True
@@ -616,7 +632,6 @@ Set myOwner = Nothing
 Set mprocess = Nothing
 Set parentSoros = Nothing
 Set MyParent = Nothing
-Set dotcollection = Nothing
 Set StaticCollection = Nothing
 End Sub
 
@@ -667,6 +682,6 @@ Public Property Get IamLambda() As Variant
 IamLambda = mIamlambda
 End Property
 
-Public Property Let IamLambda(ByVal rhs As Variant)
-mIamlambda = rhs
+Public Property Let IamLambda(ByVal RHS As Variant)
+mIamlambda = RHS
 End Property

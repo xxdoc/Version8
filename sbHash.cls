@@ -82,7 +82,7 @@ Friend Sub ReduceHash(newTop As Long, v() As modfun)
             If MaxSpace > 50 Then
                         MaxSpace = 50
                          ReDim Preserve PriveSpace(MaxSpace) As item
-                            
+                                            
                             ReDim Hash(MaxSpace * 2 + 3)
                            hashlen = MaxSpace * 2 + 3
                          '  reHash...

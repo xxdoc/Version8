@@ -51,7 +51,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 1
-Global Const Revision = 27
+Global Const Revision = 28
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -135,7 +135,7 @@ Public varhash As New Hash
 Public comhash As New sbHash, numid As New sbHash, funid As New sbHash
 Public strid  As New sbHash, strfunid As New sbHash
 Public cLid As Long 'current id for app id
-
+Public GarbageCollector As New FastCollection
 ''
 Public basestack1 As New basetask ' this is the global stack
 Public sb2used As Long
@@ -1281,22 +1281,19 @@ Dim s$, ss$, f As Long, col As Long, x1 As Long, i As Long, pppp As mArray, pppp
 End Function
 
 Public Sub PushStage(basestack As basetask, dummy As Boolean)
+
         With basestack.RetStack
-                basestack.SubLevel = basestack.SubLevel + 1
+               basestack.SubLevel = basestack.SubLevel + 1
 
                 If dummy Then
                         .PushVal 0
                         .PushVal 0
                         .PushVal 0
                         .PushVal 0
-                        .PushVal 0
-                        .PushVal 0
                         .PushVal -2
                 Else
-                        .PushVal 0   ' Len(arrname$)
                         .PushVal CDbl(subHash.count)
                         .PushVal CDbl(varhash.count)
-                        .PushVal 0 'CDbl(neoArray.Count)
                         .PushVal CDbl(sb2used)
                         .PushVal CDbl(var2used)
                         .PushVal -1
@@ -1312,13 +1309,11 @@ Dim kolpo As Boolean, bb$, once As Boolean, dd As Variant
 
                     var2used = CLng(.PopVal)
                     sb2used = CLng(.PopVal)
-                   .drop 1
                       varhash.ReduceHash CLng(.PopVal), var()
                     subHash.ReduceHash CLng(.PopVal), sbf()
-                     .drop 1
         ElseIf .LookTopVal = -2 Then
         basestack.SubLevel = basestack.SubLevel - 1
-        .drop 7
+        .drop 5
         Else
         End If
         End With
@@ -2314,7 +2309,7 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
         bstack.LastValue = CStr(var(i))
         GoTo fastexit
 ElseIf Prefix = "FOR" Then
-RetStackSize = bstack.RetStack.Total
+RetStackSize = bstack.RetStackTotal
     If v = -1 Then
     w$ = myUcase(w$)
         y1 = 0
@@ -2422,7 +2417,7 @@ subsentry10:
                                       i = 1
                     If bb$ <> "" Then
                             If bb$ = Chr$(0) Then
-                                       If RetStackSize = bstack.RetStack.Total And bstack.RetStack.LookTopVal < 0 Then
+                                       If RetStackSize = bstack.RetStackTotal And bstack.RetStack.LookTopVal < 0 Then
                                         ' this is a return form other block
                                          SpeedGroup = 2
                                         b$ = bb$
@@ -2442,7 +2437,7 @@ subsentry10:
                                                         ElseIf p < 0 Then
                                                                 subspoint = False
                                                                 bstack.IsInRetStackNumber p
-                                                        If bstack.RetStack.Total - RetStackSize <= 7 Then
+                                                        If bstack.RetStackTotal - RetStackSize <= 7 Then
                                                         i = Len(ec$) - CLng(p) + 1
      
                                                        bb$ = Mid$(ec$, i)
@@ -14268,6 +14263,11 @@ Do
             If bstack.lastobj Is Nothing Then
                 pppp.item(x1 - 1) = p
             Else
+                If Typename(bstack.lastobj) = "mHandler" Then
+                If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
+                GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
+                End If
+                End If
                 Set pppp.item(x1 - 1) = bstack.lastobj
                 Set bstack.lastobj = Nothing
             End If
@@ -14297,6 +14297,11 @@ Do
             If bstack.lastobj Is Nothing Then
                 pppp.item(x1 - 1) = ss$
             Else
+                If Typename(bstack.lastobj) = "mHandler" Then
+                    If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
+                    GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
+                    End If
+                    End If
                 Set pppp.item(x1 - 1) = bstack.lastobj
                 Set bstack.lastobj = Nothing
             End If
@@ -16509,7 +16514,7 @@ ContOn:
                 If y2 Then
                 If bstack.SubLevel > deep And deep <> 0 Then
 ' GO BACK TO FIRST CALL
-If bstack.RetStack.Total >= 9 * deep Then
+If bstack.RetStackTotal >= 9 * deep Then
              MyEr "No more " + CStr(deep) + " levels gosub allowed", "Δεν επιτρέπονται πάνω από " + CStr(deep) + " επίπεδα για εντολή ΔΙΑΜΕΣΟΥ"
 
              Execute = 0
@@ -16517,7 +16522,7 @@ If bstack.RetStack.Total >= 9 * deep Then
 
             
 Else
-bstack.RetStack.drop bstack.RetStack.Total
+bstack.RetStack.drop bstack.RetStackTotal
  End If
   MyEr "Internal Error", "Εσωτερικό Λάθος"
  NOEXECUTION = True
@@ -16572,7 +16577,7 @@ If myexit(bstack) Then Execute = 1: Exit Function
 
 If bstack.SubLevel > deep And deep <> 0 Then
 ' GO BACK TO FIRST CALL
-If bstack.RetStack.Total >= 9 * deep Then
+If bstack.RetStackTotal >= 9 * deep Then
              MyEr "No more " + CStr(deep) + " levels gosub allowed", "Δεν επιτρέπονται πάνω από " + CStr(deep) + " επίπεδα για εντολή ΔΙΑΜΕΣΟΥ"
 
              Execute = 0
@@ -16580,7 +16585,7 @@ If bstack.RetStack.Total >= 9 * deep Then
 
             
 Else
-bstack.RetStack.drop bstack.RetStack.Total
+bstack.RetStack.drop bstack.RetStackTotal
  End If
   MyEr "Internal Error", "Εσωτερικό Λάθος"
  NOEXECUTION = True
@@ -17727,18 +17732,25 @@ End If
             End If
             
             SpeedGroup bstack, pppp, "@READ", w$, "", v
+            
+                If Typename(myobject) = "mHandler" Then
+                    If Not GarbageCollector.ExistKey(objptr(myobject)) Then
+                    GarbageCollector.AddKey objptr(bstack.lastobj), myobject
+                    End If
+            End If
+            
+            
             Set pppp.item(v).LinkRef = myobject
      Else
             If Typename(bstack.lastobj) = "mHandler" Then
-                  ' If bstack.lastobj.T1 = 1 Then
-                  '        If bstack.lastobj.ObjRef.IsObj Then
-                  '        Set pppp.item(v) = bstack.lastobj.ObjRef.ValueObj
-                   '       Else
-                  '        pppp.item(v) = bstack.lastobj.ObjRef.Value
-                  '        End If
-                  ' Else
+
+                                                
+                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
+                                        GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
+                                        End If
+                                
                           Set pppp.item(v) = bstack.lastobj
-                  ' End If
+     
             Else
                    If Not bstack.lastobj Is Nothing Then
                           If TypeOf bstack.lastobj Is mArray Then
@@ -17746,15 +17758,18 @@ End If
                                          Set pppp.item(v) = CopyArray(bstack.lastobj)
 
                                  Else
-   ' not any object
+  
+   
                                             Set pppp.item(v) = bstack.lastobj
                                             If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
                                  End If
                           Else
+                          
                                   Set pppp.item(v) = bstack.lastobj
                                   If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
                           End If
                    Else
+                  
                           Set pppp.item(v) = bstack.lastobj
                           If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
                    End If
@@ -17781,6 +17796,11 @@ If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
      bstack.soros.PushObj bstack.lastobj
      SpeedGroup bstack, pppp, "@READ", w$, "", v
      Else
+                                      If Typename(bstack.lastobj) = "mHandler" Then
+                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
+                                        GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
+                                        End If
+                                        End If
      Set pppp.item(v) = bstack.lastobj
      End If
      Set pppp.item(v).LinkRef = myobject
@@ -17894,9 +17914,22 @@ If Not IsStrExp(bstack, b$, ss$) Then
     If bstack.lastobj.Arr Then
         Set pppp.item(v) = bstack.lastobj
     Else
+                                     If Typename(bstack.lastobj.GroupRef) = "mHandler" Then
+                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.GroupRef)) Then
+                                        GarbageCollector.AddKey objptr(bstack.lastobj.GroupRef), bstack.lastobj
+                                        End If
+                                        End If
+    
+    
         Set pppp.item(v) = bstack.lastobj.GroupRef
     End If
     Else
+    If Typename(bstack.lastobj) = "mHandler" Then
+    If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
+    GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
+    End If
+    End If
+    
         Set pppp.item(v) = bstack.lastobj
         End If
         Set bstack.lastobj = Nothing
@@ -18983,7 +19016,7 @@ Case "GROUP", "ΟΜΑΔΑ"
   Exit Function
 Case "CALL", "ΚΑΛΕΣΕ"
 ' CHECK FOR NUMBER...
-NeoCall ObjPtr(basestack), rest$, lang, Identifier
+NeoCall objptr(basestack), rest$, lang, Identifier
 Case "COMMIT", "ΑΝΕΘΕΣΕ"
 Identifier = MyRead(3, basestack, rest$, lang)
 Exit Function
@@ -27511,7 +27544,6 @@ Set ParentStack = basestack.Parent
                 Do
                  If FastSymbol(rest$, "?") Then
                         ps.DataOptional
-                        basestack.soros.MergeTop ps
             ElseIf FastSymbol(rest$, "!") Then
                 If IsExp(ParentStack, rest$, p) Then
                 ps.DataValLong p
@@ -27548,7 +27580,15 @@ Set ParentStack = basestack.Parent
     If Not FastSymbol(rest$, ",") Then Exit Do
                 Loop
              Set ParentStack = Nothing
-            basestack.soros.MergeTop ps
+             With basestack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
+            
 End Function
 Function PushParamGeneral(basestack As basetask, rest$) As Boolean
 PushParamGeneral = True
@@ -27561,7 +27601,6 @@ Dim ps As mStiva, p As Double, s$
                 Do
         If FastSymbol(rest$, "?") Then
                         ps.DataOptional
-                        basestack.soros.MergeTop ps
             ElseIf FastSymbol(rest$, "!") Then
                 If IsExp(basestack, rest$, p) Then
                 ps.DataValLong p
@@ -27599,7 +27638,15 @@ Dim ps As mStiva, p As Double, s$
     If Not FastSymbol(rest$, ",") Then Exit Do
                 Loop
             
-            basestack.soros.MergeTop ps
+                      
+             With basestack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
 End Function
 Sub PushParamGeneraOLD(basestack As basetask, rest$)
 Dim ps As mStiva, p As Double, s$
@@ -27625,7 +27672,14 @@ Dim ps As mStiva, p As Double, s$
                     If Not FastSymbol(rest$, ",") Then Exit Do
                 Loop
              
-            basestack.soros.MergeTop ps
+              With basestack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
 End Sub
 
 Function searchsub(a$, w$, final As Long) As Boolean
@@ -27771,7 +27825,7 @@ executeblock = True
 'bstack.LastComm = ""
 Dim i As Long, ec$, ec1$, LL As Long, oldLL As Long, bb$, p As Double, x2 As Long, y2 As Long, monce As Long, W3 As Long, removebracket As Boolean
 Dim myLevel As Long, oldexec As Long, loopthis As Boolean, subspoint As Boolean, RetStackSize As Long
-RetStackSize = bstack.RetStack.Total
+RetStackSize = bstack.RetStackTotal
 If Exec = 0 Then Exec = 1
 oldexec = Exec
 myLevel = bstack.SubLevel
@@ -27879,7 +27933,7 @@ ALFA12:
                         If Not kolpo Then
                                 If bb$ <> "" Then
                                         If bb$ = Chr$(0) Then
-                                        If RetStackSize = bstack.RetStack.Total And bstack.RetStack.LookTopVal < 0 Then
+                                        If RetStackSize = bstack.RetStackTotal And bstack.RetStack.LookTopVal < 0 Then
                                         ' this is a return form other block
                                          Exec = 2
                                         b$ = bb$
@@ -32375,8 +32429,8 @@ again1234:
 Set curbstack = curbstack.Parent
 GoTo again1234
 End If
+GarbageFlush
 Set curbstack = Nothing
-' this command do nothing in a function.
 Set bstack.StaticCollection = Nothing
 varhash.ReduceHash 0, var()
 var2used = 0
@@ -34983,7 +35037,14 @@ End If
 IsSymbol ss$, ","
 i = i + 1
 Loop
-bstack.soros.MergeTop ps
+   With bstack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
 Else
 ProcStack = False
 Exit Function
@@ -35004,7 +35065,14 @@ End If
 IsSymbol ss$, ","
 i = i + 1
 Loop
-bstack.soros.MergeTop ps
+   With bstack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
 End If
 Else
 ProcStack = False
@@ -35041,7 +35109,14 @@ End If
 IsSymbol ss$, ","
 i = i + 1
 Loop
-bstack.soros.MergeTop ps
+   With bstack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
 'stack$(bstack) = ss$ & stack$(bstack)
 Else
 ProcStack = False
@@ -35063,7 +35138,14 @@ End If
 IsSymbol ss$, ","
 i = i + 1
 Loop
-bstack.soros.MergeTop ps
+   With bstack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
 'stack$(bstack) = ss$ & stack$(bstack)
 End If
 Else
@@ -35085,7 +35167,14 @@ End If
 IsSymbol ss$, ","
 i = i + 1
 Loop
-bstack.soros.MergeTop ps
+   With bstack
+             If .SorosNothing Then
+           
+               Set .Sorosref = ps
+             Else
+                .soros.MergeTop ps
+             End If
+             End With
 'stack$(bstack) = ss$ & stack$(bstack)
 End If
 Else
@@ -38934,6 +39023,15 @@ If Left$(ah, 1) = "N" Or InStr(ah, "l") > 0 Then
         Set pppp = Nothing
         
     Else
+    If Typename(bstack.lastobj) = "mHandler" Then
+    If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
+    GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
+    End If
+    End If
+    
+    
+    
+    
         Set bb.ValueObj = bstack.lastobj
     End If
         Set bstack.lastobj = Nothing
@@ -38953,6 +39051,7 @@ ElseIf Left$(ah, 1) = "S" Then
         Set bb.ValueObj = pppp
         Set pppp = Nothing
     Else
+    
         Set bb.ValueObj = bstack.lastobj
     End If
         Set bstack.lastobj = Nothing
@@ -39283,3 +39382,24 @@ Function MakeATypeLib(v As Variant, Optional usetypelib As Boolean = False) As F
     End If
     Set obj = Nothing
 End Function
+Public Sub GarbageFlush()
+Dim objptr, obj As Object, i As Long
+With GarbageCollector
+If .count > 0 Then
+For i = 0 To .count - 1
+.index = i
+Set obj = .ValueObj
+If TypeOf obj Is FastCollection Then
+    obj.GarbageJob
+ElseIf TypeOf obj Is mHandler Then
+If TypeOf obj.objref Is FastCollection Then
+obj.objref.GarbageJob
+
+End If
+End If
+Next i
+GarbageCollector.GarbageJob
+End If
+End With
+
+End Sub

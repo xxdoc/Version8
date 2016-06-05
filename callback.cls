@@ -28,8 +28,8 @@ Public Sub Cli(LoadFileAndSwitches$, Optional Prompt$ = ">")
 Dim ohere$
 If elevatestatus Then Exit Sub
 elevatestatus = 1
-ohere$ = HERE$
-HERE$ = mineHere$
+ohere$ = here$
+here$ = mineHere$
 If LoadFileAndSwitches$ = "" Then newshow objref
 NoAction = True
 NOEXECUTION = False
@@ -64,7 +64,7 @@ Switches para$
 
 Form1.MyPrompt cLine, Prompt$
 finalize:
-HERE$ = ohere$
+here$ = ohere$
 elevatestatus = 0
 End Sub
 Property Let ShowGui(RHS As Boolean)
@@ -74,7 +74,7 @@ Form1.WindowState = 0
 If Form1.top >= Screen.Height Then Form1.Move 0, 0
 Else
 If Form1.WindowState = 0 Then
-If Not (QRY Or GFQRY Or Forms.Count > 5) Then Form1.Visible = False
+If Not (QRY Or GFQRY Or Forms.count > 5) Then Form1.Visible = False
 End If
 End If
 End Property
@@ -140,8 +140,8 @@ Dim ohere$, stay As Variant
 If elevatestatus Then Exit Function
 elevatestatus = 1
 If clean Then PushStage objref, 0
-ohere$ = HERE$
-HERE$ = mineHere$
+ohere$ = here$
+here$ = mineHere$
 NoAction = True
 NOEXECUTION = False
 objref.toprinter = False
@@ -191,7 +191,7 @@ NoAction = False
 If ExTarget Then Run = False
 End If
 finalize:
-HERE$ = ohere$
+here$ = ohere$
 
 If clean Then
 If Not objref Is Nothing Then PopStage objref Else Run = False
@@ -238,6 +238,7 @@ Private Sub Class_Terminate()
 Set objref.Owner = Nothing
 Set objref.Sorosref = Nothing
 Set objref = Nothing
+GarbageFlush
 'If App.StartMode = vbSModeStandalone Then Exit Sub
 TerminateM2000
 terminatefinal

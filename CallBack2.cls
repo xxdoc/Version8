@@ -33,22 +33,22 @@ Sub MethodType(ByVal mName$, mType$)
 mName$ = myUcase(mName$)
 reghash.AddKey mName$, mType$
 End Sub
-Public Sub CallGlobal(modulename$, ParamArray A())
+Public Sub CallGlobal(modulename$, ParamArray a())
 If Status <> 0 Then Exit Sub
 Dim ohere$
-ohere$ = HERE$
+ohere$ = here$
 Dim i As Long, mS As New mStiva, ar As mArray, j As Long
 Dim manydim As Long, maxitems As Long, probe As Long, v() As Variant, probelow As Long
 Dim oldsoros As mStiva
 Set oldsoros = objref.soros
 Set objref.Sorosref = mS
-For i = 0 To UBound(A())
-Select Case VarType(A(i))
+For i = 0 To UBound(a())
+Select Case VarType(a(i))
 Case Is >= vbArray
 ' only with error control
-If Typename(A(i)) = "Variant()" Then
+If Typename(a(i)) = "Variant()" Then
 Set ar = New mArray
-v() = A(i)
+v() = a(i)
 On Error Resume Next
 For j = 1 To 60
     probe = UBound(v, j)
@@ -76,14 +76,14 @@ End If
 Case vbEmpty
 mS.DataValLong 0
 Case vbVariant, vbString
-mS.DataStr CStr(A(i))
+mS.DataStr CStr(a(i))
 Case Else
-mS.DataVal CDbl(A(i))
+mS.DataVal CDbl(a(i))
 End Select
 Next i
 PushStage objref, 0
 Set mS = Nothing
-HERE$ = ""
+here$ = ""
 If subHash.ExistKey(myUcase(modulename$, True)) Then
     probe = interpret(objref, modulename$)
 Else
@@ -114,9 +114,9 @@ End If
 PopStage objref
 Set objref.Sorosref = oldsoros
 Set oldsoros = Nothing
-HERE$ = ohere$
+here$ = ohere$
 End Sub
-Public Sub CallModule(modulename$, ParamArray A())
+Public Sub CallModule(modulename$, ParamArray a())
 Static once As Boolean, where As Long, what
 If Status <> 0 Then Exit Sub
 If Not GetSubFullName2(myUcase(modulename$, True), full$, where) Then
@@ -148,8 +148,8 @@ End If
 If once Then Exit Sub
 Dim ohere$
 once = True
-ohere$ = HERE$
-HERE$ = full$
+ohere$ = here$
+here$ = full$
 
 
 Dim i As Long, mS As New mStiva, ar As mArray, j As Long
@@ -166,14 +166,14 @@ Set oldsoros = objref.soros
 Set objref.Sorosref = mS
 
 
-For i = 0 To UBound(A())
+For i = 0 To UBound(a())
 
-Select Case VarType(A(i))
+Select Case VarType(a(i))
 Case Is >= vbArray
 ' only with error control
-If Typename(A(i)) = "Variant()" Then
+If Typename(a(i)) = "Variant()" Then
 Set ar = New mArray
-v() = A(i)
+v() = a(i)
 On Error Resume Next
 For j = 1 To 60
     probe = UBound(v, j)
@@ -216,10 +216,10 @@ End If
 Case vbEmpty
 mS.DataValLong 0
 Case vbVariant, vbString
-mS.DataStr CStr(A(i))
+mS.DataStr CStr(a(i))
 Case Else
 
-mS.DataVal CDbl(A(i))
+mS.DataVal CDbl(a(i))
 
 End Select
 Next i
@@ -259,7 +259,7 @@ PopStage objref
 
 Set objref.Sorosref = oldsoros
 Set oldsoros = Nothing
-HERE$ = ohere$
+here$ = ohere$
 once = False
 End Sub
 
@@ -327,8 +327,8 @@ If Status <> 0 Then Exit Function
 If elevatestatus2 Then Exit Function
 elevatestatus2 = 1
 If clean Then PushStage objref, 0
-ohere$ = HERE$
-HERE$ = mineHere$
+ohere$ = here$
+here$ = mineHere$
 NoAction = True
 NOEXECUTION = False
 objref.toprinter = False
@@ -396,7 +396,7 @@ If ExTarget Then Run = False
 End If
 finalize:
 If NERR Then Stop
-HERE$ = ohere$
+here$ = ohere$
 
 If clean Then PopStage objref
 elevatestatus2 = 0
@@ -437,5 +437,5 @@ mName$ = name$
 Set objref.Owner = Nothing
 Set objref.Sorosref = Nothing
 Set objref = Nothing
-
+GarbageFlush
 End Sub

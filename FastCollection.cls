@@ -270,7 +270,8 @@ End Sub
 Private Sub ReduceHash(newTop As Long)
     If newTop <= 5 Then
             If newTop < 0 Then
-            newTop = -1
+                newTop = -1
+                toplim = -1
                 MaxSpace = 5
                 ReDim PriveSpace(MaxSpace) As item
                 
@@ -427,13 +428,13 @@ End If
 End Function
 
 Private Sub ItemCreator(Key As String, nValue As Variant)
-Dim A As Long, kk As Long
+Dim a As Long, kk As Long
 Done = False
 kk = HashFunc0(Key)
 If ExistKey2(Key, kk) Then Exit Sub  ' done is false
-A = Malloc()
+a = Malloc()
 
-With PriveSpace(A)
+With PriveSpace(a)
     .Key = Key
     If IsObject(nValue) Then
     Set .iValue = nValue
@@ -442,25 +443,25 @@ With PriveSpace(A)
     End If
     .firsthash = kk
 End With
-place HashFunc1(kk, Key), A
-index = A
+place HashFunc1(kk, Key), a
+index = a
 Done = True
 End Sub
 
 Property Get Percent()
 Percent = 100 * count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal A)
+Private Sub place(ByVal b, ByVal a)
     Dim k As Long
     k = Hash(b)
-    Hash(b) = A + 1
-    PriveSpace(A).Pleft = k
-    PriveSpace(A).lastpos = b
+    Hash(b) = a + 1
+    PriveSpace(a).Pleft = k
+    PriveSpace(a).lastpos = b
 End Sub
-Private Function HashFunc0(A$) As Long
+Private Function HashFunc0(a$) As Long
  Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
-  p4 = Len(A$) * 2 '- 2
-  p2 = StrPtr(A$): p4 = p2 + p4
+  p4 = Len(a$) * 2 '- 2
+  p2 = StrPtr(a$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, p1
   p3 = UINT(p1)
@@ -478,15 +479,15 @@ End Function
 Private Function HashFunc2(where As Long)
 HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFAFF7) + Len(PriveSpace(where).Key) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc1(nkey As Long, A$)
-HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + Len(A$) + hashlen + 1, hashlen)
+Private Function HashFunc1(nkey As Long, a$)
+HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc(A$)
-HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFAFF7) + Len(A$) + hashlen + 1, hashlen)
+Private Function HashFunc(a$)
+HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
 End Function
-Private Function UINT(ByVal A As Integer) As Long
+Private Function UINT(ByVal a As Integer) As Long
  Dim b As Integer
- b = A And &HFFFF
+ b = a And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -498,20 +499,20 @@ Private Function UINT(ByVal A As Integer) As Long
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal A As Double) As Double
-If A > CDbl(2147483647) Then A = CDbl(2147483647)
-If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
-If A < 0 Then
-uintnew = 4294967296# + A
+Private Function uintnew(ByVal a As Double) As Double
+If a > CDbl(2147483647) Then a = CDbl(2147483647)
+If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
+If a < 0 Then
+uintnew = 4294967296# + a
 Else
-uintnew = A
+uintnew = a
 End If
 End Function
 
-Private Sub SwapVariant(ByRef A As Variant, ByRef b As Variant)
+Private Sub SwapVariant(ByRef a As Variant, ByRef b As Variant)
    Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
-   CopyMemory t(0), ByVal VarPtr(A), 16
-   CopyMemory ByVal VarPtr(A), ByVal VarPtr(b), 16
+   CopyMemory t(0), ByVal VarPtr(a), 16
+   CopyMemory ByVal VarPtr(a), ByVal VarPtr(b), 16
    CopyMemory ByVal VarPtr(b), t(0), 16
 End Sub
 ' only for tests
@@ -520,7 +521,7 @@ Private Function GetRefCount(ByRef vvv) As Long
     Dim obj As IUnknown
     Set obj = vvv
     If obj Is Nothing Then Exit Function
-    CopyMemory GetRefCount, ByVal (ObjPtr(obj)) + 4, 4
+    CopyMemory GetRefCount, ByVal (objptr(obj)) + 4, 4
     GetRefCount = GetRefCount - 3
     Set obj = Nothing
 End Function
@@ -567,9 +568,13 @@ Done = False
 End Sub
 Private Sub Class_Terminate()
 
-Erase PriveSpace()
+    Erase PriveSpace()
 End Sub
-
+Public Sub GarbageJob()
+Erase PriveSpace()
+toplim = -1
+ReduceHash -1
+End Sub
 Private Sub QuickSortItems(Arr() As item, ByVal LB As Long, ByVal UB As Long)
 Dim M1 As Long, M2 As Long
 Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
