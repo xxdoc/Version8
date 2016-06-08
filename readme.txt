@@ -1,8 +1,9 @@
 M2000 Interpreter and Environment
 
-Version 8.1
-Revision 28
+Version 8.2
 Final Version
+New << operator
+
 
 
 http://georgekarras.blogspot.gr/

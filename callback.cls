@@ -68,6 +68,7 @@ here$ = ohere$
 elevatestatus = 0
 End Sub
 Property Let ShowGui(RHS As Boolean)
+If Forms.count = 0 Then Exit Property
 If RHS Then
 Form1.Visible = True
 Form1.WindowState = 0

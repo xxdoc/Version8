@@ -10,7 +10,7 @@ Begin VB.Form Form1
    ClientWidth     =   9765
    ControlBox      =   0   'False
    BeginProperty Font 
-      Name            =   "Verdana"
+      Name            =   "Arial"
       Size            =   8.25
       Charset         =   0
       Weight          =   400
@@ -32,6 +32,15 @@ Begin VB.Form Form1
    WindowState     =   1  'Minimized
    Begin VB.PictureBox Picture2 
       BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Verdana"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   465
       Left            =   0
       Picture         =   "TextP0.frx":0582
@@ -47,6 +56,15 @@ Begin VB.Form Form1
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
       Height          =   675
       Index           =   0
@@ -66,6 +84,15 @@ Begin VB.Form Form1
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
       Height          =   1140
       Left            =   8010
@@ -93,12 +120,11 @@ Begin VB.Form Form1
          Name            =   "Arial"
          Size            =   12
          Charset         =   0
-         Weight          =   700
+         Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ShowBar         =   0   'False
    End
    Begin M2000.gList List1 
       Height          =   1920
@@ -113,8 +139,8 @@ Begin VB.Form Form1
       Max             =   1
       Vertical        =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Verdana"
-         Size            =   8.25
+         Name            =   "Arial"
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -154,6 +180,15 @@ Begin VB.Form Form1
       AutoRedraw      =   -1  'True
       BackColor       =   &H8000000C&
       BorderStyle     =   0  'None
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       FontTransparent =   0   'False
       ForeColor       =   &H80000008&
       Height          =   5640
@@ -224,7 +259,7 @@ Public Point2Me As Object
 Private Declare Function GetCommandLineW Lib "KERNEL32" () As Long
 
 Private Declare Sub PutMem4 Lib "msvbvm60" (ByVal Ptr As Long, ByVal Value As Long)
-Private Declare Function SysAllocStringLen Lib "oleaut32" (ByVal Ptr As Long, ByVal length As Long) As Long
+Private Declare Function SysAllocStringLen Lib "oleaut32" (ByVal Ptr As Long, ByVal Length As Long) As Long
 
 Public Function commandW() As String
 Static mm$
@@ -267,12 +302,12 @@ TaskMaster.rest
         End If
 End Sub
 
-Private Sub dSprite_GotFocus(Index As Integer)
+Private Sub dSprite_GotFocus(index As Integer)
 If lockme Then TEXT1.SetFocus: Exit Sub
 
 End Sub
 
-Private Sub dSprite_OLEDragOver(Index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
+Private Sub dSprite_OLEDragOver(index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
@@ -339,7 +374,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.length - .SelStart) > i
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
 .Form1supEnabled = i > 0 And .SelStart > i
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -357,7 +392,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.length - .SelStart) > i
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
 .Form1supEnabled = i > 0 And .SelStart > i
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -379,7 +414,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.length - .SelStart) > .SelLength
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > .SelLength
 .Form1supEnabled = i > 0 And .SelStart > .SelLength
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -408,7 +443,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.length - .SelStart) > i
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > i
 .Form1supEnabled = i > 0 And .SelStart > i
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -430,7 +465,7 @@ i = .SelLength
 .Form1mn1Enabled = i > 1
 .Form1mn2Enabled = i > 1
 .Form1mn3Enabled = Clipboard.GetFormat(13) Or Clipboard.GetFormat(1)
-.Form1sdnEnabled = i > 0 And (.length - .SelStart) > .SelLength
+.Form1sdnEnabled = i > 0 And (.Length - .SelStart) > .SelLength
 .Form1supEnabled = i > 0 And .SelStart > .SelLength
 .Form1mscatEnabled = .Form1sdnEnabled Or .Form1supEnabled
 .Form1rthisEnabled = .Form1mscatEnabled
@@ -458,11 +493,11 @@ End If
 End If
 End Sub
 
-Private Sub ffhelp(A$)
-If Left$(A$, 1) < "С" Then
-fHelp basestack1, A$, True
+Private Sub ffhelp(a$)
+If Left$(a$, 1) < "С" Then
+fHelp basestack1, a$, True
 Else
-fHelp basestack1, A$
+fHelp basestack1, a$
 End If
 End Sub
 
@@ -514,7 +549,7 @@ Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal t
 If item = List1.ListIndex Then
 
 List1.FillThere thisHDC, thisrect, &HFFFFFF, -List1.LeftMarginPixels  ' or black in reverse
-List1.WriteThere thisrect, List1.List(item), List1.PanPos / dv15, List1.addpixels / 2, 0
+List1.WriteThere thisrect, List1.list(item), List1.PanPos / dv15, List1.addpixels / 2, 0
 Skip = True
 Else
 Skip = False
@@ -920,7 +955,7 @@ End Sub
 
 
 
-Private Sub dSprite_MouseDown(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseDown(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 Dim p As Long, u2 As Long
 If lockme Then Exit Sub
  MOUB = Button
@@ -930,19 +965,19 @@ If lockme Then Exit Sub
 If Not NoAction Then
 NoAction = True
 Dim sel&
-p = val("0" & dSprite(Index).Tag)
+p = val("0" & dSprite(index).Tag)
 With players(p)
     u2 = .uMineLineSpace * 2
 
         If Button > 0 And Targets Then
 
-        sel& = ScanTarget(q(), CLng(x), CLng(y), Index)
+        sel& = ScanTarget(q(), CLng(x), CLng(y), index)
             If sel& >= 0 Then
                 If Button = 1 Then
                 '' If QRY Then LCTC dSprite(Index), oy&, ox&, ins& Else LCT dSprite(Index), oy&, ox&
                 Select Case q(sel&).Id Mod 100
                 Case Is < 10
-                If Not interpret(DisStack, "LAYER " & dSprite(Index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
+                If Not interpret(DisStack, "LAYER " & dSprite(index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
                 Case Else
                 INK$ = q(sel&).Comm
                 End Select
@@ -960,7 +995,7 @@ End If
 
 End Sub
 
-Private Sub dSprite_MouseMove(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseMove(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = Button
 If NOEDIT = True And (exWnd = 0 Or Button) Then
@@ -968,7 +1003,7 @@ Me.KeyPreview = True
 End If
 End Sub
 
-Private Sub dSprite_MouseUp(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseUp(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = 0
 End Sub
@@ -1266,7 +1301,7 @@ STq = False
 STEXIT = False
 STbyST = True
 Form2.Show , Form1
-Form2.Label1(0) = HERE$
+Form2.Label1(0) = here$
 Form2.Label1(1) = "..."
 Form2.Label1(2) = "..."
     Form2.gList3(2).BackColor = &H3B3B3B
@@ -1467,7 +1502,7 @@ Switches para$
   On Error Resume Next
   Dim i As Long
   
-      For i = 0 To Controls.Count - 1
+      For i = 0 To Controls.count - 1
      If Typename(Controls(i)) <> "Menu" Then Controls(i).TabStop = False
       Next i
 End Sub
@@ -1551,7 +1586,7 @@ MOUT = False
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
-Dim pn As Long, A As New cDIBSection
+Dim pn As Long, a As New cDIBSection
 AutoRedraw = True
  If App.StartMode = vbSModeStandalone Then If OneOnly Then Exit Sub
 OneOnly = True
@@ -1651,7 +1686,7 @@ MyDoEvents
  If cLine = "" Then
 
    If trace Then
-    Form2.Label1(0) = HERE$
+    Form2.Label1(0) = here$
     Form2.Label1(1) = "..."
     Form2.Label1(2) = "..."
     Form2.gList3(2).BackColor = &H3B3B3B
@@ -1859,7 +1894,7 @@ End Sub
 
 Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, A$, JJ As Long, ii As Long
+Dim aa$, a$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -2068,18 +2103,18 @@ End If
 
 If TEXT1.SelText <> "" Then
 
-    A$ = vbCrLf + TEXT1.SelText & "*"
+    a$ = vbCrLf + TEXT1.SelText & "*"
     If shift <> 0 Then  ' тумых
-        A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf + Space$(6), vbCrLf)
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
          TEXT1.SelStartSilent = ii
-         TEXT1.SelLengthSilent = Len(A$) - 3
+         TEXT1.SelLengthSilent = Len(a$) - 3
          
     Else
-        A$ = Replace(A$, vbCrLf, vbCrLf + Space$(6))
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf, vbCrLf + Space$(6))
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
         TEXT1.SelStartSilent = where + 6
-        TEXT1.SelLengthSilent = Len(A$) - 3 - (where + 6 - ii)
+        TEXT1.SelLengthSilent = Len(a$) - 3 - (where + 6 - ii)
        
     End If
   
@@ -2344,7 +2379,7 @@ End If
 End Sub
 
 
-Private Function Parameters(A As String, b As String, c As String) As Boolean
+Private Function Parameters(a As String, b As String, c As String) As Boolean
 Dim i, ch As Boolean, vl As Boolean, chs$, all$, many As Long
 b = ""
 c = ""
@@ -2352,11 +2387,11 @@ c = ""
 'parameters = False
 ch = False
 vl = False
-Do While i < Len(A)
+Do While i < Len(a)
 i = i + 1
-Select Case Mid$(A, i, 1)
+Select Case Mid$(a, i, 1)
 Case "%"
-If Mid$(A, i + 1, 1) = "u" Then
+If Mid$(a, i + 1, 1) = "u" Then
 i = i + 1
 'we have four bytes
 many = 6
@@ -2386,7 +2421,7 @@ Exit Do
 End If
 Case Else
 If ch = True Then
-chs$ = chs$ & Mid$(A, i, 1)
+chs$ = chs$ & Mid$(a, i, 1)
 If Len(chs$) = many Then
 If many = 4 Then
 chs$ = Chr(Int(chs$))
@@ -2401,14 +2436,14 @@ b = b + chs$
 End If
 End If
 ElseIf vl = False Then
-b = b + Mid$(A, i, 1)
+b = b + Mid$(a, i, 1)
 Else
-c = c + Mid$(A, i, 1)
+c = c + Mid$(a, i, 1)
 End If
 End Select
 Loop
 If c <> "" Then Parameters = True
-A = Mid$(A, i + 1)
+a = Mid$(a, i + 1)
 End Function
 
 
@@ -2662,7 +2697,7 @@ Dim aa$
 aa$ = GetTextData(13)
 If aa$ = "" Then aa$ = Clipboard.GetText(1)
 With TEXT1
-If .ParaSelStart = 2 And .glistN.List(.glistN.ListIndex) = "" Then
+If .ParaSelStart = 2 And .glistN.list(.glistN.ListIndex) = "" Then
 .SelStart = .SelStart - 1
 End If
 .AddUndo ""

@@ -25,6 +25,18 @@ Friend Sub NoPublic(bstack As basetask, where$)
         Set objref.Owner = bstack.Owner
         mineHere$ = where$
 End Sub
+Property Let ShowGui(RHS As Boolean)
+If Forms.count = 0 Then Exit Property
+If RHS Then
+Form1.Visible = True
+Form1.WindowState = 0
+If Form1.top >= Screen.Height Then Form1.Move 0, 0
+Else
+If Form1.WindowState = 0 Then
+If Not (QRY Or GFQRY Or Forms.count > 5) Then Form1.Visible = False
+End If
+End If
+End Property
 Public Sub EventRef(RHS As Object, Optional name As String)
 Set mObjRef = RHS
 mName$ = name$

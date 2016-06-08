@@ -14,15 +14,13 @@ Attribute VB_Exposed = False
 Option Explicit
 ' Basetask is a module task of M2000
 ' This is a utility soros for passing parammeters to functions
-Public addlen As Long
+Public addlen As Long, NoFuncError As Boolean, CallW As String, fHere$, strg As Boolean
 Public nokillvars As Boolean
 Public IFCTRL As Boolean, jump As Boolean
-Public Vars As Long, vname As Long
-'Public LastComm$
+Public Vars As Long
 Public connectnow As Boolean
 Public LastExecute As Long
 Public LastOnce As Boolean
-''Public LastLoop As Boolean
 Public priveflag As Boolean
 Public RemoveLocal As Boolean
 Private parentSoros As mStiva ' reference to parent..stiva
@@ -40,7 +38,7 @@ Private mtolayer As Long
 Private myRun As Boolean
 Private mprocess As TaskInterface ' reference to current process maybe same to parrent...
 Private mprocessOk As Boolean ' if i have a process class
-Private threadsnames As FastCollection   ' δουλεύει
+Private threadsnames As GarbageClass   ' δουλεύει
 Public TaskMain As Boolean
 Public OriginalName$
 Private mGroupName$
@@ -392,7 +390,7 @@ Public Property Get Process() As TaskInterface
 Set Process = mprocess
 End Property
 Private Sub checkialive()
-If threadsnames Is Nothing Then Set threadsnames = New FastCollection
+If threadsnames Is Nothing Then Set threadsnames = New GarbageClass
 End Sub
 
 Public Property Set LinkThread(Threadid As Long, a As TaskInterface)
@@ -432,7 +430,7 @@ If threadsnames Is Nothing Then Exit Function
 ' this is mandatory
 If TaskMaster Is Nothing Then Exit Function
 If TaskMaster.ThrowOne(Threadid) Then ThrowOne = True
-If Err.number > 0 Then Err.Clear: Exit Function
+If Err.Number > 0 Then Err.Clear: Exit Function
 ' maybe the task isn't on our list - because we send message from other thread!
 If threadsnames.Find(Threadid) Then
     Set aa = threadsnames.ValueObj

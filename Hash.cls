@@ -69,7 +69,22 @@ Friend Sub ReduceHash(newTop As Long, v())
             .Key = ""
         End If
         If .KeyType = 0 And .NDX >= 0 Then
-            If IsObject(v(.NDX)) Then Set v(.NDX) = Nothing
+            If IsObject(v(.NDX)) Then
+            GarbageCollector.Done = False
+           If Typename(v(.NDX)) = "mHandler" Then
+            If GarbageCollector.Find(objptr(v(.NDX).objref)) Then
+            ElseIf GarbageCollector.Find(objptr(v(.NDX))) Then
+            
+            End If
+            End If
+            Set v(.NDX) = Nothing
+            If GarbageCollector.Done Then
+            If GarbageCollector.ReferCountValue = 1 Then
+                GarbageCollector.RemoveWithNoFind
+            End If
+            End If
+            
+            End If
             v(.NDX) = Empty
             End If
         .KeyType = 0

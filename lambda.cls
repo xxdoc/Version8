@@ -92,6 +92,17 @@ If IsObject(val) Then
 '' maybe here we can copy
 '' check first the type
 If TypeOf val Is mHandler Then
+                                        If val.Indirect = -1 Then
+                                        If Not GarbageCollector.ExistKey(objptr(val.objref)) Then
+                                        GarbageCollector.AddKey objptr(val.objref), val.objref
+                                        End If
+                                        Else
+                                           If Not GarbageCollector.ExistKey(objptr(v(val.Indirect).objref)) Then
+                                        GarbageCollector.AddKey objptr(v(val.Indirect).objref), v(val.Indirect)
+                                        End If
+                                        End If
+
+
 If val.Indirect > -1 Then
 Set myVar(where).Value = v(val.Indirect)
 Exit Sub
@@ -127,11 +138,11 @@ Next i
 Erase myVar()
 End If
 End Sub
-Public Sub CopyTo(A As lambda, v() As Variant)
+Public Sub CopyTo(a As lambda, v() As Variant)
 ' only for new
 Dim b As lambda, VR As Variant, where As Long
-Set A = New lambda
-A.code$ = Me.code$
+Set a = New lambda
+a.code$ = Me.code$
 Dim i As Long
 If used > 0 Then
 For i = 0 To used - 1
@@ -142,22 +153,22 @@ If Typename(v(myVar(where).there)) = "lambda" Then
     .CopyTo b, v()
     End With
     Set VR = b
-    A.FeedNonLocal nm$, VR, v()
+    a.FeedNonLocal nm$, VR, v()
     Set VR = Nothing
     Set b = Nothing
 Else
-    A.FeedNonLocal nm$, v(myVar(where).there), v()
+    a.FeedNonLocal nm$, v(myVar(where).there), v()
 End If
 Else
 If Typename(myVar(where).Value) = "lambda" Then
 On Error Resume Next
     myVar(where).Value.CopyTo b, v()
     Set VR = b
-    A.FeedNonLocal nm$, VR, v()
+    a.FeedNonLocal nm$, VR, v()
     Set VR = Nothing
     Set b = Nothing
 Else
-    A.FeedNonLocal nm$, myVar(where).Value, v()
+    a.FeedNonLocal nm$, myVar(where).Value, v()
 End If
 End If
 Next i

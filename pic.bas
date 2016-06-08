@@ -587,14 +587,14 @@ If zoomfactor <= 1 Then zoomfactor = 1
 zoomfactor = zoomfactor / 100#
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 Dim a As Single, b As Single, k As Single, r As Single
-Dim br As Byte, BG As Byte, bbb As Byte, ba$
+Dim BR As Byte, BG As Byte, bbb As Byte, ba$
 Dim BR1 As Byte, BG1 As Byte, BBb1 As Byte
 BR1 = 255 * ((100 - alpha) / 100#)
 BG1 = 255 * ((100 - alpha) / 100#)
 BBb1 = 255 * ((100 - alpha) / 100#)
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" & ba$, 6)
-br = val("&h" & Mid$(ba$, 1, 2))
+BR = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 Dim pw As Long, ph As Long
@@ -699,27 +699,27 @@ nomalo = Not (ang Mod 90 = 0)
                         If nomalo Then
                       If mmx <= 1 Then
                       
-                      bDib1(screen_x, screen_y) = br * xf1
+                      bDib1(screen_x, screen_y) = BR * xf1
                         
-                        bDib1(screen_x + 1, screen_y) = br * xf1  ' * yf / 2
-                       bDib1(screen_x + 2, screen_y) = br * xf1 '* yf / 2
+                        bDib1(screen_x + 1, screen_y) = BR * xf1  ' * yf / 2
+                       bDib1(screen_x + 2, screen_y) = BR * xf1 '* yf / 2
                        ElseIf mmx >= pw1out Then
-                        bDib1(screen_x, screen_y) = br * xf
+                        bDib1(screen_x, screen_y) = BR * xf
                         
-                        bDib1(screen_x + 1, screen_y) = br * xf
+                        bDib1(screen_x + 1, screen_y) = BR * xf
 
-                        bDib1(screen_x + 2, screen_y) = br * xf
+                        bDib1(screen_x + 2, screen_y) = BR * xf
                        End If
                        If mmy >= ph1out Then
-                         bDib1(screen_x, screen_y) = br * yf
+                         bDib1(screen_x, screen_y) = BR * yf
                         
-                        bDib1(screen_x + 1, screen_y) = br * yf
-                       bDib1(screen_x + 2, screen_y) = br * yf
+                        bDib1(screen_x + 1, screen_y) = BR * yf
+                       bDib1(screen_x + 2, screen_y) = BR * yf
                        ElseIf mmy <= 1 Then
-                          bDib1(screen_x, screen_y) = br * yf1
+                          bDib1(screen_x, screen_y) = BR * yf1
                         
-                        bDib1(screen_x + 1, screen_y) = br * yf1
-                       bDib1(screen_x + 2, screen_y) = br * yf1
+                        bDib1(screen_x + 1, screen_y) = BR * yf1
+                       bDib1(screen_x + 2, screen_y) = BR * yf1
                       End If
                
                  End If
@@ -873,10 +873,10 @@ If zoomfactor <= 0.01 Then zoomfactor = 0.01
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 
 Dim k As Single, r As Single
-Dim br As Byte, BG As Byte, bbb As Byte, ba$
+Dim BR As Byte, BG As Byte, bbb As Byte, ba$
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" + ba$, 6)
-br = val("&h" + Mid$(ba$, 1, 2))
+BR = val("&h" + Mid$(ba$, 1, 2))
 BG = val("&h" + Mid$(ba$, 3, 2))
 bbb = val("&h" + Mid$(ba$, 5, 2))
 
@@ -995,7 +995,7 @@ On Error Resume Next
                         bDib1(screen_x + 2, screen_y) = yf1 * (xf1 * bDib(mmx + 2, mmy) + xf * bDib(mmx + 5, mmy)) + yf * (xf1 * bDib(mmx + 2, mmy + 1) + xf * bDib(mmx + 5, mmy + 1))
                       End If
                     Else
-                        bDib1(screen_x, screen_y) = br
+                        bDib1(screen_x, screen_y) = BR
                         bDib1(screen_x + 1, screen_y) = BG
                         bDib1(screen_x + 2, screen_y) = bbb
                     End If
@@ -1021,10 +1021,10 @@ If cDIBbuffer0.hDIb = 0 Then Exit Sub
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 'Dim a As Single, b As Single
 Dim k As Single, r As Single
-Dim br As Byte, BG As Byte, bbb As Byte, ba$
+Dim BR As Byte, BG As Byte, bbb As Byte, ba$
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" + ba$, 6)
-br = val("&h" + Mid$(ba$, 1, 2))
+BR = val("&h" + Mid$(ba$, 1, 2))
 BG = val("&h" + Mid$(ba$, 3, 2))
 bbb = val("&h" + Mid$(ba$, 5, 2))
 
@@ -1123,7 +1123,7 @@ On Error Resume Next
                         bDib1(screen_x + 2, screen_y) = bDib(mmx + 2, mmy)
                      
                     Else
-                        bDib1(screen_x, screen_y) = br
+                        bDib1(screen_x, screen_y) = BR
                         bDib1(screen_x + 1, screen_y) = BG
                         bDib1(screen_x + 2, screen_y) = bbb
                     End If
@@ -1149,10 +1149,10 @@ If zoomfactor <= 1 Then zoomfactor = 1
 zoomfactor = zoomfactor / 100#
 Dim myw As Long, myh As Long, piw As Long, pih As Long, pix As Long, piy As Long
 Dim k As Single, r As Single
-Dim br As Byte, BG As Byte, bbb As Byte, ba$
+Dim BR As Byte, BG As Byte, bbb As Byte, ba$
 ba$ = Hex$(bckColor)
 ba$ = Right$("00000" & ba$, 6)
-br = val("&h" & Mid$(ba$, 1, 2))
+BR = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 
@@ -1290,7 +1290,7 @@ End With
                 
                               If mmx >= 0 And mmx < pw And mmy >= 0 And mmy < ph Then
                                  mmx = mmx * 3
-                                                           If bDib(mmx, mmy) <> br Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
+                                                           If bDib(mmx, mmy) <> BR Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
                                  bDib1(screen_x, screen_y) = (bDib(mmx, mmy) * CLng(255 - bDib2(mmx, mmy)) + bDib1(screen_x, screen_y) * CLng(bDib2(mmx, mmy))) \ 255
                                  bDib1(screen_x + 1, screen_y) = (bDib(mmx + 1, mmy) * CLng(255 - bDib2(mmx + 1, mmy)) + bDib1(screen_x + 1, screen_y) * CLng(bDib2(mmx + 1, mmy))) \ 255
                                  bDib1(screen_x + 2, screen_y) = (bDib(mmx + 2, mmy) * CLng(255 - bDib2(mmx + 2, mmy)) + bDib1(screen_x + 2, screen_y) * CLng(bDib2(mmx + 2, mmy))) \ 255
@@ -1321,7 +1321,7 @@ End With
 
                      If mmx >= 0 And mmx < pw And mmy >= 0 And mmy < ph Then
                         mmx = mmx * 3
-                        If bDib(mmx, mmy) <> br Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
+                        If bDib(mmx, mmy) <> BR Or bDib(mmx + 1, mmy) <> BG Or bDib(mmx + 2, mmy) <> bbb Then
                                       If alpha = 0 Then
                                       ElseIf alpha = 100 Then
                                         bDib1(screen_x, screen_y) = bDib(mmx, mmy)
@@ -1346,7 +1346,7 @@ End With
                         bDib1(screen_x + 1, screen_y) = bDib(mmx + 1, mmy)
                         bDib1(screen_x + 2, screen_y) = bDib(mmx + 2, mmy)
                     ElseIf bckColor <> -1 Then
-                        bDib1(screen_x, screen_y) = br
+                        bDib1(screen_x, screen_y) = BR
                       bDib1(screen_x + 1, screen_y) = BG
                       bDib1(screen_x + 2, screen_y) = bbb
                     End If
@@ -1934,10 +1934,10 @@ Dim tSA As SAFEARRAY2D
     End With
     CopyMemory ByVal VarPtrArray(bDib()), VarPtr(tSA), 4
 '.........................
-Dim br As Integer, BG As Integer, bbb As Integer, ba$
+Dim BR As Integer, BG As Integer, bbb As Integer, ba$
 ba$ = Hex$(lBackColor)
 ba$ = Right$("00000" & ba$, 6)
-br = val("&h" & Mid$(ba$, 1, 2))
+BR = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 
@@ -1961,7 +1961,7 @@ Dim GLHEIGHT, GLWIDTH As Long
             '
             Do While lCol < GLWIDTH
              
-            If Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
+            If Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
                lCol = lCol + 1
                 mmx = mmx + 3
             Loop
@@ -1974,7 +1974,7 @@ Dim GLHEIGHT, GLWIDTH As Long
                 lStart = lCol
                
                 Do While lCol < GLWIDTH
-                 If Not (Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
+                 If Not (Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
 
                 mmx = mmx + 3
                     lCol = lCol + 1
@@ -2024,10 +2024,10 @@ Dim tSA As SAFEARRAY2D
     End With
     CopyMemory ByVal VarPtrArray(bDib()), VarPtr(tSA), 4
 '.........................
-Dim br As Integer, BG As Integer, bbb As Integer, ba$
+Dim BR As Integer, BG As Integer, bbb As Integer, ba$
 ba$ = Hex$(lBackColor)
 ba$ = Right$("00000" & ba$, 6)
-br = val("&h" & Mid$(ba$, 1, 2))
+BR = val("&h" & Mid$(ba$, 1, 2))
 BG = val("&h" & Mid$(ba$, 3, 2))
 bbb = val("&h" & Mid$(ba$, 5, 2))
 
@@ -2049,7 +2049,7 @@ lSkinRgn = CreateRectRgn(0, 0, 0, 0)
             ' color as the background color.
             '
             Do While lCol < GLWIDTH
-            If Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
+            If Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE Then Exit Do
                 lCol = lCol + 1
                 mmx = mmx + 3
             Loop
@@ -2061,7 +2061,7 @@ lSkinRgn = CreateRectRgn(0, 0, 0, 0)
                 '
                 lStart = lCol
                 Do While lCol < GLWIDTH
-                If Not (Abs(bDib(mmx, mmy) - br) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
+                If Not (Abs(bDib(mmx, mmy) - BR) > RANGE Or Abs(bDib(mmx + 1, mmy) - BG) > RANGE Or Abs(bDib(mmx + 2, mmy) - bbb) > RANGE) Then Exit Do
 
                 mmx = mmx + 3
                     lCol = lCol + 1
@@ -2777,7 +2777,7 @@ Case "EXIT", "EXPORT", "EXTERN", "FALSE", "FAST", "FIELD", "FIELD$(", "FILE$("
 Case "FILE.APP$(", "FILE.NAME$(", "FILE.NAME.ONLY$(", "FILE.PATH$(", "FILE.STAMP(", "FILE.TITLE$(", "FILE.TYPE$(", "FILELEN(", "FILES"
 Case "FILL", "FILTER$(", "FIND", "FKEY", "FLOODFILL", "FLUSH", "FONT", "FONTNAME$", "FOR"
 Case "FORM", "FORMAT$(", "FORMLABEL", "FORWARD(", "FRAC(", "FRAME", "FREQUENCY(", "FROM", "FUNCTION", "FUNCTION$(", "FUNCTION("
-Case "GET", "GLOBAL", "GOSUB", "GOTO", "GRABFRAME$", "GRADIENT", "GREEK", "GROUP"
+Case "GARBAGE", "GET", "GLOBAL", "GOSUB", "GOTO", "GRABFRAME$", "GRADIENT", "GREEK", "GROUP"
 Case "GROUP.COUNT(", "HEIGHT", "HELP", "HEX", "HEX$(", "HIDE", "HIDE$(", "HIFI", "HIGHWORD("
 Case "HILOWWORD(", "HIWORD(", "HOLD", "HTML", "HWND", "ICON", "IF", "IMAGE", "IMAGE.X("
 Case "IMAGE.X.PIXELS(", "IMAGE.Y(", "IMAGE.Y.PIXELS(", "IN", "INKEY$", "INKEY(", "INLINE", "INPUT", "INPUT$("
@@ -2801,13 +2801,13 @@ Case "PLAYER", "PLAYSCORE", "POINT", "POINT(", "POLYGON", "POS", "POS.X", "POS.Y
 Case "PRINTER", "PRINTERNAME$", "PRINTING", "PRIVATE", "PROFILER", "PROPERTIES", "PROPERTIES$", "PUBLIC", "PUSH", "PUT", "QUOTE$("
 Case "RANDOM", "RANDOM(", "READ", "RECORDS(", "RECURSION.LIMIT", "REFER", "REFRESH", "RELEASE", "REM"
 Case "REMOVE", "REPEAT", "REPLACE$(", "REPORT", "REPORTLINES", "RESTART", "RETRIEVE", "RETURN", "REVISION"
-Case "RIGHT$(", "RIGHTPART$(", "RINSTR(", "ROUND(", "ROW", "SAVE", "SAVE.AS", "SAVE.DOC", "SCALE.X"
+Case "RIGHT$(", "RIGHTPART$(", "RINSTR(", "RND", "ROUND(", "ROW", "SAVE", "SAVE.AS", "SAVE.DOC", "SCALE.X"
 Case "SCALE.Y", "SCAN", "SCORE", "SCREEN.PIXELS", "SCREEN.X", "SCREEN.Y", "SCRIPT", "SCROLL", "SEARCH"
 Case "SEEK", "SEEK(", "SELECT", "SEQUENTIAL", "SET", "SETTINGS", "SGN(", "SHIFT", "SHIFTBACK", "SHORTDIR$("
 Case "SHOW", "SHOW$(", "SIN(", "SINGLE", "SINT(", "SIZE", "SIZE.X(", "SIZE.Y(", "SLOW"
 Case "SND$(", "SORT", "SOUND", "SOUNDREC", "SOUNDS", "SPEECH", "SPEECH$(", "SPLIT", "SPRITE"
 Case "SPRITE$", "SQRT(", "STACK", "STACK$(", "STACK.SIZE", "STACKITEM$(", "STACKITEM(", "STACKTYPE$(", "START", "STATIC"
-Case "STEP", "STEREO", "STOCK", "STOP", "STR$(", "STRING$(", "STRUCTURE", "SUB", "SUBDIR"
+Case "STEP", "STEREO", "STOCK", "STOP", "STR$(", "STREAM", "STRING$(", "STRUCTURE", "SUB", "SUBDIR"
 Case "SWAP", "SWEEP", "SWITCHES", "TAB", "TAB(", "TABLE", "TAN(", "TARGET"
 Case "TARGETS", "TASK.MAIN", "TEMPNAME$", "TEMPORARY$", "TEST", "TEXT", "THEN", "THIS"
 Case "THREAD", "THREAD.PLAN", "THREADS", "THREADS$", "TICK", "TIME$(", "TIME(", "TIMECOUNT", "TITLE"
@@ -2860,9 +2860,9 @@ Case "памы", "памылисо(", "паяацяажос$(", "паяацяажос(", "паяал(", "паяал$(", "п
 Case "паяелбокг", "патглемо(", "павос", "педиа", "педио", "педио$(", "пеф$(", "пема", "пеяи"
 Case "пеяи$", "пеяихыяио", "пета", "пи", "пимайас", "пимайас$(", "пимайас(", "пимайес", "писы("
 Case "пкациа", "пкаисио", "пкатос", "пкатос.сглеиоу", "пкатжояла$", "пкгйтяокоцио", "покуцымо"
-Case "пяос", "пяосаялоцгс", "пяосхесе.еццяажо", "пяосхгйг", "пяосыяимо$", "пяовеияо", "пяовеияо$", "пяовеияо.еийома$", "яифа("
+Case "пяос", "пяосаялоцгс", "пяосхесе.еццяажо", "пяосхгйг", "пяосыяимо$", "пяовеияо", "пяовеияо$", "пяовеияо.еийома$", "яеула", "яифа("
 Case "яоутима", "яоутимас", "яухлисеис", "яыта$(", "яыта(", "саяысе", "сбгсе", "се"
-Case "сеияа", "сеияиайос.дисйоу(", "секида", "семаяио", "сгл", "сгл(", "сглади", "сглеио", "сглеио(", "сглеяа", "статийг", "статийес"
+Case "сеияа", "сеияиайос.дисйоу(", "секида", "семаяио", "сгл", "сгл(", "сглади", "сглеио", "сглеио(", "сглеяа", "сйоупидиа", "статийг", "статийес"
 Case "стг", "стгкг", "стгкг(", "стгм", "сто", "стой", "стовои", "стовос", "стяоцц(", "суццяажеас"
 Case "суццяажг", "суцйяиме(", "суцйяоусг(", "суцвымеусе.еццяажо", "сулпиесг", "сулпкгяысг", "сум(", "сумаятгсг", "сумаятгсг$("
 Case "сумаятгсг(", "сумевисе", "сумхгла", "сус", "сусйеуг.пяобокгс$", "сустгла", "сувмотгта(", "свд$(", "сведиа"
@@ -2870,7 +2870,7 @@ Case "сведио.мглатым", "сыяос", "сыяос$(", "сыяоутупос$(", "сысе", "сысе.еццяажо
 Case "танг", "танимолгсг", "таутисг(", "таутовяомо", "текос", "текос(", "тий", "тиктос.аявеиоу$(", "тилг"
 Case "тилг(", "тилгсыяоу$(", "тилгсыяоу(", "типота", "титкос", "тлгла", "тлгла(", "тлгла$", "тлглата", "томос"
 Case "тон.еж(", "топийа", "топийес", "топийг", "топийо", "топийо$(", "топийо(", "топос$(", "топос.аявеиоу$("
-Case "тоте", "тупос", "тупос$(", "тупос.аявеиоу$(", "тупысе", "туваиос(", "тыяа", "у.сглеиа"
+Case "тоте", "тупос", "тупос$(", "тупос.аявеиоу$(", "тупысе", "туваиос", "туваиос(", "тыяа", "у.сглеиа"
 Case "упаявеи(", "упаявеи.йатакоцос(", "уплея(", "упо", "упойатакоцос", "упок", "упокоцистг", "упокоцистгс$", "упокоипо"
 Case "уполмгла", "упыяа(", "уьос", "уьос.сглеиоу", "жайекос$(", "жамеяо$(", "жаядиа", "жеяе"
 Case "жеяеписы", "жхимоуса", "жиктяо$(", "жомто", "жояла", "жояла$", "жоятос", "жоятысе", "жоятысе.еццяажо"
@@ -3661,7 +3661,7 @@ End Function
 Public Function NumberId(aHash As sbHash, bHash As sbHash) As Boolean
 Dim myid(), i As Long
 Dim myfun()
-myid() = Array("THIS", "ауто", "PEN", "пема", "HWND", "паяахуяо", "LOCALE", "топийо", "CODEPAGE", "йыдийосекида" _
+myid() = Array("THIS", "ауто", "RND", "туваиос", "PEN", "пема", "HWND", "паяахуяо", "LOCALE", "топийо", "CODEPAGE", "йыдийосекида" _
 , "SPEECH", "коцос", "ERROR", "кахос", "SCREEN.Y", "амакусг.у", "SCREEN.X", "амакусг.в", "TWIPSY", "уьос.сглеиоу" _
 , "TWIPSX", "пкатос.сглеиоу", "REPORTLINES", "цяаллесамажояас", "LINESPACE", "диастиво", "MODE", "тупос" _
 , "MEMORY", "лмглг", "CHARSET", "ваяайтгяес", "ITALIC", "пкациа", "BOLD", "жаядиа", "COLORS", "вяылата" _
@@ -3971,7 +3971,7 @@ Public Sub StoreFont(aName$, aSize As Single, ByVal aCharset As Long)
 
 On Error Resume Next
 fonttest.Font.Size = aSize
-If Err.number > 0 Then aSize = 12: fonttest.Font.Size = aSize
+If Err.Number > 0 Then aSize = 12: fonttest.Font.Size = aSize
     fonttest.FontName = aName$
     fonttest.Font.bold = True
     fonttest.Font.Italic = True
@@ -3997,7 +3997,7 @@ Dim a As New FastCollection, i As Long, key1 As Long, k As Long, m As Variant, p
 For i = 1 To n
 a.AddKey i - 1
 Next i
-Dim cc As Long, kk As Boolean, tt As Long, old As Long
+Dim cc As Long, kk As Boolean, TT As Long, old As Long
 For cc = 1 To 1
 Set a = New FastCollection
 For i = 1 To n
@@ -4007,9 +4007,9 @@ Debug.Print "(ord)   (key)       (hash position)   (pure)   (left)"
 old = a.problem("test" + Str$(a.count))
 
 For k = 0 To a.count - 1
-tt = Int((a.count - 1) * Rnd)
+TT = Int((a.count - 1) * Rnd)
 'tt = 13
-If tt < 0 Or tt >= a.count Then Stop
+If TT < 0 Or TT >= a.count Then Stop
 pos = Int((a.count - 1) * Rnd)
 a.index = pos
 m = a.KeyToString

@@ -72,6 +72,7 @@ Private Sub Class_Initialize()
     hashlen = MaxSpace * 2 + 3
     toplim = -1
     mSortstyle = vbTextCompare
+   ' Debug.Print "create one"
 End Sub
 Public Sub SetBinaryCompare()
 mSortstyle = vbBinaryCompare
@@ -117,16 +118,18 @@ Public Sub ToKey(RHS)
     Done = Find(RHS)
     If Done Then lastkey = CStr(RHS)
 End Sub
-Public Sub RemoveWithNoFind(RHS)
+Public Sub RemoveWithNoFind()
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
 If toplim < 0 Then Stop
 top1 = toplim
 If Done Then
-
-        If ParentIndex > 0 Then
+       If ParentIndex > -1 Then
             PriveSpace(ParentIndex).Pleft = PriveSpace(index).Pleft
+
         Else
-            Hash(PriveSpace(index).lastpos) = PriveSpace(index).Pleft
+        
+        Hash(PriveSpace(index).lastpos) = PriveSpace(index).Pleft
+
         End If
         SwapVariant vvv, PriveSpace(top1).iValue
         PriveSpace(index).iValue = -1
@@ -135,22 +138,28 @@ If Done Then
         PriveSpace(top1) = new_item
         SwapVariant vvv, PriveSpace(index).iValue
         If Hash(PriveSpace(index).lastpos) - 1 = top1 Then
+        
             Hash(PriveSpace(index).lastpos) = index + 1
         Else
+        
             k = Hash(PriveSpace(index).lastpos) - 1
-            If k < 1 Then
-                Hash(PriveSpace(index).lastpos) = index + 1
-            Else
+If k >= 0 Then
                 Do
                 k1 = k
                 k = PriveSpace(k).Pleft - 1
                 Loop Until k = top1 Or k < 0
                 PriveSpace(k1).Pleft = index + 1
-            End If
         End If
-        toplim = toplim - 1
 
-      ReduceHash toplim
+        End If
+  
+here:
+       toplim = toplim - 1
+      
+        
+       
+        
+  ReduceHash toplim
 End If
 End Sub
 Public Sub Remove(RHS)
@@ -522,7 +531,7 @@ Private Function GetRefCount(ByRef vvv) As Long
     Set obj = vvv
     If obj Is Nothing Then Exit Function
     CopyMemory GetRefCount, ByVal (objptr(obj)) + 4, 4
-    GetRefCount = GetRefCount - 3
+    GetRefCount = GetRefCount - 2
     Set obj = Nothing
 End Function
 Public Property Get ReferCount() As Long
@@ -537,6 +546,12 @@ End Property
 Public Property Get KeyToString() As Variant
 If index > -1 Then
     KeyToString = PriveSpace(index).Key
+End If
+End Property
+Public Property Get ReferCountValue() As Long
+If index = -1 Then
+ElseIf IsObject(PriveSpace(index).iValue) Then
+    ReferCountValue = GetRefCount(PriveSpace(index).iValue)
 End If
 End Property
 Public Sub ToStart()
@@ -567,7 +582,7 @@ Done = False
 
 End Sub
 Private Sub Class_Terminate()
-
+'Debug.Print "erased"
     Erase PriveSpace()
 End Sub
 Public Sub GarbageJob()
@@ -577,11 +592,11 @@ ReduceHash -1
 End Sub
 Private Sub QuickSortItems(Arr() As item, ByVal LB As Long, ByVal UB As Long)
 Dim M1 As Long, M2 As Long
-Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
+Dim Piv As item, tmp As item '<- adjust types here, when switching to something different than Long
   If UB - LB = 1 Then
      M1 = LB
 
-     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = 1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
+     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = 1 Then tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = tmp
      Exit Sub
   Else
   ' we have unique names
@@ -597,7 +612,7 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
     Do While StrComp(Arr(M2).Key, Piv.Key, mSortstyle) = 1: M2 = M2 - 1: Loop
 
     If M1 <= M2 Then
-      Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
+      tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = tmp 'swap
       M1 = M1 + 1
       M2 = M2 - 1
     End If
@@ -610,11 +625,11 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
 End Sub
 Private Sub QuickSortItemsRev(Arr() As item, ByVal LB As Long, ByVal UB As Long)
 Dim M1 As Long, M2 As Long
-Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
+Dim Piv As item, tmp As item '<- adjust types here, when switching to something different than Long
   If UB - LB = 1 Then
      M1 = LB
 
-     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = -1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
+     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = -1 Then tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = tmp
      Exit Sub
   Else
   ' we have unique names
@@ -630,7 +645,7 @@ Dim Piv As item, Tmp As item '<- adjust types here, when switching to something 
     Do While StrComp(Arr(M2).Key, Piv.Key, mSortstyle) = -1: M2 = M2 - 1: Loop
 
     If M1 <= M2 Then
-      Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
+      tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = tmp 'swap
       M1 = M1 + 1
       M2 = M2 - 1
     End If

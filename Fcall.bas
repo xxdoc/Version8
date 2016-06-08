@@ -1,13 +1,13 @@
 Attribute VB_Name = "Fcall"
 ' This is a module from Olaf Schmidt changed for M2000 needs
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal callconv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef RETVAR As Variant) As Long
-Private Declare Function GetProcByName Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function GetProcByOrdinal Lib "kernel32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal nOrdinal As Long) As Long
-Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
-Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
-Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
-Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
-Private Declare Sub RtlMoveMemory Lib "kernel32" (dst As Any, src As Any, ByVal BLen As Long)
+Private Declare Function GetProcByName Lib "KERNEL32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GetProcByOrdinal Lib "KERNEL32" Alias "GetProcAddress" (ByVal hModule As Long, ByVal nOrdinal As Long) As Long
+Private Declare Function LoadLibrary Lib "KERNEL32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
+Private Declare Function FreeLibrary Lib "KERNEL32" (ByVal hLibModule As Long) As Long
+Private Declare Function lstrlenA Lib "KERNEL32" (ByVal lpString As Long) As Long
+Private Declare Function lstrlenW Lib "KERNEL32" (ByVal lpString As Long) As Long
+Private Declare Sub RtlMoveMemory Lib "KERNEL32" (dst As Any, src As Any, ByVal BLen As Long)
 
 Private Enum CALLINGCONVENTION_ENUM
   cc_fastcall
@@ -141,7 +141,7 @@ End Function
 Public Sub RemoveDll(sLib As String)
 If LibHdls.Find(sLib) Then
     FreeLibrary LibHdls.Value
-    LibHdls.RemoveWithNoFind sLib
+    LibHdls.RemoveWithNoFind
 End If
 End Sub
 
