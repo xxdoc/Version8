@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 0
+Global Const Revision = 1
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -4429,7 +4429,7 @@ End If
 End If
 End Function
 Function IsNumber(bstack As basetask, a$, r As Double) As Boolean
-Dim VR As Long, v$, n$, v1&, w1 As Long, w2 As Long, p As Double, s1$, dd As Long, dn As Long, W3 As Long
+Dim VR As Long, v$, n$, V1&, w1 As Long, w2 As Long, p As Double, s1$, dd As Long, dn As Long, W3 As Long
 Dim PP As Double, pppp As mArray, nBstack As basetask, pppp1 As mArray, rB As Byte, ri As Integer
 Dim anything As Object
 
@@ -4480,20 +4480,20 @@ a$ = Mid$(a$, sng&)
 n$ = a$
 w2 = Len(n$)
 sng& = 1
-v1& = IsLabelBig(bstack, n$, v$, par)
+V1& = IsLabelBig(bstack, n$, v$, par)
 
-If v1& = 0 Then GoTo zerohere
+If V1& = 0 Then GoTo zerohere
 ''''''''''''''''''If NoOptimum Then If v1& > 0 Then par = False
 If par Then
 par = False
 removethis:
-v1& = Abs(v1&)
+V1& = Abs(V1&)
  
- If v1& = 1 Then
+ If V1& = 1 Then
  GoTo LOOKFORVARNUM
- ElseIf v1& = 4 Then
+ ElseIf V1& = 4 Then
  GoTo LOOKFORVARNUM4
- ElseIf v1& = 5 Or v1& = 7 Then
+ ElseIf V1& = 5 Or V1& = 7 Then
  GoTo LOOKFORSUBNUM
  Else
  '
@@ -4503,7 +4503,7 @@ v1& = Abs(v1&)
  ''
 End If
 
-Select Case v1&
+Select Case V1&
 Case 1
 If Not numid.ExistKey(v$) Then GoTo LOOKFORVARNUM
 Select Case v$
@@ -5129,7 +5129,7 @@ Else
 If Len(v$) > 5 Then
 If Left$(v$, 5) = "THIS." Or Left$(v$, 5) = "ΑΥΤΟ." Then
 v$ = Mid$(v$, 5)
-v1& = IsLabel(bstack, (v$), v$)
+V1& = IsLabel(bstack, (v$), v$)
 If v$ <> "" Then GoTo removethis
 End If
 End If
@@ -7970,9 +7970,9 @@ s1$ = v$ & ")" ' ANY CHAR HERE
 MakeThisSubNum bstack, s1$
 If IsSymbol(n$, "@") Then
 'is a function allways...
-If GetlocalSub(s1$, v1&) Then
+If GetlocalSub(s1$, V1&) Then
     GoTo contAr1
-ElseIf GetSub(s1$, v1&) Then
+ElseIf GetSub(s1$, V1&) Then
 GoTo contAr1
 Else
 GoTo skiphere
@@ -7981,11 +7981,11 @@ End If
 Else
 If neoGetArray(bstack, v$, pppp, , , True) Then
     GoTo contAr2
-ElseIf GetlocalSub(s1$, v1&) Then
+ElseIf GetlocalSub(s1$, V1&) Then
     GoTo contAr1
-ElseIf neoGetArray(bstack, v$, pppp) Then
+ElseIf neoGetArray(bstack, v$, pppp, , True) Then
 GoTo contAr2
-ElseIf GetSub(s1$, v1&) Then
+ElseIf GetSub(s1$, V1&) Then
 GoTo contAr1
 Else
 skiphere:
@@ -7993,7 +7993,7 @@ If bstack.UseGroupname <> "" Then
 If InStr(s1$, bstack.UseGroupname) = 1 Then
 
 s1$ = bstack.UseGroupname + ChrW(&HFFBF) + Mid$(s1$, Len(bstack.UseGroupname) + 1)
-If GetSub(s1$, v1&) Then GoTo contAr1
+If GetSub(s1$, V1&) Then GoTo contAr1
 End If
 End If
 If Right$(s1$, 1) = ")" Then
@@ -8024,7 +8024,7 @@ GoTo skiperror
 End If
 End If
 '''ver 18
-If GetSub(s1$, v1&) Then
+If GetSub(s1$, V1&) Then
 GoTo contAr1
 ElseIf neoGetArray(bstack, v$, pppp) Then
 GoTo contAr2
@@ -8032,7 +8032,7 @@ Else
 GoTo skiperror
 End If
 
-If GetSub(s1$, v1&) Then
+If GetSub(s1$, V1&) Then
 contAr1:
 s1$ = Trim$(s1$)
     If bstack.NoFuncError Then
@@ -8052,8 +8052,8 @@ Else
     Set nBstack.Parent = bstack
     If bstack.IamThread Then Set nBstack.Process = bstack.Process
     Set nBstack.Owner = bstack.Owner
-    nBstack.OriginalCode = v1&
-    nBstack.UseGroupname = sbf(v1&).sbgroup
+    nBstack.OriginalCode = V1&
+    nBstack.UseGroupname = sbf(V1&).sbgroup
     If GoFunc(nBstack, s1$, n$, p) Then
         If Not nBstack.StaticCollection Is Nothing Then
         bstack.SetVarobJ "%_" + s1$, nBstack.StaticCollection
@@ -12517,7 +12517,7 @@ itisarrayorfunction:
                 GoTo contStrArr
             ElseIf GetlocalSub(q1$, w1&) Then
                 GoTo contStrFun
-            ElseIf neoGetArray(bstackstr, q$, pppp) Then
+            ElseIf neoGetArray(bstackstr, q$, pppp, , True) Then
                 GoTo contStrArr
             ElseIf GetSub(q1$, w1&) Then
                 GoTo contStrFun
@@ -15908,8 +15908,8 @@ ContElse:
         Case "TRY", "ΔΕΣ"
 ContTry:
                 If IsLabelSymbolNew(b$, "ΡΕΥΜΑ", "STREAM", lang) Then
- Debug.Print bstack.CallW
- Debug.Print bstack.fHere
+ 'Debug.Print bstack.CallW
+ 'Debug.Print bstack.fHere
     If bstack.CallW <> "" Then
         ss$ = here$
         i = bstack.soros.Total
@@ -20310,19 +20310,27 @@ Else
                 Set ga.GroupRef = var(k)
                 ga.Arr = False
                 neoGetArray = True
+                 Exit Function
+                Else
+                k = -1
+                n$ = bstack.GroupName + nm$
+                ' not a mhandler
             End If
-            Exit Function
+           
         End If
 
 End If
 End If
-If k = 0 Then
+If k <= 0 Then
 
             If searchonly Then Exit Function
             If Not useLocalOnly Then
                         n$ = nm$
                         varhash.Find n$, k
-                      
+        Else
+      
+     Exit Function
+        
             End If
 End If
 
@@ -28280,7 +28288,7 @@ Function StockValues(bstack As basetask, b$, lang As Long) As Boolean
 
 ' Stock A[$|%| ]()  keep  N,  B[$|%| ]()
 ' Stock A[$|%| ]()  sweep  N [,  value ]   fill a copy of value to n items or empty slots
-Dim w$, pppp As mArray, v As Long, VN As Long, i As Long, what$, pppp1 As mArray, v1 As Long
+Dim w$, pppp As mArray, v As Long, VN As Long, i As Long, what$, pppp1 As mArray, V1 As Long
 Dim bs As New basetask, p As Double, p1 As Double, soros As mStiva
 If Abs(IsLabel(bstack, b$, what$)) > 4 Then
         If neoGetArray(bstack, what$, pppp) Then
@@ -28339,8 +28347,8 @@ againhere:
                                                                                                 bs.soros.PushObj pppp.item(v)
                                                                                                         If Not globalArrByPointer(bs, bstack, w$) Then MyEr "No array found", "Δεν βρήκα πίνακα"
                                                                                                 Else
-                                                                                                        If NeoGetArrayItem(pppp1, bstack, w$, v1, b$) Then
-                                                                                                               Set pppp1.item(v1) = pppp.item(v)
+                                                                                                        If NeoGetArrayItem(pppp1, bstack, w$, V1, b$) Then
+                                                                                                               Set pppp1.item(V1) = pppp.item(v)
                                                                                                         End If
                                                                                                 End If
                                                                                         ElseIf IsSymbol(b$, ")") Then
@@ -28362,8 +28370,8 @@ againhere:
                                                                                         Case 5, 6, 7
                                                                                          If neoGetArray(bstack, w$, pppp1) Then
                                                                                          If Not pppp1.Arr Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
-                                                                                                If NeoGetArrayItem(pppp1, bstack, w$, v1, b$) Then
-                                                                                                     pppp1.item(v1) = pppp.item(v)
+                                                                                                If NeoGetArrayItem(pppp1, bstack, w$, V1, b$) Then
+                                                                                                     pppp1.item(V1) = pppp.item(v)
                                                                                                 End If
                                                                                       
                                                                                          End If
@@ -28391,22 +28399,22 @@ againhere:
                                                                      If Abs(IsLabel(bstack, b$, w$)) > 4 Then
                                                                         If neoGetArray(bstack, w$, pppp1) Then
                                                                         If Not pppp1.Arr Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
-                                                                         If NeoGetArrayItem(pppp1, bstack, w$, v1, b$) Then
-                                                                                   If Not (v1 + p - 1 <= pppp1.UpperMonoLimit) Then
+                                                                         If NeoGetArrayItem(pppp1, bstack, w$, V1, b$) Then
+                                                                                   If Not (V1 + p - 1 <= pppp1.UpperMonoLimit) Then
                                                                                                 MyEr "Invalid index", "Μη έγκυρος δείκτης"
                                                                                                 Exit Function
                                                                                    Else
                                                                                    If pppp1 Is pppp Then
-                                                                                   If v = v1 Then
+                                                                                   If v = V1 Then
                                                                                    ' do nothing
-                                                                                   ElseIf Abs(v - v1) < p And v1 > v Then
+                                                                                   ElseIf Abs(v - V1) < p And V1 > v Then
                                                                                    'from top
                                                                                                For i = p - 1 To 0 Step -1
                                                                                                                 With pppp
                                                                                                                 If IsObject(.item(i + v)) Then
-                                                                                                                     Set pppp1.item(i + v1) = .item(i + v)
+                                                                                                                     Set pppp1.item(i + V1) = .item(i + v)
                                                                                                                 Else
-                                                                                                                     pppp1.item(i + v1) = .item(i + v)
+                                                                                                                     pppp1.item(i + V1) = .item(i + v)
                                                                                                                 End If
                                                                                                                 End With
                                                                                                Next i
@@ -28414,9 +28422,9 @@ againhere:
                                                                                             For i = 0 To p - 1
                                                                                                                 With pppp
                                                                                                                 If IsObject(.item(i + v)) Then
-                                                                                                                     Set pppp1.item(i + v1) = .item(i + v)
+                                                                                                                     Set pppp1.item(i + V1) = .item(i + v)
                                                                                                                 Else
-                                                                                                                    pppp1.item(i + v1) = .item(i + v)
+                                                                                                                    pppp1.item(i + V1) = .item(i + v)
                                                                                                                 End If
                                                                                                                 End With
                                                                                                Next i
@@ -28426,9 +28434,9 @@ againhere:
                                                                                                For i = 0 To p - 1
                                                                                                                 With pppp
                                                                                                                 If IsObject(.item(i + v)) Then
-                                                                                                                     Set pppp1.item(i + v1) = .item(i + v)
+                                                                                                                     Set pppp1.item(i + V1) = .item(i + v)
                                                                                                                 Else
-                                                                                                                      pppp1.item(i + v1) = .item(i + v)
+                                                                                                                      pppp1.item(i + V1) = .item(i + v)
                                                                                                                 End If
                                                                                                                 End With
                                                                                                Next i
@@ -28439,10 +28447,10 @@ againhere:
                                                                                                 End If
                                                                                   End If
                                                                                   ElseIf Right$(w$, 1) = "$" Then
-                                                                                   If GetVar(bstack, w$, v1) Then
-                                                                                    var(v1) = ""
+                                                                                   If GetVar(bstack, w$, V1) Then
+                                                                                    var(V1) = ""
                                                                                         Else
-                                                                                        v1 = GlobalVar(w$, "")
+                                                                                        V1 = GlobalVar(w$, "")
                                                                                         End If
                                                                                         VN = Right$(what$, 3) = "$"
                                                                                          If p - 1 + v > pppp.UpperMonoLimit Then
@@ -28452,21 +28460,21 @@ againhere:
                                                                                     For i = 0 To p - 1
                                                                                                                 With pppp
                                                                                                                 If IsObject(.item(i + v)) Then
-                                                                                                                        If VN Then var(v1) = var(v1) + Sput("") Else var(v1) = var(v1) & " 0"
+                                                                                                                        If VN Then var(V1) = var(V1) + Sput("") Else var(V1) = var(V1) & " 0"
                                                                                                                 Else
                                                                                                                   
                                                                                                                      Select Case VarType(.item(i + v))
                                                                                                                      Case 5
-                                                                                                                     var(v1) = var(v1) + " " + Trim$(Str(.item(i + v)))
+                                                                                                                     var(V1) = var(V1) + " " + Trim$(Str(.item(i + v)))
                                                                                                                      Case 8
                                                                                                                      w$ = .item(i + v)
                                                                                                                      If IsNumberD2(w$, p) Then
-                                                                                                                     var(v1) = var(v1) + " " + .item(i + v)
+                                                                                                                     var(V1) = var(V1) + " " + .item(i + v)
                                                                                                                      Else
-                                                                                                                     var(v1) = var(v1) + Sput(.item(i + v))
+                                                                                                                     var(V1) = var(V1) + Sput(.item(i + v))
                                                                                                                      End If
                                                                                                                      Case Else
-                                                                                                                     If VN Then var(v1) = var(v1) + Sput("") Else var(v1) = var(v1) & " 0"
+                                                                                                                     If VN Then var(V1) = var(V1) + Sput("") Else var(V1) = var(V1) & " 0"
                                                                                                               
                                                                                                                      ''var(V1) = var(V1) & " " & Trim$(Str$(.item(i + V)))
                                                                                                                      End Select
@@ -30249,7 +30257,7 @@ End Sub
 Sub NeoShiftBack(basestackLP As Long, rest$, lang As Long, resp As Boolean)
 resp = ProcShiftBack(ObjFromPtr(basestackLP), rest$)
 End Sub
-Sub CallNext(basestack As basetask, rest$, resp As Boolean, v1 As Double, v2 As String)
+Sub CallNext(basestack As basetask, rest$, resp As Boolean, V1 As Double, V2 As String)
 Dim i As Long, p As Double, par As Boolean, f As Long
 Dim flag As Boolean, it As Long, what$, s$, x1 As Long, ss$, bs As basetask, vvl As Variant, x As Double
 reenter1:
@@ -30303,10 +30311,10 @@ End If
         If Typename(vvl) = "Empty" Then resp = False: Exit Sub
         If InStr(ss$, "$") > 0 Then
    
-        v2 = CStr(vvl)
+        V2 = CStr(vvl)
         Else
         
-            v1 = CDbl(vvl)
+            V1 = CDbl(vvl)
    
         End If
         End If
@@ -39560,7 +39568,7 @@ CallEventFromCOM = True
 F1$ = evCom.modulename$
 aString$ = UCase(aString$)
 f$ = UCase(F1$ + "_" + aString$ + "()") ' No greek
-Debug.Print f$
+'Debug.Print f$
 If Not subHash.Find(f$, klm) Then Exit Function
 extr = extreme
 extreme = True

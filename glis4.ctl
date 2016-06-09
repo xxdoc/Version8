@@ -12,8 +12,8 @@ Begin VB.UserControl gList
    FillColor       =   &H80000002&
    FillStyle       =   0  'Solid
    BeginProperty Font 
-      Name            =   "MS Sans Serif"
-      Size            =   8.25
+      Name            =   "ARIAL"
+      Size            =   9
       Charset         =   161
       Weight          =   700
       Underline       =   0   'False

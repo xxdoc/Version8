@@ -407,11 +407,17 @@ NoAction = False
 If ExTarget Then Run = False
 End If
 finalize:
-If NERR Then Stop
+If NERR Then
+' problem
+PopStage objref
+
+End If
 here$ = ohere$
 
 If clean Then PopStage objref
 elevatestatus2 = 0
+Dim exityes
+If NERR Then NERR = False: Err.Raise 50500, , "Fatsl Error"
 End Function
 Property Get ErrorGr() As String
 ErrorGr = LastErNameGR

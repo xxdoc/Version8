@@ -120,7 +120,7 @@ Public Sub ToKey(RHS)
 End Sub
 Public Sub RemoveWithNoFind()
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
-If toplim < 0 Then Stop
+If toplim < 0 Then Exit Sub   ' previus stop
 top1 = toplim
 If Done Then
        If ParentIndex > -1 Then
@@ -164,7 +164,7 @@ End If
 End Sub
 Public Sub Remove(RHS)
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
-If toplim < 0 Then Stop
+If toplim < 0 Then Exit Sub   ' previus stop
 top1 = toplim
 Done = Find(RHS)
 If Done Then
@@ -592,11 +592,11 @@ ReduceHash -1
 End Sub
 Private Sub QuickSortItems(Arr() As item, ByVal LB As Long, ByVal UB As Long)
 Dim M1 As Long, M2 As Long
-Dim Piv As item, tmp As item '<- adjust types here, when switching to something different than Long
+Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
   If UB - LB = 1 Then
      M1 = LB
 
-     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = 1 Then tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = tmp
+     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = 1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
      Exit Sub
   Else
   ' we have unique names
@@ -612,7 +612,7 @@ Dim Piv As item, tmp As item '<- adjust types here, when switching to something 
     Do While StrComp(Arr(M2).Key, Piv.Key, mSortstyle) = 1: M2 = M2 - 1: Loop
 
     If M1 <= M2 Then
-      tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = tmp 'swap
+      Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
       M1 = M1 + 1
       M2 = M2 - 1
     End If
@@ -625,11 +625,11 @@ Dim Piv As item, tmp As item '<- adjust types here, when switching to something 
 End Sub
 Private Sub QuickSortItemsRev(Arr() As item, ByVal LB As Long, ByVal UB As Long)
 Dim M1 As Long, M2 As Long
-Dim Piv As item, tmp As item '<- adjust types here, when switching to something different than Long
+Dim Piv As item, Tmp As item '<- adjust types here, when switching to something different than Long
   If UB - LB = 1 Then
      M1 = LB
 
-     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = -1 Then tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = tmp
+     If StrComp(Arr(M1).Key, Arr(UB).Key, mSortstyle) = -1 Then Tmp = Arr(M1): Arr(M1) = Arr(UB): Arr(UB) = Tmp
      Exit Sub
   Else
   ' we have unique names
@@ -645,7 +645,7 @@ Dim Piv As item, tmp As item '<- adjust types here, when switching to something 
     Do While StrComp(Arr(M2).Key, Piv.Key, mSortstyle) = -1: M2 = M2 - 1: Loop
 
     If M1 <= M2 Then
-      tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = tmp 'swap
+      Tmp = Arr(M1): Arr(M1) = Arr(M2): Arr(M2) = Tmp 'swap
       M1 = M1 + 1
       M2 = M2 - 1
     End If

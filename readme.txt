@@ -1,9 +1,7 @@
 M2000 Interpreter and Environment
 
-Version 8.2
-Final Version
-New << operator
-
+Version 8.2 revision 1
+small bug now Works perfect
 
 
 http://georgekarras.blogspot.gr/
