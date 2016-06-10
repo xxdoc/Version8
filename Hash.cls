@@ -178,9 +178,9 @@ Loop Until k < 0
 End If
 End Function
 Friend Sub ItemCreator(Key As String, num As Long, Optional isref As Boolean = False)
-Dim a As Long
-a = Malloc()
-With PriveSpace(a)
+Dim A As Long
+A = Malloc()
+With PriveSpace(A)
     .Key = Key
     .NDX = num
     If isref Then
@@ -190,26 +190,26 @@ With PriveSpace(a)
     End If
     .firsthash = HashFunc0(Key)
 End With
-place HashFunc(Key), a
+place HashFunc(Key), A
 End Sub
 Property Get Percent()
 Percent = count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal a)
+Private Sub place(ByVal b, ByVal A)
 Dim k As Long
 
     k = Hash(b)
-    Hash(b) = a + 1
-    PriveSpace(a).Pleft = k
-    PriveSpace(a).lastpos = b
+    Hash(b) = A + 1
+    PriveSpace(A).Pleft = k
+    PriveSpace(A).lastpos = b
 End Sub
-Private Sub ab(ByVal a As Long, b As Long)
-b = (b + a + 1024 * a) Xor &H83F3CF
+Private Sub ab(ByVal A As Long, b As Long)
+b = (b + A + 1024 * A) Xor &H83F3CF
 End Sub
-Public Function HashFunc0(a$) As Long
+Public Function HashFunc0(A$) As Long
 Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
-  p4 = Len(a$) * 2 '- 2
-  p2 = StrPtr(a$): p4 = p2 + p4
+  p4 = Len(A$) * 2 '- 2
+  p2 = StrPtr(A$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, p1
   p3 = UINT(p1)
@@ -225,9 +225,9 @@ Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
   Next i
  
 End Function
-Private Function UINT(ByVal a As Integer) As Long 'δίνει έναν integer σαν unsign integer σε long
+Private Function UINT(ByVal A As Integer) As Long 'δίνει έναν integer σαν unsign integer σε long
  Dim b As Integer
- b = a And &HFFFF
+ b = A And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -239,19 +239,19 @@ Private Function HashFunc2(where As Long)
 HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFAFF7 + Len(PriveSpace(where).Key) + hashlen + 1), hashlen)
 End Function
 
-Private Function HashFunc(a$)
-HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFAFF7 + Len(a$) + hashlen + 1), hashlen)
+Private Function HashFunc(A$)
+HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFAFF7 + Len(A$) + hashlen + 1), hashlen)
 End Function
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal a As Double) As Double
-If a > CDbl(2147483647) Then a = CDbl(2147483647)
-If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
-If a < 0 Then
-uintnew = 4294967296# + a
+Private Function uintnew(ByVal A As Double) As Double
+If A > CDbl(2147483647) Then A = CDbl(2147483647)
+If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
+If A < 0 Then
+uintnew = 4294967296# + A
 Else
-uintnew = a
+uintnew = A
 End If
 End Function
 

@@ -101,14 +101,14 @@ Public Property Get Text() As String
 If glistN.listcount = 0 Then
 glistN.additem mprompt
 Else
-Text = glistN.List(0)
+Text = glistN.list(0)
 End If
 End Property
 Public Property Get vartext() As String
 If glistN.listcount = 0 Then
 glistN.additem ""
 Else
-vartext = Mid$(glistN.List(0), 1 + Len(mprompt))
+vartext = Mid$(glistN.list(0), 1 + Len(mprompt))
 End If
 End Property
 Public Property Let vartext(ByVal RHS As String)
@@ -119,7 +119,7 @@ glistN.HeadlineHeight = 0
 If glistN.listcount = 0 Then
 glistN.additem mprompt + RHS
 Else
-glistN.List(0) = mprompt + RHS
+glistN.list(0) = mprompt + RHS
 End If
 glistN.SelStart = Len(mprompt + RHS) + 1
 glistN.ShowMe
@@ -133,7 +133,7 @@ glistN.HeadlineHeight = 0
 If glistN.listcount = 0 Then
 glistN.additem RHS
 Else
-glistN.List(0) = RHS
+glistN.list(0) = RHS
 End If
 'glistN.LeftMarginPixels = oldright
 
@@ -218,22 +218,22 @@ Private Sub Class_Terminate()
 Set glistN = Nothing
 End Sub
 
-Private Sub glistN_RegisterGlist(this As gList)
-If Not glistN.Spinner Then this.NoWheel = True
+Private Sub glistN_RegisterGlist(This As gList)
+If Not glistN.Spinner Then This.NoWheel = True
 On Error Resume Next
-Set LastGlist = this
-If Err.Number > 0 Then this.NoWheel = True
+Set LastGlist = This
+If Err.Number > 0 Then This.NoWheel = True
 End Sub
 
 
 
 Private Sub glistN_ChangeListItem(item As Long, Content As String)
 If Not enabled Then Exit Sub
-Dim this As String, thispos As Long, VR(2)
+Dim This As String, thispos As Long, VR(2)
 thispos = glistN.SelStart - Len(mprompt)
-this = Mid$(Content, 1 + Len(mprompt))
+This = Mid$(Content, 1 + Len(mprompt))
 '' RaiseEvent ValidString(this, thispos)
-VR(0) = this
+VR(0) = This
 VR(1) = thispos
    If mIndex >= 0 Then
    Callback.CallbackNow mesCtrlName + ".ValidString(" + Str(mIndex) + ")", VR()
@@ -255,7 +255,7 @@ If thisselstart <= Len(mprompt) Then thisselstart = Len(mprompt) + 1
 'glistN.ShowPan
 With glistN
 .ShowPan
-.ExternalCursor .SelStart, .List(.ListIndex), .ForeColor
+.ExternalCursor .SelStart, .list(.ListIndex), .ForeColor
 End With
 End Sub
 
@@ -354,7 +354,14 @@ ElseIf KeyCode = vbKeyV And (shift And 3) = 2 Then
 If Not enabled Then Exit Sub
 Pad$ = GetTextData(13)
 If Pad$ = "" Then Pad$ = Clipboard.GetText(1)
-If Pad$ <> "" Then vartext = Pad$
+If Pad$ <> "" Then
+If glistN.maxchar > 0 Then
+    vartext = Mid$(Pad$, 1, glistN.maxchar)
+
+Else
+    vartext = Pad$
+    End If
+End If
 End If
 
 End Sub
@@ -563,11 +570,11 @@ aa.bold = ThisBold
 Set glistN.Font = aa
 End If
 End Sub
-Public Property Get Index() As Long
-Index = mIndex
+Public Property Get index() As Long
+index = mIndex
 End Property
 
-Public Property Let Index(ByVal RHS As Long)
+Public Property Let index(ByVal RHS As Long)
 mIndex = RHS
 End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)

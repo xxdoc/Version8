@@ -493,11 +493,11 @@ End If
 End If
 End Sub
 
-Private Sub ffhelp(a$)
-If Left$(a$, 1) < "С" Then
-fHelp basestack1, a$, True
+Private Sub ffhelp(A$)
+If Left$(A$, 1) < "С" Then
+fHelp basestack1, A$, True
 Else
-fHelp basestack1, a$
+fHelp basestack1, A$
 End If
 End Sub
 
@@ -545,14 +545,14 @@ End If
 End Select
 End Sub
 
-Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, Skip As Boolean)
+Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal thisHDC As Long, skip As Boolean)
 If item = List1.ListIndex Then
 
 List1.FillThere thisHDC, thisrect, &HFFFFFF, -List1.LeftMarginPixels  ' or black in reverse
 List1.WriteThere thisrect, List1.list(item), List1.PanPos / dv15, List1.addpixels / 2, 0
-Skip = True
+skip = True
 Else
-Skip = False
+skip = False
 End If
 End Sub
 
@@ -1434,7 +1434,7 @@ Set MeStack.Owner = Me
 ThereIsAPrinter = IsPrinter
 If ThereIsAPrinter Then
 
-pName = Printer.DeviceName
+pname = Printer.DeviceName
 port = Printer.port
 
 End If
@@ -1586,7 +1586,7 @@ MOUT = False
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
-Dim pn As Long, a As New cDIBSection
+Dim pn As Long, A As New cDIBSection
 AutoRedraw = True
  If App.StartMode = vbSModeStandalone Then If OneOnly Then Exit Sub
 OneOnly = True
@@ -1894,7 +1894,7 @@ End Sub
 
 Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, a$, JJ As Long, ii As Long
+Dim aa$, A$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -2103,18 +2103,18 @@ End If
 
 If TEXT1.SelText <> "" Then
 
-    a$ = vbCrLf + TEXT1.SelText & "*"
+    A$ = vbCrLf + TEXT1.SelText & "*"
     If shift <> 0 Then  ' тумых
-        a$ = Replace(a$, vbCrLf + Space$(6), vbCrLf)
-        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
+        A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
+        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
          TEXT1.SelStartSilent = ii
-         TEXT1.SelLengthSilent = Len(a$) - 3
+         TEXT1.SelLengthSilent = Len(A$) - 3
          
     Else
-        a$ = Replace(a$, vbCrLf, vbCrLf + Space$(6))
-        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
+        A$ = Replace(A$, vbCrLf, vbCrLf + Space$(6))
+        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
         TEXT1.SelStartSilent = where + 6
-        TEXT1.SelLengthSilent = Len(a$) - 3 - (where + 6 - ii)
+        TEXT1.SelLengthSilent = Len(A$) - 3 - (where + 6 - ii)
        
     End If
   
@@ -2295,9 +2295,9 @@ MyDoEvents
 End If
 End Sub
 Public Sub IEUP(ThisFile As String)
-Static once As Boolean
-If once Then Exit Sub
-once = True
+Static Once As Boolean
+If Once Then Exit Sub
+Once = True
 If ThisFile = "" Then
 
 If exWnd <> 0 Then
@@ -2317,7 +2317,7 @@ Sleep 50
 view1.Visible = False
 
  End If
- once = False
+ Once = False
     Exit Sub
 End If
    
@@ -2366,7 +2366,7 @@ End If
 
 'follow IEX, IEY
 cnt = False
-once = False
+Once = False
 End Sub
 Public Sub follow(ByVal nx As Long, ByVal ny As Long)
 Exit Sub
@@ -2379,7 +2379,7 @@ End If
 End Sub
 
 
-Private Function Parameters(a As String, b As String, c As String) As Boolean
+Private Function Parameters(A As String, b As String, c As String) As Boolean
 Dim i, ch As Boolean, vl As Boolean, chs$, all$, many As Long
 b = ""
 c = ""
@@ -2387,11 +2387,11 @@ c = ""
 'parameters = False
 ch = False
 vl = False
-Do While i < Len(a)
+Do While i < Len(A)
 i = i + 1
-Select Case Mid$(a, i, 1)
+Select Case Mid$(A, i, 1)
 Case "%"
-If Mid$(a, i + 1, 1) = "u" Then
+If Mid$(A, i + 1, 1) = "u" Then
 i = i + 1
 'we have four bytes
 many = 6
@@ -2421,7 +2421,7 @@ Exit Do
 End If
 Case Else
 If ch = True Then
-chs$ = chs$ & Mid$(a, i, 1)
+chs$ = chs$ & Mid$(A, i, 1)
 If Len(chs$) = many Then
 If many = 4 Then
 chs$ = Chr(Int(chs$))
@@ -2436,14 +2436,14 @@ b = b + chs$
 End If
 End If
 ElseIf vl = False Then
-b = b + Mid$(a, i, 1)
+b = b + Mid$(A, i, 1)
 Else
-c = c + Mid$(a, i, 1)
+c = c + Mid$(A, i, 1)
 End If
 End Select
 Loop
 If c <> "" Then Parameters = True
-a = Mid$(a, i + 1)
+A = Mid$(A, i + 1)
 End Function
 
 
@@ -2481,7 +2481,7 @@ MYFONT = defFontname
             DIS.FontName = MYFONT
             DIS.Font.Italic = False
             DIS.FontName = MYFONT
-            If Err.number > 0 Then
+            If Err.Number > 0 Then
             Err.Clear
             MYFONT = defFontname
             End If
@@ -2581,7 +2581,7 @@ Err.Clear
 DIS.FontName = MYFONT
 DIS.Font.Italic = False
 DIS.FontName = MYFONT
-If Err.number > 0 Then
+If Err.Number > 0 Then
 Err.Clear
 MYFONT = defFontname
 End If

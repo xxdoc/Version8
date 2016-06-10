@@ -157,8 +157,8 @@ End If
         m_duration = uintnew(CDbl(timeGetTime)) + mYspace
 
             If mybuf$ = "" Then mybuf$ = mycode: NowProcess.IFCTRL = 0: NowProcess.jump = False
-            ohere$ = HERE$
-            HERE$ = myHere$
+            ohere$ = here$
+            here$ = myHere$
  ''Set NowProcess.Owner = myOwner ' μπορεί να έχει αλλάξει... για ασφάλεια???
             ' always...start run from here owner setting.
             x = 1
@@ -206,7 +206,7 @@ End If
         End If
 conthere:
 If NOEXECUTION Then GoTo there
-                HERE$ = ohere$
+                here$ = ohere$
         If x = 0 Then
         myDone = True
         
@@ -251,44 +251,21 @@ End If
         m_duration = uintnew(CDbl(timeGetTime)) + mYspace
 
             If mybuf$ = "" Then mybuf$ = mycode: NowProcess.IFCTRL = 0: NowProcess.jump = False
-            ohere$ = HERE$
-            HERE$ = myHere$
+            ohere$ = here$
+            here$ = myHere$
             x = 1
             look = True
             
 Set NowProcess.Owner = myOwner
-If Interrupted Then
-SetTextBasketBack myOwner, players(GetCode(myOwner))
-Else
-    If NowProcess.RemoveLocal Then
-     ' do the bad action...
-     PopStage NowProcess
-     NowProcess.RemoveLocal = False
-     End If
-
-End If
+If Interrupted Then SetTextBasketBack myOwner, players(GetCode(myOwner))
  Call executeblock(x, NowProcess, mybuf$, False, look, Interrupted)
   If Not (NowProcess Is Nothing) Then Set myOwner = NowProcess.Owner
         If Len(mybuf$) < 3 Then
         mybuf$ = ""
-  ''   If Not mNostretch And Not Interrupted Then
-         ''         If m_duration < uintnew(CDbl(timeGetTime)) Then
-       ''     mYspace = uintnew(CDbl(timeGetTime)) - m_duration - mYspace
-     ''       End If
-    
-   ''  End If
         Else
       
-     If Interrupted Then
-     m_duration = 0      ' do it in past;;
+     If Interrupted Then m_duration = 0           ' do it in past;;
      
-     Else
-     If NowProcess.RemoveLocal Then
-     ' do the bad action...
-     PopStage NowProcess
-     NowProcess.RemoveLocal = False
-     End If
-     End If
     If Not look Then GoTo conthere
      End If
        '' If Not NowProcess.Parent.IamRunning Then
@@ -316,7 +293,7 @@ End If
         End If
 conthere:
 If NOEXECUTION Then GoTo there
-                HERE$ = ohere$
+                here$ = ohere$
         If x = 0 Then
         myDone = True
         
@@ -331,11 +308,6 @@ If MOUT Then GoTo there
     
    Exit Sub
 there:
-    If NowProcess.RemoveLocal Then
-     ' do the bad action...
-     PopStage NowProcess
-     NowProcess.RemoveLocal = False
-     End If
 On Error GoTo 0
 
     Set myOwner = Nothing

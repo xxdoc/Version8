@@ -22,7 +22,6 @@ Public connectnow As Boolean
 Public LastExecute As Long
 Public LastOnce As Boolean
 Public priveflag As Boolean
-Public RemoveLocal As Boolean
 Private parentSoros As mStiva ' reference to parent..stiva
 Private MyParent As basetask  'reference to parent
 Private myOwner As Object
@@ -178,29 +177,29 @@ Else
 End If
 End Sub
 
-Public Sub MoveNameDot(a$)
-If a$ = "" Then Exit Sub
+Public Sub MoveNameDot(A$)
+If A$ = "" Then Exit Sub
 If curdotcol < dotcolmax Then
     curdotcol = curdotcol + 1
-    dotcol(curdotcol) = a$
+    dotcol(curdotcol) = A$
     
 Else
     MyEr "Max count for dot names", "Ã›„ÈÛÙÔÚ ·ÒÈËÏ¸Ú ÙÂÎÂﬂ·Ú"
 End If
 End Sub
-Public Function GetDotNew(a$, dotnum&) As Boolean
-If Look2Parent Then GetDotNew = Parent.GetDotNew(a$, dotnum&): Exit Function
+Public Function GetDotNew(A$, dotnum&) As Boolean
+If Look2Parent Then GetDotNew = Parent.GetDotNew(A$, dotnum&): Exit Function
 
 If curdotcol = 0 Then
 If UseGroupname <> "" Then
- If InStr(a$, "(") > 0 Then
- If AscW(Left$(a$, 1)) > 255 Then
- a$ = "¡’‘œ." + a$
+ If InStr(A$, "(") > 0 Then
+ If AscW(Left$(A$, 1)) > 255 Then
+ A$ = "¡’‘œ." + A$
  Else
- a$ = "THIS." + a$
+ A$ = "THIS." + A$
  End If
  Else
- a$ = UseGroupname + a$
+ A$ = UseGroupname + A$
  End If
 
  
@@ -214,26 +213,26 @@ If UseGroupname = "" Then
 Else
 
             
-            a$ = UseGroupname + a$
+            A$ = UseGroupname + A$
  End If
 Else
 
   If dotcol(dotnum) = "THIS" Then
     If UseGroupname <> "" Then
-      a$ = UseGroupname + a$
+      A$ = UseGroupname + A$
     Else
-    a$ = "THIS." + a$
+    A$ = "THIS." + A$
     End If
   Else
-    a$ = dotcol(dotnum) + "." + a$
+    A$ = dotcol(dotnum) + "." + A$
 
     End If
-    If Asc(a$) = 46 Then
+    If Asc(A$) = 46 Then
     dotnum = 1
-    While Asc(Mid$(a$, dotnum + 1) + " ") = 46
+    While Asc(Mid$(A$, dotnum + 1) + " ") = 46
     dotnum = dotnum + 1
     Wend
-    a$ = Mid$(a$, dotnum + 1)
+    A$ = Mid$(A$, dotnum + 1)
     GoTo newrun
     End If
     End If
@@ -241,19 +240,19 @@ Else
     GetDotNew = True
 End Function
 
-Public Function GetDot(a$, st&) As Boolean
+Public Function GetDot(A$, st&) As Boolean
 Dim i&
-If curdotcol = 0 Then a$ = Mid$(a$, 2): Exit Function
-Do While Mid$(a$, st&, 1) = " "
+If curdotcol = 0 Then A$ = Mid$(A$, 2): Exit Function
+Do While Mid$(A$, st&, 1) = " "
 st& = st& + 1
-If st& > Len(a$) Then Exit Function
+If st& > Len(A$) Then Exit Function
 Loop
 
-For i& = st& + 1 To Len(a$)
-If Mid$(a$, i&, 1) <> "." Then i& = i& + 1: Exit For
+For i& = st& + 1 To Len(A$)
+If Mid$(A$, i&, 1) <> "." Then i& = i& + 1: Exit For
 Next i&
 i& = i& - 2
-a$ = Left$(a$, st& - 1) + dotcol(i& - st& + 1) + Mid$(a$, i&)
+A$ = Left$(A$, st& - 1) + dotcol(i& - st& + 1) + Mid$(A$, i&)
 If Not Err Then GetDot = True
 End Function
 
@@ -324,8 +323,8 @@ Public Property Get Parent() As basetask
 Set Parent = MyParent
 
 End Property
-Public Property Set Sorosref(a As mStiva)
-Set parentSoros = a
+Public Property Set Sorosref(A As mStiva)
+Set parentSoros = A
 End Property
 Public Property Get RetStackTotal() As Long
 If RetSoros Is Nothing Then
@@ -347,8 +346,8 @@ Set parentSoros = New mStiva
 End If
 Set soros = parentSoros
 End Property
-Public Property Set Owner(a As Object)
-Set myOwner = a
+Public Property Set Owner(A As Object)
+Set myOwner = A
 End Property
 Public Property Get Owner() As Object
 If mtoprinter Then
@@ -376,12 +375,12 @@ Public Sub EndRun()
 ' Ï¸ÌÔ ·¸ ÙÔ Myprocess.tick
 myRun = False
 End Sub
-Public Property Set Process(a As TaskInterface)
-If mprocess Is a Then
+Public Property Set Process(A As TaskInterface)
+If mprocess Is A Then
 Set mprocess = Nothing
 mprocessOk = True
 Else
-Set mprocess = a
+Set mprocess = A
 
 mprocessOk = True
 End If
@@ -393,12 +392,12 @@ Private Sub checkialive()
 If threadsnames Is Nothing Then Set threadsnames = New GarbageClass
 End Sub
 
-Public Property Set LinkThread(Threadid As Long, a As TaskInterface)
+Public Property Set LinkThread(Threadid As Long, A As TaskInterface)
 Dim aa As mThreadref
 checkialive
 If threadsnames.Find(Threadid) Then
 Set aa = threadsnames.ValueObj
-Set aa.thread = a
+Set aa.thread = A
 End If
 End Property
 
@@ -449,7 +448,7 @@ End Function
 Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 '' use threadsnames
 
-Dim aa As mThreadref, a$
+Dim aa As mThreadref, A$
 If threadsnames Is Nothing Then Exit Function
 
 If threadsnames.count > 0 Then
@@ -459,12 +458,12 @@ While threadsnames.Done
 Set aa = threadsnames.ValueObj
 If Left$(aa.VarName, 1) = "_" Then
 If lang = 0 Then
-a$ = a$ & "≈”Ÿ‘≈—… œ Õ«Ã¡ "
+A$ = A$ & "≈”Ÿ‘≈—… œ Õ«Ã¡ "
 Else
-a$ = a$ & "INTERNAL THREAD "
+A$ = A$ & "INTERNAL THREAD "
 End If
 Else
-a$ = a$ & aa.VarName + Str$(aa.Id) & " "
+A$ = A$ & aa.VarName + Str$(aa.Id) & " "
 End If
 threadsnames.NextIndex
 Wend
@@ -473,12 +472,12 @@ Set aa = Nothing
 End If
 If Me.IamChild Then
 If Not Me.Parent Is Nothing Then
-ThreadsStr = Trim$(a$ & Me.Parent.ThreadsStr(lang))
+ThreadsStr = Trim$(A$ & Me.Parent.ThreadsStr(lang))
 Else
 ThreadsStr = ""
 End If
 Else
-ThreadsStr = Trim$(a$)
+ThreadsStr = Trim$(A$)
 End If
 End Function
 Public Function ThreadsNumber() As Long

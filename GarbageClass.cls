@@ -71,7 +71,7 @@ Private Sub Class_Initialize()
     hashlen = MaxSpace * 2 + 3
     toplim = -1
     mSortstyle = vbTextCompare
-    Debug.Print "create one"
+    'Debug.Print "create one"
 End Sub
 Public Sub SetBinaryCompare()
 mSortstyle = vbBinaryCompare
@@ -358,12 +358,12 @@ End If
 End Function
 
 Private Sub ItemCreator(kk As Long, nValue As Variant)
-Dim a As Long
+Dim A As Long
 Done = False
 If ExistKey(kk) Then Exit Sub  ' done is false
-a = Malloc()
+A = Malloc()
 
-With PriveSpace(a)
+With PriveSpace(A)
     .Key = kk
     If IsObject(nValue) Then
     Set .iValue = nValue
@@ -371,20 +371,20 @@ With PriveSpace(a)
     .iValue = nValue
     End If
 End With
-place HashFunc1(kk), a
-index = a
+place HashFunc1(kk), A
+index = A
 Done = True
 End Sub
 
 Property Get Percent()
 Percent = 100 * count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal a)
+Private Sub place(ByVal b, ByVal A)
     Dim k As Long
     k = Hash(b)
-    Hash(b) = a + 1
-    PriveSpace(a).Pleft = k
-    PriveSpace(a).lastpos = b
+    Hash(b) = A + 1
+    PriveSpace(A).Pleft = k
+    PriveSpace(A).lastpos = b
 End Sub
 
 Private Function HashFunc2(where As Long)
@@ -393,12 +393,12 @@ End Function
 Private Function HashFunc1(nkey As Long)
 HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc(a As Long)
-HashFunc = MyMod(uintnew(a Or &HAFFAFF7) + hashlen + 1, hashlen)
+Private Function HashFunc(A As Long)
+HashFunc = MyMod(uintnew(A Or &HAFFAFF7) + hashlen + 1, hashlen)
 End Function
-Private Function UINT(ByVal a As Integer) As Long
+Private Function UINT(ByVal A As Integer) As Long
  Dim b As Integer
- b = a And &HFFFF
+ b = A And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -410,20 +410,20 @@ Private Function UINT(ByVal a As Integer) As Long
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal a As Double) As Double
-If a > CDbl(2147483647) Then a = CDbl(2147483647)
-If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
-If a < 0 Then
-uintnew = 4294967296# + a
+Private Function uintnew(ByVal A As Double) As Double
+If A > CDbl(2147483647) Then A = CDbl(2147483647)
+If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
+If A < 0 Then
+uintnew = 4294967296# + A
 Else
-uintnew = a
+uintnew = A
 End If
 End Function
 
-Private Sub SwapVariant(ByRef a As Variant, ByRef b As Variant)
+Private Sub SwapVariant(ByRef A As Variant, ByRef b As Variant)
    Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
-   CopyMemory t(0), ByVal VarPtr(a), 16
-   CopyMemory ByVal VarPtr(a), ByVal VarPtr(b), 16
+   CopyMemory t(0), ByVal VarPtr(A), 16
+   CopyMemory ByVal VarPtr(A), ByVal VarPtr(b), 16
    CopyMemory ByVal VarPtr(b), t(0), 16
 End Sub
 ' only for tests
