@@ -500,21 +500,25 @@ If threadsnames Is Nothing Then Exit Sub
 Dim aa As mThreadref, Tid As Long
 Dim thatProcess As TaskInterface
 Dim thatBasetask As basetask
-
+CONT:
 If threadsnames.count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
 Set aa = threadsnames.ValueObj
 If idexclude <> aa.Id Then
 If Not TaskMaster Is Nothing Then
-If TaskMaster.ThrowOne(aa.Id) Then
-ThrowOne aa.Id
-End If
+        If TaskMaster.ThrowOne(aa.Id) Then
+        ThrowOne aa.Id
+        ElseIf Not IamThread Then
+        threadsnames.RemoveWithNoFind
+        GoTo CONT
+        End If
 Else
 ThrowOne aa.Id
 End If
 End If
 threadsnames.NextIndex
+
 Wend
 Set aa = Nothing
 End If

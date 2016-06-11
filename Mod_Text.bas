@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 2
+Global Const Revision = 3
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -8272,16 +8272,11 @@ contlambdahere:
                        End If
                        
                           If Not .IsObj Then
-                          If .Value = Empty Then
-                          r = SG * val(.KeyToString)
-                          Else
-                                  If Typename(.Value) = "String" Then
-                                  If IsNumberCheck(.Value, r) Then r = SG * r Else r = 0
+                     If .ValueType(0, r, s$) Then
+                                     r = SG * r
                                   Else
-                                    r = SG * .Value
-                                  End If
-                               
-                      End If
+                                      r = 0
+                                 End If
                         Else
                         Set bstack.lastobj = pppp.GroupRef.objref.ValueObj
                        r = 0
@@ -8324,14 +8319,10 @@ contlabel:
                        End If
                        End If
                         If Not .IsObj Then
-                                 If .Value = Empty Then
-                                     r = SG * val(.KeyToString)
+                           If .ValueType(0, r, s$) Then
+                                     r = SG * r
                                   Else
-                                 If Typename(.Value) = "String" Then
-                                  If IsNumberCheck(.Value, r) Then r = SG * r Else r = 0
-                                  Else
-                                    r = SG * .Value
-                                  End If
+                                      r = 0
                                  End If
                         Else
                        r = SG * rValue(bstack, pppp.GroupRef.objref.ValueObj)
@@ -12687,7 +12678,10 @@ contlambdastr:
             MyEr "This kind of object not supported", "Αυτού του είδους το αντικείμενο δεν υποστηρίζεται"
             End If
             Else
-            r$ = .Value
+            Call .ValueType(0, p, r$)
+                               
+                                  
+         '   r$ = .Value
             End If
             End If
             End With
@@ -26521,7 +26515,11 @@ Sub procthreads(scr As Object, bstack As basetask, rest$, lang As Long)
 
 If TaskMaster.QueueCount >= 0 Then
 
-If IsLabelSymbolNew(rest$, "ΣΒΗΣΕ", "ERASE", lang) Then TaskMaster.Dispose: Exit Sub
+If IsLabelSymbolNew(rest$, "ΣΒΗΣΕ", "ERASE", lang) Then
+TaskMaster.Dispose
+bstack.ThrowThreads
+Exit Sub
+End If
 If lang = 0 Then
         PlainBaSket scr, players(GetCode(scr)), "NHMATA ΣΕ ΕΠΕΞΕΡΓΑΣΙΑ:" & CStr(TaskMaster.QueueCount)
         Else

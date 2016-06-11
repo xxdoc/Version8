@@ -1,6 +1,6 @@
 M2000 Interpreter and Environment
 
-Version 8.2 revision 2
+Version 8.2 revision 3
 
 
 http://georgekarras.blogspot.gr/

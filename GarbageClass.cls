@@ -489,7 +489,6 @@ Done = False
 
 End Sub
 Private Sub Class_Terminate()
-Debug.Print "erased"
     Erase PriveSpace()
 End Sub
 Public Sub GarbageJob()
