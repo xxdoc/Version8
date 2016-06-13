@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 4
+Global Const Revision = 5
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -12678,7 +12678,7 @@ contlambdastr:
             MyEr "This kind of object not supported", "Αυτού του είδους το αντικείμενο δεν υποστηρίζεται"
             End If
             Else
-            Call .ValueType(0, p, r$)
+            Call .ValueType(2, p, r$)
                                
                                   
          '   r$ = .Value
