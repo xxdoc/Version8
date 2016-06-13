@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 3
+Global Const Revision = 4
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -33624,13 +33624,13 @@ If frm$ <> "" Then
     If InStrRev(s$, ")") > 0 Then
     
     pa$ = pa$ & Left$(s$, InStrRev(s$, ")") - 1) & ", "
-    Else
+    ElseIf InStrRev(s$, " ") > 0 Then
     pa$ = pa$ & Left$(s$, InStrRev(s$, " ") - 1) & ", "
     End If
 Else
     If InStrRev(s$, ")") > 0 Then
     pa$ = pa$ & Left$(s$, InStrRev(s$, ")") - 1)
-    Else
+    ElseIf InStrRev(s$, " ") > 0 Then
     pa$ = pa$ & Left$(s$, InStrRev(s$, " ") - 1)
     End If
 End If
@@ -35426,19 +35426,35 @@ Case Else
 Set myobject = .StackItem(i)
 If Not myobject Is Nothing Then
 If TypeOf myobject Is mHandler Then
+Dim aaa As mHandler
+If myobject.Indirect > -1 Then
+If IsObject(var(myobject.Indirect)) Then
+If myobject.Indirect <= var2used Then
 
-Select Case myobject.T1
-Case 1
-    s$ = s$ + "*[Inventory]"
-Case 2
-    s$ = s$ + "*[Buffer]"
-Case Else
-    s$ = s$ + "*[" + Typename(myobject.objref) + "]"
-End Select
+        s$ = s$ + "*[" + Typename(var(myobject.Indirect)) + "]"
+        Else
+         s$ = s$ + "*[Error]"
+        End If
+Else
+        s$ = s$ + "*[Nothing]"
+End If
+Else
+    Select Case myobject.T1
+    Case 1
+        s$ = s$ + "*[Inventory]"
+    Case 2
+        s$ = s$ + "*[Buffer]"
+    Case Else
+        s$ = s$ + "*[" + Typename(myobject.objref) + "]"
+    End Select
 End If
 Else
     s$ = s$ + "*[" + Typename(myobject) + "]"
-    End If
+End If
+Else
+s$ = s$ + "*[Nothing]"
+End If
+
 End Select
 Loop
 Set myobject = Nothing

@@ -1,10 +1,11 @@
 M2000 Interpreter and Environment
 
-Version 8.2 revision 3
+Version 8.2 revision 4
 
 
 http://georgekarras.blogspot.gr/
 
+http://m2000.forumgreek.com/
 
 https://github.com/M2000Interpreter/Version8
 
