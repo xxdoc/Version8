@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 5
+Global Const Revision = 6
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -3215,7 +3215,7 @@ JetPostfixUser = JetPostfixHelp
 JetPostfix = JetPostfixHelp
 JetPrefix = JetPrefixHelp
  
-basickey = "Software\m2000v4\"
+basickey = "Software\m2000v5\"
 ' by default
 'AddTwipsTop = 4 * Screen.TwipsPerPixelY
 casesensitive = False

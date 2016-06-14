@@ -173,7 +173,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -1440,15 +1440,15 @@ port = Printer.port
 End If
 
 dset
-If LoadFont(GetCurDir(True) & "TT6492M_.TTF") Then
-defFontname = "monospace 821 greek bt"
-MYFONT = defFontname
-myBold = True
-Else
+'If LoadFont(GetCurDir(True) & "TT6492M_.TTF") Then
+'defFontname = "monospace 821 greek bt"
+'MYFONT = defFontname
+'myBold = True
+'Else
 MYFONT = "Tahoma"
 defFontname = MYFONT
 myBold = False
-End If
+'End If
 myCharSet = 0
 With Form1
 .Font.name = MYFONT

@@ -58,9 +58,9 @@ Private Sub Form_Unload(Cancel As Integer)
 On Error Resume Next
 Set LastGlist = Nothing
 Set LastGlist2 = Nothing
-'Set DisStack.Owner = Nothing
-form5iamloaded = False
-RemoveFont GetCurDir(True) & "TT6492M_.TTF"
+'Set DisStak.Owner = Nothing
+form5iamloaded = False '
+'RemoveFont GetCurDir(True) & "TT6492M_.TTF"
 MediaPlayer1.closeMovie
   DisableMidi
   TaskMaster.Dispose
@@ -84,14 +84,14 @@ Public Sub RestoreSizePos()
 Me.Move Form1.Left, Form1.top, Form1.Width, Form1.Height
 End Sub
  Function GetKeY(ascii As Integer) As String
-    Dim Buffer As String, Ret As Long
+    Dim Buffer As String, ret As Long
     Buffer = String$(514, 0)
     Dim r&, k&
       r = GetKeyboardLayout(DWL_ANYTHREAD) And &HFFFF
       r = val("&H" & Right(Hex(r), 4))
-    Ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
-    If Ret > 0 Then
-        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(val("&h" + Left$(Buffer, Ret - 1))))))
+    ret = GetLocaleInfo(r, LOCALE_ILANGUAGE, StrPtr(Buffer), Len(Buffer))
+    If ret > 0 Then
+        GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, CLng(val("&h" + Left$(Buffer, ret - 1))))))
     Else
         GetKeY = ChrW$(AscW(StrConv(ChrW$(ascii Mod 256), 64, 1033)))
     End If

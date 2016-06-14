@@ -1,7 +1,7 @@
 M2000 Interpreter and Environment
 
-Version 8.2 revision 5
-
+Version 8.2 revision 6
+registry key change to \software\m2000v5\
 
 http://georgekarras.blogspot.gr/
 
