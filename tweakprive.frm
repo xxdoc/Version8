@@ -472,13 +472,13 @@ End Sub
 
 
 
-Private Sub combo1_AutoCompleteDone(ByVal this$)
+Private Sub combo1_AutoCompleteDone(ByVal This$)
 
-playfontname this$
+playfontname This$
 End Sub
 
-Private Sub combo1_PickOther(ByVal this As String)
-playfontname this$
+Private Sub combo1_PickOther(ByVal This As String)
+playfontname This$
 
 End Sub
 
@@ -494,7 +494,7 @@ DIS.TabStop = False
 gList2.TabStop = False
 End Sub
 
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, shift As Integer, x As Single, y As Single)
 
 If Button = 1 Then
     
@@ -520,7 +520,7 @@ If Button = 1 Then
 End If
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, shift As Integer, x As Single, y As Single)
 Dim addx As Long, addy As Long, factor As Single, Once As Boolean
 If Once Then Exit Sub
 If Button = 0 Then dr = False: drmove = False
@@ -593,7 +593,7 @@ End If
 Once = False
 End Sub
 
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, shift As Integer, x As Single, y As Single)
 
 If dr Then Me.mousepointer = 0
 dr = False
@@ -706,7 +706,7 @@ cc.ClassKey = HKEY_CURRENT_USER
         cc.Value = UCase(combo3.Text)
         cc.ValueKey = "CASESENSITIVE"
         cc.ValueType = REG_SZ
-        If checkbox2.Checked Then
+        If checkbox2.checked Then
         casesensitive = True
          cc.Value = "YES"
         Else
@@ -726,7 +726,7 @@ cc.ClassKey = HKEY_CURRENT_USER
     cc.ValueKey = "FONT"
         cc.ValueType = REG_SZ
         If cc.Value = "" Then
-        cc.Value = "Tahoma"
+        cc.Value = "Verdana"
         End If
         MYFONT = cc.Value
     combo1.Text = cc.Value
@@ -806,7 +806,7 @@ End If
         cc.Value = "DARK"
         End If
         combo3.Text = cc.Value
-DIS.Font.bold = checkbox1.Checked
+DIS.Font.bold = checkbox1.checked
       cc.ValueKey = "CASESENSITIVE"
         cc.ValueType = REG_SZ
         
@@ -849,17 +849,17 @@ combo1.Shutdown
 combo2.Shutdown
 combo3.Shutdown
 Sleep 200
-tbPaper.locked = True
-tbPen.locked = True
-tbSize.locked = True
-tbLineSpacing.locked = True
+tbPaper.Locked = True
+tbPen.Locked = True
+tbSize.Locked = True
+tbLineSpacing.Locked = True
 checkbox1.Shutdown
 checkbox2.Shutdown
 
 Unload Me
 End Sub
 Private Sub Form_Load1()
-Dim cd As String, DUMMY As Long, q$
+Dim cd As String, dummy As Long, q$
 
 
 Dim i, A$
@@ -875,9 +875,9 @@ Set combo1 = New dropdownlist
 combo1.UseOnlyTheList = True
 
 
-Set combo1.TextBox = textbox2
+Set combo1.Textbox = textbox2
 Set combo1.Container = gList3
-combo1.locked = False
+combo1.Locked = False
 combo1.AutoComplete = True
 If TweakLang = 0 Then
 combo1.Label = "Όνομα Γραμματοσειράς"
@@ -896,9 +896,9 @@ Set combo2 = New dropdownlist
 combo2.UseOnlyTheList = True
 
 textbox3.enabled = False
-Set combo2.TextBox = textbox3
+Set combo2.Textbox = textbox3
 Set combo2.Container = gList5
-combo2.locked = False
+combo2.Locked = False
 combo2.AutoComplete = True
 If TweakLang = 0 Then
 combo2.Label = "Τύπος γραμμάτων"
@@ -914,9 +914,9 @@ Set combo3 = New dropdownlist
 combo3.UseOnlyTheList = True
 
 textbox4.enabled = False
-Set combo3.TextBox = textbox4
+Set combo3.Textbox = textbox4
 Set combo3.Container = gList14
-combo3.locked = False
+combo3.Locked = False
 combo3.AutoComplete = True
 If TweakLang = 0 Then
 combo3.Label = "Χρώμα Html"
@@ -1056,7 +1056,7 @@ Else
 myCommand.Caption = "OK"
 End If
   Set myCommand.Callback = Me
-  myCommand.Index = 1
+  myCommand.index = 1
 myCommand.enabled = True
 Set myUnicode = New myButton
 Set myUnicode.Container = command1(1)
@@ -1069,7 +1069,7 @@ End If
 myUnicode.enabled = True
 Set myCancel = New myButton
 Set myCancel.Container = command1(2)
-myCancel.Index = 2
+myCancel.index = 2
 If TweakLang = 0 Then
 myCancel.Caption = "ΑΚΥΡΟ"
 Else
@@ -1214,12 +1214,12 @@ DIS.ShowMe2
 
 End Sub
 
-Private Sub InterPress_Press(Index As Long)
-If Index = 1 Then
+Private Sub InterPress_Press(index As Long)
+If index = 1 Then
 
 Command111_Click
 'Unload Me  'remove this line
-ElseIf Index = 2 Then
+ElseIf index = 2 Then
 ShutMe
 Else
 If myUnicode.Caption = "Unicode Preview" Then
@@ -1348,8 +1348,8 @@ playall
 ThatString = CStr(A)
 If A = 0 Then setpos = 2: tbSize.ResetPan
 End Sub
-Public Sub hookme(this As gList)
-Set LastGlist = this
+Public Sub hookme(This As gList)
+Set LastGlist = This
 End Sub
 Private Sub gList2_RefreshDesktop()
 If Form1.Visible Then Form1.Refresh: If Form1.DIS.Visible Then Form1.DIS.Refresh

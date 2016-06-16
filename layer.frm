@@ -58,23 +58,32 @@ Private Sub Form_Unload(Cancel As Integer)
 On Error Resume Next
 Set LastGlist = Nothing
 Set LastGlist2 = Nothing
-'Set DisStak.Owner = Nothing
 form5iamloaded = False '
-'RemoveFont GetCurDir(True) & "TT6492M_.TTF"
 MediaPlayer1.closeMovie
   DisableMidi
   TaskMaster.Dispose
   Set TaskMaster = Nothing
+  
 Dim x As Form
+If IsWine Then
+ModalId = 0
+
 For Each x In Forms
-''MsgBox X.name
+If x.Visible Then x.Visible = False
+Next
+Set x = Nothing
+
+Form1.helper1
+Exit Sub
+Else
+For Each x In Forms
 If x.name <> Me.name Then Unload x
 Next
 Set x = Nothing
+End If
+
 If m_bInIDE Then Exit Sub
 SetErrorMode SEM_NOGPFAULTERRORBOX
-'End
-''If App.UnattendedApp Then End
 End Sub
 Private Sub Form_KeyPress(KeyAscii As Integer)
 INK$ = INK$ & GetKeY(KeyAscii)

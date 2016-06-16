@@ -23,15 +23,23 @@ Begin VB.Form Form2
       TabIndex        =   5
       Top             =   810
       Width           =   3705
-      _extentx        =   6535
-      _extenty        =   3387
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "TEST.frx":000C
-      borderstyle     =   1
-      showbar         =   0   'False
-      backcolor       =   3881787
-      forecolor       =   16777215
+      _ExtentX        =   6535
+      _ExtentY        =   3387
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BorderStyle     =   1
+      ShowBar         =   0   'False
+      Backcolor       =   3881787
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList3 
       Height          =   600
@@ -41,13 +49,21 @@ Begin VB.Form Form2
       TabStop         =   0   'False
       Top             =   810
       Width           =   3930
-      _extentx        =   6932
-      _extenty        =   1058
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "TEST.frx":0030
-      backcolor       =   3881787
-      forecolor       =   16777215
+      _ExtentX        =   6932
+      _ExtentY        =   1058
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   161
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Backcolor       =   3881787
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList0 
       Height          =   555
@@ -55,14 +71,22 @@ Begin VB.Form Form2
       TabIndex        =   1
       Top             =   4620
       Width           =   7665
-      _extentx        =   13520
-      _extenty        =   979
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "TEST.frx":0054
-      showbar         =   0   'False
-      backcolor       =   657930
-      forecolor       =   16777215
+      _ExtentX        =   13520
+      _ExtentY        =   979
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      Backcolor       =   657930
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList1 
       Height          =   1800
@@ -70,14 +94,22 @@ Begin VB.Form Form2
       TabIndex        =   0
       Top             =   2775
       Width           =   7665
-      _extentx        =   13520
-      _extenty        =   3175
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "TEST.frx":0078
-      showbar         =   0   'False
-      backcolor       =   3881787
-      forecolor       =   16777215
+      _ExtentX        =   13520
+      _ExtentY        =   3175
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      Backcolor       =   3881787
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList3 
       Height          =   615
@@ -87,14 +119,22 @@ Begin VB.Form Form2
       TabStop         =   0   'False
       Top             =   1455
       Width           =   3930
-      _extentx        =   6932
-      _extenty        =   1085
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "TEST.frx":009C
-      showbar         =   0   'False
-      backcolor       =   3881787
-      forecolor       =   16777215
+      _ExtentX        =   6932
+      _ExtentY        =   1085
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      Backcolor       =   3881787
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList3 
       Height          =   615
@@ -104,14 +144,22 @@ Begin VB.Form Form2
       TabStop         =   0   'False
       Top             =   2115
       Width           =   3930
-      _extentx        =   6932
-      _extenty        =   1085
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "TEST.frx":00C0
-      showbar         =   0   'False
-      backcolor       =   3881787
-      forecolor       =   16777215
+      _ExtentX        =   6932
+      _ExtentY        =   1085
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ShowBar         =   0   'False
+      Backcolor       =   3881787
+      ForeColor       =   16777215
    End
    Begin M2000.gList gList2 
       Height          =   495
@@ -120,15 +168,23 @@ Begin VB.Form Form2
       TabStop         =   0   'False
       Top             =   135
       Width           =   7635
-      _extentx        =   13467
-      _extenty        =   873
-      max             =   1
-      vertical        =   -1  'True
-      font            =   "TEST.frx":00E4
-      enabled         =   -1  'True
-      backcolor       =   3881787
-      forecolor       =   16777215
-      capcolor        =   16777215
+      _ExtentX        =   13467
+      _ExtentY        =   873
+      Max             =   1
+      Vertical        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   161
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Enabled         =   -1  'True
+      Backcolor       =   3881787
+      ForeColor       =   16777215
+      CapColor        =   16777215
    End
 End
 Attribute VB_Name = "Form2"
@@ -258,7 +314,7 @@ testpad.enabled = True
 Set compute = New myTextBox
 Set compute.Container = gList0
 compute.MaxCharLength = 500 ' as a limit
-compute.locked = False
+compute.Locked = False
 compute.enabled = True
 compute.Retired
 Set Label(0).Container = gList3(0)
@@ -339,12 +395,12 @@ End If
 End Sub
 
 
-Public Property Get Label1(ByVal Index As Long) As String
-Label1 = Label(Index)
+Public Property Get Label1(ByVal index As Long) As String
+Label1 = Label(index)
 End Property
 
-Public Property Let Label1(ByVal Index As Long, ByVal RHS As String)
-Label(Index) = RHS
+Public Property Let Label1(ByVal index As Long, ByVal RHS As String)
+Label(index) = RHS
 End Property
 Public Sub FillThereMyVersion(thathDC As Long, thatRect As Long, thatbgcolor As Long)
 Dim A As RECT, b As Long
@@ -382,19 +438,19 @@ Private Sub gList2_LostFocus()
 doubleclick = 0
 End Sub
 
-Private Sub glist3_CheckGotFocus(Index As Integer)
+Private Sub glist3_CheckGotFocus(index As Integer)
 Dim s$
 gList4.SetFocus
-If Index < 2 Then
+If index < 2 Then
 abt = False
 
 vH_title$ = ""
-s$ = Label(Index)
+s$ = Label(index)
 Select Case Left$(LTrim(Label(2)) + " ", 1)
 Case "?", "!", " ", ".", ":", Is >= "A", Chr$(10), """"
     fHelp MyBaseTask, s$, AscW(s$ + Mid$(" Ó", Abs(pagio$ = "GREEK") + 1)) < 128
 End Select
-ElseIf Index = 2 Then
+ElseIf index = 2 Then
 TestShowCode = Not TestShowCode
 If TestShowCode Then
 gList3(2).BackColor = &H606060
@@ -440,7 +496,7 @@ b.Right = gList4.WidthPixels
   End If
    
    
-   PrintItem thisHDC, gList4.List(item), A
+   PrintItem thisHDC, gList4.list(item), A
     skip = True
 End Sub
  
@@ -629,8 +685,8 @@ gList0.FontSize = gList1.FontSize
 ScaleDialogFix = factor
 End Function
 
-Public Sub hookme(this As gList)
-If Not this Is Nothing Then this.NoWheel = True
+Public Sub hookme(This As gList)
+If Not This Is Nothing Then This.NoWheel = True
 End Sub
 Sub ByeBye()
 Unload Me

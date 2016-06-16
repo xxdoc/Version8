@@ -71,10 +71,10 @@ Private Type POINTAPI
         y As Long
 End Type
 
-Private Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hDC As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 'Private Declare Function CreateDC Lib "gdi32" Alias "CreateDCA" (ByVal lpDriverName As String, ByVal lpDeviceName As Long, ByVal lpOutput As String, pInitData As Any) As Long
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
+Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function Ellipse Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
@@ -99,7 +99,7 @@ End Type
 
 Private Type SAFEARRAYBOUND
     cElements As Long
-    lLbound As Long
+    lLBound As Long
 End Type
 Private Type SAFEARRAY2D
     cDims As Integer
@@ -158,7 +158,7 @@ szlMillimeters As SIZEL
 End Type
 
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 ' Note - this is not the declare in the API viewer - modify lplpVoid to be
 ' Byref so we get the pointer back:
@@ -201,7 +201,7 @@ Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 
 ' Clipboard functions:
-Private Declare Function OpenClipboard Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" () As Long
 Private Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
 Private Declare Function EmptyClipboard Lib "user32" () As Long
@@ -230,11 +230,11 @@ Private m_lPtr As Long
 ' Type containing the Bitmap information:
 Private m_tBI As BITMAPINFO
 'george karras the great
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function GlobalAlloc Lib "KERNEL32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalFree Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalLock Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "KERNEL32" (ByVal hMem As Long) As Long
+Private Declare Function UpdateWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Const RC_PALETTE As Long = &H100
 Private Const SIZEPALETTE As Long = 104
 Private Const RASTERCAPS As Long = 38
@@ -258,10 +258,10 @@ Private Type LOGPALETTE
     palPalEntry(255) As PALETTEENTRY ' Enough for 256 colors
 End Type
 Private Type GUID
-    Data1 As Long
-    Data2 As Integer
-    Data3 As Integer
-    Data4(7) As Byte
+    data1 As Long
+    data2 As Integer
+    data3 As Integer
+    data4(7) As Byte
 End Type
 Private Enum ICAP_COMPRESSION
 TWCP_NONE = 0
@@ -281,7 +281,7 @@ Private Type PicBmp
     hPal As Long
     reserved As Long
     End Type
-Private Declare Function GlobalHandle Lib "kernel32" (wMem As Any) As Long
+Private Declare Function GlobalHandle Lib "KERNEL32" (wMem As Any) As Long
 
 Private Declare Function OleCreatePictureIndirect Lib "olepro32.dll" (PicDesc As PicBmp, RefIID As GUID, ByVal fPictureOwnsHandle As Long, IPic As IPicture) As Long
 'Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
@@ -345,7 +345,7 @@ Private Function getRGB(bckColor As Variant) As Long
 Dim BR As Byte, BG As Byte, bbb As Byte, ba$
 If VarType(bckColor) <> vbString Then ba$ = Hex$(bckColor) Else ba$ = bckColor
 ba$ = Right$("00000" & ba$, 6)
-getRGB = Val("&h" & Mid$(ba$, 1, 2)) * 256 * 256 + Val("&h" & Mid$(ba$, 3, 2)) * 256 + Val("&h" & Mid$(ba$, 5, 2))
+getRGB = val("&h" & Mid$(ba$, 1, 2)) * 256 * 256 + val("&h" & Mid$(ba$, 3, 2)) * 256 + val("&h" & Mid$(ba$, 5, 2))
 End Function
 Private Function getRGBquad(rgb As RGBQUAD) As Long
 getRGBquad = cUlng(rgb.rgbRed + rgb.rgbGreen * 256 + rgb.rgbBlue * 256 * 256)
@@ -387,11 +387,11 @@ Public Property Let FontSize(fsize As Variant)
 m_fontsize = fsize
 End Property
 
-Public Property Get transparent() As Variant
-transparent = m_transparent
+Public Property Get Transparent() As Variant
+Transparent = m_transparent
 End Property
 
-Public Property Let transparent(trans As Variant)
+Public Property Let Transparent(trans As Variant)
 m_transparent = trans
 End Property
 Public Property Get PageStyle() As Variant
@@ -832,7 +832,7 @@ Public Sub RandomiseBits( _
         Optional ByVal bGray As Boolean = False _
     )
 Dim bDib() As Byte
-Dim x As Long, y As Long, Z As Long
+Dim x As Long, y As Long, z As Long
 Dim lc As Long
 Dim tSA As SAFEARRAY2D
 Dim xend As Long
@@ -843,9 +843,9 @@ If mStep > 3 Then cStep = 3 Else cStep = mStep
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = m_tBI.bmiHeader.biHeight
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = BytesPerScanLine()
         .pvData = m_lPtr
     End With
@@ -859,9 +859,9 @@ If mStep > 3 Then cStep = 3 Else cStep = mStep
         For y = 0 To m_tBI.bmiHeader.biHeight - 1
             For x = 0 To xend Step mStep
                 lc = Rnd * 255
-                For Z = 0 To cStep
-                bDib(x + Z, y) = lc
-                Next Z
+                For z = 0 To cStep
+                bDib(x + z, y) = lc
+                Next z
             Next x
         Next y
     Else
@@ -869,9 +869,9 @@ If mStep > 3 Then cStep = 3 Else cStep = mStep
             For y = 0 To m_tBI.bmiHeader.biHeight - 1
             
                 bDib(x, y) = 0
-                For Z = 1 To cStep
+                For z = 1 To cStep
                 bDib(x + 1, y) = Rnd * 255
-                Next Z
+                Next z
             Next y
         Next x
     End If
@@ -889,7 +889,7 @@ End Sub
 Public Sub ClearUp()
 If m_hDIb <> 0 Then
  If m_lPtr > 0 Then GlobalFree m_lPtr
- If DeleteObject(m_hDIb) <> 1 Then MsgBox "Πρόβλημα με το σύστημα γραφικών", vbCritical
+ If DeleteObject(m_hDIb) <> 1 Then MyEr "Problem with GDI objects", "Πρόβλημα με το σύστημα γραφικών"
 GdiFlush
         m_tBI.bmiHeader.biHeight = 0
          ' end new
@@ -933,7 +933,7 @@ End Sub
 Public Sub ThumbnailPaint(DestPic As Object, Optional ByVal zf As Single = -1, Optional ByVal FitToPic As Boolean = True, Optional CROP As Boolean = False, Optional over As Boolean = False, Optional ByVal fr As Long = 0, Optional ByVal offsetx As Long = 0, Optional ByVal offsety As Long, Optional ByVal border As Long = 0, Optional ByVal rtxy As Double = 1#)
    Dim oldSc As Long, dummy1 As Boolean, dummy2 As Boolean, sw As Long, sh As Long
    Dim swProbe As Long, shProbe As Long, osh As Double
-   Dim myleft As Long, mytop As Long, mywidth As Long, myheight As Long
+   Dim Myleft As Long, mytop As Long, mywidth As Long, myheight As Long
    
      Dim A As Single
          oldSc = DestPic.ScaleMode
@@ -1035,7 +1035,7 @@ End Sub
 Public Sub ThumbnailPaintPrinter(copiesNUM As Long, Optional ByVal zf As Single = -1, Optional ByVal FitToPic As Boolean = True, Optional CROP As Boolean = False, Optional over As Boolean = False, Optional ByVal fr As Long = 0, Optional ByVal offsetx As Long = 0, Optional ByVal offsety As Long, Optional ByVal border As Long = 0, Optional ByVal rtxy As Double = 1#, Optional pname As String = "")
    Dim oldSc As Long, dummy1 As Boolean, dummy2 As Boolean, sw As Long, sh As Long
    Dim swProbe As Long, shProbe As Long, osh As Double
-   Dim myleft As Long, mytop As Long, mywidth As Long, myheight As Long
+   Dim Myleft As Long, mytop As Long, mywidth As Long, myheight As Long
    Dim lox As Long, loy As Long
    
      Dim A As Single
@@ -1142,7 +1142,7 @@ End Sub
 Public Sub ThumbnailPaintDummy(DestPic As Object, Optional ByVal zf As Single = -1, Optional ByVal FitToPic As Boolean = True, Optional CROP As Boolean = False, Optional over As Boolean = False, Optional ByVal fr As Long = 0, Optional ByVal offsetx As Long = 0, Optional ByVal offsety As Long, Optional ByVal border As Long = 0, Optional ByVal rtxy As Double = 1#)
    Dim oldSc As Long, dummy1 As Boolean, dummy2 As Boolean, sw As Long, sh As Long
    Dim swProbe As Long, shProbe As Long, osh As Double
-   Dim myleft As Long, mytop As Long, mywidth As Long, myheight As Long
+   Dim Myleft As Long, mytop As Long, mywidth As Long, myheight As Long
    
      Dim A As Single
          oldSc = DestPic.ScaleMode
@@ -1241,7 +1241,7 @@ End Sub
 Public Sub ThumbnailPaintDummyOLD(DestPic As Object, Optional ByVal zf As Single = -1, Optional ByVal FitToPic As Boolean = True, Optional CROP As Boolean = False, Optional over As Boolean = False, Optional ByVal fr As Long = 0, Optional ByVal offsetx As Long = 0, Optional ByVal offsety As Long, Optional ByVal border As Long = 0)
    Dim oldSc As Long, dummy1 As Boolean, dummy2 As Boolean, sw As Long, sh As Long
    Dim swProbe As Long, shProbe As Long, osh As Double
-   Dim myleft As Long, mytop As Long, mywidth As Long, myheight As Long
+   Dim Myleft As Long, mytop As Long, mywidth As Long, myheight As Long
      Dim A As Single
       
    oldSc = DestPic.ScaleMode
@@ -1316,7 +1316,7 @@ Public Sub ThumbnailPartPaint(DestPic As Object, _
                     Optional offsetx As Long = 0, _
                     Optional offsety As Long = 0)
                     Dim ThumbnailDistY As Long, zf As Single, ofsize As Single
-   Dim oldSc As Long, ms As Long
+   Dim oldSc As Long, mS As Long
       'DestPic.Refresh
    oldSc = DestPic.ScaleMode
    DestPic.FontName = "Arial"
@@ -1325,9 +1325,9 @@ Public Sub ThumbnailPartPaint(DestPic As Object, _
    DestPic.ScaleMode = vbPixels
     If lText <> "" Then
     ThumbnailDistY = DestPic.TextHeight("Ay") + 2
-   ms = (ThumbnailSizeX + 8) / DestPic.TextWidth("a") - 1
-   If ms > 2 Then
-   If Len(lText) > ms Then lText = Left$(lText, ms - 2) & ".."
+   mS = (ThumbnailSizeX + 8) / DestPic.TextWidth("a") - 1
+   If mS > 2 Then
+   If Len(lText) > mS Then lText = Left$(lText, mS - 2) & ".."
     Else
         lText = ""
      ThumbnailDistY = 0
@@ -1370,7 +1370,7 @@ Private Sub Class_Initialize()
 PaintType = False
  SD = "DISPLAY" & Chr(0)
  emfSizeFactor = 4000
- m_fontname = "VERDANA"
+ m_fontname = "Verdana"
  m_fontsize = 8
  m_logx = 1
  m_logy = 1
@@ -1392,9 +1392,9 @@ On Error Resume Next
     With tSA
         .cbElements = 1
         .cDims = 2
-        .Bounds(0).lLbound = 0
+        .Bounds(0).lLBound = 0
         .Bounds(0).cElements = m_tBI.bmiHeader.biHeight
-        .Bounds(1).lLbound = 0
+        .Bounds(1).lLBound = 0
         .Bounds(1).cElements = BytesPerScanLine()
         .pvData = m_lPtr
     End With
@@ -1707,9 +1707,9 @@ Private Function CreateBitmapPicture(ByVal hbmp As Long, ByVal hPal As Long) As 
 
     'Fill GUID info
     With IID_IDispatch
-        .Data1 = &H20400
-        .Data4(0) = &HC0
-        .Data4(7) = &H46
+        .data1 = &H20400
+        .data4(0) = &HC0
+        .data4(7) = &H46
     End With
 
     'Fill picture info
@@ -1918,7 +1918,7 @@ End Function
 Public Sub MakePrinterhDC(dest As Object, PAGENAME$)
 Dim di As DOCINFO
         
-          Dim Ret As Long
+          Dim ret As Long
           Dim LastError As Long
           Dim dummy3 As Object
 If UBound(MyDM) = 1 Then
@@ -1931,14 +1931,14 @@ End If
           di.lpszDocName = PAGENAME$
 
          ' Ret = ResetDC(p_hdc, MyDM(1))
-          Ret = StartDoc(p_hdc, di)
-          Ret = StartPage(p_hdc)
+          ret = StartDoc(p_hdc, di)
+          ret = StartPage(p_hdc)
  End Sub
  Public Sub FreePrinterHdc()
- Dim Ret As Long
-          Ret = EndPage(p_hdc)
-          Ret = EndDoc(p_hdc)
-          Ret = DeleteDC(p_hdc)
+ Dim ret As Long
+          ret = EndPage(p_hdc)
+          ret = EndDoc(p_hdc)
+          ret = DeleteDC(p_hdc)
           p_hdc = 0
 End Sub
 Sub PageView(where As Object, Optional how As Long = -1, Optional vso As Object = Nothing, Optional hso As Object = Nothing, Optional Percent As Single = 1, Optional gid As Long = 0)
@@ -1995,7 +1995,7 @@ Else
 If Not vso Is Nothing Then
 If vso.Visible = False Then
 vso.Visible = True
-vso.Enabled = False: vso.Value = 0: vso.Enabled = True
+vso.enabled = False: vso.Value = 0: vso.enabled = True
 End If
 vso.Visible = True
 VredX = redX
@@ -2014,7 +2014,7 @@ Else
 If Not hso Is Nothing Then
 If hso.Visible = False Then
 hso.Visible = True
-hso.Enabled = False: hso.Value = 0: hso.Enabled = True
+hso.enabled = False: hso.Value = 0: hso.enabled = True
 End If
 hso.Visible = True
 VredY = redY
@@ -2026,7 +2026,7 @@ If vso.Visible Then
 vso.Max = Height * aa - (where.ScaleHeight - VredY) \ DYP
 vso.smallchange = 1
 If (where.ScaleHeight - VredY) \ DYP > 0 Then vso.largechange = (where.ScaleHeight - VredY) \ DYP
-vso.refresh
+vso.Refresh
 redY = -(vso.Value)
 
 End If
@@ -2036,7 +2036,7 @@ If hso.Visible Then
 hso.Max = Width * aa - (where.ScaleWidth - VredX) \ DXP
 hso.smallchange = 1
 If (where.ScaleWidth - VredX) \ DXP > 0 Then hso.largechange = (where.ScaleWidth - VredX) \ DXP
-hso.refresh
+hso.Refresh
 redX = -(hso.Value)
 End If
 End If
@@ -2056,7 +2056,7 @@ If Not vso Is Nothing Then vso.Visible = False: redX = 0
 Else
 If Not vso Is Nothing Then
 If vso.Visible = False Then
-vso.Visible = True: vso.Enabled = False: vso.Value = 0: vso.Enabled = True
+vso.Visible = True: vso.enabled = False: vso.Value = 0: vso.enabled = True
 End If
 vso.Visible = True: redX = vso.Width
 End If
@@ -2074,7 +2074,7 @@ If vso.Visible Then
 vso.Max = Height * aa - where.ScaleHeight \ DYP
 vso.smallchange = 1
 vso.largechange = where.ScaleHeight \ DYP
-vso.refresh
+vso.Refresh
 redY = -(vso.Value)
 'vso.Enabled = True
 Else
@@ -2096,7 +2096,7 @@ End If
 Else
 If Not vso Is Nothing Then
 If vso.Visible = False Then
-vso.Visible = True: vso.Enabled = False: vso.Value = 0: vso.Enabled = True
+vso.Visible = True: vso.enabled = False: vso.Value = 0: vso.enabled = True
 End If
 vso.Visible = True
 VredX = redX
@@ -2113,7 +2113,7 @@ End If
 Else
 If Not hso Is Nothing Then
 If hso.Visible = False Then
-hso.Visible = True: hso.Enabled = False: hso.Value = 0: hso.Enabled = True
+hso.Visible = True: hso.enabled = False: hso.Value = 0: hso.enabled = True
 End If
 hso.Visible = True
 VredY = redY
@@ -2124,7 +2124,7 @@ If vso.Visible Then
 vso.Max = Height - (where.ScaleHeight - VredY) \ DYP
 vso.smallchange = 1
 If (where.ScaleHeight - VredY) \ DYP > 0 Then vso.largechange = (where.ScaleHeight - VredY) \ DYP
-vso.refresh
+vso.Refresh
 redY = -(vso.Value)
 
 End If
@@ -2134,7 +2134,7 @@ If hso.Visible Then
 hso.Max = Width - (where.ScaleWidth - VredX) \ DXP
 hso.smallchange = 1
 If (where.ScaleWidth - VredX) \ DXP > 0 Then hso.largechange = (where.ScaleWidth - VredX) \ DXP
-hso.refresh
+hso.Refresh
 redX = -(hso.Value)
 End If
 End If
@@ -2154,14 +2154,14 @@ Else
 where.gonia(gid).Visible = vso.Visible And hso.Visible
 End If
 End If
-where.refresh
+where.Refresh
 Once = False
 End Sub
 
 Public Sub ThumbnailPaintdib(DestPic As cDIBSection, Optional ByVal zf As Single = -1, Optional ByVal FitToPic As Boolean = True, Optional CROP As Boolean = False, Optional over As Boolean = False, Optional ByVal fr As Long = 0, Optional ByVal offsetx As Long = 0, Optional ByVal offsety As Long, Optional ByVal border As Long = 0, Optional ByVal rtxy As Double = 1#)
    Dim oldSc As Long, dummy1 As Boolean, dummy2 As Boolean, sw As Long, sh As Long
    Dim swProbe As Long, shProbe As Long, osh As Double
-   Dim myleft As Long, mytop As Long, mywidth As Long, myheight As Long
+   Dim Myleft As Long, mytop As Long, mywidth As Long, myheight As Long
    If Width = 0 Then GoTo tp1
    On Error GoTo tp1
      Dim A As Single

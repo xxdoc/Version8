@@ -16,7 +16,7 @@ Attribute VB_Exposed = True
 Private objref As basetask
 Private mineHere$
 Public Event ErrorAtt(ByRef recover As Variant)
-Dim locked As Boolean
+Dim Locked As Boolean
 Friend Sub NoPublic(bstack As basetask, where$)
 
         Set objref = New basetask
@@ -133,7 +133,7 @@ Dim pos As Long, p As Double, s As String, drop$
 Set objref.lastobj = Nothing
 End Function
 Public Sub AddExecCode(code$)
-If locked Then Exit Sub
+If Locked Then Exit Sub
 Call Run(code$, False)
 End Sub
 Public Function Run(ByVal code$, Optional clean As Boolean = True) As Boolean
@@ -228,7 +228,6 @@ NeoSubMain
 End Sub
 
 Private Sub Class_Initialize()
-
  If Not l_complete Then NeoSubMain
         Set objref = New basetask
         Set objref.Owner = Form1.DIS
@@ -239,8 +238,8 @@ Private Sub Class_Terminate()
 Set objref.Owner = Nothing
 Set objref.Sorosref = Nothing
 Set objref = Nothing
+globalstack.Flush
 GarbageFlush
-'If App.StartMode = vbSModeStandalone Then Exit Sub
 TerminateM2000
 terminatefinal
 l_complete = False

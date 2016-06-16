@@ -50,7 +50,6 @@ m.Cli a$, ">"
 End If
 m.ShowGui = False
 Set m = Nothing
-'Debug.Print "ok"
 If m_bInIDE Then Exit Sub
 SetErrorMode SEM_NOGPFAULTERRORBOX
 End Sub

@@ -173,7 +173,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   ""
+      Location        =   "http:///"
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -232,8 +232,8 @@ Attribute HTML.VB_VarHelpID = -1
 ''Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, _
      ByVal nIndex As Integer, ByVal dwNewLong As Long) As Long
 ''Private Const GWL_STYLE = (-16)
-Private DisStack As New basetask
-Private MeStack As New basetask
+Private DisStack As basetask
+Private MeStack As basetask
 Dim lookfirst As Boolean, look1 As Boolean
 Private Declare Function GetLocaleInfo Lib "KERNEL32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 Private Declare Function GetKeyboardLayout& Lib "user32" (ByVal dwLayout&) ' not NT?
@@ -1399,6 +1399,8 @@ mousepointer = 99
 End Sub
 
 Private Sub Form_Load()
+Set DisStack = New basetask
+Set MeStack = New basetask
 Debug.Assert (InIDECheck = True)
 onetime = 0
 Set fonttest = Form1.dSprite(0)
@@ -1445,7 +1447,7 @@ dset
 'MYFONT = defFontname
 'myBold = True
 'Else
-MYFONT = "Tahoma"
+MYFONT = "Verdana"
 defFontname = MYFONT
 myBold = False
 'End If
@@ -1567,6 +1569,7 @@ End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 Cancel = NoAction
+
 End Sub
 
 Private Sub iForm_Resize()
@@ -1855,12 +1858,25 @@ End Sub
 
 
 Private Sub Form_Unload(Cancel As Integer)
-Set fonttest = Nothing
-Set MeStack.Owner = Nothing
-TEXT1.Dereference
-Set Point2Me = Nothing
-End Sub
+    Set DisStack.Owner = Nothing
+     Set DisStack = Nothing
+    Set MeStack.Owner = Nothing
+    Set MeStack = Nothing
+    TEXT1.Dereference
+    Set Point2Me = Nothing
+    Set fonttest = Nothing
 
+End Sub
+Public Sub helper1()
+    Set DisStack.Owner = Nothing
+     Set DisStack = Nothing
+    Set MeStack.Owner = Nothing
+    Set MeStack = Nothing
+    TEXT1.Dereference
+    Set Point2Me = Nothing
+    Set fonttest = Nothing
+End Sub
+    
 Private Sub List1_DblClick()
 Dim dummy As Boolean
 List1.Visible = False

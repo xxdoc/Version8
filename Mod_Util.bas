@@ -1972,18 +1972,18 @@ End With
 End Sub
 
 Public Sub FeedFont2Stack(basestack As basetask, ok As Boolean)
-Dim ms As New mStiva
+Dim mS As New mStiva
 If ok Then
-ms.PushVal CDbl(ReturnBold)
-ms.PushVal CDbl(ReturnItalic)
-ms.PushVal CDbl(ReturnCharset)
-ms.PushVal CDbl(ReturnSize)
-ms.PushStr ReturnFontName
-ms.PushVal CDbl(1)
+mS.PushVal CDbl(ReturnBold)
+mS.PushVal CDbl(ReturnItalic)
+mS.PushVal CDbl(ReturnCharset)
+mS.PushVal CDbl(ReturnSize)
+mS.PushStr ReturnFontName
+mS.PushVal CDbl(1)
 Else
-ms.PushVal CDbl(0)
+mS.PushVal CDbl(0)
 End If
-basestack.soros.MergeTop ms
+basestack.soros.MergeTop mS
 End Sub
 Public Sub nPlain(basestack As basetask, ByVal what As String, ByVal Font As String, ByVal Size As Single, Optional ByVal degree As Double = 0#, Optional ByVal JUSTIFY As Long = 0, Optional ByVal qual As Boolean = True, Optional ByVal ExtraWidth As Long = 0)
 Dim ddd As Object
@@ -2085,6 +2085,7 @@ If ExtraWidth <> 0 Then SetTextCharacterExtra ddd.hDC, 0
 End Sub
 
 Public Sub nForm(bstack As basetask, TheSize As Single, nW As Long, nH As Long, myLineSpace As Long)
+    On Error Resume Next
     StoreFont bstack.Owner.Font.name, TheSize, bstack.myCharSet
     nH = fonttest.TextHeight("Wq") + myLineSpace * 2
     nW = fonttest.TextWidth("W") + dv15

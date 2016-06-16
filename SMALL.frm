@@ -109,9 +109,9 @@ If ASKINUSE Then Exit Function
 Dim oldesc As Boolean
 oldesc = escok
 'using AskTitle$, AskText$, AskCancel$, AskOk$, AskDIB$
-Static once As Boolean
-If once Then Exit Function
-once = True
+Static Once As Boolean
+If Once Then Exit Function
+Once = True
 ASKINUSE = True
 If TypeOf Screen.ActiveForm Is GuiM2000 Then Screen.ActiveForm.UNhookMe
 
@@ -218,7 +218,7 @@ bstack.soros.PushStr AskStrInput$
 End If
 End If
 AskCancel$ = ""
-once = False
+Once = False
 ASKINUSE = False
 INK$ = ""
 On Error Resume Next
@@ -239,7 +239,7 @@ Else
 
 Err.Clear
 p = bstack.Process.Done
-If Err.number = 0 Then
+If Err.Number = 0 Then
 e = True
 If p <> 0 Then
 Exit Sub
@@ -268,7 +268,7 @@ Do
 If SLEEPSHORT Then Sleep 1
 If e Then
 p = bstack.Process.Done
-If Err.number = 0 Then
+If Err.Number = 0 Then
 If p <> 0 Then
 Exit Do
 End If
@@ -293,7 +293,7 @@ Else
 
 Err.Clear
 p = bstack.Process.Done
-If Err.number = 0 Then
+If Err.Number = 0 Then
 e = True
 If p <> 0 Then
 Exit Sub
@@ -318,7 +318,7 @@ Else
         End If
 If e Then
 p = bstack.Process.Done
-If Err.number = 0 Then
+If Err.Number = 0 Then
 If p <> 0 Then
 Exit Do
 End If
@@ -394,6 +394,7 @@ Private Sub Form_Resize()
  reopen4 = False
  If Form4.Visible Then Form4.Visible = False: reopen4 = True
  If Form3.Visible Then If trace Then Form2.Visible = False: reopen2 = True
+ If reopen2 Or reopen4 Then Timer1.enabled = True: Exit Sub
  End If
  Timer1.enabled = Timer1.Interval < 10000
  
@@ -444,7 +445,7 @@ If reopen2 Then Form2.Show , Form1: Form2.Visible = True
        Next
        
 Sleep 1
-If Forms.Count > 5 Then
+If Forms.count > 5 Then
 
 Else
 Form1.SetFocus

@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 6
+Global Const Revision = 7
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -3183,6 +3183,10 @@ Public Sub NeoSubMain()
 ' need to read registry form sub main
 On Error Resume Next
 '' ADDITION
+INK$ = ""
+UINK$ = ""
+MINK$ = ""
+MKEY$ = ""
 RandomizeIt rndbase, 0
 Set ObjectCatalog = New FastCollection
 LCID_DEF = LCID_def1()
@@ -3299,10 +3303,11 @@ DelTemp
 'Set DisStack.Owner = Nothing
 
 Set basestack1.Owner = Nothing
-
 Set LastGlist = Nothing
 Set LastGlist2 = Nothing
-Unload Form5
+If form5iamloaded Then
+    Unload Form5
+End If
 End Sub
 Public Sub terminatefinal()
 Set globalstack = Nothing
@@ -10463,7 +10468,7 @@ ReadVarStr = vvv
 End Function
 Function IsString(bstackstr As basetask, A$, r$) As Boolean
 Dim nBstack As basetask
-Dim p As Double, PP As Double, pppp As mArray, ms As mStiva
+Dim p As Double, PP As Double, pppp As mArray, mS As mStiva
 Dim q$, w As Long, w1&, w2 As Long, s$, par As Boolean
 Dim q1$, q2$, W3 As Long, dn As Long, dd As Long, bs As basetask
 Set bstackstr.lastobj = Nothing
@@ -11345,13 +11350,13 @@ If Trim$(r$ + q2$) <> "" Then
                 If Typename(var(w1)) = "Group" Then
                 If FastSymbol(A$, ",") Then
                 If IsExp(bstackstr, A$, p) Then
-                Set ms = var(w1).PrepareSoros(var(), "")
-                If p < 1 Or p > ms.Total Then
+                Set mS = var(w1).PrepareSoros(var(), "")
+                If p < 1 Or p > mS.Total Then
                 OutOfLimit
                 Exit Function
                 
                 End If
-                s$ = ms.StackItem(CLng(p))
+                s$ = mS.StackItem(CLng(p))
                 If Left$(s$, 1) = "*" Then s$ = Mid$(s$, 2)
                 q1$ = Split(s$)(1)
                 s$ = Split(s$)(0)
@@ -11413,16 +11418,16 @@ If Trim$(r$ + q2$) <> "" Then
                 If FastSymbol(A$, ",") Then
                 If IsExp(bstackstr, A$, p) Then
                 If here$ <> "" Then
-                Set ms = var(w1).PrepareSoros(var(), here$ + "." + Left$(s$, Len(s$) - Len(var(w1).GroupName) + 1))
+                Set mS = var(w1).PrepareSoros(var(), here$ + "." + Left$(s$, Len(s$) - Len(var(w1).GroupName) + 1))
                 Else
-                Set ms = var(w1).PrepareSoros(var(), Left$(s$, Len(s$) - Len(var(w1).GroupName) + 1))
+                Set mS = var(w1).PrepareSoros(var(), Left$(s$, Len(s$) - Len(var(w1).GroupName) + 1))
                 End If
-                If p < 1 Or p > ms.Total Then
+                If p < 1 Or p > mS.Total Then
                 OutOfLimit
                 Exit Function
                 
                 End If
-                 s$ = ms.StackItem(CLng(p))
+                 s$ = mS.StackItem(CLng(p))
                 If Left$(s$, 1) = "*" Then s$ = Mid$(s$, 2)
                          r$ = Split(s$)(0)
                  If InStr(r$, ChrW(&HFFBF)) > 0 Then r$ = Replace$(r$, ChrW(&HFFBF), "")
@@ -14554,7 +14559,7 @@ End If
          If di.Visible Then di.Refresh
         ProcTask2 bstack
         
-        Loop Until STbyST Or STq Or STEXIT Or NOEXECUTION Or myexit(bstack)
+        Loop Until STbyST Or STq Or STEXIT Or NOEXECUTION Or myexit(bstack) Or Not Form2.Visible
         If Not STEXIT Then
         If Not STq Then
         Form2.gList4.ListIndex = 0
@@ -22242,7 +22247,7 @@ rc = GetFuncPtr("winmm.dll", "midiOutOpen")
 If rc <> 0 Then
     rc = midiOutOpen(hmidi, curDevice, 0, 0, 0)
     If (rc <> 0) Then
-        MsgBox "Couldn't open midi device - Error #" & rc
+       MyEr "Couldn't open midi device - Error #" & rc, "Δεν μπορώ να ανοίξω κανάλι Midi - λάθος #"" & rc"
     End If
     End If
     End If
