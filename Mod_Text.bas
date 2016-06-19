@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 7
+Global Const Revision = 8
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -22879,10 +22879,10 @@ Dim aa As Object
     Set aa = var(v)
                          ev.VarIndex = v
                          If here$ <> "" Then
-                         ev.ModuleName = here$ + "." + objname$
+                         ev.modulename = here$ + "." + objname$
                          ev.modulenameonly = here$
                          Else
-                         ev.ModuleName = objname$
+                         ev.modulename = objname$
                          ev.modulenameonly = ""
                          End If
                          ev.Attach aa
@@ -29510,7 +29510,7 @@ bstack.soros.DataVal CDbl(uIndex)
 uIndex = 1
 End If
 uIndex = uIndex + 1
-F1$ = gui.ModuleName$
+F1$ = gui.modulename$
 bstack.soros.DataObj gui
 
 Dim j As Long, k As Long, s1$, klm As Long, s2$
@@ -29570,7 +29570,7 @@ bstack.IamAnEvent = True
 Dim i As Long
 If A Is Nothing Then GoTo conthere0
 i = A.VarIndex
-F1$ = gui.ModuleName$
+F1$ = gui.modulename$
 Set oldbstack = bstack.soros
 Dim j As Long, k As Long, s1$, klm As Long, s2$
 Dim ohere$
@@ -29677,12 +29677,12 @@ what$ = Left$(what$, Len(what$) - 1)
                                 Set aaa = aVar
                                 With pppp.item(0)
                                 Set aaa.EventObj = .EventObj
-                                h$ = .ModuleName
+                                h$ = .modulename
                                 End With
                                 Set aaa = Nothing
                                 With aVar
                                  .MyName = what$
-                                 .ModuleName = h$
+                                 .modulename = h$
                                  .TITLE = what$ + "(" + LTrim(Str$(i)) + ")"
                                  .index = i
                                 End With
@@ -29836,7 +29836,7 @@ ElseIf IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                                   Set alfa.EventObj = var(y1)
                                   alfa.index = -1
                                   alfa.MyName = what$
-                                  alfa.ModuleName = here$
+                                  alfa.modulename = here$
                                   alfa.TITLE = what$
                                   Set alfa = Nothing
                             Else
@@ -29860,7 +29860,7 @@ ElseIf IsLabelSymbolNew(rest$, "жояла", "FORM", lang) Then
                                  End With
                                   alfa.MyName = what$
                                   alfa.index = -1
-                                  alfa.ModuleName = here$
+                                  alfa.modulename = here$
                                   alfa.ByPass = bp
                                   alfa.TITLE = what$
                                   Set mmmm = Nothing
@@ -29888,7 +29888,7 @@ contEvArray:
                                 Set aaa = Nothing
                                 With aVar
                                  .MyName = what$
-                                 .ModuleName = here$
+                                 .modulename = here$
                                  .ByPass = bp
                                  .TITLE = what$ + "(" + LTrim(Str$(i)) + ")"
                                  .index = i
@@ -35896,7 +35896,7 @@ MyCursor = False
 End If
 .lastprint = False
 End With
-
+LCTbasketCur bstack.Owner, players(prive)
 End Function
 Function MyLineInput(bstack As basetask, rest$, lang As Long) As Boolean
 Dim f As Long, p As Double, what$, it As Long, s$, i As Long, prive As Long, frm$
@@ -39576,7 +39576,7 @@ Dim f$, F1$, klm As Long
 'olescok = escok
 'escok = False
 CallEventFromCOM = True
-F1$ = evCom.ModuleName$
+F1$ = evCom.modulename$
 aString$ = UCase(aString$)
 f$ = UCase(F1$ + "_" + aString$ + "()") ' No greek
 'Debug.Print f$
@@ -39592,7 +39592,7 @@ Set bstack.Owner = Form1.DIS
 bstack.IamAnEvent = True
 Dim i As Long
 i = evCom.VarIndex
-F1$ = evCom.ModuleName$
+F1$ = evCom.modulename$
 Set oldbstack = bstack.soros
 Dim j As Long, k As Long, s1$, s2$
 Dim ohere$
