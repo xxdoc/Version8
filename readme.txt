@@ -1,7 +1,6 @@
 M2000 Interpreter and Environment
 
-Version 8.2 revision 8
-fix Cursor Command
+Version 8.2 revision 9
 
 http://georgekarras.blogspot.gr/
 

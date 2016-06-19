@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 8
+Global Const Revision = 9
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2657,7 +2657,7 @@ End If
 MyTitle$ = Trim$(PREVT$)
 
 Exit Function
-T1:
+t1:
 MyTitle$ = "???"
 End Function
 Function PointPos(f$) As Long
@@ -5203,8 +5203,8 @@ ElseIf IsExp(bstack, n$, p) Then
     ElseIf TypeOf bstack.lastobj Is mHandler Then
         Set anything = bstack.lastobj
         Set bstack.lastobj = Nothing
-        If anything.Indirect Then
-            If IsObject(var(anything.Indirect)) Then
+        If anything.indirect Then
+            If IsObject(var(anything.indirect)) Then
                 Set bstack.lastobj = New mHandler
                 On Error Resume Next
                 Err.Clear
@@ -5212,12 +5212,12 @@ ElseIf IsExp(bstack, n$, p) Then
                 If FastSymbol(n$, ",") Then
                 
                 End If
-                Set bstack.lastobj.objref = MakeATypeLib(var(anything.Indirect))
+                Set bstack.lastobj.objref = MakeATypeLib(var(anything.indirect))
 
                 If Err Then
                    MyEr "Can't Read TypeLib", "Δεν μπορώ να διαβάσω τους τύπους των παραμέτρων"
                    Else
-                   bstack.lastobj.T1 = 1
+                   bstack.lastobj.t1 = 1
                 End If
                 Set anything = Nothing
             Else
@@ -5764,10 +5764,10 @@ IsNumber = False
     Set anything = bstack.lastobj
     Set bstack.lastobj = Nothing
     With anything
-        If anything.Indirect >= 0 Then
-                Select Case anything.Indirect
+        If anything.indirect >= 0 Then
+                Select Case anything.indirect
                 Case 1 To var2used
-                    r = SG * IsObject(var(anything.Indirect))
+                    r = SG * IsObject(var(anything.indirect))
                 Case Else
                     r = 0
                 End Select
@@ -6048,7 +6048,7 @@ Case "EVAL(", "ΕΚΦΡ(", "ΕΚΦΡΑΣΗ("
         If Typename(bstack.lastobj) = "mHandler" Then
             Set anything = bstack.lastobj
             With anything
-                If .T1 = 1 Then
+                If .t1 = 1 Then
                     On Error GoTo there12
                     If .objref.Done Then
                          If FastSymbol(n$, "!") Then
@@ -6068,7 +6068,7 @@ Case "EVAL(", "ΕΚΦΡ(", "ΕΚΦΡΑΣΗ("
 there12:
                     Set anything = Nothing
                     Exit Function
-                ElseIf .T1 = 2 Then
+                ElseIf .t1 = 2 Then
                     ' p is offset for items not bytes
                     If FastSymbol(n$, ",") Then
                         If IsExp(bstack, n$, p) Then
@@ -7189,7 +7189,7 @@ Case "LEN.DISP(", "ΜΗΚΟΣ.ΕΜΦ("
     If Typename(bstack.lastobj) = "mHandler" Then
     
     With bstack.lastobj
-    If .Indirect < 0 Then
+    If .indirect < 0 Then
     If TypeOf .objref Is FastCollection Then
         r = SG * .objref.count
         A$ = n$
@@ -7227,8 +7227,8 @@ Case "LEN(", "ΜΗΚΟΣ("
         If Typename(bstack.lastobj) = "mHandler" Then
         
             With bstack.lastobj
-                If .Indirect < 0 Then
-                    If .T1 = 1 Then
+                If .indirect < 0 Then
+                    If .t1 = 1 Then
                             If .objref.StructLen > 0 Then
                                 r = SG * .objref.StructLen
                             Else
@@ -7238,7 +7238,7 @@ Case "LEN(", "ΜΗΚΟΣ("
                             IsNumber = FastSymbol(A$, ")", True)
                             Set bstack.lastobj = Nothing
                         Exit Function
-                    ElseIf .T1 = 2 Then
+                    ElseIf .t1 = 2 Then
                         r = SG * .objref.SizeByte()
                         A$ = n$
                         IsNumber = FastSymbol(A$, ")", True)
@@ -7653,7 +7653,7 @@ Case "SINT(", "ΑΚΕΡΑΙΟ.ΔΥΑΔΙΚΟ("
  If Not bstack.lastobj Is Nothing Then
  If Not TypeOf bstack.lastobj Is mHandler Then A$ = n$: Exit Function
  With bstack.lastobj
-    If .T1 <> 2 Then GoTo err1256
+    If .t1 <> 2 Then GoTo err1256
     If Not TypeOf .objref Is MemBlock Then GoTo err1256
     If Not FastSymbol(n$, ",") Then GoTo err1256
     If Not IsExp(bstack, n$, p) Then GoTo err1256
@@ -8081,7 +8081,7 @@ IsNumber = True
 If Not pppp.Arr Then
 If Typename(pppp.GroupRef) = "mHandler" Then
 '' here the poke as alfa(3).value or Αλφα(3).τιμή
-If pppp.GroupRef.Indirect >= 0 Then
+If pppp.GroupRef.indirect >= 0 Then
     MyEr "Not implemented yet", "Δεν εχει ακόμα υλοποιηθεί αυτό"
     A$ = n$
     Exit Function
@@ -8096,7 +8096,7 @@ w2 = -pppp.GroupRef.objref.index - 2
 GoTo contlambdahere
 Else
 Set bstack.lastobj = pppp
-If pppp.GroupRef.T1 Then
+If pppp.GroupRef.t1 Then
 r = SG * pppp.GroupRef.objref.GetPtr(0)
 Else
 r = SG * pppp.GroupRef.objref.Done
@@ -8232,7 +8232,7 @@ contlambdahere:
      
                 If IsExp(bstack, n$, p) Then
                 
-                If pppp.GroupRef.T1 = 2 Then ' OK for Buffer
+                If pppp.GroupRef.t1 = 2 Then ' OK for Buffer
                 
                  With pppp.GroupRef.objref
                  If FastSymbol(n$, "!") Then
@@ -10890,7 +10890,7 @@ Case "EVAL$(", "ΕΚΦΡ$(", "ΕΚΦΡΑΣΗ$("
     Dim anything As Object
         Set anything = bstackstr.lastobj
         With anything
-            If .T1 = 1 Then
+            If .t1 = 1 Then
             If FastSymbol(A$, ",") Then
                 If IsExp(bstackstr, A$, p) Then
                 p = Int(p)
@@ -11377,7 +11377,7 @@ If Trim$(r$ + q2$) <> "" Then
                 
                     r$ = Typename(var(W3))
                 If r$ = "mHandler" Then
-                       Select Case var(W3).T1
+                       Select Case var(W3).t1
                        Case 1
                            r$ = "Inventory"
                        Case 2
@@ -11621,13 +11621,13 @@ If Trim$(r$ + q2$) <> "" Then
                         r$ = Typename(pppp.item(w2))
                         If r$ = "mHandler" Then
                         
-                            Select Case pppp.item(w2).T1
+                            Select Case pppp.item(w2).t1
                                  Case 1
                                      r$ = "Inventory"
                                  Case 2
                                      r$ = "Buffer"
                                  Case 3
-                                w1 = pppp.item(w2).Indirect
+                                w1 = pppp.item(w2).indirect
                                 If w1 > -1 Or w1 <= var2used Then
                                 r$ = Typename(var(w1))
                                 Else
@@ -11642,17 +11642,17 @@ If Trim$(r$ + q2$) <> "" Then
                     
                         Set bstackstr.lastobj = pppp.GroupRef.objref
                         With bstackstr.lastobj
-                        If pppp.GroupRef.T1 = 1 Then
+                        If pppp.GroupRef.t1 = 1 Then
                         If .IsObj Then
                             r$ = Typename(.ValueObj)
                             If r$ = "mHandler" Then
-                                Select Case .ValueObj.T1
+                                Select Case .ValueObj.t1
                                     Case 1
                                         r$ = "Inventory"
                                     Case 2
                                         r$ = "Buffer"
                                         Case 3
-                                     w1 = .ValueObj.Indirect
+                                     w1 = .ValueObj.indirect
                                         If w1 > -1 Or w1 <= var2used Then
                                         r$ = Typename(var(w1))
                                         Else
@@ -11696,13 +11696,13 @@ If Trim$(r$ + q2$) <> "" Then
     If GetVar(bstackstr, s$, w1) Then
                     r$ = Typename(var(w1))
                     If r$ = "mHandler" Then
-                    Select Case var(w1).T1
+                    Select Case var(w1).t1
                         Case 1
                         r$ = "Inventory"
                         Case 2
                         r$ = "Buffer"
                         Case 3
-                                     w1 = var(w1).Indirect
+                                     w1 = var(w1).indirect
                                         If w1 > -1 Or w1 <= var2used Then
                                         r$ = Typename(var(w1))
                                         Else
@@ -12645,7 +12645,7 @@ contlambdastr:
         Exit Function
         Else
         If Typename(pppp.GroupRef) = "mHandler" Then
-        If pppp.GroupRef.T1 <> 1 Then
+        If pppp.GroupRef.t1 <> 1 Then
             SyntaxError
             IsString = False
             Exit Function
@@ -14315,17 +14315,7 @@ Do
             If bstack.lastobj Is Nothing Then
                 pppp.item(x1 - 1) = p
             Else
-                If Typename(bstack.lastobj) = "mHandler" Then
-                                                 If bstack.lastobj.Indirect = -1 Then
-                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.objref)) Then
-                                        GarbageCollector.AddKey objptr(bstack.lastobj.objref), bstack.lastobj.objref
-                                        End If
-                                        Else
-                                           If Not GarbageCollector.ExistKey(objptr(var(bstack.lastobj.Indirect).objref)) Then
-                                        GarbageCollector.AddKey objptr(var(bstack.lastobj.Indirect).objref), var(bstack.lastobj.Indirect)
-                                        End If
-                                        End If
-                End If
+                If Typename(bstack.lastobj) = "mHandler" Then CheckGarbage bstack
                 Set pppp.item(x1 - 1) = bstack.lastobj
                 Set bstack.lastobj = Nothing
             End If
@@ -14355,17 +14345,7 @@ Do
             If bstack.lastobj Is Nothing Then
                 pppp.item(x1 - 1) = ss$
             Else
-                If Typename(bstack.lastobj) = "mHandler" Then
-                                                 If bstack.lastobj.Indirect = -1 Then
-                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.objref)) Then
-                                        GarbageCollector.AddKey objptr(bstack.lastobj.objref), bstack.lastobj.objref
-                                        End If
-                                        Else
-                                           If Not GarbageCollector.ExistKey(objptr(var(bstack.lastobj.Indirect).objref)) Then
-                                        GarbageCollector.AddKey objptr(var(bstack.lastobj.Indirect).objref), var(bstack.lastobj.Indirect)
-                                        End If
-                                        End If
-                    End If
+                If Typename(bstack.lastobj) = "mHandler" Then CheckGarbage bstack
                 Set pppp.item(x1 - 1) = bstack.lastobj
                 Set bstack.lastobj = Nothing
             End If
@@ -14953,7 +14933,7 @@ ContReturn:
        Execute = 0
        Exit Function
        ElseIf Typename(bstack.lastobj) = "mHandler" Then
-       If bstack.lastobj.T1 = 1 Then
+       If bstack.lastobj.t1 = 1 Then
               If ChangeValues(bstack, b$) Then GoTo loopcontinue
         Else
                 If ChangeValuesMem(bstack, b$, lang) Then GoTo loopcontinue
@@ -16890,22 +16870,15 @@ varonly:
                         If bstack.lastobj Is Nothing Then
                          MyEr "Missing Object", "Δεν βρήκα αντικείμενο"
                         Execute = 0: Exit Function
-                        ElseIf Typename(bstack.lastobj) = "mHandler" Then
+                        ElseIf Typename(bstack.lastobj) = "mHandler" Then   '' CheckGarbage bstack
                             bstack.lastobj.CopyTo myobject
-                                                               If bstack.lastobj.Indirect = -1 Then
-                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.objref)) Then
-                                        GarbageCollector.AddKey objptr(bstack.lastobj.objref), bstack.lastobj.objref
-                                        End If
-                                        Else
-                                           If Not GarbageCollector.ExistKey(objptr(var(bstack.lastobj.Indirect).objref)) Then
-                                        GarbageCollector.AddKey objptr(var(bstack.lastobj.Indirect).objref), var(bstack.lastobj.Indirect)
-                                        End If
-                                        End If
+                                 
                             
                             Set var(v) = myobject
+                             
                         Else
                          Set myobject = var(v)
-                         myobject.T1 = 0
+                         myobject.t1 = 0
                          Set myobject.objref = bstack.lastobj
                         End If
                         Set bstack.lastobj = Nothing
@@ -17027,7 +17000,7 @@ cont5689:
                                         End If
                                 ElseIf Typename(bstack.lastobj) = "mHandler" Then
                                  If NewStat Then
-                                 If bstack.lastobj.T1 = 1 Then
+                                 If bstack.lastobj.t1 = 1 Then
                                             MyEr "No New statement for inventory", "Όχι δήλωση νέου για κατάσταση"
                                             Else
                                             MyEr "No New statement for buffer", "Όχι δήλωση νέου για Διάρθρωση"
@@ -17039,8 +17012,8 @@ cont5689:
                                         Set myobject = bstack.lastobj
                                         Set bstack.lastobj = Nothing
                                         If x1 <> 0 Then
-                                        If myobject.Indirect > -1 Then
-                                          Set var(x1) = var(myobject.Indirect)
+                                        If myobject.indirect > -1 Then
+                                          Set var(x1) = var(myobject.indirect)
                                         Else
                                           Set var(x1) = myobject
                                           End If
@@ -17839,18 +17812,7 @@ End If
             Set pppp.item(v).LinkRef = myobject
      Else
             If Typename(bstack.lastobj) = "mHandler" Then
-
-
-                                        If bstack.lastobj.Indirect = -1 Then
-                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.objref)) Then
-                                        GarbageCollector.AddKey objptr(bstack.lastobj.objref), bstack.lastobj.objref
-                                        End If
-                                        Else
-                                           If Not GarbageCollector.ExistKey(objptr(var(bstack.lastobj.Indirect).objref)) Then
-                                        GarbageCollector.AddKey objptr(var(bstack.lastobj.Indirect).objref), var(bstack.lastobj.Indirect)
-                                        End If
-                                        End If
-                                
+                                   CheckGarbage bstack
                           Set pppp.item(v) = bstack.lastobj
      
             Else
@@ -17898,17 +17860,8 @@ If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
      bstack.soros.PushObj bstack.lastobj
      SpeedGroup bstack, pppp, "@READ", w$, "", v
      Else
-                                      If Typename(bstack.lastobj) = "mHandler" Then
-                                                              If bstack.lastobj.Indirect = -1 Then
-                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.objref)) Then
-                                        GarbageCollector.AddKey objptr(bstack.lastobj.objref), bstack.lastobj.objref
-                                        End If
-                                        Else
-                                           If Not GarbageCollector.ExistKey(objptr(var(bstack.lastobj.Indirect).objref)) Then
-                                        GarbageCollector.AddKey objptr(var(bstack.lastobj.Indirect).objref), var(bstack.lastobj.Indirect)
-                                        End If
-                                        End If
-                                        End If
+     If Typename(bstack.lastobj) = "mHandler" Then CheckGarbage bstack
+
      Set pppp.item(v) = bstack.lastobj
      End If
      Set pppp.item(v).LinkRef = myobject
@@ -18022,34 +17975,12 @@ If Not IsStrExp(bstack, b$, ss$) Then
     If bstack.lastobj.Arr Then
         Set pppp.item(v) = bstack.lastobj
     Else
-                                     If Typename(bstack.lastobj.GroupRef) = "mHandler" Then
-                                        If bstack.lastobj.Indirect = -1 Then
-                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.objref)) Then
-                                        GarbageCollector.AddKey objptr(bstack.lastobj.objref), bstack.lastobj.objref
-                                        End If
-                                        Else
-                                           If Not GarbageCollector.ExistKey(objptr(var(bstack.lastobj.Indirect).objref)) Then
-                                        GarbageCollector.AddKey objptr(var(bstack.lastobj.Indirect).objref), var(bstack.lastobj.Indirect)
-                                        End If
-                                        End If
-                                        End If
-    
-    
+        If Typename(bstack.lastobj.GroupRef) = "mHandler" Then CheckGarbage bstack
         Set pppp.item(v) = bstack.lastobj.GroupRef
     End If
     Else
-    If Typename(bstack.lastobj) = "mHandler" Then
-                                        If bstack.lastobj.Indirect = -1 Then
-                                        If Not GarbageCollector.ExistKey(objptr(bstack.lastobj.objref)) Then
-                                        GarbageCollector.AddKey objptr(bstack.lastobj.objref), bstack.lastobj.objref
-                                        End If
-                                        Else
-                                           If Not GarbageCollector.ExistKey(objptr(var(bstack.lastobj.Indirect).objref)) Then
-                                        GarbageCollector.AddKey objptr(var(bstack.lastobj.Indirect).objref), var(bstack.lastobj.Indirect)
-                                        End If
-                                        End If
-    End If
-    
+        If Typename(bstack.lastobj) = "mHandler" Then CheckGarbage bstack
+   
         Set pppp.item(v) = bstack.lastobj
         End If
         Set bstack.lastobj = Nothing
@@ -21880,7 +21811,7 @@ If IsObject(var(h&)) Then
 If var(h&) Is Nothing Then
 s$ = s$ + "*[Nothing]"
 ElseIf TypeOf var(h&) Is mHandler Then
-Select Case var(h&).T1
+Select Case var(h&).t1
 Case 1
     s$ = s$ + "*[Inventory]"
 Case 2
@@ -21952,7 +21883,7 @@ Dim p As Double
 If Not PP.Arr Then
 Dim ppp$
     If TypeOf PP.GroupRef Is mHandler Then
-    If PP.GroupRef.T1 <> 1 Then
+    If PP.GroupRef.t1 <> 1 Then
      If IsExp(bstack, rst$, p) Then
      p = Int(p)
      If p >= 0 Or p < PP.GroupRef.objref.items Then
@@ -22319,7 +22250,7 @@ If j <> 62 Then
     Case 66, 98, 916, 948
         If j <> 42 Then Exit Function
         If Typename$(st.StackItem(i)) = "mHandler" Then
-            If st.StackItem(i).T1 <> 2 Then Exit Function
+            If st.StackItem(i).t1 <> 2 Then Exit Function
         Else
             Exit Function
         End If
@@ -22327,7 +22258,7 @@ If j <> 62 Then
     Case 73, 105, 922, 954
         If j <> 42 Then Exit Function
         If Typename$(st.StackItem(i)) = "mHandler" Then
-            If st.StackItem(i).T1 <> 1 Then Exit Function
+            If st.StackItem(i).t1 <> 1 Then Exit Function
         Else
             Exit Function
         End If
@@ -22371,7 +22302,7 @@ Else
             If ss$ = "Gr" Then ss$ = "G"
             If ss$ = "la" Then ss$ = "F"
             If ss$ = "mH" Then
-                Select Case st.StackItem(i).T1
+                Select Case st.StackItem(i).t1
                 Case 1
                 ss$ = "I"
                 Case 2
@@ -22805,16 +22736,16 @@ CloseAllConnections
 End Sub
 Function MakeitObjectGeneric(Number As Long) As Object
 Dim aa As New mHandler, k As Long
-aa.T1 = 3
+aa.t1 = 3
 On Error GoTo there
 Do While TypeOf var(Number) Is mHandler
-If Not var(Number).Indirect < 0 Then Exit Do
+If Not var(Number).indirect < 0 Then Exit Do
 If k > 10 Then Exit Do
-Number = var(Number).Indirect
+Number = var(Number).indirect
 k = k + 1
 Loop
 there:
-aa.Indirect = Number
+aa.indirect = Number
 
 Set aa.objref = Nothing
 Set MakeitObjectGeneric = aa
@@ -22822,13 +22753,13 @@ End Function
 
 Sub MakeitObjectInventory(var As Variant)
 Dim aa As New mHandler
-aa.T1 = 1 ' 1 for Inventory
+aa.t1 = 1 ' 1 for Inventory
 Set aa.objref = New FastCollection
 Set var = aa
 End Sub
 Sub MakeitObjectBuffer(var As Variant)
 Dim aa As New mHandler
-aa.T1 = 2 ' 2 for Buffer
+aa.t1 = 2 ' 2 for Buffer
 Set aa.objref = New MemBlock
 Set var = aa
 End Sub
@@ -23213,7 +23144,7 @@ If x1 <> 0 Then
                          If rinstr(sbf(i).sbgroup, bstack.GroupName) + Len(bstack.GroupName) - 1 = Len(sbf(i).sbgroup) Then
                          bstack.IndexSub = i
                           sbf(i).sb = ss$
-                          GoTo there12345
+                          GoTo continuehere22
                           Else
                           End If
              End If
@@ -23332,7 +23263,7 @@ If x1 <> 0 Then
                          If rinstr(sbf(i).sbgroup, bstack.GroupName) + Len(bstack.GroupName) - 1 = Len(sbf(i).sbgroup) Then
                           bstack.IndexSub = i
                           sbf(i).sb = ss$
-                          GoTo there12345
+                          GoTo continuehere22 'there12345
                           End If
              End If
 
@@ -24022,6 +23953,7 @@ End Select
 continuehere:
 ''\\\\\\\\\\\\\\\\
 LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+continuehere22:
 If MaybeIsSymbol(rest$, "}") Then
 
 ExecuteVarOnly = 1
@@ -24188,21 +24120,21 @@ End Sub
 
 Public Sub ProcProperty(bstack As basetask, v(), vIndex As Long, FN$, rest$, language As Long, Optional hardlink As Boolean = False)
 Dim var1() As Variant, s$, r As Double, l As Long, newref As Long, many As Long, y1 As Boolean, x1 As Long, y2 As Boolean
-Dim var2() As String, ss$, sp As Double, Indirect As Boolean
+Dim var2() As String, ss$, sp As Double, indirect As Boolean
 Dim vv As Object
 Dim oo As Object, myVar As Variant
 Set vv = v(vIndex)
 Dim pppp As mArray
 If TypeOf vv Is mHandler Then
 
-If vv.Indirect >= 0 Then
- vIndex = vv.Indirect
-    Set vv = var(vv.Indirect)
+If vv.indirect >= 0 Then
+ vIndex = vv.indirect
+    Set vv = var(vv.indirect)
    
 Else
     Set vv = vv.objref
 End If
- Indirect = True
+ indirect = True
 End If
 Do
 ReDim var1(0 To 0)
@@ -24303,14 +24235,14 @@ If hardlink Then
 Set oo = v(vIndex)
 If TypeOf oo Is mHandler Then
     Set oo = oo.objref
-    If oo.T1 <> 1 Then
+    If oo.t1 <> 1 Then
         GoTo there
     End If
 End If
     var(newref).ConstructObj oo, l
 Set oo = Nothing
 Else
-var(newref).Construct vIndex, l, Indirect   ' this is the link vindex is an index to var()
+var(newref).Construct vIndex, l, indirect   ' this is the link vindex is an index to var()
 End If
 ' so for every method or property we use this simple struct
 ' we can define the value type
@@ -24335,10 +24267,10 @@ With pppp
 Set oo = v(vIndex)
 If TypeOf oo Is mHandler Then
 With oo
-If .Indirect < 0 Then
+If .indirect < 0 Then
     Set oo = oo.objref
 Else
-    If .Indirect <= var2used Then
+    If .indirect <= var2used Then
     
     End If
 End If
@@ -24410,9 +24342,9 @@ Dim vv As Object, mstack As New mStiva, result As Variant, retobject As Object
 Dim namarg As Long
 Set vv = v(vIndex)
 If TypeOf vv Is mHandler Then
-If vv.Indirect >= 0 Then
-vIndex = vv.Indirect
-Set vv = var(vv.Indirect)
+If vv.indirect >= 0 Then
+vIndex = vv.indirect
+Set vv = var(vv.indirect)
 
 Else
 Set vv = vv.objref
@@ -26113,7 +26045,7 @@ If basestack.lastobj Is Nothing Then
 If p > 32 Then p = 0 ' dis
 Else
 If Typename(basestack.lastobj) = "mHandler" Then
-    i = basestack.lastobj.Indirect
+    i = basestack.lastobj.indirect
     If i >= 0 And i <= var2used Then
         If Typename(var(i)) = "GuiM2000" Then
             Set scr1 = var(i)
@@ -32204,7 +32136,7 @@ Case 1
                             MyRead = False
                            MyEr "Read Only", "Μόνο για ανάγνωση"
                            Exit Function
-                        ElseIf var(i).T1 = myobject.T1 Then
+                        ElseIf var(i).t1 = myobject.t1 Then
                            Set var(i) = myobject
                         Else
                           MyRead = False
@@ -32242,8 +32174,8 @@ Case 1
                         End If
                         End If
                         End If
-                If myobject.Indirect > -1 Then
-                Set var(i) = MakeitObjectGeneric(myobject.Indirect)
+                If myobject.indirect > -1 Then
+                Set var(i) = MakeitObjectGeneric(myobject.indirect)
                 Else
                 Set var(i) = myobject
                 End If
@@ -32562,7 +32494,7 @@ ElseIf y1 < 5 And y1 > 0 Then
        ElseIf Typename(var(i)) = "Group" Then
        var(i) = CLng(0)
        ElseIf Typename(var(i)) = "mHandler" Then
-       If var(i).T1 = 1 Then
+       If var(i).t1 = 1 Then
        If var(i).ReadOnly Then
             MyEr "Read Only", "Μόνο για ανάγνωση"
             MyClear = False
@@ -35432,11 +35364,11 @@ Set myobject = .StackItem(i)
 If Not myobject Is Nothing Then
 If TypeOf myobject Is mHandler Then
 Dim aaa As mHandler
-If myobject.Indirect > -1 Then
-If IsObject(var(myobject.Indirect)) Then
-If myobject.Indirect <= var2used Then
+If myobject.indirect > -1 Then
+If IsObject(var(myobject.indirect)) Then
+If myobject.indirect <= var2used Then
 
-        s$ = s$ + "*[" + Typename(var(myobject.Indirect)) + "]"
+        s$ = s$ + "*[" + Typename(var(myobject.indirect)) + "]"
         Else
          s$ = s$ + "*[Error]"
         End If
@@ -35444,7 +35376,7 @@ Else
         s$ = s$ + "*[Nothing]"
 End If
 Else
-    Select Case myobject.T1
+    Select Case myobject.t1
     Case 1
         s$ = s$ + "*[Inventory]"
     Case 2
@@ -36477,7 +36409,7 @@ desc = IsLabelSymbolNew(rest$, "ΦΘΙΝΟΥΣΑ", "DESCENDING", lang)
                         MyEr "Read Only", "Μόνο για ανάγνωση"
                         Exit Function
                         End If
-                            If var(i).T1 = 1 Then
+                            If var(i).t1 = 1 Then
                             If FastSymbol(rest$, ",") Then
                                 If IsExp(basestack, rest$, p) Then
                                     If p <> 0 Then
@@ -39371,11 +39303,11 @@ If Left$(ah, 1) = "N" Or InStr(ah, "l") > 0 Then
         Set pppp = Nothing
         
     Else
-    If Typename(bstack.lastobj) = "mHandler" Then
-    If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
-    GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
-    End If
-    End If
+    If Typename(bstack.lastobj) = "mHandler" Then CheckGarbage bstack
+    'If Not GarbageCollector.ExistKey(objptr(bstack.lastobj)) Then
+    'GarbageCollector.AddKey objptr(bstack.lastobj), bstack.lastobj
+    'End If
+    'End If
     
     
     
@@ -39567,7 +39499,7 @@ Function GetAnewEvent() As Variant
 Dim aa As New ComShinkEvent, bb As New mHandler
 'Set aa.Callback = Form1
 Set bb.objref = aa
- bb.T1 = 3
+ bb.t1 = 3
 Set GetAnewEvent = bb
 End Function
 Public Function CallEventFromCOM(evCom As ComShinkEvent, aString$, what$, NumVar As Long, vrs()) As Boolean
@@ -39795,3 +39727,18 @@ End If
 
 End Sub
 
+Sub CheckGarbage(bstack As basetask)
+With bstack.lastobj
+     If .indirect = -1 Then
+                                        If .t1 <> 2 Then
+                                            If Not GarbageCollector.ExistKey(objptr(.objref)) Then
+                                            GarbageCollector.AddKey objptr(.objref), .objref
+                                            End If
+                                        End If
+                                        ElseIf var(.indirect).objref.t1 <> 2 Then
+                                            If Not GarbageCollector.ExistKey(objptr(var(.indirect).objref)) Then
+                                                GarbageCollector.AddKey objptr(var(.indirect).objref), var(.indirect)
+                                            End If
+                                        End If
+End With
+End Sub
