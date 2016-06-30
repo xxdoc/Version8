@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 9
+Global Const Revision = 11
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -34395,7 +34395,7 @@ End If
            IESizeY = Form1.ScaleHeight * 6 / 8
            End If
 
-If myLcase(Left$(s$, 7)) = "http://" Or myLcase(Left$(s$, 4)) = "www." Or myLcase(Left$(s$, 6)) = "about:" Then
+If myLcase(Left$(s$, 8)) = "https://" Or myLcase(Left$(s$, 7)) = "http://" Or myLcase(Left$(s$, 4)) = "www." Or myLcase(Left$(s$, 6)) = "about:" Then
 Form1.IEUP s$
 ElseIf s$ <> "" Then
 Form1.IEUP "file:" & strTemp + s$
@@ -37653,7 +37653,7 @@ prive = GetCode(basestack.Owner)
     crNew basestack, players(prive)
 End If
 If funcdeep < 128 Then funcdeep = 128
-If funcdeep > 14800 Then funcdeep = 14800
+If funcdeep > 3375 Then funcdeep = 3375
 End Function
 Function ProcSalata(entrypoint As Long, basestack As basetask, rest$) As Boolean
 Dim p As Double, scr As Object, prive As Long

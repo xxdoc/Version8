@@ -34,6 +34,9 @@ Sub Main()
 DisableProcessWindowsGhosting
 Dim a$
 On Error Resume Next
+With New cFIE
+.FEATURE_BROWSER_EMULATION = .InstalledVersion
+End With
 Set m = CreateObject("M2000.callback")
 'Dim m As New M2000.callback
 If Err Then

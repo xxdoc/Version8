@@ -173,7 +173,7 @@ Begin VB.Form Form1
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
    Begin VB.PictureBox DIS 
       Appearance      =   0  'Flat
@@ -1594,7 +1594,7 @@ AutoRedraw = True
  If App.StartMode = vbSModeStandalone Then If OneOnly Then Exit Sub
 OneOnly = True
 
-If m_bInIDE Then funcdeep = 128 Else funcdeep = 14800 ' need stack 102440960 bytes
+If m_bInIDE Then funcdeep = 128 Else funcdeep = 3375 ' need stack 102440960 bytes
 
 escok = False
 Sleep 10
@@ -2277,13 +2277,13 @@ End Sub
 
 
 
-Public Sub view1_StatusTextChange11(bstack As basetask, ByVal T1 As String)
+Public Sub view1_StatusTextChange11(bstack As basetask, ByVal t1 As String)
 On Error Resume Next
 exWnd = 0
 
 view1.Visible = False
 Sleep 1
-PREPARE bstack, T1
+PREPARE bstack, t1
 Sleep 1
 If Form1.Visible Then Form1.Refresh
 End Sub
