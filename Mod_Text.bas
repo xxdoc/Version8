@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 11
+Global Const Revision = 12
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -17912,7 +17912,8 @@ If neoGetArray(bstack, w$, pppp) Then
 againstrarr:
 If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then Execute = 0: Exit Function
 On Error Resume Next
-If Typename(pppp.item(v)) = "mArray" And Not pppp.Arr Then
+' WHY BEFORE WAS : If Typename(pppp.item(v)) = "mArray" And Not pppp.Arr Then
+If Typename(pppp.item(v)) = "mArray" And pppp.Arr Then
 If FastSymbol(b$, "(") Then
 Set pppp = pppp.item(v)
 GoTo againstrarr
@@ -18040,7 +18041,7 @@ If neoGetArray(bstack, w$, pppp) Then
 againintarr:
 If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then Execute = 0: Exit Function
 On Error Resume Next
-If Typename(pppp.item(v)) = "mArray" And Not pppp.Arr Then
+If Typename(pppp.item(v)) = "mArray" And pppp.Arr Then
 If FastSymbol(b$, "(") Then
 Set pppp = pppp.item(v)
 GoTo againintarr
@@ -18078,6 +18079,23 @@ GoTo loopcontinue
 End If
 If Not FastSymbol(b$, "=") Then Execute = 0: Exit Function
 If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
+If Not bstack.lastobj Is Nothing Then
+    If TypeOf bstack.lastobj Is mArray Then
+                                 If bstack.lastobj.Arr Then
+                                         Set pppp.item(v) = CopyArray(bstack.lastobj)
+
+                                 Else
+  
+   
+                                            Set pppp.item(v) = bstack.lastobj
+                                            If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                                 End If
+                          Else
+                          
+                                  Set pppp.item(v) = bstack.lastobj
+                                  If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                          End If
+Else
 p = Int(p)
 If Err.Number > 0 Then Execute = 0: Exit Function
 pppp.item(v) = p
@@ -18090,6 +18108,7 @@ Else
 Exit Do
 End If
 Loop
+End If
 Else
 Execute = 0: Exit Function
 End If
@@ -22928,23 +22947,23 @@ Public Function GetLCIDFromKeyboardLanguage() As String
     GetLCIDFromKeyboardLanguage = Left$(Buffer, ret - 1)
 
 End Function
-Private Function GetlocaleString(ByVal This As Long) As String
+Private Function GetlocaleString(ByVal this As Long) As String
 On Error GoTo 1234
     Dim Buffer As String, ret&, r&
     Buffer = String$(514, 0)
       
-        ret = GetLocaleInfoW(cLid, This, StrPtr(Buffer), Len(Buffer))
+        ret = GetLocaleInfoW(cLid, this, StrPtr(Buffer), Len(Buffer))
     GetlocaleString = Left$(Buffer, ret - 1)
     
 1234:
     
 End Function
-Private Function GetDeflocaleString(ByVal This As Long) As String
+Private Function GetDeflocaleString(ByVal this As Long) As String
 On Error GoTo 1234
     Dim Buffer As String, ret&, r&
     Buffer = String$(514, 0)
       
-        ret = GetLocaleInfoW(0, This, StrPtr(Buffer), Len(Buffer))
+        ret = GetLocaleInfoW(0, this, StrPtr(Buffer), Len(Buffer))
     GetDeflocaleString = Left$(Buffer, ret - 1)
     
 1234:
@@ -34056,7 +34075,7 @@ MyFunction = True
                                         If Not FastSymbol(rest$, "}") Then
                                                 MyFunction = False
                                         Else
-                                                Call preProcessor(bstack, what$)
+                                               ' ' Call preProcessor(bstack, what$)
                                                 If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                                 sbf(x1).sb = what$: bstack.IndexSub = x1
                                         End If
@@ -34086,7 +34105,7 @@ jump1:
                                             If Not FastSymbol(rest$, "}") Then
                                                     MyFunction = False
                                             Else
-                                                    Call preProcessor(bstack, what$)
+                                                    ' Call preProcessor(bstack, what$)
                                                     If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                                     sbf(x1).sb = what$: bstack.IndexSub = x1
                                             End If
@@ -34111,7 +34130,7 @@ jump1:
                                             If Not FastSymbol(rest$, "}") Then
                                                     MyFunction = False
                                             Else
-                                                    Call preProcessor(bstack, what$)
+                                                    ' Call preProcessor(bstack, what$)
                                                     If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                                     sbf(x1).sb = what$
                                                     bstack.IndexSub = x1
@@ -34812,9 +34831,9 @@ Function ProcWriter(basestack As basetask, rest$, lang As Long) As Boolean
 Dim prive As Long
 prive = GetCode(basestack.Owner)
 If lang = 1 Then
-PlainBaSket basestack.Owner, players(prive), "George Karras (C), Kanalaki, Greece 1999-2016"
+PlainBaSket basestack.Owner, players(prive), "George Karras (C), Preveza, Greece 1999-2017"
 Else
-PlainBaSket basestack.Owner, players(prive), "Γιώργος Καρράς (C), Καναλάκι, Ελλάδα 1999-2016"
+PlainBaSket basestack.Owner, players(prive), "Γιώργος Καρράς (C), Πρέβεζα, Ελλάδα 1999-2017"
 End If
 crNew basestack, players(prive)
 ProcWriter = True
@@ -37844,7 +37863,7 @@ JUMP0:
                                    If Not FastSymbol(rest$, "}") Then
                                            MyModule = False
                                       Else
-                                     Call preProcessor(basestack, what$)
+                                     ' Call preProcessor(basestack, what$)
                                     If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                                       
                                             sbf(x1).sb = what$: basestack.IndexSub = x1
@@ -37872,7 +37891,7 @@ JUMP0:
                                 If Not FastSymbol(rest$, "}") Then
                                         MyModule = False
                                 Else
-                                Call preProcessor(basestack, what$)
+                                ' Call preProcessor(basestack, what$)
                                 If Right$(what$, 2) <> vbCrLf Then what$ = what$ + vbCrLf
                                 sbf(x1).sb = what$
                                 basestack.IndexSub = x1
@@ -37884,12 +37903,12 @@ JUMP0:
                 ElseIf FastSymbol(rest$, "{") Then
                         If here$ = "" Then
                                 pa$ = block(rest$)
-                                Call preProcessor(basestack, pa$)
+                                ' Call preProcessor(basestack, pa$)
                                 If Right$(pa$, 2) <> vbCrLf Then pa$ = pa$ + vbCrLf
                                 basestack.IndexSub = GlobalSub(what$, pa$)
                         Else
                                 ss$ = block(rest$)
-                                Call preProcessor(basestack, ss$)
+                                ' Call preProcessor(basestack, ss$)
                                 i = Len(rest$)
                                 If Right$(ss$, 2) <> vbCrLf Then ss$ = ss$ + vbCrLf
                                 If Left$(sbf(basestack.OriginalCode).sb, 10) = "'11001EDIT" Then
