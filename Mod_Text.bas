@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 12
+Global Const Revision = 13
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -29170,6 +29170,11 @@ If FastSymbol(rest$, "{") Then
 Set aa = var(i)
 aa.BypassInit 10
 aa.VarIndex = i
+If here$ = "" Then
+    aa.NoHere = bstack.GroupName
+Else
+    aa.NoHere = here$ + "." + bstack.GroupName
+End If
 aa.enabled = True
 ss$ = NLtrim$(block(rest$))
 rd$ = ""
@@ -29322,6 +29327,7 @@ Dim aaa() As GenItem, bbb() As Long, mytop As Long
 aa.CopySpaceUp aaa(), bbb(), mytop
 alfa.CopySpaceDown aaa(), bbb(), mytop
 alfa.ParamBlock aa.ParamsRead, aa.params
+alfa.NoHere = aa.NoHere
 Set bstack.lastobj = alfa
 Set aa = Nothing
 End Sub
@@ -29739,6 +29745,9 @@ Dim w$, x1 As Long, y1 As Long, s$, useold As Boolean, bp As Long
 Dim alfa As GuiM2000, mm As CallBack2
 Dim aVar As Variant, p As Double
 Dim pppp As mArray, mmmm As mEvent
+' for these events no use of noHere property because no copyevent/upgrade happens
+'         see .upgrade in UnFloatGroupReWriteVars and UnFloatGroup
+
  If IsLabelSymbolNew(rest$, "ежаялоцг", "APPLICATION", lang) Then
  
  Set mm = New CallBack2
