@@ -373,7 +373,7 @@ End If
         ' do its normal windows message handling---Like DDE, etc.
         lBusy = MsgWaitForMultipleObjects(1, hTimer, False, _
             INFINITE, QS_ALLINPUT&)
- 
+           
                  DoEvents
 
   Loop Until lBusy = WAIT_OBJECT_0

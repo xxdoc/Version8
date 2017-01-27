@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 13
+Global Const Revision = 14
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -13224,7 +13224,7 @@ End If
 End Function
 
 Function interpret(bstack As basetask, b$) As Boolean
-Dim di As Object, myobject As Object, i As Long
+Dim di As Object, myobject As Object, i As Long, x1 As Long
 Set di = bstack.Owner
 Dim prive As basket
 'b$ = Trim$(b$)
@@ -13345,7 +13345,8 @@ Case 1
             If FastSymbol(b$, "=") Then
                 If GetVar(bstack, w$, v) Then
                     If IsExp(bstack, b$, p) Then
-            If Typename(var(v)) = "Group" Then             '' Group 2 Group
+againhere:
+                      If Typename(var(v)) = "Group" Then             '' Group 2 Group
                         If Not bstack.lastobj Is Nothing Then
                                 If TypeOf bstack.lastobj Is Group Then
                                   Set myobject = bstack.lastobj
@@ -13358,7 +13359,9 @@ Case 1
                                   interpret = False
                                 End If
                         Else  '' make an upgrade
-                               interpret = False
+                        
+                               MyEr "Expected object type  group", "Περίμενα αντικείμενο τύπου ομάδα"
+                           Exit Function
 
                         End If
                         ElseIf VarType(var(v)) = vbLong Then
@@ -13368,16 +13371,36 @@ Case 1
                                         Set bstack.lastobj = Nothing
                                     UnFloatGroup bstack, w$, v, myobject  ' global??
                                     Set myobject = Nothing
-                             
+                       
                                 Else
-                                interpret = False
+                                var(v) = CDbl(0)
+                                GoTo againhere
                                 End If
                                 Else
+                                On Error Resume Next
                                 var(v) = CLng(p)
+                                If Err.Number = 6 Then
+                                MyEr "Overflow long", "υπερχείλιση μακρύ"
+                                interpret = False
+                                Exit Function
                                 End If
+                                End If
+                    ElseIf Not bstack.lastobj Is Nothing Then
+                        If TypeOf bstack.lastobj Is lambda Then
+                                                Set var(v) = bstack.lastobj
+                                                Set bstack.lastobj = Nothing
+                        Else
+                        MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                           Exit Function
+                        End If
                     Else
-                    
+                    If IsObject(var(v)) Then
+                    MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                           Exit Function
+                    Else
                     var(v) = p
+                    
+                    End If
                     End If
                     Else
                     If LastErNum <> -2 Then NoValueForvariable w$
@@ -13392,8 +13415,23 @@ Case 1
                                         
                                 GlobalMoveGroup bstack, w$
                                 Else
-                                
+                    If Typename$(bstack.lastobj) = "lambda" Then
+                    
+                       If Not GetVar(bstack, w$, x1, True) Then x1 = GlobalVar(w$, p, , True)
+                             GlobalSub w$ + "()", "CALL EXTERN " & CStr(x1) ' & " : = NUMBER"
+                                        Set myobject = bstack.lastobj
+                                        Set bstack.lastobj = Nothing
+                                        If x1 <> 0 Then
+                                        
+                                          Set var(x1) = myobject
+                                                Set myobject = Nothing
+                                           
+                                            
+                                        End If
+                                        Else
                                 SyntaxError
+            End If
+                                
                                 End If
                 Else
                     GlobalVar w$, p
@@ -13458,7 +13496,7 @@ Case 1
                                                     
                             End Select
                                         If Err.Number = 6 Then
-                                        ' υπερχείλιση
+                                        MyEr "Overflow long", "υπερχείλιση μακρύ"
                                                                 interpret = False
                                                                 Exit Function
                                                     End If
@@ -13474,6 +13512,7 @@ Case 1
                                         var(v) = var(v) - p
                                         Case "/"
                                                     If p = 0 Then
+                                                    MyEr "Devision by zero", "Διαίρεση με το μηδέν"
                                                             interpret = False
                                                             Exit Function
                                                     End If
@@ -13520,7 +13559,7 @@ PROCESSCOMMAND:
             If Trim(w$) <> "" Then
       
             Select Case w$
-        Dim x1 As Long, y1 As Long
+        Dim y1 As Long
         Dim x2 As Long, y2 As Long, SBR$, nd&
             Case " ", ChrW(160)
             ' nothing
@@ -13593,6 +13632,7 @@ PROCESSCOMMAND:
                 y2 = -1
                 nd& = 0
                 SBR$ = ""
+                On Error GoTo err123456
                   With players(GetCode(di))
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then x1 = Abs(p) Mod (.mx + 1)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then y1 = Abs(p) Mod (.My + 1)
@@ -13600,9 +13640,15 @@ PROCESSCOMMAND:
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then y2 = CLng(p)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then nd& = Abs(p)
                 If FastSymbol(b$, ",") Then If Not IsStrExp(bstack, b$, SBR$) Then interpret = False: here$ = ohere$: Exit Function
-                Targets = False
-             
-             
+                
+               
+err123456:
+                If Err.Number = 6 Then
+                MyEr "Overflow", "Υπερχείλιση"
+                interpret = False: here$ = ohere$: Exit Function
+                
+                End If
+              Targets = False
                 ReDim Preserve q(UBound(q()) + 1)
               
                 q(UBound(q()) - 1) = BoxTarget(bstack, x1, y1, x2, y2, SBR$, nd&, ss$, .Xt, .Yt, .uMineLineSpace)
@@ -13652,7 +13698,29 @@ PROCESSCOMMAND:
                 ElseIf IsStrExp(bstack, b$, w$) Then
                            b$ = vbCrLf + w$ + b$
                    End If
-        
+Case "RETURN", "ΕΠΙΣΤΡΟΦΗ"
+    LastErNum = 0
+       If IsExp(bstack, b$, p) Then
+                If bstack.lastobj Is Nothing Then
+                 MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+                 interpret = False
+                 Exit Function
+                ElseIf Typename(bstack.lastobj) = "mHandler" Then
+                         If bstack.lastobj.t1 = 1 Then
+                                If ChangeValues(bstack, b$) Then GoTo loopcontinue1
+                          Else
+                                  If ChangeValuesMem(bstack, b$, lang) Then GoTo loopcontinue1
+                          End If
+                         
+                End If
+            MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+            interpret = False
+            Exit Function
+       Else
+      MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+       interpret = False
+                End If
+
                 Case "ΤΕΛΟΣ", "END"
    
                     If NORUN1 Then NORUN1 = False: interpret = True: b$ = "": Exit Function   ' send environment....to hell
@@ -13745,13 +13813,40 @@ If ss$ <> "" Then
             If ss$ = "=" Then
                 If GetVar(bstack, w$, v) Then
                     If IsStrExp(bstack, b$, ss$) Then
-                         CheckVar var(v), ss$
+                    If Typename$(bstack.lastobj) = "lambda" Then
+                                  GlobalSub w$ + "()", "CALL EXTERN " & CStr(v)
+                                               Set var(v) = bstack.lastobj
+                                                Set bstack.lastobj = Nothing
+                    Else
+                         
+                         If CheckVarOnlyNo(var(v), ss$) Then
+                           MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                           Exit Function
+                         End If
+                        End If
                     Else
                        NoValueForvariable w$
                     Exit Do  '???
                     End If
                 ElseIf IsStrExp(bstack, b$, ss$) Then
-                    GlobalVar w$, ss$
+                    
+                                If bstack.lastobj Is Nothing Then
+              GlobalVar w$, ss$
+            Else
+            If Typename$(bstack.lastobj) = "lambda" Then
+                       If Not GetVar(bstack, w$, x1, True) Then x1 = GlobalVar(w$, p, , True)
+                             GlobalSub w$ + "()", "CALL EXTERN " & CStr(x1) ' & " : = NUMBER"
+                                        Set myobject = bstack.lastobj
+                                        Set bstack.lastobj = Nothing
+                                        If x1 <> 0 Then
+                                        
+                                          Set var(x1) = myobject
+                                                Set myobject = Nothing
+                                           
+                                            
+                                        End If
+            End If
+            End If
                 ElseIf LastErNum = 0 Then
                                     
                     SyntaxError
@@ -13781,13 +13876,54 @@ If FastSymbol(b$, "=") Then '................................
            
             If GetVar(bstack, w$, v) Then
                 If IsExp(bstack, b$, p) Then
-                var(v) = Int(p)
+                
+                
+                If Not bstack.lastobj Is Nothing Then
+                        If TypeOf bstack.lastobj Is lambda Then
+                        If Typename(var(v)) = "lambda" Then
+                                                Set var(v) = bstack.lastobj
+
+                                                Else
+                                    GlobalSub w$ + "()", "CALL EXTERN " & CStr(v) ' & " : = NUMBER"
+                                               Set var(v) = bstack.lastobj
+                                                
+                                        End If
+                           Set bstack.lastobj = Nothing
+                         Else
+                       SyntaxError
+                        End If
+                        ElseIf IsObject(var(v)) Then
+                           MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                           Exit Function
+                        Else
+                        var(v) = Int(p)
+                        End If
                 Else
                   MissNumExpr
                 Exit Do
                 End If
             ElseIf IsExp(bstack, b$, p) Then
-                GlobalVar w$, p
+             If Not bstack.lastobj Is Nothing Then
+                
+                If Typename$(bstack.lastobj) = "lambda" Then
+                    
+                       If Not GetVar(bstack, w$, x1, True) Then x1 = GlobalVar(w$, p, , True)
+                             GlobalSub w$ + "()", "CALL EXTERN " & CStr(x1) ' & " : = NUMBER"
+                                        Set myobject = bstack.lastobj
+                                        Set bstack.lastobj = Nothing
+                                        If x1 <> 0 Then
+                                        
+                                          Set var(x1) = myobject
+                                                Set myobject = Nothing
+                                           
+                                            
+                                        End If
+                                        Else
+                                SyntaxError
+            End If
+            Else
+            GlobalVar w$, p
+            End If
                 ElseIf LastErNum = 0 Then
                                 
                 SyntaxError
@@ -13872,6 +14008,7 @@ End If
 Case 5
 
 If neoGetArray(bstack, w$, pppp) Then
+againarray22:
     If FastSymbol(b$, ")") Then
     'need to found an expression
         If FastSymbol(b$, "=") Then
@@ -13890,7 +14027,7 @@ If neoGetArray(bstack, w$, pppp) Then
         End If
 If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: here$ = ohere$: Exit Function
 On Error Resume Next
-If MaybeIsSymbol(b$, ":+-*/!") Then
+If MaybeIsSymbol(b$, ":+-*/~") Then
 With pppp
         If IsOperator(b$, "++", 2) Then
             .item(v) = .item(v) + 1
@@ -13950,13 +14087,69 @@ If Typename(pppp.item(v)) = "Group" Then
 interpret = SpeedGroup(bstack, pppp, "", w$, b$, v)
 GoTo loopcontinue1
 End If
-
+ElseIf IsOperator(b$, "(") Then
+If Typename(pppp.item(v)) = "mArray" Then
+Set pppp = pppp.item(v)
+GoTo againarray22
+End If
 ElseIf Not FastSymbol(b$, "=") Then
 here$ = ohere$: Exit Function
 End If
 
 If Not IsExp(bstack, b$, p) Then here$ = ohere$: Exit Function
-pppp.item(v) = p
+
+ If Not bstack.lastobj Is Nothing Then
+     Set myobject = pppp.GroupRef
+     If pppp.IHaveClass Then
+             bstack.soros.PushObj bstack.lastobj
+            If Typename(pppp.item(v)) = "Empty" Then
+            Set pppp.item(v) = New Group
+            End If
+            
+            SpeedGroup bstack, pppp, "@READ", w$, "", v
+            
+               
+            
+            Set pppp.item(v).LinkRef = myobject
+     Else
+            If Typename(bstack.lastobj) = "mHandler" Then
+                                   CheckGarbage bstack
+                          Set pppp.item(v) = bstack.lastobj
+     
+            Else
+                   If Not bstack.lastobj Is Nothing Then
+                          If TypeOf bstack.lastobj Is mArray Then
+                                 If bstack.lastobj.Arr Then
+                                         Set pppp.item(v) = CopyArray(bstack.lastobj)
+
+                                 Else
+  
+   
+                                            Set pppp.item(v) = bstack.lastobj
+                                            If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                                 End If
+                          Else
+                          
+                                  Set pppp.item(v) = bstack.lastobj
+                                  If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                          End If
+                   Else
+                  
+                          Set pppp.item(v) = bstack.lastobj
+                          If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                   End If
+            End If
+        End If
+     
+     Set bstack.lastobj = Nothing
+     Else
+     If pppp.Arr Then
+     pppp.item(v) = p
+     ElseIf Typename(pppp.GroupRef) Like "Pro*" Then
+    
+     pppp.GroupRef.Value = p
+     End If
+    End If
 Do While FastSymbol(b$, ",")
 If pppp.UpperMonoLimit > v Then
 v = v + 1
@@ -13987,8 +14180,15 @@ If neoGetArray(bstack, w$, pppp) Then
             Exit Function
         End If
         End If
+againstrarr22:
 If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: here$ = ohere$: Exit Function
 On Error Resume Next
+If Typename(pppp.item(v)) = "mArray" And pppp.Arr Then
+If FastSymbol(b$, "(") Then
+Set pppp = pppp.item(v)
+GoTo againstrarr22
+End If
+End If
 If Not FastSymbol(b$, "=") Then
     If FastSymbol(b$, ":=", , 2) Then
 contarr1:
@@ -14036,12 +14236,32 @@ Else
         If Not IsStrExp(bstack, b$, ss$) Then interpret = False: here$ = ohere$: Exit Function
         
         
-        If Not IsObject(pppp.item(v)) Then
-          pppp.item(v) = ss$
-          Else
-        CheckVar pppp.item(v), ss$
-        
+    If Not IsObject(pppp.item(v)) Then
+    If pppp.Arr Then
+    If bstack.lastobj Is Nothing Then
+        pppp.item(v) = ss$
+    
+    Else
+    If Typename(bstack.lastobj) = "mArray" Then
+    If bstack.lastobj.Arr Then
+        Set pppp.item(v) = CopyArray(bstack.lastobj)
+    Else
+        If Typename(bstack.lastobj.GroupRef) = "mHandler" Then CheckGarbage bstack
+        Set pppp.item(v) = bstack.lastobj.GroupRef
+    End If
+    Else
+        If Typename(bstack.lastobj) = "mHandler" Then CheckGarbage bstack
+   
+        Set pppp.item(v) = bstack.lastobj
         End If
+        Set bstack.lastobj = Nothing
+        End If
+        Else
+        pppp.GroupRef.Value = ss$
+        End If
+    Else
+        CheckVar pppp.item(v), ss$
+    End If
         Do While FastSymbol(b$, ",")
         If pppp.UpperMonoLimit > v Then
         v = v + 1
@@ -14079,9 +14299,16 @@ If neoGetArray(bstack, w$, pppp) Then
             Exit Function
         End If
         End If
+againintarr7:
 If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then interpret = False: here$ = ohere$: Exit Function
 On Error Resume Next
-If MaybeIsSymbol(b$, "+-*/!") Then
+If Typename(pppp.item(v)) = "mArray" And pppp.Arr Then
+If FastSymbol(b$, "(") Then
+Set pppp = pppp.item(v)
+GoTo againintarr7
+End If
+End If
+If MaybeIsSymbol(b$, "+-*/~") Then
 If IsOperator(b$, "++", 2) Then
 pppp.item(v) = pppp.item(v) + 1
 ElseIf IsOperator(b$, "--", 2) Then
@@ -14107,14 +14334,35 @@ pppp.item(v) = -pppp.item(v)
 ElseIf IsOperator(b$, "~") Then
 pppp.item(v) = -1 - (pppp.item(v) <> 0)
 End If
+
 GoTo loopcontinue1
 End If
 If Not FastSymbol(b$, "=") Then here$ = ohere$: Exit Function
 If Not IsExp(bstack, b$, p) Then here$ = ohere$: Exit Function
+If Not bstack.lastobj Is Nothing Then
+    If TypeOf bstack.lastobj Is mArray Then
+                                 If bstack.lastobj.Arr Then
+                                         Set pppp.item(v) = CopyArray(bstack.lastobj)
+
+                                 Else
+  
+   
+                                            Set pppp.item(v) = bstack.lastobj
+                                            If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                                 End If
+                          Else
+                          
+                                  Set pppp.item(v) = bstack.lastobj
+                                  If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                          End If
+Else
 p = Int(p)
+
 If Err.Number > 0 Then interpret = False: here$ = ohere$: Exit Function
 pppp.item(v) = p
+End If
 Do While FastSymbol(b$, ",")
+
 If pppp.UpperMonoLimit > v Then
 v = v + 1
 If Not IsExp(bstack, b$, p) Then here$ = ohere$: Exit Function
@@ -14719,13 +14967,19 @@ contTarg:
                 y2 = -1
                 nd& = 0
                 sbb$ = ""
-         
+                On Error GoTo err123
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then x1 = Abs(p) Mod (.mx + 1)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then y1 = Abs(p) Mod (.My + 1)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then x2 = CLng(p)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then y2 = CLng(p)
                 If FastSymbol(b$, ",") Then If IsExp(bstack, b$, p) Then nd& = Abs(p)
                 If FastSymbol(b$, ",") Then If Not IsStrExp(bstack, b$, sbb$) Then Execute = 0: Exit Function
+err123:
+                        If Err.Number = 6 Then
+                                MyEr "Overflow long", "υπερχείλιση μακρύ"
+                                Execute = 0
+                                Exit Function
+                                End If
                 Targets = False
                 MyDoEvents1 Form1
        
@@ -16545,7 +16799,13 @@ ContOn:
         y2 = True
         End If
             If y1 Then
+            On Error Resume Next
                 p = CLng(p)
+                        If Err.Number = 6 Then
+                                MyEr "Overflow", "υπερχείλιση"
+                                Execute = 0
+                                Exit Function
+                                End If
                 If p <= 0 Then ' no exit
                 SetNextLine b$
                 If Execute <> 2 Then Execute = 1 Else Execute = 3
@@ -16855,11 +17115,15 @@ varonly:
                              
                                 Else
                                 '' maybe a block of itemd''
+                                           MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
                                 
                                   Execute = 0
                                 End If
                         Else  '' make an upgrade
-                                Execute = 0
+                                           MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+
+                 Execute = 0
+                 Exit Function
 
                         End If
                         ElseIf Typename$(var(v)) = "mHandler" Then
@@ -16896,25 +17160,52 @@ varonly:
                                         Execute = 0
                                 End If
                                 Else
+                                On Error Resume Next
                                     var(v) = CLng(p)
+                                            If Err.Number = 6 Then
+                                MyEr "Overflow long", "υπερχείλιση μακρύ"
+                                Execute = 0
+                                Exit Function
+                                End If
+                                On Error GoTo 0
                                 End If
                         Else
                                 If Not bstack.lastobj Is Nothing Then
                                     If TypeOf bstack.lastobj Is Group Then
+                                    If (Typename(var(v)) = "Group") Or Not IsObject(var(v)) Then
                                             Set myobject = bstack.lastobj
                                             Set bstack.lastobj = Nothing
                                             UnFloatGroup bstack, w$, v, myobject  ' global??
                                             Set myobject = Nothing
+                                    Else
+                                        SyntaxError
+                                        Execute = 0: Exit Function
+                                    End If
                                     ElseIf TypeOf bstack.lastobj Is lambda Then
-                                            Set var(v) = bstack.lastobj
+                                    If Typename(var(v)) = "lambda" Then
+                                                Set var(v) = bstack.lastobj
+
+                                                Else
+                                    GlobalSub w$ + "()", "CALL EXTERN " & CStr(v) ' & " : = NUMBER"
+                                               Set var(v) = bstack.lastobj
+                                                
+                                        End If
+                                         
                                             Set bstack.lastobj = Nothing
                                     Else
                                              var(v) = 0
                                     End If
                                 Else
+                                If IsObject(var(v)) Then
+                               ' If Not (TypeOf var(v) Is Group) Then
+                                           MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+
+                 Execute = 0
+                 Exit Function
+                 Else
 
                                  var(v) = p
-                                                 
+                                End If
                     End If
                             End If
                         End If
@@ -17149,6 +17440,7 @@ again123456:
                              End Select
                              
                             ElseIf VarType(var(v)) = vbLong Then
+                            On Error Resume Next
                                Select Case ss$
                                 Case "=", "g"
                                    If Not bstack.lastobj Is Nothing Then
@@ -17183,7 +17475,12 @@ again123456:
                                Case "!"
                                  var(v) = -1 - (var(v) <> 0)
                             End Select
-                            
+                                    If Err.Number = 6 Then
+                                MyEr "Overflow long", "υπερχείλιση μακρύ"
+                                Execute = 0
+                                Exit Function
+                                End If
+                                On Error GoTo 0
                             ElseIf Not bstack.lastobj Is Nothing Then
                              If TypeOf bstack.lastobj Is lambda Then
 contlambda:
@@ -17380,10 +17677,21 @@ If ss$ <> "" Then
                         End If
                   var(v).Value = ss$
                   ElseIf Typename$(bstack.lastobj) = "lambda" Then
-                  Set var(v) = bstack.lastobj
-                  Set bstack.lastobj = Nothing
+        If Typename(var(v)) = "lambda" Then
+                                                Set var(v) = bstack.lastobj
+
+                                                Else
+                                    GlobalSub w$ + "()", "CALL EXTERN " & CStr(v) ' & " : = NUMBER"
+                                               Set var(v) = bstack.lastobj
+                                                
+                                        End If
+                                         
+                                            Set bstack.lastobj = Nothing
                   Else
-                CheckVar var(v), ss$
+                                  If CheckVarOnlyNo(var(v), ss$) Then
+                                    MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                                    Execute = 0: Exit Function
+                                  End If
                 End If
                 End If
                 ElseIf Not bstack.StaticCollection Is Nothing Then
@@ -17514,16 +17822,28 @@ If MaybeIsSymbol(b$, "=-+*/<~") Then
                         var(v).Value = Int(p)
                 ElseIf Not bstack.lastobj Is Nothing Then
                         If TypeOf bstack.lastobj Is lambda Then
-                              
-                                        Set var(v) = bstack.lastobj
-                                        Set bstack.lastobj = Nothing
+                            If Typename(var(v)) = "lambda" Then
+                                                Set var(v) = bstack.lastobj
+
+                                                Else
+                                    GlobalSub w$ + "()", "CALL EXTERN " & CStr(v) ' & " : = NUMBER"
+                                               Set var(v) = bstack.lastobj
+                                                
+                                        End If
+                                         
+                                            Set bstack.lastobj = Nothing
                                 Else
-                                NoValueForvariable w$
+                                MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+
                             Execute = 0
                             Exit Function
                          End If
                  Else
-                 var(v) = Int(p)
+                    MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+
+                 Execute = 0
+                 Exit Function
+                 ' OLD: var(v) = Int(p)
                  End If
                 If Err.Number = 6 Then Execute = 0: Exit Do
                 On Error GoTo 0
@@ -17974,7 +18294,7 @@ If Not IsStrExp(bstack, b$, ss$) Then
     Else
     If Typename(bstack.lastobj) = "mArray" Then
     If bstack.lastobj.Arr Then
-        Set pppp.item(v) = bstack.lastobj
+        Set pppp.item(v) = CopyArray(bstack.lastobj)
     Else
         If Typename(bstack.lastobj.GroupRef) = "mHandler" Then CheckGarbage bstack
         Set pppp.item(v) = bstack.lastobj.GroupRef
@@ -22868,6 +23188,19 @@ Else
 var = s
 End If
 End Sub
+Function CheckVarOnlyNo(var As Variant, s As String) As Boolean
+If Typename(var) = doc Then
+If var.IsEmpty Then
+var.textDoc = s
+Else
+var.InsertDoc var.LastParagraph, var.TextParagraphLen(var.LastParagraph) + 1, s
+End If
+ElseIf IsObject(var) Then
+CheckVarOnlyNo = True
+Else
+var = s
+End If
+End Function
 Sub CheckVarLong(var As Variant, l As Long)
 
 If IsObject(var) Then
@@ -25960,10 +26293,11 @@ Next xp
 For i = 0 To Form1.List1.listcount - 1
 If pname & " (" & port & ")" = Form1.List1.list(i) Then Form1.List1.ListIndex = i
 Next i
-If interpret(basestack, "menu !") Then
-i = InStr(Form1.List1, " (")
-pname = Left$(Form1.List1, i - 1)
-port = Mid$(Form1.List1, i + 2, InStr(i + 2, Form1.List1, ")") - i - 2)
+Execute basestack, "menu !", True
+If CDbl(Form1.List1.ListIndex + 1) > 0 Then
+i = InStr(Form1.List1.ListValue, " (")
+pname = Left$(Form1.List1.ListValue, i - 1)
+port = Mid$(Form1.List1.ListValue, i + 2, InStr(i + 2, Form1.List1.ListValue, ")") - i - 2)
 End If
 For Each xp In Printers
 If xp.DeviceName = pname And xp.port = port Then Set Printer = xp
@@ -26306,8 +26640,6 @@ Form1.BackColor = players(-1).Paper
 Form1.Cls
 
 
-''x = interpret(basestack, "MOTION CENTER")
-''x = interpret(basestack, "MODE" & Str$(players(GetCode(scr)).SZ) & "," & Str$(scr.Width) & "," & Str$(scr.Height))
 MyMode scr
 ElseIf scr.name = "DIS" Then
 Form1.Move Form1.Left + scr.Left, Form1.top + scr.top, scr.Width, scr.Height
@@ -26519,10 +26851,9 @@ Dim scr As Object, x1 As Long, y1 As Long, p As Double
 Set scr = basestack.Owner
 ProcMotion = True
 If lang = 1 And IsLabelSymbolLatin(rest$, "CENTER") Then
-x1 = interpret(basestack, "MODE" & Str$(players(GetCode(scr)).SZ) & "," & Str$(scr.Width) & "," & Str$(scr.Height))
+ProcMotion = ProcMode(basestack, Str$(players(GetCode(scr)).SZ) & "," & Str$(scr.Width) & "," & Str$(scr.Height))
 ElseIf IsLabelSymbol(rest$, "ΚΕΝΤΡΟ") Then
-x1 = interpret(basestack, "MODE" & Str$(players(GetCode(scr)).SZ) & "," & Str$(scr.Width) & "," & Str$(scr.Height))
-
+ProcMotion = ProcMode(basestack, Str$(players(GetCode(scr)).SZ) & "," & Str$(scr.Width) & "," & Str$(scr.Height))
 Else
 If IsExp(basestack, rest$, p) Then x1 = CLng(p) Else x1 = scr.Left
 If FastSymbol(rest$, ",") Then
@@ -27474,8 +27805,11 @@ End If
                     
                     End If
                     Else
+                    If here$ = "" Then
+                    MyEr "in command prompt", "στην εισαγωγή εντολών"
+                    Else
                     MyEr "in module " & here$, "στο τμημα " & here$
-                    
+                    End If
                     End If
                     If InStr(FK$(13), ",") > 0 Then
                     If Left$(pa$, InStr(pa$, ",")) <> Left$(FK$(13), InStr(FK$(13), ",")) Then
@@ -38721,7 +39055,14 @@ MyLong = True
 there01:
                 
                 MakeitObjectLong var(i)
+                On Error Resume Next
+                Err.Clear
                 CheckVarLong var(i), CLng(p)
+                If Err > 0 Then
+                If Err.Number = 6 Then MyEr "Overflow Long", "Υπερχείλιση  μακρύ"
+                MyLong = False
+                Exit Function
+                End If
                 GoTo there12
             Else
         
