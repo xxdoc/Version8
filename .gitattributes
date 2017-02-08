@@ -5,4 +5,4 @@
 *.ctl eol=crlf
 *.vbp eol=crlf
 *.vbw eol=crlf
-
+*.bas=auto encoding=ISO-8859-7
