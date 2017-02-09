@@ -19,6 +19,7 @@ Dim dtable(10) As Long
 Dim actualdata() As Variant
 Dim maxitems As Long
 Dim maxitems1 As Long
+Public myarrbase As Long
 Public IHaveClass As Boolean
 Public IHaveGui As Boolean
 Public GroupRef As Object   ' get a floating Group, maybe with groups inside....as floating group
@@ -56,10 +57,10 @@ Private Type SAFEARRAY1D
     cLocks As Long
     pvData As Long
     cElements As Long
-    lLbound As Long
+    lLBound As Long
 End Type
-Public Sub PushProp(a As Variant)
-Set GroupRef = a
+Public Sub PushProp(A As Variant)
+Set GroupRef = A
 Arr = False
 End Sub
 Public Sub CopySerialize(mmm() As Variant)
@@ -111,8 +112,9 @@ End Sub
 
 Public Sub CopyArray(k As mArray)
 'copy this to k
-Dim V As Variant, i As Long, obj As Object, obj2 As Object, spare As lambda
-k.SerialItem V, Me.UpperMonoLimit, 8
+Dim v As Variant, i As Long, obj As Object, obj2 As Object, spare As lambda
+k.SerialItem v, Me.UpperMonoLimit, 8
+k.myarrbase = myarrbase
 k.RevOrder = False
 k.StartResize
 For i = 0 To dnum - 1
@@ -291,11 +293,11 @@ PushOffset = False
 Else
 
 If RevOrder Then
-If nDim >= limit(dnum - curdim - 1) Then Exit Function
-curitem = curitem + dtable(dnum - curdim - 1) * nDim
+If nDim >= limit(dnum - curdim - 1) - myarrbase Then Exit Function
+curitem = curitem + dtable(dnum - curdim - 1) * (nDim + myarrbase)
 Else
-If nDim >= limit(curdim) Then Exit Function
-curitem = curitem + dtable(curdim) * nDim
+If nDim >= limit(curdim) - myarrbase Then Exit Function
+curitem = curitem + dtable(curdim) * (nDim + myarrbase)
 End If
 PushOffset = True
 End If
@@ -353,7 +355,7 @@ On Error Resume Next
 If curitem < 0 Then
 If Not GroupRef Is Nothing Then
 If TypeOf GroupRef Is mHandler Then
-If GroupRef.T1 = 1 Then
+If GroupRef.t1 = 1 Then
 If GroupRef.objref.Done Then
 Set GroupRef.objref.ValueObj = item
 Exit Property
@@ -407,7 +409,7 @@ Set var = aa
 End Sub
 Sub CopyGroup(myobject As Object, myobject2 As Object)
 'Special Copy
- Dim ps As New mStiva, V As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
+ Dim ps As New mStiva, v As Long, s$, frm$, vvl As Variant, x1 As Long, ss$
 Dim subgroup As Object, sub2 As Object
  Set myobject2 = New Group
  
@@ -442,6 +444,7 @@ maxitems1 = 0
 ReDim actualdata(0)
 CodeName = GetAnyName$
 Arr = True
+myarrbase = -ArrBase
 End Sub
 
 Private Sub Class_Terminate()

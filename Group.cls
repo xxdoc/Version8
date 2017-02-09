@@ -33,8 +33,8 @@ s = OwnSoros.StackItem(i)
 If Left$(s$, 1) = "*" Then
 AllSoros.DataStr "*" + topname$ + GroupName + Mid$(s, 2)
  If Not IsObject(v(val(Split(s)(1)))) Then Set v(val(Split(s)(1))) = New Group
- If HERE$ <> "" Then
- Set vv = v(val(Split(s)(1))).PrepareSoros(v(), HERE$ + "." + GroupName)
+ If here$ <> "" Then
+ Set vv = v(val(Split(s)(1))).PrepareSoros(v(), here$ + "." + GroupName)
  Else
  Set vv = v(val(Split(s)(1))).PrepareSoros(v(), GroupName)
  End If

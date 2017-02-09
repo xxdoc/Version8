@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 14
+Global Const Revision = 15
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2274,7 +2274,7 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
             
             CopyGroup var(y1), bs
             
-            Set tempRef = pppp.item(v).Link
+            Set tempRef = pppp.GroupRef   'pppp.item(v).Link
             Set pppp.item(v) = bs.lastobj
             Set pppp.item(v).LinkRef = tempRef
             Set bs.lastobj = Nothing
@@ -2301,7 +2301,7 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
         b$ = vbCrLf + w$ + "$=" + w$ + b$
      SpeedGroup = Execute(bstack, b$, True)
     CopyGroup var(y1), bstack
-       Set tempRef = pppp.item(v).Link
+       Set tempRef = pppp.GroupRef  ''  .item(v).Link
       Set pppp.item(v) = bstack.lastobj
       Set pppp.item(v).LinkRef = tempRef
     Set bstack.lastobj = Nothing
@@ -2542,7 +2542,7 @@ breakexit:
         v = mm.PopVal
         If v <> -1 Then
                         CopyGroup var(y1), bstack
-                         Set tempRef = pppp.item(v).Link
+                         Set tempRef = pppp.GroupRef  '  pppp.item(v).Link
                         Set pppp.item(v) = bstack.lastobj
                          Set pppp.item(v).LinkRef = tempRef
 
@@ -2589,7 +2589,7 @@ If LastErNum <> 0 Then
 If FK$(13) = "" Then FK$(13) = GetNextLine((sbf(bstack.OriginalCode).sb))
     End If
                         CopyGroup var(y1), bstack
-                        Set tempRef = pppp.item(v).Link
+                        Set tempRef = pppp.GroupRef '' pppp.item(v).Link
                         Set pppp.item(v) = bstack.lastobj
                          Set pppp.item(v).LinkRef = tempRef
 
@@ -8138,9 +8138,9 @@ PP = 0
                          
                         End If
                             On Error Resume Next
-                            If p < 0 Then
+                            If p < -pppp.myarrbase Then
                                     A$ = n$: IsNumber = False
-                              MyErMacro A$, "negative index in array " & v$ & ")", "αρνητικός δείκτης στο πίνακα " & v$ & ")"
+                              MyErMacro A$, "index too low for array " & v$ & ")", "αρνητικός δείκτης στο πίνακα " & v$ & ")"
                             Exit Function
                             End If
                             
@@ -12583,6 +12583,10 @@ contStrArr:
         End If
             If Not FastSymbol(A$, ")") Then MissSymbol A$, ")": IsString = False: Exit Function
         End If
+              If p < -pppp.myarrbase Then
+                 MyErMacro A$, "index too low for array " & q & ")", "αρνητικός δείκτης στο πίνακα " & q$ & ")": Exit Function
+    
+                End If
             On Error Resume Next
         If Not pppp.PushOffset(w2, dn, CLng(p)) Then
         
@@ -14657,10 +14661,28 @@ If FastSymbol(b$, vbCrLf, , 2) Then
     NewStat = False
     VarStat = False
     sss = LLL: lbl = True: jump = False
-    If IsNumberLabel(b$, w$) Then sss = Len(b$): sss = LLL: lbl = False: jump = False:  If sss = 0 Then sss = 2: b$ = vbCrLf
+    If IsNumberLabel(b$, w$) Then
+    sss = Len(b$): sss = LLL: lbl = False: jump = False:  If sss = 0 Then sss = 2: b$ = vbCrLf
+    End If
     UINK$ = ""
 Else
-    If lbl Then If IsNumberLabel(b$, w$) Then sss = Len(b$): sss = LLL: jump = False: If sss = 0 Then sss = 2: b$ = vbCrLf
+    If lbl Then
+    If IsNumberLabel(b$, w$) Then
+    
+    
+     If IFCTRL = 2 Then
+     
+      Once = False
+                b$ = w$
+                Execute = 2
+                Exit Function
+    Else
+    sss = Len(b$): sss = LLL: jump = False: If sss = 0 Then sss = 2: b$ = vbCrLf
+
+    End If
+    End If
+    End If
+ 
 End If
 If VarStat Or NewStat Then
 
@@ -15239,9 +15261,25 @@ ContExit:
                 Execute = 2
                 Exit Function
         ElseIf IsLabelSymbolNewExp(b$, "ΓΙΑ", "FOR", lang, Us$) Then
+        
          Once = False
+                
+            i = Abs(IsLabelOnly(b$, w$))
+            If i = 0 Then
+                    i = IsNumberLabel(b$, w$)
+                    b$ = w$
+                    Execute = 12
+            ElseIf i = 1 Then
+                b$ = w$
+                Execute = 12
+               
+                 
+            Else
+        
                 b$ = "NEXT"
-        Execute = 2
+                Execute = 2
+             End If
+        
                 Exit Function
         ElseIf IsLabelSymbolNewExp(b$, "ΕΚΤΥΠΩΣΗΣ", "PRINTING", lang, Us$) Then
         If bstack.toprinter Then
@@ -15431,7 +15469,7 @@ If x1 = 1 Then
             Else
                     TraceRestore bstack, nd&
                     If Execute = 2 And ss$ <> "" And Not ok Then
-                            If y1 And ss$ = "NEXT" Then
+                        If y1 And ss$ = "NEXT" Then
                                     If sx = p Then
                                             If lang Then ss$ = "NEXT " + sbb$ Else ss$ = "ΕΠΌΜΕΝΟ " + sbb$
                                             If search2KIND(b$, ss$, x1, True) Then
@@ -15462,6 +15500,11 @@ If x1 = 1 Then
                             End If
                             b$ = ss$
                             Exit Function
+                    ElseIf Execute = 12 Then
+                    bstack.RetStack.drop 2
+                    Execute = 2
+                    b$ = ss$
+                    Exit Function
                     End If
             End If
         
@@ -16124,6 +16167,12 @@ ContElse:
                 End If
                 jump = False
                 Else
+                If IsNumberLabel(b$, w$) Then
+                  Once = False
+                b$ = w$
+                Execute = 2
+                Exit Function
+                End If
                 lbl = False
                 End If
                 End If
@@ -16333,7 +16382,9 @@ contif:
                     End If
                     
                     Else
-                    
+If MaybeIsSymbol(b$, "0123456789") Then
+GoTo ContGoto
+End If
                     IFCTRL = 2 ' NONEED ANYTHING BUT NOT ERROR FOR IF.ELSE AND ELSE
                     If Once Then
                     sss = Len(b$): GoTo AGAIN1
@@ -16937,7 +16988,6 @@ contHereFromOn:
                 
                 PushParamGeneral bstack, b$
                 If FastSymbol(b$, ")") Then
-                
                  PushStage bstack, False
                 bstack.RetStack.PushVal Len(b$)
                  
@@ -16995,8 +17045,13 @@ ContGoto:
                 MyEr "No Label or Number in GOTO", "Χωρίς όνομα ή αριθμό η ΠΡΟΣ"
                 Exit Function
         Else
+        ' GET OUT FOR NEXT
+    
+        
         i = Abs(IsLabelOnly(b$, w$))
+
                 If i = 1 Then
+                
                 Once = False
                 b$ = w$
                 Execute = 2
@@ -18150,7 +18205,16 @@ End If
                           Else
                           
                                   Set pppp.item(v) = bstack.lastobj
-                                  If TypeOf bstack.lastobj Is Group Then Set pppp.item(v).LinkRef = myobject
+                                  
+                                  If TypeOf bstack.lastobj Is Group Then
+                                      Set pppp.item(v).LinkRef = myobject
+                                      If myobject Is Nothing Then
+                                       
+                                        Set pppp.item(v).LinkRef = bstack.lastobj.Link
+                                        
+                                      End If
+                                  End If
+                                  
                           End If
                    Else
                   
@@ -18796,7 +18860,11 @@ Case 2
                              GoTo emptyfunc
                      End If
  
-    
+Case 12
+MyEr "Exit for out of for next loop", "Εξοδος για έξω από Για Επόμενο"
+GoFunc = False
+Exit Do
+
 End Select
 
 Loop
@@ -21203,9 +21271,7 @@ Function PosLabel(ByVal w$, ByVal b$) As Long
 Dim i As Long, j As Long, jmp As Boolean
 On Error Resume Next
 If val(Left$(w$, 1)) = 0 Then w$ = w$ & ":": jmp = True
-
 PosLabel = Len(b$) + 1
-
 If Left$(b$, Len(w$)) = w$ Then
     i = 1
 Else
@@ -22290,8 +22356,8 @@ PP.SerialItem W3, dn, 6
         If Not FastSymbol(rst$, ")") Then MyEr "missing )", "λείπει )": Exit Function
     End If
         On Error Resume Next
-        If p < 0 Then
-         MyEr "negative index in array " & v$ & ")", "αρνητικός δείκτης στο πίνακα " & v$ & ")": Exit Function
+        If p < -PP.myarrbase Then
+         MyEr "index too low for array " & v$ & ")", "αρνητικός δείκτης στο πίνακα " & v$ & ")": Exit Function
     
         End If
         If PP.PushOffset(offset, dn, CLng(p)) Then
@@ -27964,6 +28030,9 @@ thh1:
 If Not loopthis Then Exit Do
 loopthis = False
                    End If
+Case 12
+MyEr "Exit for out of for next loop", "Εξοδος για έξω από Για Επόμενο"
+Exit Do
         End Select
 Loop
 ProcModuleEntry = True
@@ -28160,6 +28229,7 @@ End If
 End If
 Exit Function
 End If
+
 Set acopy = New Document
 
 With acopy
@@ -28194,8 +28264,9 @@ IsNumberLabel ss$, DUMP$
                                                    '' If Right$(w$, 1) = ")" Then w$ = Left$(w$, Len(w$) - 1)
                                                         End If
                                                         searchsub = True
-                                                        
                                                        
+                                                       
+
                                                         Exit Do
                                     End If
                         End If
@@ -28530,8 +28601,14 @@ subsub02:
                                Once = kolpo
                                Exec = 2: b$ = bb$: Exit Function
                         End If
+
                 Case Else
-                        If W3 = 3 And bb$ = "CONTINUE" Then
+                        If W3 = 12 Then
+                        
+                                                        b$ = bb$
+                                                        Exec = 12
+                                                        Exit Do
+                        ElseIf W3 = 3 And bb$ = "CONTINUE" Then
                                 If removebracket Then
                                         ec$ = block(b$)
                                 Else
@@ -31530,7 +31607,9 @@ MyThread = True
 ElseIf IsExp(bstack, rest$, p) Then
 ss$ = ""
     If IsLabelSymbolNewExp(rest$, "ΣΒΗΣΕ", "ERASE", lang, ss$) Then
-        bstack.ThrowOne CLng(p)
+       If Not bstack.ThrowOne(CLng(p)) Then
+       TaskMaster.ThrowOne (CLng(p))
+       End If
     ElseIf IsLabelSymbolNewExp(rest$, "ΚΡΑΤΑ", "HOLD", lang, ss$) Then
         TaskMaster.Message CLng(p), 0
     ElseIf IsLabelSymbolNewExp(rest$, "ΕΚΤΕΛΕΣΗ", "EXECUTE", lang, ss$) Then
@@ -33700,7 +33779,8 @@ Else
 If bstack.toprinter = True Then oxiforPrinter:   Exit Function
  If Typename(bstack.Owner) Like "Gui*" Then oxiforforms: Exit Function
             If ISSTRINGA(rest$, frm$) Then
-            If Not FastSymbol(rest$, ",") Then MissPar:  Exit Function
+            
+            If Not Fast2Symbol(rest$, ",", 1, ";", 1) Then MissPar: Exit Function
             Else
             frm$ = "?"
             End If
@@ -34432,6 +34512,7 @@ MyFunction = True
                 x1 = GlobalSub(what$, "", "")
                 GoTo jump1
                         ElseIf here$ = "" And GetSub(what$, x1) Then
+                        
 jump1:
                                 If x1 >= lckfrm And lckfrm <> 0 Then   ' when we load a scrabled program..we have locked functions/modules
                                             MyEr what$ & " is locked", what$ & " είναι κλειδωμένο"
@@ -34457,12 +34538,17 @@ jump1:
                                     End If
                                     Exit Function
                         ElseIf GetlocalSub(bstack.GroupName & what$, x1) Then
+                     
+
+                                    If FastSymbol(rest$, "{") Then
+                                    If bstack.OriginalCode > x1 Then
+                                            GoTo jumpheretoo
+                                    End If
                                     If x1 >= lckfrm And lckfrm <> 0 Then
                                             MyEr what$ & " is locked", what$ & " είναι κλειδωμένο"
                                             rest$ = ""
                                             MyFunction = False: Exit Function
                                     End If
-                                    If FastSymbol(rest$, "{") Then
                                             i = Len(rest$)
                                             what$ = block(rest$) + " "
                                             While Left$(what$, 10) = "'11001EDIT"
@@ -34484,6 +34570,8 @@ jump1:
                                     End If
                                     Exit Function
                         ElseIf FastSymbol(rest$, "{") Then
+jumpheretoo:
+                        
                                     If here$ = "" Then
                                                 s$ = block(rest$)
                                                 If Right$(s$, 2) <> vbCrLf Then s$ = s$ + vbCrLf
@@ -38218,12 +38306,16 @@ JUMP0:
                         End If
                         Exit Function
                 ElseIf GetlocalSub(basestack.GroupName & what$, x1) Then
+                        If FastSymbol(rest$, "{") Then
+                        If basestack.OriginalCode > x1 Then
+                        ' we have collision so we need a new one
+                        GoTo jumpheretoo
+                        End If
                         If x1 >= lckfrm And lckfrm <> 0 Then
                                 MyEr what$ & " is locked", what$ & " είναι κλειδωμένο"
                                 rest$ = ""
                                 MyModule = False: Exit Function
                         End If
-                        If FastSymbol(rest$, "{") Then
                                 i = Len(rest$) ''
                                 what$ = block(rest$) + " "
                                 While Left$(what$, 10) = "'11001EDIT"
@@ -38244,6 +38336,7 @@ JUMP0:
                         End If
                         Exit Function
                 ElseIf FastSymbol(rest$, "{") Then
+jumpheretoo:
                         If here$ = "" Then
                                 pa$ = block(rest$)
                                 ' Call preProcessor(basestack, pa$)
@@ -39437,6 +39530,8 @@ End If
 ' restore DB.Provider for User
 JetPrefixUser = JetPrefixHelp
 JetPostfixUser = JetPostfixHelp
+' SET ARRAY BASE TO ZERO
+ArrBase = 0
 End If
 
 End Function
@@ -39525,6 +39620,9 @@ If Not IsLabelSymbolNew(rest$, "ΒΑΣΗ", "BASE", lang) Then
 Else
 Do
 If IsStrExp(basestack, rest$, ss$) Then
+On Error Resume Next
+If (ss$ Like "*.mdb") Or (ss$ Like "*:\*") Then ss$ = mylcasefILE(ss$)
+
 RemoveOneConn ss$
 End If
 Loop Until Not FastSymbol(rest$, ",")
