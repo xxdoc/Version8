@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 15
+Global Const Revision = 16
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -5587,15 +5587,20 @@ End If
 
     If FastSymbol(n$, ",") Then
           If IsExp(bstack, n$, p) Then
-          
+          If p < 1 Then
+          r = SG * -pppp.myarrbase
+          Else
           pppp.SerialItem PP, CLng(p - 1), 6
           r = SG * PP
+          End If
               A$ = n$
                IsNumber = FastSymbol(A$, ")", True)
+
           Else
               A$ = n$
            MyErMacro A$, "Can't read dimension index from array " & s$, "Δεν μπορώ να διαβάσω τον δείκτη διάστασης του πίνακα " & s$
           End If
+        
       Else ' dimensions
       p = 0
       pppp.SerialItem PP, CLng(p), 5
@@ -5625,8 +5630,12 @@ If IsStrExp(bstack, n$, s$) Then
   If Not pppp.Arr Then MyEr "Need an Array", "Χρειάζομαι ένα πίνακα": Exit Function
         If FastSymbol(n$, ",") Then
           If IsExp(bstack, n$, p) Then
-            pppp.SerialItem PP, CLng(p - 1), 6
-            r = SG * PP
+            If p < 1 Then
+                r = SG * -pppp.myarrbase
+            Else
+                pppp.SerialItem PP, CLng(p - 1), 6
+                r = SG * PP
+            End If
             A$ = n$
             IsNumber = FastSymbol(A$, ")", True)
           Else
@@ -16138,6 +16147,7 @@ contTask:
                  bstack.TaskMain = bstack.Exist(CLng(sp), "_multi") = False
                 
                
+               
              Loop Until MOUT Or bstack.TaskMain Or NOEXECUTION Or TaskMaster.QueueCount < 2
             
      bstack.TaskMain = False
@@ -17224,6 +17234,7 @@ varonly:
                                 End If
                                 On Error GoTo 0
                                 End If
+
                         Else
                                 If Not bstack.lastobj Is Nothing Then
                                     If TypeOf bstack.lastobj Is Group Then
@@ -17247,6 +17258,11 @@ varonly:
                                         End If
                                          
                                             Set bstack.lastobj = Nothing
+                                ElseIf TypeOf bstack.lastobj Is mEvent Then
+                                Set var(v) = Nothing
+                                Set var(v) = bstack.lastobj
+                                    Set bstack.lastobj = Nothing
+
                                     Else
                                              var(v) = 0
                                     End If
@@ -17506,6 +17522,11 @@ again123456:
                                         Set myobject = Nothing
                                     ElseIf TypeOf bstack.lastobj Is lambda Then
                                 GoTo contlambda
+                                ElseIf TypeOf bstack.lastobj Is mEvent Then
+                                Set var(v) = Nothing
+                                Set var(v) = bstack.lastobj
+                                    Set bstack.lastobj = Nothing
+
                                    Else
                                    MissNumExpr
                                    Execute = 0
@@ -29760,6 +29781,7 @@ Dim j As Long, k, s1$, klm As Long
 Set oldbstack = bstack.soros
 Dim ohere$
 ohere$ = here$
+If A Is Nothing Then Exit Function
 For j = 0 To A.count - 1
 here$ = "EV" + CStr(i) + "." + CStr(j)
 If A.enabled Then
@@ -39284,20 +39306,33 @@ End Function
 
 Function MyDim(basestack As basetask, rest$, lang As Long) As Boolean
 Dim par As Boolean, pppp As mArray, it As Long
-Dim p As Double, w$, s$, x As Double, i As Long, f As Long, reverse As Boolean, ss$
+Dim p As Double, w$, s$, x As Double, i As Long, f As Long, reverse As Boolean, ss$, uselocalbase As Boolean, usethisbase As Long
+Dim oldbase As Long
 MyDim = True
 reverse = IsLabelSymbolNew(rest$, "OLE", "OLE", lang)
 par = IsLabelSymbolNew(rest$, "ΝΕΟ", "NEW", lang)
-
+uselocalbase = IsLabelSymbolNew(rest$, "ΒΑΣΗ", "BASE", lang)
+If uselocalbase Then
+If FastSymbol(rest$, "1") Then
+    oldbase = ArrBase
+    ArrBase = 1
+ElseIf FastSymbol(rest$, "0") Then
+    oldbase = ArrBase
+    ArrBase = 0
+End If
+If Not FastSymbol(rest$, ",") Then MyDim = True: GoTo ex1
+End If
+' for security
+usethisbase = ArrBase
 Do
-
+ArrBase = usethisbase
     it = Abs(IsLabelDIM(basestack, rest$, w$))
     If basestack.priveflag Then w$ = ChrW(&HFFBF) + w$
     If MaybeIsSymbol(rest$, ")") Then rest$ = "0" + rest$
 
     ''*********************
     If neoGetArray(basestack, w$, pppp, here$ <> "") And Not par Then
-    If pppp.IHaveClass And pppp.GroupRef Is Nothing Then Set pppp = Nothing: Exit Function
+    If pppp.IHaveClass And pppp.GroupRef Is Nothing Then Set pppp = Nothing: GoTo ex1
    ' If reverse Then pppp.RevOrder = True
     Select Case it
     Case 5, 6, 7
@@ -39335,7 +39370,7 @@ Do
                             Set basestack.lastobj = Nothing
                                                         MyEr "Only Group or Lambda", "Μόνο Ομάδες και λάμδα"
                                                         MyDim = False
-                                                        Exit Function
+                                                        GoTo ex1
                                          
                     
                             End If
@@ -39366,7 +39401,7 @@ Do
                                                         Set basestack.lastobj = Nothing
                                                         MyEr "Only Group or Lambda objects here", "Μόνο Ομάδες ή λάμδα αντικείμενα εδώ"
                                                         MyDim = False
-                                                        Exit Function
+                                                        GoTo ex1
                                                         Exit For
                                                      End If
                                                      
@@ -39377,7 +39412,7 @@ Do
                         Else
                           Set basestack.lastobj = Nothing
                             MyDim = False
-                            Exit Function
+                            GoTo ex1
                             Exit For
                         End If
                         Next i
@@ -39422,13 +39457,13 @@ Do
                                                      Set basestack.lastobj = Nothing
                                                         MyEr "Only Lambda objects here", "Μόνο λάμδα αντικείμενα εδώ"
                                                         MyDim = False
-                                                        Exit Function
+                                                        GoTo ex1
                                                         Exit For
                             End If
                         Else
                             Set basestack.lastobj = Nothing
                             MyDim = False
-                            Exit Function
+                            GoTo ex1
                             Exit For
                         End If
                         Next i
@@ -39470,13 +39505,13 @@ Do
                                                      Set basestack.lastobj = Nothing
                                                         MyEr "Only Lambda objects here", "Μόνο λάμδα αντικείμενα εδώ"
                                                         MyDim = False
-                                                        Exit Function
+                                                        GoTo ex1
                                                         Exit For
                             End If
                         Else
                             Set basestack.lastobj = Nothing
                             MyDim = False
-                            Exit Function
+                            GoTo ex1
                             Exit For
                         End If
                         Next i
@@ -39492,11 +39527,14 @@ Do
 
     rest$ = basestack.GroupName & w$ & rest$
     MyDim = False
-    Exit Function
+    GoTo ex1
     End If
     
 Loop Until Not FastSymbol(rest$, ",")
-
+ex1:
+If uselocalbase Then
+ArrBase = oldbase
+End If
 End Function
 Function MyNew(basestack As basetask, rest$, lang As Long) As Boolean
 MyNew = True
