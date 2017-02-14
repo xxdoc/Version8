@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 16
+Global Const Revision = 17
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -17509,7 +17509,11 @@ again123456:
                                 Execute = 0
                                 Exit Do
                              End Select
-                             
+                            ElseIf Typename(var(v)) = "mEvent" Then
+                            Set var(v) = Nothing
+                                Set var(v) = bstack.lastobj
+                                    Set bstack.lastobj = Nothing
+
                             ElseIf VarType(var(v)) = vbLong Then
                             On Error Resume Next
                                Select Case ss$
