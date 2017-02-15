@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 18
+Global Const Revision = 19
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -17223,7 +17223,8 @@ varonly:
                                         UnFloatGroup bstack, w$, v, myobject  ' global??
                                         Set myobject = Nothing
                                 Else
-                                        Execute = 0
+                                        var(v) = CDbl(0)
+                                        GoTo contherefromlong
                                 End If
                                 Else
                                 On Error Resume Next
@@ -17237,6 +17238,7 @@ varonly:
                                 End If
 
                         Else
+contherefromlong:
                                 If Not bstack.lastobj Is Nothing Then
                                     If TypeOf bstack.lastobj Is Group Then
                                     If (Typename(var(v)) = "Group") Or Not IsObject(var(v)) Then
@@ -17904,28 +17906,25 @@ If MaybeIsSymbol(b$, "=-+*/<~") Then
                 ElseIf Not bstack.lastobj Is Nothing Then
                         If TypeOf bstack.lastobj Is lambda Then
                             If Typename(var(v)) = "lambda" Then
-                                                Set var(v) = bstack.lastobj
-
-                                                Else
-                                    GlobalSub w$ + "()", "CALL EXTERN " & CStr(v) ' & " : = NUMBER"
-                                               Set var(v) = bstack.lastobj
-                                                
-                                        End If
-                                         
-                                            Set bstack.lastobj = Nothing
-                                Else
-                                MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
-
+                                 Set var(v) = bstack.lastobj
+                            Else
+                                GlobalSub w$ + "()", "CALL EXTERN " & CStr(v) ' & " : = NUMBER"
+                                Set var(v) = bstack.lastobj
+                            End If
+                            Set bstack.lastobj = Nothing
+                        Else
+                            MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
                             Execute = 0
                             Exit Function
-                         End If
-                 Else
-                    MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
-
-                 Execute = 0
-                 Exit Function
-                 ' OLD: var(v) = Int(p)
-                 End If
+                            End If
+               ElseIf IsObject(var(v)) Then
+                                       MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                                    Execute = 0
+                                    Exit Function
+                Else
+                     var(v) = Int(p)
+                End If
+ 
                 If Err.Number = 6 Then Execute = 0: Exit Do
                 On Error GoTo 0
                 End If

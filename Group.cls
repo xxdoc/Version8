@@ -136,6 +136,9 @@ Set bank = Nothing
 End Sub
 Public Property Set LinkRef(A As Object)
 If FloatGroup Then
+If Typename(A) <> "Group" Then
+Exit Property
+End If
 mTeam = False
 Set LinkToGroup = A
 If A Is Nothing Then Exit Property
