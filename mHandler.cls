@@ -13,11 +13,11 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' Generic Handler
 Public objref As Object
-Public T1 As Variant, Indirect As Long
+Public t1 As Variant, indirect As Long
 Public ReadOnly As Boolean
 
 Private Sub Class_Initialize()
-Indirect = -1
+indirect = -1
 End Sub
 
 ''Public Par1 As Variant
@@ -26,9 +26,9 @@ Set objref = Nothing
 End Sub
 Public Sub CopyTo(A As mHandler)
 Set A = New mHandler
-A.T1 = T1
+A.t1 = t1
 ''A.Par1 = Par1   ' key or index ???
 ' no copy for reference
-A.Indirect = Indirect
+A.indirect = indirect
 Set A.objref = objref
 End Sub

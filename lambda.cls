@@ -93,8 +93,8 @@ If IsObject(val) Then
 '' check first the type
 If TypeOf val Is mHandler Then
 CheckGarbage val, v()
-If val.Indirect > -1 Then
-    Set myVar(where).Value = v(val.Indirect)
+If val.indirect > -1 Then
+    Set myVar(where).Value = v(val.indirect)
     Exit Sub
 End If
 End If
@@ -122,11 +122,24 @@ Dim i As Long
 If used > 0 Then
 For i = used - 1 To 0
 If IsObject(myVar(i).Value) Then
-Set myVar(i).Value = Nothing
+            GarbageCollector.Done = False
+           If Typename(myVar(i).Value) = "mHandler" Then
+            If GarbageCollector.Find(objptr(myVar(i).Value.objref)) Then
+            ElseIf GarbageCollector.Find(objptr(myVar(i).Value)) Then
+            
+            End If
+            End If
+            Set myVar(i).Value = Nothing
+            If GarbageCollector.Done Then
+            If GarbageCollector.ReferCountValue = 1 Then
+                GarbageCollector.RemoveWithNoFind
+            End If
+            End If
 End If
 Next i
-Erase myVar()
+
 End If
+Erase myVar()
 End Sub
 Public Sub CopyTo(A As lambda, v() As Variant)
 ' only for new
@@ -166,15 +179,15 @@ End If
 End Sub
 Sub CheckGarbage(obj As Variant, var() As Variant)
 With obj
-     If .Indirect = -1 Then
-                                        If .T1 <> 2 Then
+     If .indirect = -1 Then
+                                        If .t1 <> 2 Then
                                             If Not GarbageCollector.ExistKey(objptr(.objref)) Then
                                             GarbageCollector.AddKey objptr(.objref), .objref
                                             End If
                                         End If
-                                        ElseIf var(.Indirect).objref.T1 <> 2 Then
-                                            If Not GarbageCollector.ExistKey(objptr(var(.Indirect).objref)) Then
-                                                GarbageCollector.AddKey objptr(var(.Indirect).objref), var(.Indirect)
+                                        ElseIf var(.indirect).objref.t1 <> 2 Then
+                                            If Not GarbageCollector.ExistKey(objptr(var(.indirect).objref)) Then
+                                                GarbageCollector.AddKey objptr(var(.indirect).objref), var(.indirect)
                                             End If
                                         End If
 End With

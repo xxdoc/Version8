@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 2
-Global Const Revision = 17
+Global Const Revision = 18
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -7245,6 +7245,7 @@ Case "LEN(", "Ã« œ”("
                             End If
                             A$ = n$
                             IsNumber = FastSymbol(A$, ")", True)
+                            
                             Set bstack.lastobj = Nothing
                         Exit Function
                     ElseIf .t1 = 2 Then
@@ -32711,7 +32712,7 @@ Case 3
             ElseIf GetVar(bstack, what$, i, , , flag) Then
                 CheckVar var(i), s$
             Else
-                GlobalVar what$, s$
+                i = GlobalVar(what$, s$)
             End If
             Set var(i) = myobject
             If ohere$ = "" Then
@@ -32967,9 +32968,33 @@ ElseIf y1 < 5 And y1 > 0 Then
             MyClear = False
             
             End If
-       Set var(i).objref = New FastCollection
+                   GarbageCollector.Done = False
+           
+            If GarbageCollector.Find(objptr(var(i).objref)) Then
+            ElseIf GarbageCollector.Find(objptr(var(i).objref)) Then
+            
+            End If
+         Set var(i) = New mHandler
+         Set var(i).objref = New FastCollection
+              If GarbageCollector.Done Then
+            If GarbageCollector.ReferCountValue = 1 Then
+                GarbageCollector.RemoveWithNoFind
+            End If
+            End If
+       
        Else
+       GarbageCollector.Done = False
+           
+            If GarbageCollector.Find(objptr(var(i).objref)) Then
+            ElseIf GarbageCollector.Find(objptr(var(i).objref)) Then
+            
+            End If
        Set var(i).objref = New MemBlock
+                     If GarbageCollector.Done Then
+            If GarbageCollector.ReferCountValue = 1 Then
+                GarbageCollector.RemoveWithNoFind
+            End If
+            End If
        End If
        Else
          MissingGroup
@@ -33010,8 +33035,11 @@ ElseIf y1 = 6 Then
         If Not pppp.Arr Then NotArray: MyClear = False: Exit Function
                 If Not NeoGetArrayItem(pppp, bstack, what$, it, rest$) Then MyClear = False: Exit Function
                          If Typename(pppp.item(it)) = doc Then
-                         Set pppp.item(it) = New Document
-                         pppp.item(it).textDoc = ""
+                             Set pppp.item(it) = New Document
+                             pppp.item(it).textDoc = ""
+                         ElseIf Typename(pppp.item(it)) = "lambda" Then
+                            Set pppp.item(it) = Nothing
+                            EmptyVariantArrayItem pppp, it
                          Else
                          pppp.item(it) = ""
                          End If
