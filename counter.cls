@@ -53,8 +53,8 @@ res = DisconnectNamedPipe(hPipe)
 End If
 End Sub
 
-Private Property Let TaskInterface_interval(ByVal rhs As Double)
-mYspace = rhs
+Private Property Let TaskInterface_interval(ByVal RHS As Double)
+mYspace = RHS
 m_duration = uintnew(CDbl(timeGetTime)) + mYspace
 End Property
 
@@ -65,12 +65,12 @@ End Property
 
 ' IMPLEMENTED PROPERTIES
 
-Private Property Set TaskInterface_Owner(rhs As Object)
+Private Property Set TaskInterface_Owner(RHS As Object)
 ' Usage: Private Property Set TaskInterface_Owner(RHS As Form)
   
   'Validating type
   'If TypeOf RHS Is Form Then
-    Set myBase.Owner = rhs
+    Set myBase.Owner = RHS
   'Else
    ' Error tmTypeMisMatch
   'End If
@@ -162,7 +162,7 @@ If m_duration <= uintnew(CDbl(timeGetTime)) Then
     DisconnectNamedPipe hPipe
   End If
   ElseIf GetLastError = ERROR_NO_DATA Then
-  Stop
+  ''Stop
   ' ERROR_NO_DATA
   
   End If
@@ -180,8 +180,8 @@ End Sub
 
 
 
-Private Property Let TaskInterface_Done(ByVal rhs As Boolean)
-  myBase.Done = rhs
+Private Property Let TaskInterface_Done(ByVal RHS As Boolean)
+  myBase.Done = RHS
 End Property
 
 Private Property Get TaskInterface_Done() As Boolean
@@ -202,8 +202,8 @@ Public Property Get TaskInterface_Priority() As PriorityLevel
 On Error Resume Next
   TaskInterface_Priority = myBase.Priority
 End Property
-Private Property Let TaskInterface_ID(ByVal rhs As Long)
-If rhs = jobnameID Then
+Private Property Let TaskInterface_ID(ByVal RHS As Long)
+If RHS = jobnameID Then
 myBase.Done = True
 End If
 End Property
@@ -211,8 +211,8 @@ End Property
 Private Property Get TaskInterface_ID() As Long
 TaskInterface_ID = jobnameID
 End Property
-Private Property Let TaskInterface_busy(ByVal rhs As Boolean)
-mybusy = rhs
+Private Property Let TaskInterface_busy(ByVal RHS As Boolean)
+mybusy = RHS
 End Property
 
 Private Property Get TaskInterface_busy() As Boolean

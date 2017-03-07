@@ -11,7 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-' MAKE VALUE AS DEFAULT PROPERTY
+' not MAKE VALUE AS DEFAULT PROPERTY, changed in version 9
 
 Dim VarRef As String
 Dim FuncRef As String
@@ -24,6 +24,7 @@ Dim bank As mArray
 Dim mTeam As Boolean
 Dim LinkToGroup As Object
 Dim mTag As String
+Public HasValue As Boolean, HasSet As Boolean, HasStrValue As Boolean
 Public Function PrepareSoros(ByRef v(), ByVal topname$) As mStiva
 Dim i As Long, AllSoros As New mStiva, s As String, vv As mStiva
 For i = 1 To OwnSoros.Total
@@ -134,14 +135,14 @@ If FloatGroup Then bank.SerialItem (0), 0, 7
 FloatGroup = False
 Set bank = Nothing
 End Sub
-Public Property Set LinkRef(A As Object)
+Public Property Set LinkRef(a As Object)
 If FloatGroup Then
-If Typename(A) <> "Group" Then
+If Typename(a) <> "Group" Then
 Exit Property
 End If
 mTeam = False
-Set LinkToGroup = A
-If A Is Nothing Then Exit Property
+Set LinkToGroup = a
+If a Is Nothing Then Exit Property
 'erase functions,,,
  bank.item(bank.item(1) * 2 + 3) = ""
 mTeam = True
@@ -152,11 +153,11 @@ End Property
 Public Property Get Link() As Object
 Set Link = LinkToGroup
 End Property
-Public Property Set Sorosref(A As mStiva)
+Public Property Set Sorosref(a As mStiva)
 If FloatGroup Then
 ' we can't do anything with stored values
 Else
-Set OwnSoros = A
+Set OwnSoros = a
 End If
 End Property
 Public Property Get soros() As mStiva
@@ -214,13 +215,6 @@ End Property
 
 Public Property Let LocalList(ByVal vNewValue As String)
 LocalRef$ = vNewValue
-End Property
-Public Property Get Value() As Variant
-Attribute Value.VB_UserMemId = 0
-Value = 0
-End Property
-Public Property Let Value(dummy As Variant)
-'
 End Property
 
 Public Property Get FloatGroupName() As Variant

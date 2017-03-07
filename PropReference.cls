@@ -43,7 +43,6 @@ vtref = vtrefnumber
 End Sub
 
 Public Property Get Value() As Variant
-Attribute Value.VB_UserMemId = 0
 Dim RETVAR As Variant
 If Init Then
 If UseIndex Then

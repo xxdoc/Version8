@@ -15,8 +15,11 @@ Option Explicit
 ' George's FastCollection
 ' Only Add, and Find.
 ' Key as string may be a hex number (used for enumarates)
-' No same key.
-' We can remove key
+
+' No same key. --- this is changed
+Private AllowSameKey As Boolean
+' We can remove a key - if AllowSameKey=false
+
 ' We can add key (only unique keys)
 ' return variant (can be anything)
 '**************
@@ -44,7 +47,7 @@ Option Explicit
 '* .Frwd  (for index, exit if not .done)
 '* .Back  (for index, exit if not .done)
 Private mSortstyle As VbCompareMethod
-Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" ( _
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Type item
     Key As String
@@ -103,11 +106,13 @@ Public Sub AddKey(RHS, Optional aValue As Variant)
     End If
 End Sub
 Public Sub Sort()
+If AllowSameKey Then Exit Sub
 If toplim = -1 Then Exit Sub
 QuickSortItems PriveSpace(), LBound(PriveSpace()), toplim
 ReHash
 End Sub
 Public Sub SortDes()
+If AllowSameKey Then Exit Sub
 If toplim = -1 Then Exit Sub
 QuickSortItemsRev PriveSpace(), LBound(PriveSpace()), toplim
 ReHash
@@ -119,6 +124,7 @@ Public Sub ToKey(RHS)
     If Done Then lastkey = CStr(RHS)
 End Sub
 Public Sub RemoveWithNoFind()
+If AllowSameKey Then Exit Sub
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
 If toplim < 0 Then Exit Sub   ' previus stop
 top1 = toplim
@@ -162,7 +168,37 @@ here:
   ReduceHash toplim
 End If
 End Sub
+Public Sub drop(RHS)
+If Not AllowSameKey Then Exit Sub
+RHS = RHS - 1
+If (toplim - RHS) >= 0 And (RHS >= 0) Then
+Dim i As Long
+For i = toplim To RHS Step -1
+       With PriveSpace(i)
+        If .Pleft > 0 Then
+            Hash(.lastpos) = .Pleft
+            .Key = ""
+            .iValue = CDbl(0)
+            .Pleft = 0
+        Else
+            Hash(.lastpos) = 0
+            .Key = ""
+        End If
+        End With
+toplim = RHS - 1
+  ReduceHash toplim
+Next i
+Else
+   MaxSpace = 5
+    ReDim PriveSpace(MaxSpace) As item, Hash(MaxSpace * 2 + 3)
+    hashlen = MaxSpace * 2 + 3
+    toplim = -1
+    mSortstyle = vbTextCompare
+End If
+
+End Sub
 Public Sub Remove(RHS)
+If AllowSameKey Then Exit Sub
 Dim k As Long, k1 As Long, vvv As Variant, top1 As Long
 If toplim < 0 Then Exit Sub   ' previus stop
 top1 = toplim
@@ -333,7 +369,7 @@ Private Sub ReduceHash(newTop As Long)
    End If
 End Sub
 Function ChangeKey(key1, key2)
-
+If AllowSameKey Then Exit Function
     Dim Key As String, NewKey As String
     Dim k As Long
     If key1 = key2 Then ChangeKey = True
@@ -411,6 +447,9 @@ End Function
 Property Get count()
     count = toplim + 1
 End Property
+Property Get IsEmpty()
+    IsEmpty = toplim = 0
+End Property
 Property Get LastKnown() As String
     LastKnown = lastfind
 End Property
@@ -434,6 +473,19 @@ Do
     Find = True: lastfind = Key: index = k: Done = True: Exit Function
     End If
      ParentIndex = k
+     k = PriveSpace(k).Pleft - 1
+Loop Until k < 0
+End If
+End Function
+Function ExistKey0(RHS) As Boolean
+If AllowSameKey Then Exit Function
+Dim k As Long, Key As String
+Key = CStr(RHS)
+If Len(Key) = 0 Then Exit Function
+k = Hash(HashFunc(Key)) - 1
+If k >= 0 Then
+Do
+    If PriveSpace(k).Key = Key Then ExistKey0 = True: index = k: Exit Function
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
 End If
@@ -464,13 +516,13 @@ End If
 End Function
 
 Private Sub ItemCreator(Key As String, nValue As Variant)
-Dim A As Long, kk As Long
+Dim a As Long, kk As Long
 Done = False
 kk = HashFunc0(Key)
-If ExistKey2(Key, kk) Then Exit Sub  ' done is false
-A = Malloc()
+If Not AllowSameKey Then If ExistKey2(Key, kk) Then Exit Sub  ' done is false
+a = Malloc()
 
-With PriveSpace(A)
+With PriveSpace(a)
     .Key = Key
     If IsObject(nValue) Then
     Set .iValue = nValue
@@ -479,25 +531,25 @@ With PriveSpace(A)
     End If
     .firsthash = kk
 End With
-place HashFunc1(kk, Key), A
-index = A
+place HashFunc1(kk, Key), a
+index = a
 Done = True
 End Sub
 
 Property Get Percent()
 Percent = 100 * count / hashlen
 End Property
-Private Sub place(ByVal b, ByVal A)
+Private Sub place(ByVal b, ByVal a)
     Dim k As Long
     k = Hash(b)
-    Hash(b) = A + 1
-    PriveSpace(A).Pleft = k
-    PriveSpace(A).lastpos = b
+    Hash(b) = a + 1
+    PriveSpace(a).Pleft = k
+    PriveSpace(a).lastpos = b
 End Sub
-Private Function HashFunc0(A$) As Long
+Private Function HashFunc0(a$) As Long
  Dim i&, p2 As Long, p1 As Integer, p4 As Long, k As Long, p3 As Long
-  p4 = Len(A$) * 2 '- 2
-  p2 = StrPtr(A$): p4 = p2 + p4
+  p4 = Len(a$) * 2 '- 2
+  p2 = StrPtr(a$): p4 = p2 + p4
    For i = p4 To p4 - 6 Step -2
   GetMem2 i, p1
   p3 = UINT(p1)
@@ -515,15 +567,15 @@ End Function
 Private Function HashFunc2(where As Long)
 HashFunc2 = MyMod(uintnew(PriveSpace(where).firsthash Or &HAFFAFF7) + Len(PriveSpace(where).Key) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc1(nkey As Long, A$)
-HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + Len(A$) + hashlen + 1, hashlen)
+Private Function HashFunc1(nkey As Long, a$)
+HashFunc1 = MyMod(uintnew(nkey Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
 End Function
-Private Function HashFunc(A$)
-HashFunc = MyMod(uintnew(HashFunc0(A$) Or &HAFFAFF7) + Len(A$) + hashlen + 1, hashlen)
+Private Function HashFunc(a$)
+HashFunc = MyMod(uintnew(HashFunc0(a$) Or &HAFFAFF7) + Len(a$) + hashlen + 1, hashlen)
 End Function
-Private Function UINT(ByVal A As Integer) As Long
+Private Function UINT(ByVal a As Integer) As Long
  Dim b As Integer
- b = A And &HFFFF
+ b = a And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
@@ -535,20 +587,20 @@ Private Function UINT(ByVal A As Integer) As Long
 Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
-Private Function uintnew(ByVal A As Double) As Double
-If A > CDbl(2147483647) Then A = CDbl(2147483647)
-If A < CDbl(-2147483648#) Then A = CDbl(-2147483648#)
-If A < 0 Then
-uintnew = 4294967296# + A
+Private Function uintnew(ByVal a As Double) As Double
+If a > CDbl(2147483647) Then a = CDbl(2147483647)
+If a < CDbl(-2147483648#) Then a = CDbl(-2147483648#)
+If a < 0 Then
+uintnew = 4294967296# + a
 Else
-uintnew = A
+uintnew = a
 End If
 End Function
 
-Private Sub SwapVariant(ByRef A As Variant, ByRef b As Variant)
+Private Sub SwapVariant(ByRef a As Variant, ByRef b As Variant)
    Dim t(0 To 3) As Long ' 4 Longs * 4 bytes each = 16 bytes
-   CopyMemory t(0), ByVal VarPtr(A), 16
-   CopyMemory ByVal VarPtr(A), ByVal VarPtr(b), 16
+   CopyMemory t(0), ByVal VarPtr(a), 16
+   CopyMemory ByVal VarPtr(a), ByVal VarPtr(b), 16
    CopyMemory ByVal VarPtr(b), t(0), 16
 End Sub
 ' only for tests
@@ -740,4 +792,9 @@ End If
 Next i
 Debug.Print count, countme, countinqueues, hashlen, Me.Percent, (countme - countinqueues) / countme * 100
 problem = haveproblem
+End Function
+
+Public Function AllowAnyKey()
+AllowSameKey = True
+
 End Function

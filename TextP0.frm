@@ -295,23 +295,29 @@ Dim Message As Msg
 End Function
 
 Private Sub DIS_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
+On Error Resume Next
+If Not TaskMaster Is Nothing Then
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
-TaskMaster.rest
+If Not TaskMaster Is Nothing Then TaskMaster.rest
+End If
         End If
 End Sub
 
-Private Sub dSprite_GotFocus(index As Integer)
+Private Sub dSprite_GotFocus(Index As Integer)
 If lockme Then TEXT1.SetFocus: Exit Sub
 
 End Sub
 
-Private Sub dSprite_OLEDragOver(index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
+Private Sub dSprite_OLEDragOver(Index As Integer, data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
+On Error Resume Next
+If Not TaskMaster Is Nothing Then
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
-TaskMaster.rest
+If Not TaskMaster Is Nothing Then TaskMaster.rest
+End If
         End If
 End Sub
 
@@ -357,10 +363,13 @@ UseEsc = False
 End Sub
 
 Private Sub Form_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, shift As Integer, x As Single, y As Single, state As Integer)
+On Error Resume Next
+If Not TaskMaster Is Nothing Then
   If TaskMaster.QueueCount > 0 Then
               TaskMaster.RestEnd1
    TaskMaster.TimerTick
-TaskMaster.rest
+If Not TaskMaster Is Nothing Then TaskMaster.rest
+End If
         End If
 End Sub
 
@@ -493,11 +502,11 @@ End If
 End If
 End Sub
 
-Private Sub ffhelp(A$)
-If Left$(A$, 1) < "С" Then
-fHelp basestack1, A$, True
+Private Sub ffhelp(a$)
+If Left$(a$, 1) < "С" Then
+fHelp basestack1, a$, True
 Else
-fHelp basestack1, A$
+fHelp basestack1, a$
 End If
 End Sub
 
@@ -549,7 +558,7 @@ Private Sub list1_ExposeRect(ByVal item As Long, ByVal thisrect As Long, ByVal t
 If item = List1.ListIndex Then
 
 List1.FillThere thisHDC, thisrect, &HFFFFFF, -List1.LeftMarginPixels  ' or black in reverse
-List1.WriteThere thisrect, List1.list(item), List1.PanPos / dv15, List1.addpixels / 2, 0
+List1.WriteThere thisrect, List1.List(item), List1.PanPos / dv15, List1.addpixels / 2, 0
 skip = True
 Else
 skip = False
@@ -609,7 +618,7 @@ End Sub
 Public Sub mscatsub()
 ''
 Dim l As Long, w As Long, s$, TempLcid As Long, OldLcid As Long
-Dim el As Long, eW As Long, SAFETY As Long, TT$
+Dim el As Long, eW As Long, safety As Long, TT$
 
 w = TEXT1.mdoc.MarkParagraphID
 eW = w
@@ -633,9 +642,9 @@ TEXT1.mdoc.ColorThis (w)
 Else
 w = 1
 l = 0
-SAFETY = SAFETY + 1
+safety = safety + 1
 End If
-Loop Until (w = eW And l = el) Or SAFETY = 2
+Loop Until (w = eW And l = el) Or safety = 2
 
 Else
 Do
@@ -648,9 +657,9 @@ TEXT1.mdoc.ColorThis (w)
 Else
 w = 1
 l = 0
-SAFETY = SAFETY + 1
+safety = safety + 1
 End If
-Loop Until (w = eW And l = el) Or SAFETY = 2
+Loop Until (w = eW And l = el) Or safety = 2
 
 End If
 TEXT1.mdoc.LCID = OldLcid
@@ -662,7 +671,7 @@ End Sub
 
 Public Sub rthissub()
 Dim l As Long, w As Long, s$, TempLcid As Long, OldLcid As Long
-Dim el As Long, eW As Long, SAFETY As Long, TT$, w1 As Long, i1 As Long
+Dim el As Long, eW As Long, safety As Long, TT$, w1 As Long, i1 As Long
 Dim neo$, mDoc10 As Document, addthat As Long, w2 As Long
 w = TEXT1.mdoc.MarkParagraphID
 eW = w
@@ -702,7 +711,7 @@ If EditTextWord Then
 TEXT1.glistN.dropkey = True
 Do
 If TEXT1.mdoc.FindWord(s$, True, w, l) Then
-If SAFETY And w = w1 Then
+If safety And w = w1 Then
 If w2 > 0 Then If w2 <> w Then TEXT1.mdoc.WrapAgainBlock w2, w2:  TEXT1.mdoc.ColorThis w2
 w2 = w
 If l = i1 Then
@@ -736,9 +745,9 @@ l = l + Len(neo$)
 Else
 w = 1
 l = 0
-SAFETY = SAFETY + 1
+safety = safety + 1
 End If
-Loop Until SAFETY = 2 Or KeyPressed(16)
+Loop Until safety = 2 Or KeyPressed(16)
 TEXT1.glistN.dropkey = False
 
 Else
@@ -748,7 +757,7 @@ Do
 If TEXT1.mdoc.FindIdentifier(s$, True, w, l) Then
 If w2 > 0 Then If w2 <> w Then TEXT1.mdoc.WrapAgainBlock w2, w2:  TEXT1.mdoc.ColorThis w2
 w2 = w
-If SAFETY And w = w1 Then
+If safety And w = w1 Then
 
 If l = i1 Then
  TEXT1.SelLengthSilent = 0
@@ -781,9 +790,9 @@ l = l + Len(neo$)
 Else
 w = 1
 l = 0
-SAFETY = SAFETY + 1
+safety = safety + 1
 End If
-Loop Until SAFETY = 2 Or KeyPressed(16)
+Loop Until safety = 2 Or KeyPressed(16)
 TEXT1.glistN.dropkey = False
 End If
 TEXT1.mdoc.LCID = OldLcid
@@ -955,7 +964,7 @@ End Sub
 
 
 
-Private Sub dSprite_MouseDown(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseDown(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 Dim p As Long, u2 As Long
 If lockme Then Exit Sub
  MOUB = Button
@@ -965,19 +974,19 @@ If lockme Then Exit Sub
 If Not NoAction Then
 NoAction = True
 Dim sel&
-p = val("0" & dSprite(index).Tag)
+p = val("0" & dSprite(Index).Tag)
 With players(p)
     u2 = .uMineLineSpace * 2
 
         If Button > 0 And Targets Then
 
-        sel& = ScanTarget(q(), CLng(x), CLng(y), index)
+        sel& = ScanTarget(q(), CLng(x), CLng(y), Index)
             If sel& >= 0 Then
                 If Button = 1 Then
                 '' If QRY Then LCTC dSprite(Index), oy&, ox&, ins& Else LCT dSprite(Index), oy&, ox&
                 Select Case q(sel&).Id Mod 100
                 Case Is < 10
-                If Not interpret(DisStack, "LAYER " & dSprite(index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
+                If Not interpret(DisStack, "LAYER " & dSprite(Index).Tag + " {" + vbCrLf + q(sel&).Comm + vbCrLf & "}") Then Beep
                 Case Else
                 INK$ = q(sel&).Comm
                 End Select
@@ -995,7 +1004,7 @@ End If
 
 End Sub
 
-Private Sub dSprite_MouseMove(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseMove(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = Button
 If NOEDIT = True And (exWnd = 0 Or Button) Then
@@ -1003,7 +1012,7 @@ Me.KeyPreview = True
 End If
 End Sub
 
-Private Sub dSprite_MouseUp(index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
+Private Sub dSprite_MouseUp(Index As Integer, Button As Integer, shift As Integer, x As Single, y As Single)
 If lockme Then Exit Sub
 MOUB = 0
 End Sub
@@ -1589,7 +1598,7 @@ MOUT = False
 On Error Resume Next
 Const HWND_BROADCAST = &HFFFF&
 Const WM_FONTCHANGE = &H1D
-Dim pn As Long, A As New cDIBSection
+Dim pn As Long, a As New cDIBSection
 AutoRedraw = True
  If App.StartMode = vbSModeStandalone Then If OneOnly Then Exit Sub
 OneOnly = True
@@ -1778,6 +1787,7 @@ NoAction = True
 NOEXECUTION = False
 basestack1.toprinter = False
 MOUT = False
+ClearLabels
 If Not interpret(basestack1, qq$) Then
 mybasket = players(DisForm)
                 Dim x As Form
@@ -1910,7 +1920,7 @@ End Sub
 
 Private Sub gList1_KeyDown(KeyCode As Integer, shift As Integer)
 Static ctrl As Boolean, noentrance As Boolean, where As Long
-Dim aa$, A$, JJ As Long, ii As Long
+Dim aa$, a$, JJ As Long, ii As Long
 If KeyCode = vbKeyEscape Then
 KeyCode = 0
  If Not EditTextWord Then
@@ -2119,18 +2129,18 @@ End If
 
 If TEXT1.SelText <> "" Then
 
-    A$ = vbCrLf + TEXT1.SelText & "*"
+    a$ = vbCrLf + TEXT1.SelText & "*"
     If shift <> 0 Then  ' тумых
-        A$ = Replace(A$, vbCrLf + Space$(6), vbCrLf)
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf + Space$(6), vbCrLf)
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
          TEXT1.SelStartSilent = ii
-         TEXT1.SelLengthSilent = Len(A$) - 3
+         TEXT1.SelLengthSilent = Len(a$) - 3
          
     Else
-        A$ = Replace(A$, vbCrLf, vbCrLf + Space$(6))
-        TEXT1.InsertTextNoRender = Mid$(A$, 3, Len(A$) - 3)
+        a$ = Replace(a$, vbCrLf, vbCrLf + Space$(6))
+        TEXT1.InsertTextNoRender = Mid$(a$, 3, Len(a$) - 3)
         TEXT1.SelStartSilent = where + 6
-        TEXT1.SelLengthSilent = Len(A$) - 3 - (where + 6 - ii)
+        TEXT1.SelLengthSilent = Len(a$) - 3 - (where + 6 - ii)
        
     End If
   
@@ -2395,7 +2405,7 @@ End If
 End Sub
 
 
-Private Function Parameters(A As String, b As String, c As String) As Boolean
+Private Function Parameters(a As String, b As String, c As String) As Boolean
 Dim i, ch As Boolean, vl As Boolean, chs$, all$, many As Long
 b = ""
 c = ""
@@ -2403,11 +2413,11 @@ c = ""
 'parameters = False
 ch = False
 vl = False
-Do While i < Len(A)
+Do While i < Len(a)
 i = i + 1
-Select Case Mid$(A, i, 1)
+Select Case Mid$(a, i, 1)
 Case "%"
-If Mid$(A, i + 1, 1) = "u" Then
+If Mid$(a, i + 1, 1) = "u" Then
 i = i + 1
 'we have four bytes
 many = 6
@@ -2437,7 +2447,7 @@ Exit Do
 End If
 Case Else
 If ch = True Then
-chs$ = chs$ & Mid$(A, i, 1)
+chs$ = chs$ & Mid$(a, i, 1)
 If Len(chs$) = many Then
 If many = 4 Then
 chs$ = Chr(Int(chs$))
@@ -2452,14 +2462,14 @@ b = b + chs$
 End If
 End If
 ElseIf vl = False Then
-b = b + Mid$(A, i, 1)
+b = b + Mid$(a, i, 1)
 Else
-c = c + Mid$(A, i, 1)
+c = c + Mid$(a, i, 1)
 End If
 End Select
 Loop
 If c <> "" Then Parameters = True
-A = Mid$(A, i + 1)
+a = Mid$(a, i + 1)
 End Function
 
 
@@ -2695,8 +2705,23 @@ End If
             LATIN basestack1
         
          End Select
-
-
+If OperatingSystem > System_Windows_7 Then
+                MouseShow True
+                ElseIf basestack.tolayer > 0 Or basestack.toback Then
+                 DIS.mousepointer = 1
+                          Set DIS.MouseIcon = Nothing
+                           
+                
+                Else
+                            If basestack.LastState Then
+                                    basestack.LastState = False
+                                    If basestack.LastMouse1 = 99 Then
+                                          s$ = CFname(basestack.LastMouse2)
+                                          DIS.MouseIcon = LoadPicture(GetDosPath(s$))
+                                    End If
+                                    DIS.mousepointer = basestack.LastMouse1
+                            End If
+                End If
 End Sub
 
 Public Sub mn1sub()
@@ -2713,7 +2738,7 @@ Dim aa$
 aa$ = GetTextData(13)
 If aa$ = "" Then aa$ = Clipboard.GetText(1)
 With TEXT1
-If .ParaSelStart = 2 And .glistN.list(.glistN.ListIndex) = "" Then
+If .ParaSelStart = 2 And .glistN.List(.glistN.ListIndex) = "" Then
 .SelStart = .SelStart - 1
 End If
 .AddUndo ""
@@ -2851,8 +2876,8 @@ Para1 = 0: Para2 = 0: Para3 = 0
 
 
 End Sub
-Public Sub hookme(This As gList)
-Set LastGlist = This
+Public Sub hookme(this As gList)
+Set LastGlist = this
 End Sub
 Public Function mybreak1() As Boolean
 Dim i As Long

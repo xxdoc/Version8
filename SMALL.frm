@@ -97,10 +97,10 @@ End Property
 '** Function **
 
 'Private onlyone As Boolean
-Public Function ask(bstack As basetask, A$) As Double
+Public Function ask(bstack As basetask, a$) As Double
 If ASKINUSE Then Exit Function
 DialogSetupLang DialogLang
-AskText$ = A$
+AskText$ = a$
 ask = NeoASK(bstack)
 
 End Function
@@ -305,7 +305,7 @@ PP = PP + CDbl(timeGetTime)
 
 Do
 
-
+If Not TaskMaster Is Nothing Then
 If TaskMaster.Processing And Not bstack.TaskMain Then
         If Not bstack.toprinter Then bstack.Owner.Refresh
         TaskMaster.TimerTick
@@ -315,6 +315,9 @@ If TaskMaster.Processing And Not bstack.TaskMain Then
 Else
         ' SleepWait 1
         MyDoEvents
+        End If
+        Else
+        DoEvents
         End If
 If e Then
 p = bstack.Process.Done
@@ -445,7 +448,7 @@ If reopen2 Then Form2.Show , Form1: Form2.Visible = True
        Next
        
 Sleep 1
-If Forms.count > 5 Then
+If Forms.Count > 5 Then
 
 Else
 Form1.SetFocus

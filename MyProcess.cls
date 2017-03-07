@@ -232,6 +232,7 @@ End Sub
 
 
 Private Sub TaskInterface_Tick()
+On Error Resume Next
  Dim x As Long, mycnt As Long, ohere$, look As Boolean
  Static offset As Double
  Dim NowProcess As basetask
@@ -365,8 +366,10 @@ End Property
 ' DELEGATED METHODS
 
 Private Sub TaskInterface_Dispose(ByVal Action As DisposeAction)
+On Error Resume Next
 myDone = True
-TaskMaster.rest
+On Error Resume Next
+If Not TaskMaster Is Nothing Then TaskMaster.rest
     Set myOwner = Nothing
 If MyMode > 0 Then
  If Not myProcess.IamRunning Then
@@ -379,7 +382,7 @@ MyMode = 0
     End If
    End If
 
-TaskMaster.RestEnd
+If Not TaskMaster Is Nothing Then TaskMaster.RestEnd
 End Sub
 Private Function ProcessEnd() As Boolean
 On Error Resume Next

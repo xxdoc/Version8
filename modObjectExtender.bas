@@ -119,22 +119,22 @@ Public Sub InitObjExtender()
 End Sub
 
 ' IUnknown::QueryInterface
-Private Function ObjExt_QueryInterface(This As EventSink, riid As GUID, pObj As Long) As Long
+Private Function ObjExt_QueryInterface(this As EventSink, riid As GUID, pObj As Long) As Long
 
     ' IUnknown
     If IsEqualGUID(riid, IID_IUnknown) Then
-        pObj = VarPtr(This)
-        ObjExt_AddRef This
+        pObj = VarPtr(this)
+        ObjExt_AddRef this
 
     ' IDispatch
     ElseIf IsEqualGUID(riid, IID_IDispatch) Then
-        pObj = VarPtr(This)
-        ObjExt_AddRef This
+        pObj = VarPtr(this)
+        ObjExt_AddRef this
 
     ' event interface
-    ElseIf IsEqualGUID(riid, This.IID) Then
-        pObj = VarPtr(This)
-        ObjExt_AddRef This
+    ElseIf IsEqualGUID(riid, this.IID) Then
+        pObj = VarPtr(this)
+        ObjExt_AddRef this
 
     ' not an implemented interface
     Else
@@ -145,39 +145,39 @@ Private Function ObjExt_QueryInterface(This As EventSink, riid As GUID, pObj As 
 End Function
 
 ' IUnknown::AddRef
-Private Function ObjExt_AddRef(This As EventSink) As Long
-    This.cRef = This.cRef + 1
-    ObjExt_AddRef = This.cRef
+Private Function ObjExt_AddRef(this As EventSink) As Long
+    this.cRef = this.cRef + 1
+    ObjExt_AddRef = this.cRef
 End Function
 
 ' IUnknown::Release
-Private Function ObjExt_Release(This As EventSink) As Long
-    This.cRef = This.cRef - 1
-    ObjExt_Release = This.cRef
+Private Function ObjExt_Release(this As EventSink) As Long
+    this.cRef = this.cRef - 1
+    ObjExt_Release = this.cRef
 
     ' if reference count is 0, free the object
-    If This.cRef = 0 Then GlobalFree This.hMem
+    If this.cRef = 0 Then GlobalFree this.hMem
 End Function
 
 ' IDispatch::GetTypeInfoCount
-Private Function ObjExt_GetTypeInfoCount(This As EventSink, pctinfo As Long) As Long
+Private Function ObjExt_GetTypeInfoCount(this As EventSink, pctinfo As Long) As Long
     pctinfo = 0
     ObjExt_GetTypeInfoCount = E_NOTIMPL
 End Function
 
 ' IDispatch::GetTypeInfo
-Private Function ObjExt_GetTypeInfo(This As EventSink, ByVal iTInfo As Long, ByVal LCID As Long, ppTInfo As Long) As Long
+Private Function ObjExt_GetTypeInfo(this As EventSink, ByVal iTInfo As Long, ByVal LCID As Long, ppTInfo As Long) As Long
     ppTInfo = 0
     ObjExt_GetTypeInfo = E_NOTIMPL
 End Function
 
 ' IDispatch::GetIDsOfNames
-Private Function ObjExt_GetIDsOfNames(This As EventSink, riid As GUID, rgszNames As Long, ByVal cNames As Long, ByVal LCID As Long, rgDispId As Long) As Long
+Private Function ObjExt_GetIDsOfNames(this As EventSink, riid As GUID, rgszNames As Long, ByVal cNames As Long, ByVal LCID As Long, rgDispId As Long) As Long
     ObjExt_GetIDsOfNames = E_NOTIMPL
 End Function
 
 ' IDispatch::Invoke
-Private Function ObjExt_Invoke(This As EventSink, _
+Private Function ObjExt_Invoke(this As EventSink, _
          ByVal dispIdMember As Long, _
          riid As GUID, _
          ByVal LCID As Long, _
@@ -190,7 +190,7 @@ Private Function ObjExt_Invoke(This As EventSink, _
     ' get the object extender class
     ' which owns this event sink
     Dim objext  As ComShinkEvent
-    Set objext = ResolveObjPtr(This.pClass)
+    Set objext = ResolveObjPtr(this.pClass)
 
     ' forward the event
     objext.FireEvent dispIdMember, pDispParams
@@ -203,7 +203,7 @@ Public Function CreateEventSink(IID As GUID, objext As ComShinkEvent) As Object
     With sink
         .cRef = 1
         .IID = IID
-        .pClass = ObjPtr(objext)
+        .pClass = objptr(objext)
         .pVTable = VarPtr(ObjExt_vtbl(0))
     End With
 
@@ -279,7 +279,7 @@ Dim btASM As Long
             VirtualUnlock btASM, MAXCODE
         VirtualFree btASM, MAXCODE, MEM_DECOMMIT
         VirtualFree btASM, 0, MEM_RELEASE
-        Debug.Print btASM
+    '    Debug.Print btASM
 End Function
 
 Private Sub AddPush(pASM As Long, lng As Long)

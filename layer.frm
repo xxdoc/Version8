@@ -61,7 +61,7 @@ Set LastGlist2 = Nothing
 form5iamloaded = False '
 MediaPlayer1.closeMovie
   DisableMidi
-  TaskMaster.Dispose
+ If Not TaskMaster Is Nothing Then TaskMaster.Dispose
   Set TaskMaster = Nothing
   
 Dim x As Form

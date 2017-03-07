@@ -1,6 +1,8 @@
 M2000 Interpreter and Environment
 
-Version 8.2 revision 19 active-X
+Version 8.4 active-X
+
+Faster and more commands and objects
 
 
 http://georgekarras.blogspot.gr/

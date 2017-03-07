@@ -2213,6 +2213,7 @@ Dim task As TaskInterface
 
 End Sub
 Public Sub sThreadInternal(bs As basetask, ByVal ThID As Long, ByVal Thinterval As Double, ByVal ThCode As String, holdtime As Double, threadhere$, Nostretch)
+On Error Resume Next
 Dim task As TaskInterface, bsdady As basetask
 Set bsdady = bs.Parent
 ' above 20000 the thid
@@ -2717,15 +2718,15 @@ ElseIf Convert3(Convert2(a$, cLid), cLid) = a$ Then
  FoundLocaleId = cLid
 End If
 End Function
-Function FoundSpecificLocaleId(a$, This As Long) As Long
-If Convert3(Convert2(a$, This), This) = a$ Then FoundSpecificLocaleId = True
+Function FoundSpecificLocaleId(a$, this As Long) As Long
+If Convert3(Convert2(a$, this), this) = a$ Then FoundSpecificLocaleId = True
 End Function
 Function ismine1(ByVal a$) As Boolean  '  START A BLOCK
 ismine1 = True
 a$ = myUcase(a$, True)
 Select Case a$
-Case "DO", "REPEAT", "PART", "LIB"
-Case "епамекабе", "епамакабе", "леяос"
+Case "DO", "REPEAT", "PART", "LIB", "PROTOTYPE"
+Case "епамекабе", "епамакабе", "леяос", "пяытотупо"
 Case Else
 ismine1 = False
 End Select
@@ -2734,8 +2735,8 @@ Function ismine2(ByVal a$) As Boolean  ' CAN START A BLOCK OR DO SOMETHING
 ismine2 = True
 a$ = myUcase(a$, True)
 Select Case a$
-Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "DECLARE", "ELSE", "EVENT", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "INVENTORY", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "PATH", "PEN", "PRINTER", "PRINTING", "STACK", "START", "STRUCTURE", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "WHILE"
-Case "аявг", "аккиыс", "цецомос", "цемийо", "цемийг", "цемийес", "циа", "дес", "долг", "ейтупытгс", "ейтупысг", "емы", "епипедо", "ивмос", "йахе", "йатастасг", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "ояисе", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
+Case "AFTER", "BACK", "BACKGROUND", "CLASS", "COLOR", "DECLARE", "ELSE", "EVENT", "EVERY", "GLOBAL", "FOR", "FUNCTION", "GROUP", "INVENTORY", "LAYER", "LOCAL", "MAIN.TASK", "MODULE", "OPERATOR", "PATH", "PEN", "PROPERTY", "PRINTER", "PRINTING", "SET", "STACK", "START", "STRUCTURE", "TASK.MAIN", "THEN", "THREAD", "TRY", "WIDTH", "VALUE", "WHILE"
+Case "аявг", "аккиыс", "аниа", "цецомос", "цемийо", "цемийг", "цемийес", "циа", "дес", "долг", "ейтупытгс", "ейтупысг", "емы", "епипедо", "хесе", "идиотгтес", "ивмос", "идиотгта", "йахе", "йатастасг", "йкасг", "йуяио.еяцо", "лета", "мгла", "олада", "ояисе", "павос", "пема", "пеяихыяио", "сумаятгсг", "сыяос", "текестгс", "тлгла", "топийа", "топийг", "топийес", "тоте", "вяыла"
 Case "->"
 Case Else
 ismine2 = False
@@ -2756,28 +2757,28 @@ Function ismine(ByVal a$) As Boolean
 ismine = True
 a$ = myUcase(a$, True)
 Select Case a$
-Case "@(", "$(", "~(", "?", "->"
+Case "@(", "$(", "~(", "?", "->", "[]"
 Case "ABOUT", "ABOUT$", "ABS(", "ADD.LICENCE$(", "AFTER", "ALWAYS", "AND", "ANGLE", "APPDIR$", "APPEND", "APPEND.DOC", "APPLICATION"
-Case "ARRAY$(", "ARRAY(", "AS", "ASC(", "ASCENDING", "ASK$(", "ASK(", "ATN("
+Case "ARRAY", "ARRAY$(", "ARRAY(", "AS", "ASC(", "ASCENDING", "ASK$(", "ASK(", "ATN("
 Case "BACK", "BACKGROUND", "BACKWARD(", "BASE", "BEEP", "BINARY", "BINARY.AND(", "BINARY.NEG("
 Case "BINARY.OR(", "BINARY.ROTATE(", "BINARY.SHIFT(", "BINARY.XOR(", "BITMAPS", "BMP$(", "BOLD"
-Case "BOOLEAN", "BORDER", "BREAK", "BROWSER", "BROWSER$", "BUFFER", "BYTE", "CALL", "CASE", "CAT"
-Case "CDATE(", "CENTER", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.OBJECT", "CHOOSE.ORGAN"
+Case "BOOLEAN", "BORDER", "BREAK", "BROWSER", "BROWSER$", "BUFFER", "BYTE", "CALL", "CASE", "CAT", "CAR("
+Case "CDATE(", "CDR(", "CENTER", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.OBJECT", "CHOOSE.ORGAN"
 Case "CHR$(", "CHRCODE$(", "CHRCODE(", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLIPBOARD$", "CLIPBOARD.IMAGE$"
 Case "CLOSE", "CLS", "CODE", "CODEPAGE", "COLLIDE(", "COLOR", "COLOR(", "COLORS"
-Case "COLOUR(", "COMMAND", "COMMAND$", "COMMIT", "COMPARE(", "COMPRESS", "COMPUTER", "COMPUTER$", "CONCURRENT"
+Case "COLOUR(", "COM", "COMMAND", "COMMAND$", "COMMIT", "COMPARE(", "COMPRESS", "COMPUTER", "COMPUTER$", "CONCURRENT", "CONS("
 Case "CONTINUE", "CONTROL$", "COPY", "COS(", "CTIME(", "CURRENCY", "CURSOR", "CURVE"
 Case "DATA", "DATE$(", "DATE(", "DATEFIELD", "DB.PROVIDER", "DB.USER", "DECLARE", "DEF", "DELETE"
 Case "DESCENDING", "DESKTOP", "DIM", "DIMENSION(", "DIR", "DIR$", "DIV", "DO"
 Case "DOC.LEN(", "DOC.PAR(", "DOC.UNIQUE.WORDS(", "DOC.WORDS(", "DOCUMENT", "DOS", "DOUBLE", "DOWN", "DRAW"
-Case "DRAWINGS", "DRIVE$(", "DRIVE.SERIAL(", "DROP", "DRW$(", "DURATION"
+Case "DRAWINGS", "DRIVE$(", "DRIVE.SERIAL(", "DROP", "DRW$(", "DURATION", "EACH("
 Case "EDIT", "EDIT.DOC", "ELSE", "ELSE.IF", "EMPTY", "END", "ENVELOPE$(", "EOF("
 Case "ERASE", "ERROR", "ERROR$", "ESCAPE", "EVAL(", "EVAL$(", "EVENT", "EVERY", "EXECUTE", "EXIST(", "EXIST.DIR("
 Case "EXIT", "EXPORT", "EXTERN", "FALSE", "FAST", "FIELD", "FIELD$(", "FILE$("
 Case "FILE.APP$(", "FILE.NAME$(", "FILE.NAME.ONLY$(", "FILE.PATH$(", "FILE.STAMP(", "FILE.TITLE$(", "FILE.TYPE$(", "FILELEN(", "FILES"
 Case "FILL", "FILTER$(", "FIND", "FKEY", "FLOODFILL", "FLUSH", "FONT", "FONTNAME$", "FOR"
 Case "FORM", "FORMAT$(", "FORMLABEL", "FORWARD(", "FRAC(", "FRAME", "FREQUENCY(", "FROM", "FUNCTION", "FUNCTION$(", "FUNCTION("
-Case "GARBAGE", "GET", "GLOBAL", "GOSUB", "GOTO", "GRABFRAME$", "GRADIENT", "GREEK", "GROUP"
+Case "GARBAGE", "GET", "GLOBAL", "GOSUB", "GOTO", "GRABFRAME$", "GRADIENT", "GREEK", "GROUP", "GROUP("
 Case "GROUP.COUNT(", "HEIGHT", "HELP", "HEX", "HEX$(", "HIDE", "HIDE$(", "HIFI", "HIGHWORD("
 Case "HILOWWORD(", "HIWORD(", "HOLD", "HTML", "HWND", "ICON", "IF", "IMAGE", "IMAGE.X("
 Case "IMAGE.X.PIXELS(", "IMAGE.Y(", "IMAGE.Y.PIXELS(", "IN", "INKEY$", "INKEY(", "INLINE", "INPUT", "INPUT$("
@@ -2794,11 +2795,11 @@ Case "MOTION.WY", "MOTION.X", "MOTION.XW", "MOTION.Y", "MOTION.YW", "MOUSE", "MO
 Case "MOUSE.Y", "MOUSEA.X", "MOUSEA.Y", "MOVE", "MOVIE", "MOVIE.COUNTER", "MOVIE.DEVICE$", "MOVIE.ERROR$", "MOVIE.STATUS$"
 Case "MOVIES", "MUSIC", "MUSIC.COUNTER", "NAME", "NEW", "NEXT"
 Case "NORMAL", "NOT", "NOTHING", "NOW", "NUMBER", "OFF", "OLE", "ON"
-Case "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPTIMIZATION", "OR", "ORDER", "OS$", "OUT", "OUTPUT"
-Case "OVER", "OVERWRITE", "PAGE", "PARAGRAPH$(", "PARAGRAPH(", "PARAGRAPH.INDEX(", "PARAM(", "PARAM$(", "PARAMETERS$", "PART", "PASSWORD"
+Case "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPERATOR", "OPTIMIZATION", "OR", "ORDER", "OS$", "OUT", "OUTPUT"
+Case "OVER", "OVERWRITE", "PAGE", "PARAGRAPH$(", "PARAGRAPH(", "PARAGRAPH.INDEX(", "PARAM(", "PARAM$(", "PARAMETERS$", "PART", "PARENT", "PASSWORD"
 Case "PATH", "PATH$(", "PAUSE", "PEN", "PI", "PIPE", "PIPENAME$(", "PLATFORM$", "PLAY"
 Case "PLAYER", "PLAYSCORE", "POINT", "POINT(", "POLYGON", "POS", "POS.X", "POS.Y", "PRINT"
-Case "PRINTER", "PRINTERNAME$", "PRINTING", "PRIVATE", "PROFILER", "PROPERTIES", "PROPERTIES$", "PUBLIC", "PUSH", "PUT", "QUOTE$("
+Case "PRINTER", "PRINTERNAME$", "PRINTING", "PRIVATE", "PROFILER", "PROPERTY", "PROPERTIES", "PROPERTIES$", "PROTOTYPE", "PUBLIC", "PUSH", "PUT", "QUEUE", "QUOTE$("
 Case "RANDOM", "RANDOM(", "READ", "RECORDS(", "RECURSION.LIMIT", "REFER", "REFRESH", "RELEASE", "REM"
 Case "REMOVE", "REPEAT", "REPLACE$(", "REPORT", "REPORTLINES", "RESTART", "RETRIEVE", "RETURN", "REVISION"
 Case "RIGHT$(", "RIGHTPART$(", "RINSTR(", "RND", "ROUND(", "ROW", "SAVE", "SAVE.AS", "SAVE.DOC", "SCALE.X"
@@ -2809,40 +2810,40 @@ Case "SND$(", "SORT", "SOUND", "SOUNDREC", "SOUNDS", "SPEECH", "SPEECH$(", "SPLI
 Case "SPRITE$", "SQRT(", "STACK", "STACK$(", "STACK.SIZE", "STACKITEM$(", "STACKITEM(", "STACKTYPE$(", "START", "STATIC"
 Case "STEP", "STEREO", "STOCK", "STOP", "STR$(", "STREAM", "STRING$(", "STRUCTURE", "SUB", "SUBDIR"
 Case "SWAP", "SWEEP", "SWITCHES", "TAB", "TAB(", "TABLE", "TAN(", "TARGET"
-Case "TARGETS", "TASK.MAIN", "TEMPNAME$", "TEMPORARY$", "TEST", "TEXT", "THEN", "THIS"
+Case "TARGETS", "TASK.MAIN", "TEMPNAME$", "TEMPORARY$", "TEST", "TEST(", "TEXT", "THEN", "THIS"
 Case "THREAD", "THREAD.PLAN", "THREADS", "THREADS$", "TICK", "TIME$(", "TIME(", "TIMECOUNT", "TITLE"
 Case "TO", "TODAY", "TONE", "TOP", "TRIM$(", "TRUE", "TRY", "TUNE", "TWIPSX"
 Case "TWIPSY", "TYPE", "TYPE$(", "UCASE$(", "UINT(", "UNDER", "UNION.DATA$(", "UNTIL"
 Case "UP", "UPDATABLE", "UPDATE", "USE", "USER", "USER.NAME$", "USGN("
-Case "VAL(", "VALID(", "VERSION", "VIEW", "VOID", "VOLUME"
+Case "VAL(", "VALID(", "VALUE", "VERSION", "VIEW", "VOID", "VOLUME"
 Case "WAIT", "WCHAR", "WEAK", "WEAK$(", "WHILE", "WIDE", "WIDTH", "WIN", "WINDOW"
 Case "WITH", "WITHEVENTS", "WORDS", "WRITABLE(", "WRITE", "WRITER", "X.TWIPS", "XOR", "Y.TWIPS", "адеиас"
 Case "адеиасе", "ай(", "айеяаио.дуадийо(", "айеяаиос", "акгхес", "акгхгс", "аккацг", "аккацг$("
 Case "аккане", "аккиыс", "аккиыс.ам", "ам", "ама", "амафгтгсг", "амахеыягсг", "амайтгсг", "амакоцио"
 Case "амакоцио$", "амакусг.охомгс", "амакусг.у", "амакусг.в", "амакутгс", "амаломг", "амамеысг", "амажояа", "амаье"
-Case "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "амы", "аниа(", "апедысе"
+Case "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "амы", "аниа", "аниа(", "апедысе"
 Case "апкос", "апо", "апохгйеусг.ыс", "апой$(", "апойопг", "апок(", "аяца", "аяихлос", "аяихлос.паяацяажоу("
 Case "аяис$(", "аяистеяолеяос$(", "аявеиа", "аявеио", "аявеио$(", "аявеиоу.лгйос(", "аявеиоу.сталпа(", "аявг", "аукос"
 Case "аукос$(", "аукоу", "ауноуса", "ауто", "ажаияесг", "ажгсе", "баке", "баке.адеиа$(", "басг"
 Case "басг(", "басг.паяовос", "басг.вягстгс", "баье", "бектистопоигсг", "бгла", "богхеиа", "цецомос", "целисе", "целисла"
-Case "цемийес", "цемийг", "цемийо", "циа", "цяалла$", "цяаллатосеияа", "цяаллатосеияа$", "цяаллесамажояас", "цяаллг"
+Case "цемийес", "цемийг", "цемийо", "циа", "цомийо", "цяалла$", "цяаллатосеияа", "цяаллатосеияа$", "цяаллесамажояас", "цяаллг"
 Case "цяажг$(", "цяаье", "цягцояа", "цымиа", "деийтг.лояжг", "деийтгс", "деийтгс.йол", "деийтгс.у", "деийтгс.в"
 Case "деийтгса.у", "деийтгса.в", "деине", "дей(", "дейаен", "дейаен$(", "дем", "дени$(", "денилеяос$(", "дес", "дглосио"
 Case "диа", "диабасе", "диацяажг", "диадовийо", "диайопг", "диайоптес", "диалесоу", "диаяхяысг", "диаяйеиа", "диастасг("
 Case "диастиво", "диажамеиа", "диажамеиа$", "диажамо", "диажуцг", "диейоье", "дийтуо$", "диояхысе"
-Case "дипка", "дипкос", "дойилг", "долг", "дяолеас", "дуадийг.пеяистяожг(", "дуадийо", "дуадийо(", "дуадийо.айеяаио("
+Case "дипка", "дипкос", "дойилг", "дойилг(", "долг", "дяолеас", "дуадийг.пеяистяожг(", "дуадийо", "дуадийо(", "дуадийо.айеяаио("
 Case "дуадийо.амти(", "дуадийо.амтистяожо(", "дуадийо.апо(", "дуадийо.г(", "дуадийо.йаи(", "дуадийо.окисхгсг(", "дуолиса(", "дысе"
 Case "еццяажес(", "еццяажо", "еццяажоу.кенеис(", "еццяажоу.лгйос(", "еццяажоу.ломадийес.кенеис(", "еццяажоу.пая(", "еццяаьило(", "ецйуяо(", "еий$("
 Case "еийома", "еийома.у(", "еийома.у.сглеиа(", "еийома.в(", "еийома.в.сглеиа(", "еийомес", "еийомидио", "еимая", "еимця"
 Case "еисацыцг", "еисацыцг$(", "еисацыцгс", "ейдосг", "ейтекесг", "ейтупысг", "ейтупысгс", "ейтупытгс", "ейтупытгс$", "ейжя(", "ейжя$("
 Case "ейжяасг(", "ейжяасг$(", "екецвос", "еккгмийа", "емаомола$", "емхесг", "емйол$", "емйол(", "емтасг", "емтокг$"
-Case "емы", "емысе", "емысг.сеияас$(", "енацыцг", "енодос", "енытеяийг", "епам$(", "епамакабе", "епамекабе"
+Case "емы", "емысе", "CONS(", "емысг.сеияас$(", "емысг(", "енацыцг", "енодос", "енытеяийг", "епам$(", "епамакабе", "епамекабе"
 Case "епамы", "епекене", "епекене.амтийеилемо", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.амтийеилемо", "епикене.цяаллатосеияа"
 Case "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцес$(", "епикоцес.жамеяес", "епикоцг", "епикоцг$(", "епикоцгс", "епипедо"
-Case "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяеиа", "еуяесг", "еуяиа", "ежап(", "ежаялоцг.аявеиоу$(", "ежаялоцг.йат$", "ежаялоцг"
+Case "епистяожг", "епижамеиа", "еполемо", "еполема(", "етийета.жоялас", "еуяеиа", "еуяесг", "еуяиа", "ежап(", "ежаялоцг.аявеиоу$(", "ежаялоцг.йат$", "ежаялоцг"
 Case "еыс", "г", "гл(", "глеяа$(", "глеяа(", "глеяолгмиа", "гво$(", "гвоцяажгсг"
-Case "гвои", "гвос", "хесе", "хесг", "хесг(", "хесг.у", "хесг.в", "хесгдениа("
-Case "идиотгтес", "идиотгтес$", "идиытийо", "исвмг", "исвмг$(", "ивмос", "йахаяг", "йахаяо", "йахе", "йаи", "йакесе", "йалпукг"
+Case "гвои", "гвос", "хесе", "хесг", "хесг(", "хесг.у", "хесг.в", "хесгдениа(", "идиотгта"
+Case "идиотгтес", "идиотгтес$", "идиытийо", "исвмг", "исвмг$(", "ивмос", "йахаяг", "йахаяо", "йахе", "йахе(", "йаи", "йакесе", "йалпукг"
 Case "йаме", "йамомийа", "йат", "йат$", "йатакоцои", "йатакоцос", "йатастасг", "йатастасг.таимиас$", "йатавыягсг", "йаты"
 Case "йатылисо(", "йеилемо", "йемг", "йемо", "йемтяо", "йеж$(", "йимгсг", "йимгсг.п", "йимгсг.пу"
 Case "йимгсг.пв", "йимгсг.у", "йимгсг.уп", "йимгсг.в", "йимгсг.вп", "йкасг", "йкеиди", "йкеисе", "йкилан.у"
@@ -2854,20 +2855,20 @@ Case "лецако.сеияас$(", "лецако.сеияас(", "лецецомота", "лецехос", "лецехос.сыяо
 Case "лекыдиа", "леяос", "лес$(", "лета", "летахесг", "летахесг(", "левяи", "лгйос", "лгйос(", "лгйос.елж("
 Case "лийяо(", "лийяо.сеияас$(", "лийяо.сеияас(", "лийяос.йатакоцос$(", "лмглг", "лояжг$(", "лоусийг", "лоусийг.летягтгс", "лпип"
 Case "лпяоста(", "маи", "меа", "мео", "меои", "меос", "мгла", "мглата", "мглата$"
-Case "нейима", "одгциа", "одгцос$(", "охомг", "ойм$(", "олада", "олада.сумоко(", "омола", "омола.аявеиоу$("
-Case "омола.аявеиоу.ломо$(", "омола.вягстг$", "ояио.амадяолгс", "ояисе", "ови", "паифеижымг", "паийтгс", "паине", "памта"
+Case "нейима", "одгциа", "одгцос$(", "охомг", "ойм$(", "олада(", "олада.сумоко(", "омола", "омола.аявеиоу$("
+Case "омола.аявеиоу.ломо$(", "омола.вягстг$", "ояио.амадяолгс", "ояисе", "оуяа", "ови", "паифеижымг", "паийтгс", "паине", "памта"
 Case "памы", "памылисо(", "паяацяажос$(", "паяацяажос(", "паяал(", "паяал$(", "паяахесг$(", "паяахуяо", "паяалетяои$", "паяе", "паяейаяе$"
 Case "паяелбокг", "патглемо(", "павос", "педиа", "педио", "педио$(", "пеф$(", "пема", "пеяи"
 Case "пеяи$", "пеяихыяио", "пета", "пи", "пимайас", "пимайас$(", "пимайас(", "пимайес", "писы("
 Case "пкациа", "пкаисио", "пкатос", "пкатос.сглеиоу", "пкатжояла$", "пкгйтяокоцио", "покуцымо"
-Case "пяос", "пяосаялоцгс", "пяосхесе.еццяажо", "пяосхгйг", "пяосыяимо$", "пяовеияо", "пяовеияо$", "пяовеияо.еийома$", "яеула", "яифа("
+Case "пяос", "пяосаялоцгс", "пяосхесе.еццяажо", "пяосхгйг", "пяытотупо", "пяыто(", "пяосыяимо$", "пяовеияо", "пяовеияо$", "пяовеияо.еийома$", "яеула", "яифа("
 Case "яоутима", "яоутимас", "яухлисеис", "яыта$(", "яыта(", "саяысе", "сбгсе", "се"
 Case "сеияа", "сеияиайос.дисйоу(", "секида", "семаяио", "сгл", "сгл(", "сглади", "сглеио", "сглеио(", "сглеяа", "сйоупидиа", "статийг", "статийес"
 Case "стг", "стгкг", "стгкг(", "стгм", "сто", "стой", "стовои", "стовос", "стяоцц(", "суццяажеас"
 Case "суццяажг", "суцйяиме(", "суцйяоусг(", "суцвымеусе.еццяажо", "сулпиесг", "сулпкгяысг", "сум(", "сумаятгсг", "сумаятгсг$("
 Case "сумаятгсг(", "сумевисе", "сумхгла", "сус", "сусйеуг.пяобокгс$", "сустгла", "сувмотгта(", "свд$(", "сведиа"
 Case "сведио.мглатым", "сыяос", "сыяос$(", "сыяоутупос$(", "сысе", "сысе.еццяажо", "таимиа", "таимиа.летягтгс", "таимиес"
-Case "танг", "танимолгсг", "таутисг(", "таутовяомо", "текос", "текос(", "тий", "тиктос.аявеиоу$(", "тилг"
+Case "танг", "танимолгсг", "таутисг(", "таутовяомо", "текестгс", "текос", "текос(", "тий", "тиктос.аявеиоу$(", "тилг"
 Case "тилг(", "тилгсыяоу$(", "тилгсыяоу(", "типота", "титкос", "тлгла", "тлгла(", "тлгла$", "тлглата", "томос"
 Case "тон.еж(", "топийа", "топийес", "топийг", "топийо", "топийо$(", "топийо(", "топос$(", "топос.аявеиоу$("
 Case "тоте", "тупос", "тупос$(", "тупос.аявеиоу$(", "тупысе", "туваиос", "туваиос(", "тыяа", "у.сглеиа"
@@ -3404,15 +3405,14 @@ i1233:
 
 
 End Function
-Public Function IsLabelDotSub(where$, a$, rrr$, r$, lang As Long) As Long
+Public Function IsLabelDotSub(where$, a$, rrr$, r$, lang As Long, Optional p1 As Integer = 0) As Long
 ' for left side...no &
 
 Dim rr&, one As Boolean, c$, firstdot$, gr As Boolean
-
 rrr$ = ""
 r$ = ""
 Dim i&, l As Long, p3 As Integer
-Dim p2 As Long, p1 As Integer, p4 As Long '', excludesp As Long
+Dim p2 As Long, p4 As Long  '', excludesp As Long
   l = Len(a$): If l = 0 Then IsLabelDotSub = 0: lang = 1: Exit Function
 p2 = StrPtr(a$): l = l - 1
   p4 = p2 + l * 2
@@ -3420,7 +3420,6 @@ p2 = StrPtr(a$): l = l - 1
   GetMem2 i, p1
   Select Case p1
     Case 13
-    
     If i < p4 Then
     GetMem2 i + 2, p3
     If p3 = 10 Then
@@ -3612,7 +3611,11 @@ i123:
               End If
     End If
   Next i
-  If i > p4 Then a$ = "" Else If (i + 2 - p2) \ 2 > 1 Then a$ = Mid$(a$, (i + 2 - p2) \ 2)
+  If i > p4 Then
+  a$ = "": p1 = 0
+  Else
+  If (i + 2 - p2) \ 2 > 1 Then a$ = Mid$(a$, (i + 2 - p2) \ 2)
+  End If
        rrr$ = firstdot$ + myUcase(r$, gr)
        lang = 1 + CLng(gr)
     IsLabelDotSub = rr&
@@ -3677,7 +3680,7 @@ myid() = Array("THIS", "ауто", "RND", "туваиос", "PEN", "пема", "HWND", "паяахуя
 , "PLAYSCORE", "паифеижымг", "MOVIE", "MEDIA", "MUSIC", "таимиа", "лоусийг", "DURATION", "диаяйеиа" _
 , "VOLUME", "емтасг", "TAB", "стгкг", "HEIGHT", "уьос", "POS", "хесг", "ROW", "цяаллг", "TIMECOUNT", "жоятос" _
 , "TICK", "тий", "TODAY", "сглеяа", "NOW", "тыяа", "MENU.VISIBLE", "епикоцес.жамеяес", "MENUITEMS", "епикоцес" _
-, "MENU", "епикоцг", "NUMBER", "аяихлос", "тилг", "LAMBDA", "калда", "APPLICATION", "ежаялоцг")
+, "MENU", "епикоцг", "NUMBER", "аяихлос", "тилг", "LAMBDA", "калда", "APPLICATION", "ежаялоцг", "GROUP", "олада", "ARRAY", "пимайас", "[]")
 For i = 0 To UBound(myid())
     aHash.ItemCreator CStr(myid(i)), i
 Next i
@@ -3694,11 +3697,12 @@ myfun() = Array("PARAM(", "паяал(", "STACKITEM(", "тилгсыяоу(", "SGN(", "сгл(", 
 , "BACKWARD(", "писы(", "FORWARD(", "лпяоста(", "DOC.PAR(", "еццяажоу.пая(", "MAX.DATA(", "лецако.сеияас(", "MIN.DATA(", "лийяо.сеияас(" _
 , "MAX(", "лецако(", "MIN(", "лийяо(", "COMPARE(", "суцйяиме(", "DOC.UNIQUE.WORDS(", "еццяажоу.ломадийес.кенеис(", "DOC.WORDS(", "еццяажоу.кенеис(" _
 , "DOC.LEN(", "еццяажоу.лгйос(", "LEN.DISP(", "лгйос.елж(", "LEN(", "лгйос(", "SQRT(", "яифа(", "FREQUENCY(", "сувмотгта(" _
-, "LOG(", "коц(", "LN(", "кж(", "ATN(", "тон.еж(", "TAN(", "ежап(", "COS(", "сум(", "SIN(", "гл(", "ABS(", "апок(", "LOWORD(", "LOWWORD(", "йатылисо(" _
+, "LOG(", "коц(", "LN(", "кж(", "ATN(", "тон.еж(", "TAN(", "ежап(", "COS(", "сум(", "SIN(", "гл(", "ABS(", "апок(", "LOWORD(", "LOWWORD(", "йахе(", "EACH(", "йатылисо(" _
 , "HIWORD(", "HIGHWORD(", "памылисо(", "BINARY.NEG(", "дуадийо.амти(", "дуадийо.амтистяожо(", "BINARY.OR(", "дуадийо.г(" _
 , "BINARY.AND(", "дуадийо.йаи(", "BINARY.XOR(", "дуадийо.апо(", "HILOWWORD(", "дуолиса(", "BINARY.SHIFT(", "дуадийо.окисхгсг(" _
 , "BINARY.ROTATE(", "дуадийг.пеяистяожг(", "SINT(", "айеяаио.дуадийо(", "USGN(", "дуадийо(", "UINT(", "дуадийо.айеяаио(", "ROUND(", "стяоцц(" _
-, "INT(", "ай(", "SEEK(", "летахесг(", "EOF(", "текос(", "RANDOM(", "туваиос(", "CHRCODE(", "ваяйыд(", "ASC(", "йыд(")
+, "INT(", "ай(", "SEEK(", "летахесг(", "EOF(", "текос(", "RANDOM(", "туваиос(", "CHRCODE(", "ваяйыд(", "ASC(", "йыд(" _
+, "GROUP(", "олада(", "TEST(", "дойилг(", "CONS(", "емысг(", "CAR(", "пяыто(", "CDR(", "еполема(")
 For i = 0 To UBound(myfun())
     bHash.ItemCreator CStr(myfun(i)), i
 Next i
@@ -3710,7 +3714,7 @@ Dim mycommands(), i As Long
 mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROUND", "BASE", "BEEP", "BITMAPS", "BOLD", "BREAK", "BROWSER", "BUFFER", "CALL", "CASE", "CAT", "CHANGE", "CHARSET", "CHOOSE.COLOR", "CHOOSE.FONT", "CHOOSE.OBJECT", "CHOOSE.ORGAN", "CIRCLE", "CLASS", "CLEAR", "CLIPBOARD", "CLOSE", "CLS", "CODEPAGE", "COLOR", "COMMIT", "COMPRESS", "CONTINUE", "COPY", "CURSOR", "CURVE", "DATA", "DB.PROVIDER", "DB.USER" _
 , "DECLARE", "DEF", "DELETE", "DESKTOP", "DIM", "DIR", "DIV", "DO", "DOCUMENT", "DOS", "DOUBLE", "DRAW", "DRAWINGS", "DROP", "DURATION", "EDIT", "EDIT.DOC", "ELSE", "ELSE.IF", "EMPTY", "END", "ERASE", "ERROR", "ESCAPE", "EVENT", "EVERY", "EXECUTE", "EXIT", "EXPORT", "FAST", "FIELD", "FILES", "FILL", "FIND", "FKEY", "FLOODFILL", "FLUSH", "FONT", "FOR", "FORM", "FORMLABEL", "FRAME", "FUNCTION", "GET", "GLOBAL" _
 , "GOSUB", "GOTO", "GRADIENT", "GREEK", "GROUP", "HEIGHT", "HELP", "HEX", "HIDE", "HOLD", "HTML", "ICON", "IF", "IMAGE", "INLINE", "INPUT", "INSERT", "INVENTORY", "ITALIC", "JOYPAD", "KEYBOARD", "LATIN", "LAYER", "LEGEND", "LET", "LINE", "LINESPACE", "LINK", "LIST", "LOAD", "LOAD.DOC", "LOCAL", "LOCALE", "LONG", "LOOP", "MAIN.TASK", "MARK", "MEDIA", "MENU", "MERGE.DOC", "METHOD", "MODE", "MODULE" _
-, "MODULES", "MONITOR", "MOTION", "MOTION.W", "MOUSE.ICON", "MOVE", "MOVIE", "MOVIES", "MUSIC", "NAME", "NEW", "NEXT", "NORMAL", "ON", "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPTIMIZATION", "ORDER", "OVER", "OVERWRITE", "PAGE", "PART", "PATH", "PEN", "PIPE", "PLAY", "PLAYER", "POLYGON", "PRINT", "PRINTER", "PRINTING", "PROFILER", "PROPERTIES", "PUSH", "PUT", "READ", "RECURSION.LIMIT" _
+, "MODULES", "MONITOR", "MOTION", "MOTION.W", "MOUSE.ICON", "MOVE", "MOVIE", "MOVIES", "MUSIC", "NAME", "NEW", "NEXT", "NORMAL", "ON", "OPEN", "OPEN.FILE", "OPEN.IMAGE", "OPTIMIZATION", "ORDER", "OVER", "OVERWRITE", "PAGE", "PART", "PATH", "PEN", "PIPE", "PLAY", "PLAYER", "POLYGON", "PRINT", "PRINTER", "PRINTING", "PROFILER", "PROPERTIES", "PROTOTYPE", "PUSH", "PUT", "READ", "RECURSION.LIMIT" _
 , "REFER", "REFRESH", "RELEASE", "REM", "REMOVE", "REPEAT", "REPORT", "RESTART", "RETRIEVE", "RETURN", "SAVE", "SAVE.AS", "SAVE.DOC", "SCAN", "SCORE", "SCREEN.PIXELS", "SCRIPT", "SCROLL", "SEARCH", "SEEK", "SELECT", "SET", "SETTINGS", "SHIFT", "SHIFTBACK", "SHOW", "SLOW", "SORT", "SOUND", "SOUNDREC", "SOUNDS", "SPEECH", "SPLIT", "SPRITE", "STACK", "START", "STATIC", "STEP", "STOCK", "STOP", "STRUCTURE" _
 , "SUB", "SUBDIR", "SWAP", "SWEEP", "SWITCHES", "TAB", "TABLE", "TARGET", "TARGETS", "TASK.MAIN", "TEST", "TEXT", "THEN", "THREAD", "THREAD.PLAN", "THREADS", "TITLE", "TONE", "TRY", "TUNE", "UPDATE", "USE", "USER", "VERSION", "VIEW", "VOLUME", "WAIT", "WHILE", "WIDTH", "WIN", "WINDOW", "WITH", "WORDS", "WRITE", "WRITER", "адеиасе", "аккацг", "аккане", "аккиыс", "аккиыс.ам", "ам", "амафгтгсг" _
 , "амахеыягсг", "амайтгсг", "амакоцио", "амакусг.охомгс", "амакутгс", "амаломг", "амамеысг", "амажояа", "амаье", "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "апедысе", "апо", "апохгйеусг.ыс", "апойопг", "аяца", "аявеиа", "аявеио", "аявг", "аукос", "ауноуса", "ажаияесг", "ажгсе", "баке", "басг", "басг.паяовос", "басг.вягстгс", "баье", "бектистопоигсг" _
@@ -3718,7 +3722,7 @@ mycommands() = Array("ABOUT", "AFTER", "APPEND", "APPEND.DOC", "BACK", "BACKGROU
 , "еисацыцг", "ейдосг", "ейтекесг", "ейтупысг", "ейтупытгс", "екецвос", "еккгмийа", "емхесг", "емтасг", "емы", "емысе", "енацыцг", "енодос", "епамакабе", "епамекабе", "епекене", "епекене.амтийеилемо", "епекене.цяаллатосеияа", "епекене.ояцамо", "епекене.вяыла", "епицяажг", "епийаияо", "епикене", "епикене.амтийеилемо", "епикене.цяаллатосеияа", "епикене.ояцамо", "епикене.вяыла", "епикоцес", "епикоцг", "епикоцгс" _
 , "епипедо", "епистяожг", "епижамеиа", "еполемо", "етийета.жоялас", "еуяесг", "глеяолгмиа", "гвоцяажгсг", "гвои", "гвос", "хесе", "хесг", "идиотгтес", "исвмг", "ивмос", "йахаяг", "йахаяо", "йахе", "йакесе", "йалпукг", "йаме", "йамомийа", "йат", "йатакоцои", "йатакоцос", "йатастасг", "йатавыягсг", "йеилемо", "йемг", "йимгсг", "йимгсг.п", "йкасг", "йкеиди", "йкеисе", "йомсока", "йяата", "йяатгсе", "йяуье" _
 , "йуйкийа", "йуйкос", "йукисг", "йуяио.еяцо", "кабг", "кахос", "катимийа", "кенеис", "киста", "коцос", "лайяус", "ле", "леходос", "лекыдиа", "леяос", "лета", "летахесг", "лоусийг", "лпип", "мео", "мгла", "мглата", "нейима", "охомг", "олада", "омола", "ояио.амадяолгс", "ояисе", "паийтгс", "паине", "памы", "паяахуяо", "паяе", "паяелбокг", "павос", "педио", "пема", "пеяи" _
-, "пеяихыяио", "пета", "пимайас", "пимайес", "пкациа", "пкаисио", "пкгйтяокоцио", "покуцымо", "пяос", "пяосхесе.еццяажо", "пяосхгйг", "пяовеияо", "яоутима", "яухлисеис", "с", "саяысе", "сбгсе", "сеияа", "секида", "семаяио", "сгл", "сглади", "сглеио", "статийг", "статийес", "стг", "стгм", "сто", "стой", "стовои", "стовос", "суццяажеас", "суццяажг", "суцвымеусе.еццяажо", "сулпиесг" _
+, "пеяихыяио", "пета", "пимайас", "пимайес", "пкациа", "пкаисио", "пкгйтяокоцио", "покуцымо", "пяос", "пяосхесе.еццяажо", "пяосхгйг", "пяытотупо", "пяовеияо", "яоутима", "яухлисеис", "с", "саяысе", "сбгсе", "сеияа", "секида", "семаяио", "сгл", "сглади", "сглеио", "статийг", "статийес", "стг", "стгм", "сто", "стой", "стовои", "стовос", "суццяажеас", "суццяажг", "суцвымеусе.еццяажо", "сулпиесг" _
 , "сулпкгяысг", "сумаятгсг", "сумевисе", "сумхгла", "сус", "сустгла", "сведиа", "сведио.мглатым", "сыяос", "сысе", "сысе.еццяажо", "таимиа", "таимиес", "танг", "танимолгсг", "текос", "титкос", "тлгла", "тлглата", "томос", "топийа", "топийес", "топийг", "топийо", "тоте", "тупос", "тупысе", "упойатакоцос", "упокоцистг", "жаядиа", "жеяе", "жеяеписы", "жомто", "жояла", "жоятос", "жоятысе" _
 , "жоятысе.еццяажо", "жымг", "ваяайтгяес", "ваяане", "вягсг", "вягстг", "вягстгс", "вяыла", "?")
 For i = 0 To UBound(mycommands())
@@ -3886,6 +3890,8 @@ Case "BACK", "BACKGROUND", "пеяихыяио"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoBack)
 Case "OVER", "памы"
     aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoOver)
+Case "PROTOTYPE", "пяытотупо"
+aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoProto)
 Case "SHIFTBACK", "жеяеписы"
 aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoShiftBack)
 Case "SHIFT", "жеяе"
@@ -4004,25 +4010,25 @@ For i = 1 To n
 a.AddKey i - 1
 Next i
 Debug.Print "(ord)   (key)       (hash position)   (pure)   (left)"
-old = a.problem("test" + Str$(a.count))
+old = a.problem("test" + Str$(a.Count))
 
-For k = 0 To a.count - 1
-TT = Int((a.count - 1) * Rnd)
+For k = 0 To a.Count - 1
+TT = Int((a.Count - 1) * Rnd)
 'tt = 13
-If TT < 0 Or TT >= a.count Then Stop
-pos = Int((a.count - 1) * Rnd)
-a.index = pos
+If TT < 0 Or TT >= a.Count Then Stop
+pos = Int((a.Count - 1) * Rnd)
+a.Index = pos
 m = a.KeyToString
 'Debug.Print "key to remove:" + m + " at position " + Str$(pos)
 If m = "" Then Stop
-old = a.count
+old = a.Count
 a.Remove a.KeyToString
-If old = a.count Then Stop
+If old = a.Count Then Stop
 If Not a.Done Then
 Debug.Print "error ", pos, m
-If a.count > 0 Then
-For jjj = 0 To a.count - 1
-a.index = jjj
+If a.Count > 0 Then
+For jjj = 0 To a.Count - 1
+a.Index = jjj
 Debug.Print a.KeyToString2
 Next jjj
 End If
@@ -4031,7 +4037,14 @@ Next k
 
 'a.ToStart
 'a.Remove a.KeyToString
-Debug.Print "final:", a.count
-If a.count <> 0 Then Exit For
+Debug.Print "final:", a.Count
+If a.Count <> 0 Then Exit For
 Next cc
+End Sub
+Sub test(a$)
+Dim pos1 As Long
+pos1 = 1
+Debug.Print aheadstatus(a$, False, pos1)
+Debug.Print a$
+Debug.Print Mid$(a$ + "***", pos1)
 End Sub

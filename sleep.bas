@@ -137,9 +137,9 @@ End Sub
 
 
 Public Sub MyDoEvents0(some As Object)
+   On Error GoTo procbliah3
 
-
-TaskMaster.rest
+If Not TaskMaster Is Nothing Then TaskMaster.rest
 
             If uintnew(timeGetTime) > k1 Then RRCOUNTER = 0
             
@@ -149,14 +149,16 @@ TaskMaster.rest
                   End If
                   
  DoEvents
-   TaskMaster.RestEnd
-   
+If Not TaskMaster Is Nothing Then TaskMaster.RestEnd
+   Exit Sub
+procbliah3:
+DoEvents
 End Sub
 
 Public Sub MyDoEvents1(some As Object)
+On Error Resume Next
 
-
-TaskMaster.rest
+If Not TaskMaster Is Nothing Then TaskMaster.rest
 
     If uintnew(timeGetTime) > k1 Then RRCOUNTER = 0
             
@@ -175,7 +177,7 @@ TaskMaster.rest
                   End If
                   
 
-   TaskMaster.RestEnd1
+ If Not TaskMaster Is Nothing Then TaskMaster.RestEnd1
    
 End Sub
 Public Sub MyRefresh(some As Object)
@@ -204,30 +206,30 @@ Loop Until lNumberOf10ThmiliSeconds < 0
 
 End Sub
 
-Public Sub SleepWaitNO(ByVal A As Long)
+Public Sub SleepWaitNO(ByVal a As Long)
 Exit Sub
  Dim b As New clsProfiler
 Dim l As Boolean, k
 l = NOEDIT
   b.MARKONE
   ''If A > 10 Then Sleep 0
-While A > b.MARKTWO And l = NOEDIT
+While a > b.MARKTWO And l = NOEDIT
 MyDoEvents2 Form1
 If TaskMaster.Processing Then TaskMaster.TimerTick Else Sleep 0
 
- A = A \ 3
+ a = a \ 3
 Wend
 End Sub
-Private Sub SleepWaitNew(A As Long)
+Private Sub SleepWaitNew(a As Long)
  Dim b As New clsProfiler
   b.MARKONE
 Do
  MyDoEvents
-Loop Until A > b.MARKTWO
+Loop Until a > b.MARKTWO
 End Sub
 Public Sub SleepWaitEdit(lNumberOf10ThmiliSeconds As Long)
-    
-If Forms.count < 3 Then
+On Error Resume Next
+If Forms.Count < 3 Then
 Sleep 1
 DoEvents
 Exit Sub
@@ -300,12 +302,12 @@ TaskMaster.rest
   Loop Until lBusy = WAIT_OBJECT_0
     ' Close the handles when you are done with them.
     CloseHandle hTimer
-TaskMaster.RestEnd
+If Not TaskMaster Is Nothing Then TaskMaster.RestEnd
 End Sub
         
 Public Sub SleepWaitEdit2(lNumberOf10ThmiliSeconds As Long)
-
-If Forms.count < 3 Then
+On Error Resume Next
+If Forms.Count < 3 Then
 Sleep 1
 DoEvents
 Exit Sub
@@ -379,5 +381,5 @@ End If
   Loop Until lBusy = WAIT_OBJECT_0
     ' Close the handles when you are done with them.
     CloseHandle hTimer
-TaskMaster.RestEnd
+If Not TaskMaster Is Nothing Then TaskMaster.RestEnd
 End Sub
