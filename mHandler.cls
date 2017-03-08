@@ -17,6 +17,7 @@ Public t1 As Variant, indirect As Long
 Public ReadOnly As Boolean
 Public index_start As Variant ' 1 for start
 Public index_End As Variant  ' -1 for end
+Public index_cursor As Variant
 Public UseIterator As Boolean
 Private Sub Class_Initialize()
 indirect = -1
@@ -37,6 +38,7 @@ a.t1 = t1
 a.indirect = indirect
 a.index_start = index_start
 a.index_End = index_End
+a.index_cursor = index_cursor
 a.UseIterator = UseIterator
 Set a.objref = objref
 End Sub

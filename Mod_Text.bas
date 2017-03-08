@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 4
-Global Const Revision = 0
+Global Const Revision = 1
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -3561,11 +3561,13 @@ Dim par As Long
 If LastErNum = -2 Then LastErNum = 0
 If a$ = "" Or a$ = vbCrLf Then Exit Function
 IsExp = IsExpA(basestack, a$, r, par, noand1)
-
-If par = 1 Then
+again:
+If par > 0 Then
 If MaybeIsSymbol(a$, ",") Then
 IsExp = GetArr(basestack, a$, r, "", 1)
-If IsExp Then par = 0
+If LastErNum = -2 Then IsExp = False
+If IsExp Then par = par - 1: If par > 0 Then GoTo again
+
 End If
 End If
 
@@ -5498,29 +5500,10 @@ If GetVar(bstack, v$, VR) Then
             CopyHandler var(VR), bstack
             r = 0
             ElseIf FastSymbol(a$, "^") Then
-                
-                dd = var(VR).indirect
-                If dd >= 0 Then
-                dn = 0
-                Do While (TypeOf var(dd) Is mHandler) And dn < 20
-                    If var(dd).indirect >= 0 Then dd = var(dd).indirect Else Exit Do
-                    dn = dn + 1
-                Loop
-                If dn = 20 Then
-                MyEr "Internal Error", "Εσωτερικό πρόβλημα"
-                Exit Function
-                End If
-                Else
-                dd = VR
-                End If
-                Select Case dd
-                Case 1 To var2used
-                    r = SG * var(dd).objref.Index
-                Case Else
-                    r = 0
-                End Select
-            Else
-                CopyHandler var(VR), bstack
+
+                    r = SG * var(VR).index_cursor
+              Else
+               Set bstack.lastobj = var(VR)
                 r = 0
             End If
         End If
@@ -6155,9 +6138,15 @@ check123678:
             If TypeOf bstack.lastobj Is mHandler Then
                 If bstack.lastobj.indirect >= 0 Then
                     Set pppp = var(bstack.lastobj.indirect)
+                    If bstack.lastobj.UseIterator Then
+                    pppp.Index = bstack.lastobj.index_cursor
+                    End If
                     GoTo check123678
                 ElseIf TypeOf bstack.lastobj.objref Is mArray Then
                     Set pppp = bstack.lastobj.objref
+                    If bstack.lastobj.UseIterator Then
+                    pppp.Index = bstack.lastobj.index_cursor
+                    End If
                     GoTo check123678
                 Else
                     NotArray
@@ -8502,8 +8491,10 @@ Case "CONS(", "ΕΝΩΣΗ("
         Set anything = bstack.lastobj
         If CheckIsmArray(anything, var()) Then
 a13410:
+
             Set pppp = anything
             If FastSymbol(a$, ",") Then
+againcons:
                 If IsExp(bstack, a$, r) Then
                     Set anything = bstack.lastobj
                     If CheckIsmArray(anything, var()) Then
@@ -8543,7 +8534,9 @@ a13415:
             NotArray
             Exit Function
         End If
+        If FastSymbol(a$, ",") Then Set pppp = anything: GoTo againcons
         Set anything = Nothing
+        
         IsNumber = FastSymbol(a$, ")", True)
     ElseIf IsStrExp(bstack, a$, s$) Then
             Set anything = bstack.lastobj
@@ -14237,6 +14230,7 @@ assignvalue3:
                                             var(v).UseIterator = True
                                             var(v).index_start = .index_start
                                             var(v).index_End = .index_End
+                                            var(v).index_cursor = .index_cursor
                                         End If
                                         End With
                                     End If
@@ -14252,6 +14246,7 @@ assignvalue3:
                                             var(v).UseIterator = True
                                             var(v).index_start = .index_start
                                             var(v).index_End = .index_End
+                                            var(v).index_cursor = .index_cursor
                                         End If
                                     End With
                                 
@@ -14375,11 +14370,20 @@ noexpression:
                                 interpret = False: Exit Function
                             End If
                             If bstack.lastobj Is Nothing Then
-                                MyEr "Missing Object", "Δεν βρήκα αντικείμενο"
+                                MyEr "Missing Object", "Δεν βρήκα αντικείενο"
                                 interpret = False: Exit Function
                             ElseIf Typename(bstack.lastobj) = "mHandler" Then   '' CheckGarbage bstack
                                 Set myobject = New mHandler
                                 bstack.lastobj.CopyTo myobject
+                                If bstack.lastobj.indirect > -0 Then
+                                CheckDeepAny myobject, var()
+                                bstack.lastobj.indirect = -1
+                                Set bstack.lastobj.objref = myobject
+                                Set var(v) = bstack.lastobj
+                                Set myobject = New mHandler
+                                bstack.lastobj.CopyTo myobject
+                                
+                                End If
                                 Set var(v) = myobject
                             ElseIf Typename(bstack.lastobj) = "mArray" Then
                                 Set myobject = New mHandler
@@ -17075,34 +17079,30 @@ contWhile:
         With bstack
             If Not .lastobj Is Nothing Then
             If TypeOf .lastobj Is mHandler Then
-            If .lastobj.t1 <> 2 Then
-            i = .lastobj.indirect
-            If i < 0 Then
-            Set myobject = .lastobj.objref
-            Else
-                x1 = 0
+                If .lastobj.UseIterator Then
+                i = .lastobj.indirect
+                If i < 0 Then
                 
-                Do While (TypeOf var(i) Is mHandler) And x1 < 20
-                    If var(i).indirect >= 0 Then i = var(i).indirect Else Exit Do
-                    x1 = x1 + 1
-                Loop
-                If TypeOf var(i) Is mHandler Then
-                If var(i).indirect >= 0 Then MyEr "internal problem", "εσωτερικό πρόβλημα": Execute = 0: Exit Function
-                Set myobject = var(i).objref
-                Else
-                Set myobject = var(i)
+                Set myobject = .lastobj.objref
+                If TypeOf myobject Is mHandler Then
+                Set myobject = myobject.objref
                 End If
-            ' find it
+                Else
+                Stop
+                End If
+                p = .lastobj.index_End <> -1 And Not myobject.IsEmpty
+                If p Then
+                    myobject.Index = .lastobj.index_start
+                    .lastobj.index_cursor = .lastobj.index_start
+                    If .lastobj.index_start <= .lastobj.index_End Then v = 1 Else v = -1
+                End If
+                
             End If
-            p = .lastobj.index_End <> -1 And Not myobject.IsEmpty
-            If p Then
-                myobject.Index = .lastobj.index_start
-                If .lastobj.index_start <= .lastobj.index_End Then v = 1 Else v = -1
-            End If
-            End If
+            Set bstack.lastobj = Nothing
             End If
             End If
         End With
+        
          w$ = Left$(w$, Len(w$) - Len(b$))
                 If p = 0 Then
                  If FastSymbol(b$, "{") Then
@@ -17153,34 +17153,27 @@ contWhile:
                  With bstack
             If Not .lastobj Is Nothing Then
             If TypeOf .lastobj Is mHandler Then
-            If .lastobj.t1 <> 2 Then
-            i = .lastobj.indirect
-            If i < 0 Then
+            If .lastobj.UseIterator Then
+                i = .lastobj.indirect
+                If i < 0 Then
+                
                 Set myobject = .lastobj.objref
-            Else
-                x1 = 0
-                Do While (TypeOf var(i) Is mHandler) And x1 < 20
-                    If var(i).indirect >= 0 Then i = var(i).indirect Else Exit Do
-                    x1 = x1 + 1
-                Loop
-                If TypeOf var(i) Is mHandler Then
-                If var(i).indirect >= 0 Then MyEr "internal problem", "εσωτερικό πρόβλημα": Execute = 0: Exit Function
-                Set myobject = var(i).objref
-                Else
-                Set myobject = var(i)
+                If TypeOf myobject Is mHandler Then
+                Set myobject = myobject.objref
                 End If
-            ' find it
-            End If
+                Else
+                Stop
+                End If
             p = .lastobj.index_End <> -1 And Not myobject.IsEmpty
             If p Then
                 If .lastobj.index_start <= .lastobj.index_End Then v = 1 Else v = -1
                 
                 If v >= 0 Then
-                p = myobject.Index < .lastobj.index_End
+                p = .lastobj.index_cursor < .lastobj.index_End
                 Else
-                p = myobject.Index > .lastobj.index_End
+                p = .lastobj.index_cursor > .lastobj.index_End
                 End If
-                If p Then myobject.Index = myobject.Index + v
+                If p Then myobject.Index = .lastobj.index_cursor + v: .lastobj.index_cursor = .lastobj.index_cursor + v
             End If
             End If
             End If
@@ -18361,13 +18354,14 @@ assignvalue3:
                                             var(v).UseIterator = True
                                             var(v).index_start = .index_start
                                             var(v).index_End = .index_End
+                                            var(v).index_cursor = .index_cursor
                                         End If
                                         End With
                                     End If
                             ElseIf TypeOf myobject Is mHandler Then
                                 
                                 If myobject.indirect > -1 Then
-                                    Set var(v) = var(myobject.indirect)
+                                     Set var(v) = var(myobject.indirect)
                                 Else
                                     Set var(v) = myobject
                                 End If
@@ -18376,6 +18370,7 @@ assignvalue3:
                                             var(v).UseIterator = True
                                             var(v).index_start = .index_start
                                             var(v).index_End = .index_End
+                                            var(v).index_cursor = .index_cursor
                                         End If
                                     End With
                                 
@@ -18507,7 +18502,17 @@ noexpression:
                             ElseIf Typename(bstack.lastobj) = "mHandler" Then   '' CheckGarbage bstack
                                 Set myobject = New mHandler
                                 bstack.lastobj.CopyTo myobject
+                                If bstack.lastobj.indirect > -0 Then
+                                CheckDeepAny myobject, var()
+                                bstack.lastobj.indirect = -1
+                                Set bstack.lastobj.objref = myobject
+                                Set var(v) = bstack.lastobj
+                                Set myobject = New mHandler
+                                bstack.lastobj.CopyTo myobject
+                                
+                                End If
                                 Set var(v) = myobject
+                                
                             ElseIf Typename(bstack.lastobj) = "mArray" Then
                                 Set myobject = New mHandler
                                 myobject.t1 = 3
@@ -24258,22 +24263,12 @@ aa.indirect = Number
 Set aa.objref = Nothing
 Set MakeitObjectGeneric = aa
 End Function
-Function MakeitObjectIterator(Number As Long, st, en) As Object
-Dim aa As New mHandler, k As Long, myobject As Object
-aa.t1 = 3
-On Error GoTo there
-Do While TypeOf var(Number) Is mHandler
-If var(Number).indirect < 0 Then Exit Do
-If k > 20 Then MyEr "too many references", "πολλές αναφορές": Exit Do
-Number = var(Number).indirect
-k = k + 1
-Loop
-there:
-aa.indirect = Number
-aa.UseIterator = True
-Set myobject = var(Number)
-If TypeOf myobject Is mHandler Then Set myobject = myobject.objref
-With myobject
+
+Sub PlaceIteratorData(bstack As basetask, anything As Variant, st, en)
+If IsObject(anything) Then
+Set bstack.lastobj.objref = anything.objref
+End If
+With bstack.lastobj.objref
     If st < 0 Then st = .Count + st Else st = st - 1
     If en < 0 Then en = .Count + en Else en = en - 1
     If st < 0 Then st = 0
@@ -24281,11 +24276,22 @@ With myobject
     If st >= .Count Then st = .Count - 1
     If en >= .Count Then en = .Count - 1
 End With
-aa.index_start = st
-aa.index_End = en
-Set aa.objref = Nothing
-Set MakeitObjectIterator = aa
-End Function
+With bstack.lastobj
+    .t1 = 3
+     .indirect = -1
+    .index_start = st
+    .index_End = en
+    .index_cursor = st
+    .UseIterator = True
+End With
+If IsObject(anything) Then
+If Not TypeOf bstack.lastobj.objref Is mArray Then
+bstack.lastobj.t1 = 1
+Set bstack.lastobj.objref = anything
+End If
+End If
+
+End Sub
 Sub MakeitObjectInventory(var As Variant, Optional queue As Boolean)
 Dim aa As New mHandler
 aa.t1 = 1 ' 1 for Inventory
@@ -42007,7 +42013,7 @@ End Function
 Function iter(bstack As basetask, rest$, lang As Long) As Boolean
 ' each( array or inventory, start: 1 by default, or -1 for end of list,  end: -1 to end (optional), or we can set it)
     Dim pppp As mArray, w1 As Long, s$, num As Long, mh As mHandler, st As Double, en As Double
-
+    
     w1 = Abs(IsLabel(bstack, rest$, s$))
     If w1 > 4 Then
     If neoGetArray(bstack, s$, pppp) Then
@@ -42047,18 +42053,18 @@ Function iter(bstack As basetask, rest$, lang As Long) As Boolean
                     Exit Function
                 End If
             End If
-            num = AllocVar   ' iterator is for local use, or by reference in a deeper level
-            Set var(num) = pppp  ' reference
-            
-            Set bstack.lastobj = MakeitObjectIterator(num, st, en)
+            Set bstack.lastobj = New mHandler
+           Set bstack.lastobj.objref = pppp
+            PlaceIteratorData bstack, var(0), st, en
             iter = True
+            Exit Function
             End If
             
         End If
         End If
     ElseIf GetVar(bstack, s$, w1) Then
         If Typename(var(w1)) = "mHandler" Then
-        If Not IsSymbol(rest$, ",") Then
+       If Not IsSymbol(rest$, ",") Then
                 st = 1: en = -1
         If IsLabelSymbolNew(rest$, "ΑΡΧΗ", "START", lang, , , , False) Then
                     st = 1
@@ -42092,13 +42098,20 @@ Function iter(bstack As basetask, rest$, lang As Long) As Boolean
                     MissNumExpr
                     Exit Function
                 End If
+                
             End If
-            Set bstack.lastobj = MakeitObjectIterator(w1, st, en)
+            
             If Typename(var(w1).objref) <> "FastCollection" And Typename(var(w1).objref) <> "mArray" Then
             Set bstack.lastobj = Nothing
             MyEr "Not proper object for iterator", "Δεν είναι σωστό αντικείμενο για επανάληψη"
             Exit Function
             End If
+           Set bstack.lastobj = New mHandler
+            'bstack.lastobj.indirect = w1
+           
+
+            'CopyHandler var(w1), bstack
+            PlaceIteratorData bstack, var(w1), st, en
             iter = True
         End If
     End If
