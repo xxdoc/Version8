@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 4
-Global Const Revision = 1
+Global Const Revision = 2
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -260,7 +260,7 @@ Private Declare Function LCMapStringW Lib "kernel32.dll" (ByVal Locale As Long, 
 Private Declare Function SysReAllocStringLen Lib "OleAut32.dll" (ByVal pBSTR As Long, Optional ByVal pszStrPtr As Long, Optional ByVal Length As Long) As Long
 
 Function ChangeValues(bstack As basetask, rest$) As Boolean
-Dim aa As mHandler, bb As FastCollection, ah As String, p As Double, s$
+Dim aa As mHandler, bb As FastCollection, ah As String, p As Double, s$, lastindex As Long
 Set aa = bstack.lastobj
 Set bstack.lastobj = Nothing
 Set bb = aa.objref
@@ -347,6 +347,8 @@ ElseIf MaybeIsSymbol(rest$, ",") Then
                         GoTo there
                 
                 End If
+lastindex = bb.Index
+                
                 If FastSymbol(rest$, ":=", , 2) Then
                     ah = aheadstatus(rest$, False) + " "
                     If Left$(ah, 1) = "N" Or InStr(ah, "l") > 0 Then
@@ -355,6 +357,7 @@ ElseIf MaybeIsSymbol(rest$, ",") Then
                             GoTo there
                         End If
                         ChangeValues = True
+                        bb.Index = lastindex
                         If Not bstack.lastobj Is Nothing Then
                             Set bb.ValueObj = bstack.lastobj
                             Set bstack.lastobj = Nothing
@@ -367,6 +370,7 @@ ElseIf MaybeIsSymbol(rest$, ",") Then
                             GoTo there
                         End If
                         ChangeValues = True
+                        bb.Index = lastindex
                         If Not bstack.lastobj Is Nothing Then
                             Set bb.ValueObj = bstack.lastobj
                             Set bstack.lastobj = Nothing
@@ -14307,12 +14311,18 @@ assignvalue3:
                                 Set myobject = bstack.lastobj
                                 Set bstack.lastobj = Nothing
                                 ss$ = bstack.GroupName
+                                If var(v).HasValue Or var(v).HasSet Then
+                                    MyEr "Property can change", "Η ιδιότητα δεν μπορεί να αλλάξει"
+                                    interpret = 0
+                                    Exit Function
+                                Else
                                 If Len(var(v).GroupName) > Len(w$) Then
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
                                 Else
                                     bstack.GroupName = Left$(w$, Len(w$) - Len(var(v).GroupName) + 1)
                                     w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
+                                End If
                                 End If
                                 Set myobject = Nothing
                                 bstack.GroupName = ss$
@@ -18434,12 +18444,18 @@ assignvalue3:
                                 Set myobject = bstack.lastobj
                                 Set bstack.lastobj = Nothing
                                 ss$ = bstack.GroupName
+                                If var(v).HasValue Or var(v).HasSet Then
+                                MyEr "Property can change", "Η ιδιότητα δεν μπορεί να αλλάξει"
+                                Execute = 0
+                                Exit Function
+                                Else
                                 If Len(var(v).GroupName) > Len(w$) Then
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
                                 Else
                                     bstack.GroupName = Left$(w$, Len(w$) - Len(var(v).GroupName) + 1)
                                     w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
+                                End If
                                 End If
                                 Set myobject = Nothing
                                 bstack.GroupName = ss$
@@ -19387,8 +19403,8 @@ End If
      If pppp.Arr Then
      pppp.item(v) = p
      ElseIf Typename(pppp.GroupRef) Like "Pro*" Then
-    
      pppp.GroupRef.Value = p
+     
      End If
     End If
 Do While FastSymbol(b$, ",")
@@ -24380,7 +24396,6 @@ End If
 Set var = aa
 End Sub
 Sub CheckVar(var As Variant, s As String)
-
 If Typename(var) = doc Then
 If var.IsEmpty Then
 var.textDoc = s
@@ -27011,7 +27026,7 @@ If myobject Is Nothing Then GoTo exithere1
     
                .HasValue = myobject.HasValue Or .HasValue
                 .HasSet = myobject.HasSet Or .HasValue
-         
+                .HasStrValue = myobject.HasStrValue Or .HasStrValue
                 End With
 exithere1:
             here$ = ohere$
@@ -28983,7 +28998,7 @@ End If
 ss$ = ""
 Do While frm$ <> ""
 MyDoEvents
-
+If NOEXECUTION Then Exit Do
 If Right$(" " & aDir.Pattern, 1) <> "*" Then
 s$ = ExtractNameOnly(Included(mcd + frm$, stac1))
 Else
@@ -30324,10 +30339,10 @@ againhere:
                                                                                                                         If VN Then var(V1) = var(V1) + Sput("") Else var(V1) = var(V1) & " 0"
                                                                                                                 Else
                                                                                                                   
-                                                                                                                     Select Case VarType(.item(i + v))
-                                                                                                                     Case 5
+                                                                                                                     Select Case Typename(.item(i + v))
+                                                                                                                     Case "Double"
                                                                                                                      var(V1) = var(V1) + " " + Trim$(Str(.item(i + v)))
-                                                                                                                     Case 8
+                                                                                                                     Case "String"
                                                                                                                      w$ = .item(i + v)
                                                                                                                      If IsNumberD2(w$, p) Then
                                                                                                                      var(V1) = var(V1) + " " + .item(i + v)
@@ -33758,8 +33773,9 @@ ProcPlayer = True
 Exit Function
 End Function
 Function MyRead(jump As Long, bstack As basetask, rest$, lang As Long) As Boolean
-Dim ps As mStiva, bs As basetask, f As Long, ohere$, par As Boolean, flag As Boolean, flag2 As Boolean
+Dim ps As mStiva, bs As basetask, f As Long, ohere$, par As Boolean, flag As Boolean, flag2 As Boolean, ok As Boolean
 Dim s$, ss$, pa$, what$, x1 As Long, y1 As Long, i As Long, myobject As Object, it As Long, useoptionals As Boolean
+Dim m As mStiva
 MyRead = True
 Dim p As Double, x As Double
 Dim pppp As mArray
@@ -34192,11 +34208,31 @@ Case 1
         If flag2 Then
             GlobalVar what$, p
         ElseIf GetVar(bstack, what$, i, , , flag) Then
-                If VarType(var(i)) <> vbLong Then
-                    var(i) = p
+        If IsObject(var(i)) Then
+                If TypeOf var(i) Is Group Then
+                    If var(i).HasSet Then
+                       
+                        Set m = bstack.soros
+                        Set bstack.Sorosref = New mStiva
+                        bstack.soros.PushVal p
+                        NeoCall objptr(bstack), what$ + "." + ChrW(&H1FFF) + ":=()", lang, ok
+                        Set bstack.Sorosref = m
+                        Set m = Nothing
+                    Else
+                        GoTo there18274
+                    End If
                 Else
-                    var(i) = CLng(p)
+there18274:
+                    MyEr "Can't assign value to object", "Δεν μπορώ να δώσω τιμή σε αντικείμενο"
+                    Exit Function
                 End If
+        ElseIf VarType(var(i)) = vbLong Then
+                    var(i) = CLng(p)
+        Else
+                    var(i) = p
+        End If
+
+        
         ElseIf i = -1 Then
                 bstack.SetVar what$, p
         Else
@@ -34225,7 +34261,21 @@ Case 3
         If flag2 Then
             GlobalVar what$, s$
         ElseIf GetVar(bstack, what$, i, , , flag) Then
-            CheckVar var(i), s$
+            If IsObject(var(i)) Then
+                If TypeOf var(i) Is Group Then
+                        
+                        Set m = bstack.soros
+                        Set bstack.Sorosref = New mStiva
+                        bstack.soros.PushStr s$
+                        NeoCall objptr(bstack), Left$(what$, Len(what$) - 1) + "." + ChrW(&H1FFF) + ":=()", lang, ok
+                        Set bstack.Sorosref = m
+                        Set m = Nothing
+                Else
+                    CheckVar var(i), s$
+                End If
+            Else
+                var(i) = s$
+            End If
         ElseIf i = -1 Then
             bstack.SetVar what$, s$
         Else
@@ -34379,6 +34429,8 @@ Case 5
         Else
             If Not IsObject(pppp.item(it)) Then
                 pppp.item(it) = s$
+            ElseIf Typename(pppp.item(it)) = "Group" Then
+            ' do something
             Else
                 Set pppp.item(it) = New Document
                 CheckVar pppp.item(it), s$
@@ -34411,6 +34463,7 @@ loopcont123:
 Loop Until Not FastSymbol(rest$, ",")
 
 End Function
+
 Function MyPush(bstack As basetask, rest$) As Boolean
 Dim s$, p As Double
 MyPush = True
@@ -41476,7 +41529,7 @@ Private Function MyMod(r1 As Double, po) As Double
 MyMod = Sgn(r1) * (Int(Abs(r1)) - Int(Int(Abs(r1) / Abs(Int(po))) * Abs(Int(po))))
 End Function
 Private Function AddInventory(bstack As basetask, rest$) As Boolean
-Dim p As Double, s$, pppp As mArray
+Dim p As Double, s$, pppp As mArray, lastindex As Long
 If Not bstack.lastobj Is Nothing Then
 If Typename(bstack.lastobj) = "mHandler" Then
 Dim aa As mHandler
@@ -41539,6 +41592,7 @@ Else
         GoTo there
 
 End If
+lastindex = bb.Index
 If FastSymbol(rest$, ":=", , 2) Then
 ah = aheadstatus(rest$, False) + " "
 If Left$(ah, 1) = "N" Or InStr(ah, "l") > 0 Then
@@ -41546,6 +41600,7 @@ If Left$(ah, 1) = "N" Or InStr(ah, "l") > 0 Then
         AddInventory = False
         GoTo there
     End If
+    bb.Index = lastindex
     If Not bstack.lastobj Is Nothing Then
     If TypeOf bstack.lastobj Is mArray Then
         Set pppp = New mArray
@@ -41575,6 +41630,7 @@ ElseIf Left$(ah, 1) = "S" Then
         AddInventory = False
         GoTo there
     End If
+    bb.Index = lastindex
     If Not bstack.lastobj Is Nothing Then
     If TypeOf bstack.lastobj Is mArray Then
         Set pppp = New mArray

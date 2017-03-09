@@ -28,7 +28,7 @@ Dim toplim As Long
 Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
 Private lastfind As String
 Private Hash() As Long
-Public index As Long
+Public Index As Long
 Private Sub Class_Initialize()
     MaxSpace = 10
     ReDim PriveSpace(MaxSpace) As item, Hash(MaxSpace * 2 + 3)
@@ -157,8 +157,8 @@ Private Function Malloc() As Long
         toplim = toplim + 1
         Malloc = toplim
 End Function
-Property Get count()
-count = toplim + 1
+Property Get Count()
+Count = toplim + 1
 End Property
 Property Get LastKnown() As String
 LastKnown = lastfind
@@ -173,7 +173,7 @@ k = Hash(HashFunc(Key)) - 1
 If k >= 0 Then
 Do
     If PriveSpace(k).Key = Key Then
-    num = PriveSpace(k).NDX: Find = True: lastfind = Key: index = k: Exit Function
+    num = PriveSpace(k).NDX: Find = True: lastfind = Key: Index = k: Exit Function
     End If
      k = PriveSpace(k).Pleft - 1
 Loop Until k < 0
@@ -192,7 +192,7 @@ Do
     With PriveSpace(k)
     If .Key = Key Then
     internal = .KeyType
-    num = .NDX: Find2 = True: lastfind = Key: index = k: Exit Function
+    num = .NDX: Find2 = True: lastfind = Key: Index = k: Exit Function
     End If
      k = .Pleft - 1
      End With
@@ -243,7 +243,7 @@ End With
 place HashFunc(Key), a
 End Sub
 Property Get Percent()
-Percent = count / hashlen
+Percent = Count / hashlen
 End Property
 Private Sub place(ByVal b, ByVal a)
 Dim k As Long
