@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 4
-Global Const Revision = 3
+Global Const Revision = 4
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -15576,7 +15576,7 @@ sss = Len(b$): lbl = True
 ' This is the main loop, if we consume commands then Len(B$) will be smaller.
 ' We have to change LLL if we put inline code
 Do While Len(b$) <> LLL
-
+'Debug.Print bstack.GroupName, "|", bstack.UseGroupname
         If NOEXECUTION Then
             MyEr "", ""
             k1 = 0
@@ -18484,8 +18484,14 @@ assigngroup:
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
                                 Else
                                     bstack.GroupName = Left$(w$, Len(w$) - Len(var(v).GroupName) + 1)
-                                    w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
+                                   If Len(var(v).GroupName) > 0 Then
+                                   w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
+                                    Else
+                                    MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
+                                    Execute = 0
+                                    Exit Function
+                                    End If
                                 End If
                                 End If
                                 Set myobject = Nothing
@@ -21473,7 +21479,7 @@ varhash.ItemCreator here$ & "." & myUcase(name$), j, True
 
 End If
 End Sub
-Function LinkGroup(ByVal name$, q As Variant, Optional usefinal As Boolean = False) As Boolean
+Function LinkGroup12(ByVal name$, q As Variant, Optional usefinal As Boolean = False) As Boolean
 Dim i As Long, Vlist As Boolean, FList, f$, aa$, v As Long
 Dim s() As String
 If Typename(q) <> "Group" Then Exit Function
@@ -21502,7 +21508,7 @@ Case "Group"
        If var(v).HasStrValue Then
        varhash.ItemCreator name$ + Mid$(Split(aa$)(0), 2) + "$", CLng(val(v)), True
        End If
-   LinkGroup name$ + Mid$(Split(aa$)(0), 2) + ".", var(val(Split(aa$)(1))), True
+   LinkGroup12 name$ + Mid$(Split(aa$)(0), 2) + ".", var(val(Split(aa$)(1))), True
         
     Else
     
@@ -21510,7 +21516,7 @@ Case "Group"
     If var(v).HasStrValue Then
     varhash.ItemCreator name$ + Split(aa$)(0) + "$", CLng(val(v)), True
     End If
-    LinkGroup name$ + Split(aa$)(0) + ".", var(val(Split(aa$)(1))), True
+    LinkGroup12 name$ + Split(aa$)(0) + ".", var(val(Split(aa$)(1))), True
     End If
 
 Case Else
@@ -21522,15 +21528,126 @@ Next
 End With
 
 
-
+Dim mm As Long
+Dim als As Long
 Dim subname$
 If FList <> "" Then
 subname$ = Replace(Replace(FList, Chr$(3), name$), Chr$(2), name$)
 s() = Split(subname$, Chr$(1))
 For i = LBound(s$()) + 1 To UBound(s$())
 If s(i) <> "" Then
- subHash.ItemCreator CStr(Split(s(i))(0)), val(Split(s(i))(1)), True
+mm = val(Split(s(i))(1))
+als = AllocSub()
+'sbf(als) = sbf(mm)
+ subHash.ItemCreator CStr(Split(s(i))(0)), mm, True
+
+ If here$ <> "" Then
+' sbf(als).sbgroup = Mid(name$, Len(here$) + 2)
+ Else
+ 'sbf(als).sbgroup = name$
+ End If
+
 End If
+Next i
+
+End If
+
+LinkGroup12 = Vlist Or FList <> ""
+End With
+
+End Function
+
+
+Function LinkGroup(bstack As basetask, ByVal name$, q As Variant, Optional usefinal As Boolean = False) As Boolean
+Dim i As Long, Vlist As Boolean, FList, f$, aa$, v As Long
+Dim s() As String
+If Typename(q) <> "Group" Then Exit Function
+'Debug.Print "link to ", name$
+Dim old1 As String
+old1 = bstack.UseGroupname
+
+'If Not usefinal Then
+'If here$ = "" Then
+'name$ = myUcase(name$) + "."
+'Else
+' name$ = here$ & "." & myUcase(name$) + "."
+'End If
+'End If
+
+If Not usefinal Then
+If here$ = "" Then
+name$ = myUcase(name$) + "."
+Else
+If bstack.UseGroupname <> "" Then
+If q.IamFloatGroup Then
+    name$ = myUcase(name$) + "."
+Else
+    bstack.UseGroupname = here$
+       name$ = myUcase(name$) + "."
+    GoTo cont1
+End If
+Else
+ name$ = here$ & "." & myUcase(name$) + "."
+ End If
+End If
+Else
+
+End If
+bstack.UseGroupname = ""
+cont1:
+With q
+
+
+FList = .FunclistTotal(var(), True)
+With q.soros
+For i = 1 To .Total
+aa$ = .StackItem(i)
+
+v = Split(aa$)(1)
+Vlist = True
+Select Case Typename(var(v))
+Case "Group"
+    If Left$(Split(aa$)(0), 1) = "*" Then
+       varhash.ItemCreator name$ + Mid$(Split(aa$)(0), 2), CLng(val(v)), True
+       If var(v).HasStrValue Then
+       varhash.ItemCreator name$ + Mid$(Split(aa$)(0), 2) + "$", CLng(val(v)), True
+       End If
+   LinkGroup bstack, name$ + Mid$(Split(aa$)(0), 2) + ".", var(val(Split(aa$)(1))), True
+        
+    Else
+    
+    varhash.ItemCreator name$ + Split(aa$)(0), CLng(val(v)), True
+    If var(v).HasStrValue Then
+    varhash.ItemCreator name$ + Split(aa$)(0) + "$", CLng(val(v)), True
+    End If
+    LinkGroup bstack, name$ + Split(aa$)(0) + ".", var(val(Split(aa$)(1))), True
+    End If
+
+Case Else
+
+    varhash.ItemCreator name$ + Split(aa$)(0), CLng(val(v)), True
+End Select
+
+Next
+End With
+
+
+Dim mm As Long
+Dim als As Long
+Dim subname$
+If FList <> "" Then
+subname$ = Replace(Replace(FList, Chr$(3), name$), Chr$(2), name$)
+s() = Split(subname$, Chr$(1))
+For i = LBound(s$()) + 1 To UBound(s$())
+If s(i) <> "" Then
+mm = val(Split(s(i))(1))
+als = AllocSub()
+sbf(als) = sbf(mm)
+ subHash.ItemCreator CStr(Split(s(i))(0)), als, True
+ 
+ ''sbf(als).sbgroup = name$
+ 
+ End If
 Next i
 
 End If
@@ -21538,6 +21655,7 @@ End If
 LinkGroup = Vlist Or FList <> ""
 End With
 
+bstack.UseGroupname = old1
 End Function
 
 Sub GlobalArr(bstack As basetask, name$, rst$, items As Long, q As Long, Optional useglobalname As Boolean = False, Optional reverse As Boolean = False)
@@ -33982,7 +34100,7 @@ conthereifglobal:
 contpush12:
        what$ = myUcase$(what$)
 backfromstr:
-       If Not LinkGroup(what$, var(i)) Then
+       If Not LinkGroup(bstack, what$, var(i)) Then
             If f Then
                 If Not ReboundVar(bstack, what$, i) Then GlobalVar what$, i, True
             Else
@@ -34025,8 +34143,16 @@ backfromstr:
     End If
     Else
 If bs.IsObjectRef(myobject) Then
+
+If TypeOf myobject Is Group Then
+i = AllocVar()
+Set var(i) = myobject
+Set myobject = Nothing
+GoTo backfromstr
+Else
 If Not GetVar(bstack, what$, i, , , flag) Then i = GlobalVar(what$, 0)
 CreateFormOtherObject var(i), myobject
+End If
  MyRead = True
 Set myobject = Nothing
 Else

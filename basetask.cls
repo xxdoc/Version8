@@ -476,7 +476,7 @@ Public Function ThreadsStr(Optional ByVal lang As Long = 0)
 Dim aa As mThreadref, a$
 If threadsnames Is Nothing Then Exit Function
 
-If threadsnames.count > 0 Then
+If threadsnames.Count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
 ' For Each aa In threadsnames
@@ -509,7 +509,7 @@ Public Function ThreadsNumber() As Long
 '' use threadsnames
 Dim aa As mThreadref, kk
 If threadsnames Is Nothing Then ThreadsNumber = kk: Exit Function
-If threadsnames.count > 0 Then
+If threadsnames.Count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
 Set aa = threadsnames.ValueObj
@@ -526,7 +526,7 @@ Dim aa As mThreadref, Tid As Long
 Dim thatProcess As TaskInterface
 Dim thatBasetask As basetask
 CONT:
-If threadsnames.count > 0 Then
+If threadsnames.Count > 0 Then
 threadsnames.ToStart
 While threadsnames.Done
 Set aa = threadsnames.ValueObj
@@ -668,6 +668,7 @@ GroupName = mGroupName
 End Property
 
 Public Property Let GroupName(ByVal vNewValue As String)
+
 ''If InStr(vNewValue, "..") > 0 Then Stop
 If vNewValue <= "." Then
 mGroupName = ""
