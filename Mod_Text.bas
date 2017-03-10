@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 4
-Global Const Revision = 2
+Global Const Revision = 3
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -13789,7 +13789,8 @@ i = MyTrimLi(a$, i)
 If i > j Then i = 1 ' no spaces
 If j - i < cl - 1 Then Exit Function
 If InStr(c$, Mid$(a$, i, cl)) > 0 Then
-If Remove Then Mid$(a$, i + cl - 1, cl) = Space$(cl)
+' old Mid$(a$, i + cl - 1, cl)
+If Remove Then Mid$(a$, i, cl) = Space$(cl)
 FastOperator = True
 End If
 End Function
@@ -14778,12 +14779,27 @@ Case "RETURN", "ΕΠΙΣΤΡΟΦΗ"
                     LastErNameGR = ""  ' interpret is like execute without if for repeat while select structures
                     If comhash.Find2(w$, i, v) Then
                         If v <> 0 Then
+                            If v = 1500 Then
+                                If Not Identifier(bstack, w$, b$, True, lang) Then
+                                    If NOEXECUTION Then
+                                            MyEr "", ""
+                                            interpret = False
+                                    End If
+                                    here$ = ohere$: Exit Function
+                              Else
+                              GoTo loopcontinue1
+                              End If
+                           
+                         '' ElseIf v = 2000 Then
                           
+                          Else
                             MyEr "No proper command for command line interpreter", "Δεν είναι η κατάλληλη εντολή για τον διερμηνευτή γραμμής"
                             interpret = False
                           
                             here$ = ohere$: Exit Function
-                            End If
+                          End If
+                     End If
+                    
                     If i <> 0 Then
                      If Not IsBadCodePtr(i) Then
                         If Not CallByPtr(i, bstack, b$, lang) Then
@@ -18289,6 +18305,11 @@ If Len(w$) > 3 Then
             If IsLabel(bstack, ss$, bb$) < 0 Then
                     If Len(bb$) = 8 Then Execute = 0: Exit Function
             w$ = Left$(bb$, Len(bb$) - 9) + Mid$(w$, 5)
+            If GetGlobalVar(w$, v) Then
+                If FastOperator(b$, "=", (0)) Then GoTo assignvalue
+                If FastOperator(b$, "<=", i, 2) Then GoTo assignvalue
+                GoTo somethingelse
+            End If
             End If
     End If
 Else
@@ -18296,7 +18317,14 @@ Else
         ss$ = ".DELETEME"
         If IsLabel(bstack, ss$, bb$) < 0 Then
                 If Len(bb$) = 8 Then Execute = 0: Exit Function
+                
             w$ = Left$(bb$, Len(bb$) - 9) + Mid$(w$, 5)
+            If GetGlobalVar(w$, v) Then
+                If FastOperator(b$, "=", (0)) Then GoTo assignvalue
+                
+                If FastOperator(b$, "<=", i, 2) Then GoTo assignvalue
+                GoTo somethingelse
+            End If
             End If
         End If
     End If
@@ -18339,6 +18367,7 @@ If MaybeIsSymbol(b$, "/*-+=~^&|<>") Then
         ' do something here
         ElseIf varhash.Find(here$ & "." & myUcase(w$), v) Then
         ' CHECK VAR
+fromThis:
             If FastOperator(b$, "=", i) Then
 assignvalue:
                 If IsNumeric(var(v)) Then
@@ -18419,6 +18448,7 @@ assignvalue3:
                     End If
                     GoTo loopcontinue
                 Else
+assigngroup:
                     If var(v) Is Nothing Then
                         AssigntoNothing  ' Use Declare
                         Execute = 0
@@ -18444,6 +18474,7 @@ assignvalue3:
                                 Set myobject = bstack.lastobj
                                 Set bstack.lastobj = Nothing
                                 ss$ = bstack.GroupName
+                                
                                 If var(v).HasValue Or var(v).HasSet Then
                                 MyEr "Property can change", "Η ιδιότητα δεν μπορεί να αλλάξει"
                                 Execute = 0
@@ -24563,7 +24594,7 @@ End Sub
 
 Function ExecuteVarOnly(bstack As basetask, ohere$, vvv As Long, rest$, lang As Long, Optional glob As Boolean = False) As Long
 Dim w$, p As Double, v As Long, ss$, b$, i As Long, lcl As Boolean, j As Long, nm$, x1 As Long, y1 As Long, frm$
-Dim prv As Boolean, stripstack1 As New basetask, hlp As String
+Dim prv As Boolean, stripstack1 As New basetask, hlp As String, vl As String
 Const TT$ = "=-+*/<!,{" + vbCr
 If Trim(rest$) = "" Then
     var(vvv) = CLng(0)
@@ -24604,7 +24635,23 @@ Select Case w$
 Case "PROPERTY", "ΙΔΙΟΤΗΤΑ"
 i = IsLabelA("", rest$, w$)
 If i = 1 Or i = 3 Then
-If i = 1 Then hlp = "[" + w$ + "]" Else hlp = "[" + Left$(w$, Len(w$) - 1) + "]$"
+
+If i = 1 Then
+    hlp = "[" + w$ + "]"
+    If lang = 1 Then
+        vl = "value"
+    Else
+        vl = "αξία"
+    End If
+Else
+    hlp = "[" + Left$(w$, Len(w$) - 1) + "]$"
+    If lang = 1 Then
+        vl = "value$"
+    Else
+        vl = "αξία$"
+    End If
+    
+End If
 f$ = ""
 If FastSymbol(rest$, "{") Then
     ClearSpace rest$
@@ -24622,14 +24669,14 @@ If FastSymbol(rest$, "{") Then
                 End If
             Case "SET"
                 If FastSymbol(nm$, "{") Then
-                    f$ = f$ + ss$ + "{link parent " + hlp + " to " + w$ + ": read value" + vbCrLf + block$(nm$) + vbCrLf + w$ + "=value}" + vbCrLf
+                    f$ = f$ + ss$ + "{link parent " + hlp + " to " + w$ + ": read " + vl + vbCrLf + block$(nm$) + vbCrLf + w$ + "=" + vl + "}" + vbCrLf
                     FastSymbol nm$, "}"
                 Else
                     f$ = f$ + "set {link parent " + hlp + " to " + w$ + ": read " + w$ + "}" + vbCrLf
                 End If
             Case "ΘΕΣΕ"
                 If FastSymbol(nm$, "{") Then
-                    f$ = f$ + ss$ + "{link parent " + hlp + " to " + w$ + ": read ΑΞΙΑ" + vbCrLf + block$(nm$) + vbCrLf + w$ + "=ΑΞΙΑ}" + vbCrLf
+                    f$ = f$ + ss$ + "{link parent " + hlp + " to " + w$ + ": read " + vl + vbCrLf + block$(nm$) + vbCrLf + w$ + "=" + vl + "}" + vbCrLf
                     FastSymbol nm$, "}"
                 Else
                     f$ = f$ + "set {link parent " + hlp + " to " + w$ + ": read " + w$ + "}" + vbCrLf
@@ -24657,14 +24704,14 @@ If FastSymbol(rest$, "{") Then
                 End If
             Case "SET"
                 If FastSymbol(nm$, "{") Then
-                    f$ = f$ + ss$ + " {link parent " + hlp + " to " + w$ + ": read value" + vbCrLf + block$(nm$) + vbCrLf + w$ + "=value}" + vbCrLf
+                    f$ = f$ + ss$ + " {link parent " + hlp + " to " + w$ + ": read " + vl + vbCrLf + block$(nm$) + vbCrLf + w$ + "=" + vl + "}" + vbCrLf
                     FastSymbol nm$, "}"
                 Else
                     f$ = f$ + "set {link parent " + hlp + " to " + w$ + ": read " + w$ + "}" + vbCrLf
                 End If
             Case "ΘΕΣΕ"
                 If FastSymbol(nm$, "{") Then
-                    f$ = f$ + ss$ + "{link parent " + hlp + " to " + w$ + ": read ΑΞΙΑ" + vbCrLf + block$(nm$) + vbCrLf + w$ + "=ΑΞΙΑ}" + vbCrLf
+                    f$ = f$ + ss$ + "{link parent " + hlp + " to " + w$ + ": read " + vl + vbCrLf + block$(nm$) + vbCrLf + w$ + "=" + vl + "}" + vbCrLf
                     FastSymbol nm$, "}"
                 Else
                     f$ = f$ + "set {link parent " + hlp + " to " + w$ + ": read " + w$ + "}" + vbCrLf
@@ -40053,7 +40100,9 @@ JUMP0:
                         If FastSymbol(rest$, "{") Then
                         If basestack.OriginalCode > x1 Then
                         ' we have collision so we need a new one
+                        If sbf(basestack.OriginalCode).sbgroup <> sbf(x1).sbgroup Then
                         GoTo jumpheretoo
+                        End If
                         End If
                         If x1 >= lckfrm And lckfrm <> 0 Then
                                 MyEr what$ & " is locked", what$ & " είναι κλειδωμένο"
