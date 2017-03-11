@@ -207,6 +207,7 @@ enabled = glistN.enabled
 End Property
 
 Public Property Let enabled(ByVal RHS As Long)
+If glistN Is Nothing Then Exit Property
 glistN.enabled = RHS
 End Property
 Sub ColorsReset()

@@ -1899,12 +1899,13 @@ PobjNum = PobjNum + 1
 '
 End Sub
 Sub ClrSprites()
+On Error Resume Next
 Dim i As Long
 If PobjNum > 0 Then
 For i = PobjNum To 1 Step -1
 players(i).x = 0: players(i).y = 0
 PobjNum = i
-Unload Form1.dSprite(PobjNum)
+If Form1.dSprite.Count > PobjNum Then Unload Form1.dSprite(PobjNum)
 Next i
 PobjNum = 0
 
@@ -2815,13 +2816,13 @@ Case "THREAD", "THREAD.PLAN", "THREADS", "THREADS$", "TICK", "TIME$(", "TIME(", 
 Case "TO", "TODAY", "TONE", "TOP", "TRIM$(", "TRUE", "TRY", "TUNE", "TWIPSX"
 Case "TWIPSY", "TYPE", "TYPE$(", "UCASE$(", "UINT(", "UNDER", "UNION.DATA$(", "UNTIL"
 Case "UP", "UPDATABLE", "UPDATE", "USE", "USER", "USER.NAME$", "USGN("
-Case "VAL(", "VALID(", "VALUE", "VERSION", "VIEW", "VOID", "VOLUME"
+Case "VAL(", "VALID(", "VALUE", "VALUE$", "VERSION", "VIEW", "VOID", "VOLUME"
 Case "WAIT", "WCHAR", "WEAK", "WEAK$(", "WHILE", "WIDE", "WIDTH", "WIN", "WINDOW"
 Case "WITH", "WITHEVENTS", "WORDS", "WRITABLE(", "WRITE", "WRITER", "X.TWIPS", "XOR", "Y.TWIPS", "адеиас"
 Case "адеиасе", "ай(", "айеяаио.дуадийо(", "айеяаиос", "акгхес", "акгхгс", "аккацг", "аккацг$("
 Case "аккане", "аккиыс", "аккиыс.ам", "ам", "ама", "амафгтгсг", "амахеыягсг", "амайтгсг", "амакоцио"
 Case "амакоцио$", "амакусг.охомгс", "амакусг.у", "амакусг.в", "амакутгс", "амаломг", "амамеысг", "амажояа", "амаье"
-Case "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "амы", "аниа", "аниа(", "апедысе"
+Case "амехесе", "амоицла.аявеиоу", "амоицла.еийомас", "амоине", "амтецяаье", "амтицяаье", "амы", "аниа", "аниа$", "аниа(", "апедысе"
 Case "апкос", "апо", "апохгйеусг.ыс", "апой$(", "апойопг", "апок(", "аяца", "аяихлос", "аяихлос.паяацяажоу("
 Case "аяис$(", "аяистеяолеяос$(", "аявеиа", "аявеио", "аявеио$(", "аявеиоу.лгйос(", "аявеиоу.сталпа(", "аявг", "аукос"
 Case "аукос$(", "аукоу", "ауноуса", "ауто", "ажаияесг", "ажгсе", "баке", "баке.адеиа$(", "басг"

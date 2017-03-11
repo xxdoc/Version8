@@ -36,6 +36,7 @@ Private Type SAFEArrayPart
    End Type
 Private Declare Sub GetMem4 Lib "msvbvm60" (ByVal addr As Long, retval As Long)
 Private Declare Sub PutMem4 Lib "msvbvm60" (ByVal addr As Long, ByVal NewVal As Long)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal addr As Long, retval As Integer)
 
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long
   Private Declare Sub CopyMemory Lib "KERNEL32" Alias "RtlMoveMemory" _
@@ -65,7 +66,7 @@ Dim v As Long
 On Error Resume Next
 v = 0
 Do While v <= Me.UpperMonoLimit
-If IsNumeric(actualdata(v)) Then
+If MyIsNumeric(actualdata(v)) Then
                     Select Case ss$
                                 Case "=", "g"
                                 actualdata(v) = p
@@ -101,7 +102,7 @@ Dim v As Long
 On Error Resume Next
 v = 0
 Do While v <= Me.UpperMonoLimit
-If IsNumeric(actualdata(v)) Then
+If MyIsNumeric(actualdata(v)) Then
                     Select Case ss$
                                 Case "="
                                 actualdata(v) = p
@@ -129,7 +130,7 @@ Dim v As Long
 On Error Resume Next
 v = 0
 Do While v <= Me.UpperMonoLimit
-If IsNumeric(actualdata(v)) Then
+If MyIsNumeric(actualdata(v)) Then
                     Select Case ss$
                                   Case "~"
                                  actualdata(v) = -1 - (actualdata(v) <> 0)
@@ -744,3 +745,10 @@ ss$ = ss$ & Chr(65 + Int((23 * Rnd) + 1))
 Next j
 GetAnyName$ = ChrW(&H1FFF) + ss$
 End Function
+Function MyIsNumeric(v As Variant) As Boolean
+Dim n As Integer
+GetMem2 VarPtr(v), n
+If n < 2 Then Exit Function
+MyIsNumeric = n < 8
+End Function
+

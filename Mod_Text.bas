@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 4
-Global Const Revision = 4
+Global Const Revision = 5
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -9759,15 +9759,15 @@ Case Is >= "A"
 
 End Function
 
-Function IsLabel(bstack As basetask, a$, rrr$) As Long
+Function IsLabel(bstack As basetask, a$, rrr$, Optional skipdot As Boolean) As Long
 Dim buf$
-If Len(a$) < 257 Then IsLabel = innerIsLabel(bstack, a$, rrr$): Exit Function
+If Len(a$) < 257 Then IsLabel = innerIsLabel(bstack, a$, rrr$, , , skipdot): Exit Function
 
  
     
     buf$ = Space$(256)
     Mid$(buf$, 1, 256) = Left$(a$, 256)
-    IsLabel = innerIsLabel(bstack, buf$, rrr$)
+    IsLabel = innerIsLabel(bstack, buf$, rrr$, , , skipdot)
     a$ = buf$ + Mid$(a$, 257)
 
     
@@ -9775,7 +9775,7 @@ If Len(a$) < 257 Then IsLabel = innerIsLabel(bstack, a$, rrr$): Exit Function
 
 End Function
 '
-Function innerIsLabel(bstack As basetask, a$, rrr$, Optional NoSpace As Boolean = False, Optional skipcase As Boolean = False) As Long
+Function innerIsLabel(bstack As basetask, a$, rrr$, Optional NoSpace As Boolean = False, Optional skipcase As Boolean = False, Optional skipdot As Boolean) As Long
 Dim rr&, one As Boolean, c$, dot&, gr As Boolean, r$, cc As Long
 'r$ = ""
 If a$ = "" Then innerIsLabel = 0: Exit Function
@@ -10062,8 +10062,12 @@ Case Is >= "A"
     End If
    If dot& Then
                            If r$ <> "" Then
+     If skipdot And dot& = 1 Then
+     rrr$ = "THIS." + rrr$
      
+     Else
                         rr& = bstack.GetDotNew(rrr$, dot&) * rr&
+                        End If
                            Else
                           If dot& > 1 Then rrr$ = String$(dot&, ".") + rrr$: If rr& = 0 Then rr& = 1
                           End If
@@ -14212,7 +14216,7 @@ Case 1
         ' CHECK VAR
             If FastOperator(b$, "=", i) Then
 assignvalue:
-                If IsNumeric(var(v)) Then
+                If MyIsNumeric(var(v)) Then
 assignvalue2:
                     If IsExp(bstack, b$, p) Then
 assignvalue3:
@@ -14263,9 +14267,14 @@ assignvalue3:
                                    Set var(v) = myobject
                                 Set bstack.lastobj = Nothing
                             ElseIf TypeOf myobject Is mEvent Then
-                                Set var(v) = Nothing
-                                Set var(v) = myobject  'a refrence to mEvent
-                                Set bstack.lastobj = Nothing
+             ''                   Set var(v) = Nothing
+           ''                     Set var(v) = myobject  'a refrence to mEvent
+                                
+                             Set var(v) = myobject
+                            CopyEvent var(v), bstack
+                            Set var(v) = bstack.lastobj
+           
+                                
                             Else
                                 Set myobject = Nothing
                                 Set bstack.lastobj = Nothing
@@ -14321,8 +14330,14 @@ assignvalue3:
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
                                 Else
                                     bstack.GroupName = Left$(w$, Len(w$) - Len(var(v).GroupName) + 1)
-                                    w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
-                                    UnFloatGroupReWriteVars bstack, w$, v, myobject
+                                    If Len(var(v).GroupName) > 0 Then
+                                        w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
+                                        UnFloatGroupReWriteVars bstack, w$, v, myobject
+                                    Else
+                                        MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
+                                        interpret = 0
+                                        Exit Function
+                                    End If
                                 End If
                                 End If
                                 Set myobject = Nothing
@@ -14417,7 +14432,17 @@ noexpression:
                         End If
                         Set bstack.lastobj = Nothing
                         Set myobject = Nothing
-                        
+                    ElseIf TypeOf var(v) Is mEvent Then
+                      If IsExp(bstack, b$, p) Then
+                            Set var(v) = bstack.lastobj
+                            CopyEvent var(v), bstack
+                            Set var(v) = bstack.lastobj
+                            Set bstack.lastobj = Nothing
+                        Else
+                            MissNumExpr
+                            interpret = 0
+                            Exit Function
+                        End If
                     Else
                         i = 1
                         GoTo somethingelse
@@ -14439,7 +14464,7 @@ somethingelse:
                     GoTo PROCESSCOMMAND
                 End If
                 On Error GoTo err123456
-                If IsNumeric(var(v)) Then
+                If MyIsNumeric(var(v)) Then
                 Select Case ss$
                     Case "="
                         v = GlobalVar(w$, p)
@@ -15765,7 +15790,13 @@ End If
 If VarStat Or NewStat Then
 
 
-If FastSymbol(b$, ",") Then sss = LLL: lbl = False: jump = False
+If FastSymbol(b$, ",") Then
+sss = LLL: lbl = False: jump = False
+ElseIf FastOperator(b$, ":", 1) Then
+NewStat = False
+VarStat = False
+GoTo comeforVarstatOrNewStat
+End If
 iscom = True
 Select Case IsLabelDotSub(here$, b$, w$, ss$, lang, nchr)
 Case 1234, 0
@@ -15797,6 +15828,7 @@ GoTo errstat
 End Select
 'ElseIf FastSymbol(b$, ":") Then
 ElseIf FastOperator(b$, ":", 1) Then
+comeforVarstatOrNewStat:
 If linebyline Then Exit Do
 contconthere:
 NewStat = False: VarStat = False: sss = LLL: lbl = False: jump = False:  If sss = 0 Then sss = 2: b$ = vbCrLf
@@ -18370,7 +18402,7 @@ If MaybeIsSymbol(b$, "/*-+=~^&|<>") Then
 fromThis:
             If FastOperator(b$, "=", i) Then
 assignvalue:
-                If IsNumeric(var(v)) Then
+                If MyIsNumeric(var(v)) Then
 assignvalue2:
                     If IsExp(bstack, b$, p) Then
 assignvalue3:
@@ -18424,9 +18456,13 @@ assignvalue3:
                                 Set var(v) = myobject
                                 Set bstack.lastobj = Nothing
                             ElseIf TypeOf myobject Is mEvent Then
-                                Set var(v) = Nothing
-                                Set var(v) = myobject  'a refrence to mEvent
-                                Set bstack.lastobj = Nothing
+                            Set var(v) = myobject
+                            CopyEvent var(v), bstack
+                            Set var(v) = bstack.lastobj
+                             '    'a refrence to mEvent
+                            '    Set var(v) = Nothing
+                             '   Set var(v) = myobject  'a refrence to mEvent
+                              '  Set bstack.lastobj = Nothing
                             Else
                                 Set myobject = Nothing
                                 Set bstack.lastobj = Nothing
@@ -18474,7 +18510,6 @@ assigngroup:
                                 Set myobject = bstack.lastobj
                                 Set bstack.lastobj = Nothing
                                 ss$ = bstack.GroupName
-                                
                                 If var(v).HasValue Or var(v).HasSet Then
                                 MyEr "Property can change", "Η ιδιότητα δεν μπορεί να αλλάξει"
                                 Execute = 0
@@ -18484,13 +18519,13 @@ assigngroup:
                                     UnFloatGroupReWriteVars bstack, w$, v, myobject
                                 Else
                                     bstack.GroupName = Left$(w$, Len(w$) - Len(var(v).GroupName) + 1)
-                                   If Len(var(v).GroupName) > 0 Then
-                                   w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
-                                    UnFloatGroupReWriteVars bstack, w$, v, myobject
+                                    If Len(var(v).GroupName) > 0 Then
+                                        w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
+                                        UnFloatGroupReWriteVars bstack, w$, v, myobject
                                     Else
-                                    MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
-                                    Execute = 0
-                                    Exit Function
+                                        MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
+                                        Execute = 0
+                                        Exit Function
                                     End If
                                 End If
                                 End If
@@ -18587,7 +18622,19 @@ noexpression:
                         End If
                         Set bstack.lastobj = Nothing
                         Set myobject = Nothing
-                        
+                      ElseIf TypeOf var(v) Is mEvent Then
+                      If IsExp(bstack, b$, p) Then
+                      If Typename$(bstack.lastobj) = "mEvent" Then
+                            Set var(v) = bstack.lastobj
+                            CopyEvent var(v), bstack
+                            Set var(v) = bstack.lastobj
+                            Set bstack.lastobj = Nothing
+                            End If
+                        Else
+                            MissNumExpr
+                            Execute = 0
+                            Exit Function
+                        End If
                     Else
                         i = 1
                         GoTo somethingelse
@@ -18609,7 +18656,7 @@ somethingelse:
                     GoTo parsecommand
                 End If
                 On Error GoTo LONGERR
-                If IsNumeric(var(v)) Then
+                If MyIsNumeric(var(v)) Then
                 Select Case ss$
                     Case "="
                         v = GlobalVar(w$, p, , VarStat)
@@ -28072,6 +28119,8 @@ If p > 32 Then
         SetTextBasketBack scr1, players(0)
         SetText scr1, prive.MineLineSpace, True
         With players(p)
+        .italics = False
+        .bold = False
         .curpos = 0
         .currow = 0
         .mysplit = 0
@@ -28089,8 +28138,13 @@ If p > 32 Then
 ElseIf p > 0 Then
 f = FindSpriteByTag(CLng(p))
 If f = 0 Then
+
     f = GetNewLayerObj(CLng(p), scr.Width, scr.Height)
     SetTextBasketBack Form1.dSprite(f), prive   ' load form prive to dSprite
+         With players(p)
+        Form1.dSprite(f).Font.Italic = .italics
+        Form1.dSprite(f).Font.bold = .bold
+        End With
     SetText Form1.dSprite(f), prive.MineLineSpace, True    'load Players() with first values
     With players(p)
     .curpos = 0
@@ -31256,13 +31310,26 @@ strOutput = Space$(result)
 result = ExpandEnvironmentStrings(StrPtr(strInput), StrPtr(strOutput), result)
 ExpEnvirStr = StripTerminator(strOutput)
 End Function
+Function ProcEventVarSet(bstack As basetask, i As Long) As mEvent
+
+If i = -1 Then  '
+    If Typename(bstack.lastobj) = "mEvent" Then
+    Set ProcEventVarSet = bstack.lastobj
+    Else
+    MyEr "Not found an object Event", "Δεν βρήκα ένα αντικείμενο Γεγονός"
+    Exit Function
+    End If
+Else
+    Set ProcEventVarSet = var(i)
+End If
+End Function
 Function ProcEvent(bstack As basetask, rest$, lang As Long, i As Long) As Boolean
 'look for { }, or hold
 Dim aa As mEvent, s$, LastName$, dd As Long, pm As Long, pf As Long
 ProcEvent = True
 Dim ss$, rd$, ss1$
 If FastSymbol(rest$, "{") Then
-Set aa = var(i)
+Set aa = ProcEventVarSet(bstack, i)
 aa.BypassInit 10
 aa.VarIndex = i
 If here$ = "" Then
@@ -31346,17 +31413,17 @@ If Not FastSymbol(rest$, "}") Then ProcEvent = False: Exit Function
 ' do something
 ' find Read command and some Functions
 ElseIf IsLabelSymbolNew(rest$, "ΑΦΗΣΕ", "RELEASE", lang) Then
-Set aa = var(i)
+Set aa = ProcEventVarSet(bstack, i)
 aa.enabled = True
 ElseIf IsLabelSymbolNew(rest$, "ΚΡΑΤΗΣΕ", "HOLD", lang) Then
-Set aa = var(i)
+Set aa = ProcEventVarSet(bstack, i)
 aa.enabled = False
 ElseIf IsLabelSymbolNew(rest$, "ΚΑΘΑΡΟ", "CLEAR", lang) Then
-Set aa = var(i)
+Set aa = ProcEventVarSet(bstack, i)
 aa.enabled = False
 aa.BypassInit 10
 ElseIf IsLabelSymbolNew(rest$, "ΝΕΟ", "NEW", lang) Then
-Set aa = var(i)
+Set aa = ProcEventVarSet(bstack, i)
 Do
 dd = 1
       ss$ = aheadstatus(rest$, , dd)
@@ -31389,7 +31456,7 @@ Set aa = Nothing
 
 
 ElseIf IsLabelSymbolNew(rest$, "ΠΕΤΑ", "DROP", lang) Then
-Set aa = var(i)
+Set aa = ProcEventVarSet(bstack, i)
 Do
 rest$ = "&" + LTrim$(rest$)
 If IsString(bstack, rest$, s$) Then
@@ -31427,10 +31494,24 @@ Set bstack.lastobj = alfa
 Set aa = Nothing
 End Sub
 Function CallEvent(bstack As basetask, rest$, lang As Long, ByVal i As Long) As Boolean
+If i > -1 Then
+If Typename(var(i)) <> "mEvent" Then
+Exit Function
+End If
+Else
+If Typename(bstack.lastobj) <> "mEvent" Then
+Exit Function
+End If
+End If
 CallEvent = True
 Dim a As mEvent, n$, f$, bb As mStiva, oldbstack As mStiva, nowtotal As Long
 FastSymbol rest$, ","
+If i < 0 Then
+Set a = bstack.lastobj
+i = var2used + CLng(Rnd(1000))
+Else
 Set a = var(i)
+End If
 ''bstack.Look2Parent = True
 If Not PushParamGeneral(bstack, rest$) Then
 
@@ -32453,6 +32534,10 @@ ElseIf IsLabelSymbolNew(rest$, "ΓΕΓΟΝΟΣ", "EVENT", lang) Then
   
             End If
         End If
+    ElseIf i = 5 Then
+    If GetEventFromArray(basestack, rest$, what$) Then
+    resp = CallEvent(basestack, rest$, lang, -1)
+    End If
     Else
         MissPar
     End If
@@ -33209,7 +33294,7 @@ Function MyLet(bstack As basetask, rest$, lang As Long) As Boolean
 Dim what$, ss$, i As Long, x1 As Long, flag As Boolean
 MyLet = True
 Do
-    x1 = IsLabel(bstack, rest$, what$)
+    x1 = IsLabel(bstack, rest$, what$, True)
     If x1 <> 0 Then
             If x1 > 4 Then
                     ss$ = BlockParam(rest$)
@@ -33240,8 +33325,9 @@ ss$ = Left$(rest$, i - 1)
                 Exit Function
                 End If
               If MyLet Then
-            ' MyLet = Identifier(bstack, "@READ", what$)
-             MyLet = MyRead(1, bstack, what$, 1)
+              MyLet = MyRead(1, bstack, what$, 1)
+            
+            
              rest$ = Mid$(rest$, i)
              Else
              MyEr "Nothig to assign", "Τίποτα για να δώσω"
@@ -34882,7 +34968,7 @@ MyDeclare = True
 ML = -1
 y1 = IsLabelSymbolNew(rest$, "ΓΕΝΙΚΟ", "GLOBAL", lang)
 y3 = IsLabelSymbolNew(rest$, "ΜΕΓΕΓΟΝΟΤΑ", "WITHEVENTS", lang)
-x1 = Abs(innerIsLabel(bstack, rest$, what$, , True))
+x1 = Abs(innerIsLabel(bstack, rest$, what$, , True, True))
 
 w$ = myUcase$(what$)
 gohere:
@@ -35317,11 +35403,42 @@ again11:
 End If
 
 End Function
+Function GetEventFromArray(basestack As basetask, rest$, what$) As Boolean
+Dim pppp As mArray, x1 As Long
+ If neoGetArray(basestack, what$, pppp) Then
+  If Not NeoGetArrayItem(pppp, basestack, what$, x1, rest$, True) Then Exit Function
+    If IsObject(pppp.item(x1)) Then
+    GetEventFromArray = True
+    Set basestack.lastobj = pppp.item(x1)
+    Exit Function
+    Else
+    MyEr "Not an Event object", "Όχι ένα αντικείμενο Γεγονός"
+ Exit Function
+    End If
+ End If
+End Function
 Function myEvent(basestack As basetask, rest$, lang As Long)
 Dim x1 As Long, what$, i As Long, s$
 myEvent = True
  x1 = Abs(IsLabel(basestack, rest$, what$))
- If x1 <> 1 Then myEvent = False: Exit Function
+ If x1 <> 1 Then
+ If x1 = 5 Then
+ Dim pppp As mArray
+ If neoGetArray(basestack, what$, pppp) Then
+  If Not NeoGetArrayItem(pppp, basestack, what$, x1, rest$, True) Then Exit Function
+    If IsObject(pppp.item(x1)) Then
+    Set basestack.lastobj = pppp.item(x1)
+    myEvent = ProcEvent(basestack, rest$, lang, -1)
+    Exit Function
+    Else
+    MyEr "Not an Event object", "Όχι ένα αντικείμενο Γεγονός"
+    myEvent = False: Exit Function
+    End If
+ End If
+ Else
+    myEvent = False: Exit Function
+ End If
+ End If
  If basestack.priveflag Then what$ = ChrW(&HFFBF) + what$
  If GetlocalVar(basestack.GroupName & what$, i) Then
  ' we found it
@@ -42356,4 +42473,10 @@ For i = 1 To sb2used
 Set sbf(i).subs = Nothing
 Next i
 End If
+End Function
+Function MyIsNumeric(v As Variant) As Boolean
+Dim n As Integer
+GetMem2 VarPtr(v), n
+'If n < 2 Then Exit Function
+MyIsNumeric = n < 8
 End Function

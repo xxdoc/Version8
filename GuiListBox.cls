@@ -427,6 +427,8 @@ Text = glistN.Text
 End Property
 
 Public Property Let Text(ByVal vNewValue As Variant)
+On Error Resume Next
+If glistN Is Nothing Then Exit Property
 glistN.Text = CStr(vNewValue)
 End Property
 Public Sub Sort(Optional SkipChar As Long = 1)

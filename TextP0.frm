@@ -1513,7 +1513,7 @@ Switches para$
   On Error Resume Next
   Dim i As Long
   
-      For i = 0 To Controls.count - 1
+      For i = 0 To Controls.Count - 1
      If Typename(Controls(i)) <> "Menu" Then Controls(i).TabStop = False
       Next i
 End Sub

@@ -695,7 +695,8 @@ Select Case .indirect
         On Error Resume Next
         Set lastobjIndirect = var(.indirect)
     Case Else
-        Set lastobj = Nothing
+    
+       Set lastobjIndirect = lastobj.objref
     End Select
 End With
 Else

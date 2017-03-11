@@ -66,6 +66,14 @@ CtrlName = name$ + "_" + LTrim(Str$(i))
  there.Controls(CtrlName).TabStop = True
  mesCtrlName = name$
 End Sub
+Public Property Get enabled() As Long
+enabled = glistN.enabled
+End Property
+
+Public Property Let enabled(ByVal RHS As Long)
+If glistN Is Nothing Then Exit Property
+glistN.enabled = RHS
+End Property
 Public Sub ConstructContainer1212(there As Form, name$, containerCtrl As Object)
 Set Callback = there
  Set glistN = there.Controls.Add("m2000.glist", name$, containerCtrl)

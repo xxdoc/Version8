@@ -148,8 +148,8 @@ End Property
 Public Property Get ListText()
 ListText = glistN.ListValue
 End Property
-Public Property Let Label(A$)
-Textbox.Prompt = A$ + " " + ChrW(&H25BC) & " "
+Public Property Let Label(a$)
+Textbox.Prompt = a$ + " " + ChrW(&H25BC) & " "
 Textbox.glistN.ShowMe
 End Property
 
@@ -455,8 +455,8 @@ End If
 
 
 End Sub
-Function Myleft$(A As Variant, pos As Variant)
-Myleft$ = Mid$(A, 1, pos)
+Function Myleft$(a As Variant, pos As Variant)
+Myleft$ = Mid$(a, 1, pos)
 End Function
 
 Private Sub TextBox_KeyPress(KeyAscii As Integer)
@@ -673,6 +673,8 @@ Text = Textbox.vartext + Textbox.glistN.LastLinePart
 End Property
 
 Public Property Let Text(ByVal RHS As String)
+On Error Resume Next
+If glistN Is Nothing Then Exit Property
  Textbox.glistN.LastLinePart = ""
 Textbox.vartext = RHS
 
@@ -693,22 +695,22 @@ End If
 End If
 Textbox.Locked = RHS
 End Property
-Public Sub additem(A$)
-glistN.additemFast A$
-Text = A$
+Public Sub additem(a$)
+glistN.additemFast a$
+Text = a$
 End Sub
 
-Public Sub additemFast(A$)
-glistN.additemFast A$
+Public Sub additemFast(a$)
+glistN.additemFast a$
 End Sub
-Public Sub MenuItem(A$, Optional enabledthis As Boolean = True, Optional checked As Boolean = False, Optional radiobutton As Boolean = False, Optional firstate As Boolean = False, Optional IdD)
+Public Sub MenuItem(a$, Optional enabledthis As Boolean = True, Optional checked As Boolean = False, Optional radiobutton As Boolean = False, Optional firstate As Boolean = False, Optional IdD)
 Dim item
 mMenuStyle = True
-If Not A$ = "" Then
-glistN.additemFast A$
+If Not a$ = "" Then
+glistN.additemFast a$
 End If
 item = glistN.listcount
-If A$ = "" Then
+If a$ = "" Then
 glistN.AddSep
 Else
 If IsMissing(IdD) Then
@@ -720,15 +722,15 @@ End If
 glistN.menuEnabled(CLng(item - 1)) = enabledthis
 End If
 End Sub
-Public Sub MenuRadio(A$, Optional enabledthis As Boolean = True, Optional firstate As Boolean = False, Optional IdD)
+Public Sub MenuRadio(a$, Optional enabledthis As Boolean = True, Optional firstate As Boolean = False, Optional IdD)
 Dim item, checked As Boolean
 checked = False
 mMenuStyle = True
-If Not A$ = "" Then
-glistN.additemFast A$
+If Not a$ = "" Then
+glistN.additemFast a$
 End If
 item = glistN.listcount
-If A$ = "" Then
+If a$ = "" Then
 glistN.AddSep
 Else
 If IsMissing(IdD) Then
@@ -947,11 +949,11 @@ On Error Resume Next
 If item < 0 Then Exit Sub
 glistN.Removeitem item
 End Sub
-Public Sub Insert(item, A$)
+Public Sub Insert(item, a$)
 On Error Resume Next
 glistN.ListindexPrivateUse = item
 If glistN.ListIndex > -1 Then
-glistN.additemAtListIndex A$
+glistN.additemAtListIndex a$
 End If
 End Sub
 Public Sub MenuItemAtListIndex(Optional enabledthis As Boolean = True, Optional checked As Boolean = False, Optional radiobutton As Boolean = False, Optional firstate As Boolean = False, Optional IdD)

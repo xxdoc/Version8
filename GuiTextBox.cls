@@ -101,14 +101,14 @@ Public Property Get Text() As String
 If glistN.listcount = 0 Then
 glistN.additem mprompt
 Else
-Text = glistN.list(0)
+Text = glistN.List(0)
 End If
 End Property
 Public Property Get vartext() As String
 If glistN.listcount = 0 Then
 glistN.additem ""
 Else
-vartext = Mid$(glistN.list(0), 1 + Len(mprompt))
+vartext = Mid$(glistN.List(0), 1 + Len(mprompt))
 End If
 End Property
 Public Property Let vartext(ByVal RHS As String)
@@ -119,7 +119,7 @@ glistN.HeadlineHeight = 0
 If glistN.listcount = 0 Then
 glistN.additem mprompt + RHS
 Else
-glistN.list(0) = mprompt + RHS
+glistN.List(0) = mprompt + RHS
 End If
 glistN.SelStart = Len(mprompt + RHS) + 1
 glistN.ShowMe
@@ -127,13 +127,15 @@ End Property
 Public Property Let Text(ByVal RHS As String)
 'Dim oldright As Long
 'oldright = glistN.LeftMarginPixels
+On Error Resume Next
+If glistN Is Nothing Then Exit Property
 glistN.restrictLines = 1
 glistN.HeadLine = "" ' no info
 glistN.HeadlineHeight = 0
 If glistN.listcount = 0 Then
 glistN.additem RHS
 Else
-glistN.list(0) = RHS
+glistN.List(0) = RHS
 End If
 'glistN.LeftMarginPixels = oldright
 
@@ -218,22 +220,22 @@ Private Sub Class_Terminate()
 Set glistN = Nothing
 End Sub
 
-Private Sub glistN_RegisterGlist(This As gList)
-If Not glistN.Spinner Then This.NoWheel = True
+Private Sub glistN_RegisterGlist(this As gList)
+If Not glistN.Spinner Then this.NoWheel = True
 On Error Resume Next
-Set LastGlist = This
-If Err.Number > 0 Then This.NoWheel = True
+Set LastGlist = this
+If Err.Number > 0 Then this.NoWheel = True
 End Sub
 
 
 
 Private Sub glistN_ChangeListItem(item As Long, Content As String)
 If Not enabled Then Exit Sub
-Dim This As String, thispos As Long, VR(2)
+Dim this As String, thispos As Long, VR(2)
 thispos = glistN.SelStart - Len(mprompt)
-This = Mid$(Content, 1 + Len(mprompt))
+this = Mid$(Content, 1 + Len(mprompt))
 '' RaiseEvent ValidString(this, thispos)
-VR(0) = This
+VR(0) = this
 VR(1) = thispos
    If mIndex >= 0 Then
    Callback.CallbackNow mesCtrlName + ".ValidString(" + Str(mIndex) + ")", VR()
@@ -255,7 +257,7 @@ If thisselstart <= Len(mprompt) Then thisselstart = Len(mprompt) + 1
 'glistN.ShowPan
 With glistN
 .ShowPan
-.ExternalCursor .SelStart, .list(.ListIndex), .ForeColor
+.ExternalCursor .SelStart, .List(.ListIndex), .ForeColor
 End With
 End Sub
 
@@ -570,11 +572,11 @@ aa.bold = ThisBold
 Set glistN.Font = aa
 End If
 End Sub
-Public Property Get index() As Long
-index = mIndex
+Public Property Get Index() As Long
+Index = mIndex
 End Property
 
-Public Property Let index(ByVal RHS As Long)
+Public Property Let Index(ByVal RHS As Long)
 mIndex = RHS
 End Property
 Public Property Let ShowAlways(ByVal vNewValue As Variant)
