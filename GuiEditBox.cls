@@ -655,28 +655,28 @@ ok = Not HaveMarkedText
 End Sub
 
 
-Private Sub glistN_ChangeListItem(item As Long, Content As String)
+Private Sub glistN_ChangeListItem(item As Long, content As String)
 Dim selstart2 As Long, checklistindex As Long
 '' only for M2000, use NumberOnly
 
 
 If NumberOnly Then
-If Not ValidNum(Content, False, NumberIntOnly) Then
+If Not ValidNum(content, False, NumberIntOnly) Then
 
 
 undotext = ""
-Content = mdoc.TextLine(item + 1)
+content = mdoc.TextLine(item + 1)
 Exit Sub
 End If
 End If
 If UsedAsTextBox Then
-If Len(Content) > glistN.maxchar Then
+If Len(content) > glistN.maxchar Then
 Charpos = glistN.maxchar
 glistN.SelStartEventAlways = glistN.SelStart - 1
 Exit Sub
 End If
 End If
-mdoc.TextLine(item + 1) = Content
+mdoc.TextLine(item + 1) = content
 WrapMarkedPara
 If all <> mdoc.DocLines Then
     Render
@@ -1743,10 +1743,10 @@ End If
       End If
 End Sub
 
-Private Sub glistN_ReadListItem(item As Long, Content As String)
+Private Sub glistN_ReadListItem(item As Long, content As String)
 If item >= 0 Then
 
-Content = mdoc.TextLine2(item + 1, showparagraphWork And showparagraph)
+content = mdoc.TextLine2(item + 1, showparagraphWork And showparagraph)
 
 End If
 End Sub
@@ -4016,6 +4016,7 @@ End If
 KeyCode = 0
 Case vbKeyF2
 If shift <> 0 Then
+If s$ = "" And SelText <> "" Then s$ = SelText
 If pagio$ = "GREEK" Then
 s$ = InputBoxN("Αναζήτησε προς τα πάνω:", "Συγγραφή Κειμένου", s$)
 Else
@@ -4030,7 +4031,7 @@ End If
 KeyCode = 0
 Case vbKeyF3
 If shift <> 0 Then
-
+If s$ = "" And SelText <> "" Then s$ = SelText
 If pagio$ = "GREEK" Then
 s$ = InputBoxN("Αναζήτησε προς τα κάτω:", "Συγγραφή Κειμένου", s$)
 Else
@@ -4218,14 +4219,16 @@ Public Sub helpmeSub()
 End Sub
 Public Sub supsub()
 Dim b$
+b$ = s$
 s$ = SelText
-If s$ = "" Then s$ = b$
+If s$ = "" Or InStr(s$, Chr$(13)) > 0 Or InStr(s$, Chr$(10)) > 0 Then s$ = b$
 Searchup s$
 End Sub
 Public Sub sdnSub()
 Dim b$
+b$ = s$
 s$ = SelText
-If s$ = "" Then s$ = b$
+If s$ = "" Or InStr(s$, Chr$(13)) > 0 Or InStr(s$, Chr$(10)) > 0 Then s$ = b$
 SearchDown s$
 End Sub
 Public Sub mscatsub()

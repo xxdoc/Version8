@@ -373,7 +373,7 @@ End If
         End If
 End Sub
 
-Private Sub gList1_ChangeListItem(item As Long, Content As String)
+Private Sub gList1_ChangeListItem(item As Long, content As String)
 Dim i As Long
 
 If nochange Then
@@ -805,8 +805,9 @@ End Sub
 
 Public Sub sdnSub()
 Dim b$
+b$ = s$
 s$ = TEXT1.SelText
-If s$ = "" Then s$ = b$
+If s$ = "" Or InStr(s$, Chr$(13)) > 0 Or InStr(s$, Chr$(10)) > 0 Then s$ = b$
 SearchDown s$
 End Sub
 Sub SearchDown(s$, Optional anystr As Boolean = False)
@@ -839,8 +840,9 @@ End Sub
 
 Public Sub supsub()
 Dim b$
+b$ = s$
 s$ = TEXT1.SelText
-If s$ = "" Then s$ = b$
+If s$ = "" Or InStr(s$, Chr$(13)) > 0 Or InStr(s$, Chr$(10)) > 0 Then s$ = b$
 Searchup s$
 End Sub
 Sub Searchup(s$, Optional anystr As Boolean = False)
@@ -2034,6 +2036,7 @@ End If
 KeyCode = 0
 Case vbKeyF2
 If shift <> 0 Then
+If s$ = "" And TEXT1.SelText <> "" Then s$ = TEXT1.SelText
 If pagio$ = "GREEK" Then
 s$ = InputBoxN("Αναζήτησε προς τα πάνω:", "Συγγραφή Κειμένου", s$)
 Else
@@ -2048,8 +2051,9 @@ End If
 KeyCode = 0
 Case vbKeyF3
 If shift <> 0 Then
-
+If s$ = "" And TEXT1.SelText <> "" Then s$ = TEXT1.SelText
 If pagio$ = "GREEK" Then
+
 s$ = InputBoxN("Αναζήτησε προς τα κάτω:", "Συγγραφή Κειμένου", s$)
 Else
 s$ = InputBoxN("Search to down:", "Text Editor", s$)

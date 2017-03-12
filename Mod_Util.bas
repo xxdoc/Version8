@@ -3317,7 +3317,8 @@ End Sub
 
 Function blockCheck(ByVal s$, ByVal lang As Long, Optional ByVal sbname$ = "") As Boolean
 If s$ = "" Then blockCheck = True: Exit Function
-Dim i As Long, j As Long, c As Long, b$, resp&
+Dim i As Long, j As Long, c As Long, b$, resp&, countlines As Long
+countlines = 1
 lang = Not lang
 Dim a1 As Boolean
 Dim jump As Boolean
@@ -3327,12 +3328,29 @@ a1 = True
 i = 1
 Do
 Select Case AscW(Mid$(s$, i, 1))
-Case 32
+Case 13
+If Len(s$) > i + 1 Then countlines = countlines + 1
+Case 32, 160
 ' nothing
 Case 34
 Do While i < c
 i = i + 1
-If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
+Select Case AscW(Mid$(s$, i, 1))
+Case 34
+Exit Do
+Case 13
+    If Not lang Then
+        b$ = sbname$ + "Problem in string in line " + CStr(countlines)
+    Else
+        b$ = sbname$ + "Πρόβλημα με τo αλφαριθμητικό στη γραμμή " + CStr(countlines)
+    End If
+    resp& = ask(b$, True)
+If resp& <> 1 Then
+blockCheck = True
+End If
+    Exit Function
+'case 10 then
+End Select
 Loop
 Case 39, 92
 Do While i < c
@@ -3351,11 +3369,28 @@ Dim target As Long
 target = j
     Do
     Select Case AscW(Mid$(s$, i, 1))
-    Case 34
-    Do While i < c
-    i = i + 1
-    If AscW(Mid$(s$, i, 1)) = 34 Then Exit Do
-    Loop
+    Case 13
+    If Len(s$) > i + 1 Then countlines = countlines + 1
+Case 34
+Do While i < c
+i = i + 1
+Select Case AscW(Mid$(s$, i, 1))
+Case 34
+Exit Do
+Case 13
+    If Not lang Then
+        b$ = sbname$ + "Problem in string in line " + CStr(countlines)
+    Else
+        b$ = sbname$ + "Πρόβλημα με τo αλφαριθμητικό στη γραμμή " + CStr(countlines)
+    End If
+    resp& = ask(b$, True)
+If resp& <> 1 Then
+blockCheck = True
+End If
+    Exit Function
+'case 10 then
+End Select
+Loop
     Case 123
     j = j - 1
     Case 125
@@ -4933,6 +4968,7 @@ Do While pos <= Len(a$)
                 End If
             ElseIf part$ = "N" Then
                     b$ = b$ & "Sa"
+                    If Mid$(a$, pos + 1, 1) = "." Then pos = pos + 1
                     part$ = ""
             End If
         Case "+", "-", "|"
@@ -6039,6 +6075,10 @@ wher$ = " : ERROR -2" & Sput(en$) + Sput(gr$) + wher$
 Else
 MyEr en$, gr$
 End If
+End Sub
+Public Sub MyErMacroStr(wher$, en$, gr$)
+LastErNum = -2
+wher$ = " : ERROR -2" & Sput(en$) + Sput(gr$) + wher$
 End Sub
 Public Sub ZeroParam(ar$)   ' we use MyErMacro in isNumber and isString
 MyErMacro ar$, "Empty parameter", "Μηδενική παράμετρος"
