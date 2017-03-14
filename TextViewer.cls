@@ -477,28 +477,28 @@ ok = Not HaveMarkedText
 End Sub
 
 
-Private Sub glistN_ChangeListItem(item As Long, Content As String)
+Private Sub glistN_ChangeListItem(item As Long, content As String)
 Dim selstart2 As Long, checklistindex As Long
 '' only for M2000, use NumberOnly
 
 
 If NumberOnly Then
-If Not ValidNum(Content, False, NumberIntOnly) Then
+If Not ValidNum(content, False, NumberIntOnly) Then
 
 
 undotext = ""
-Content = mdoc.TextLine(item + 1)
+content = mdoc.TextLine(item + 1)
 Exit Sub
 End If
 End If
 If UsedAsTextBox Then
-If Len(Content) > glistN.maxchar Then
+If Len(content) > glistN.maxchar Then
 Charpos = glistN.maxchar
 glistN.SelStartEventAlways = glistN.SelStart - 1
 Exit Sub
 End If
 End If
-mdoc.TextLine(item + 1) = Content
+mdoc.TextLine(item + 1) = content
 WrapMarkedPara
 If all <> mdoc.DocLines Then
     Render
@@ -1520,10 +1520,10 @@ End If
 
 End Sub
 
-Private Sub glistN_ReadListItem(item As Long, Content As String)
+Private Sub glistN_ReadListItem(item As Long, content As String)
 If item >= 0 Then
 
-Content = mdoc.TextLine2(item + 1, showparagraphWork And showparagraph)
+content = mdoc.TextLine2(item + 1, showparagraphWork And showparagraph)
 
 End If
 End Sub
@@ -1685,8 +1685,15 @@ addone col(), 1, 14
 End If
  pos2 = k - Len(a$) + 1
 End If
-kind = IsLabelOnly(a$, drop$)
+Dim n$
+n$ = a$
+kind = IsLabelOnly(n$, drop$)
+If kind = 0 And n$ <> a$ Then
+feedthis = 10
+a$ = n$: Exit Sub
 End If
+End If
+a$ = n$
 
 If kind = 0 Then drop$ = "$(": kind = Abs(FastSymbol(a$, drop$, , 2)) * 4
 If kind = 0 Then drop$ = "~(": kind = Abs(FastSymbol(a$, drop$, , 2)) * 4
@@ -1827,7 +1834,7 @@ End If
 Exit Sub
 End If
 ReDim col(1)
-Dim a$, k As Long, drop$, pos1 As Long, pos2 As Long, onetime As Boolean, kind As Long
+Dim a$, k As Long, drop$, pos1 As Long, pos2 As Long, onetime As Boolean, kind As Long, lastkind As Long
 Dim lastcol As Long
 a$ = data
 onetime = True
@@ -1863,6 +1870,18 @@ Exit Sub
   Next k
   
 End If
+If MaybeIsSymbol(a$, ":", "\", True) Then
+'pos2 = k - Len(a$) + 1
+If Len(a$) > 1 Then
+If AscW(a$) <> 32 Then
+lastkind = 1
+GoTo again3
+End If
+Else
+'lastkind = 1
+'GoTo again3
+End If
+Else
 While FastSymbol(a$, ":")
 If pos2 > 0 Then
 addone col(), pos2, 14
@@ -1871,6 +1890,7 @@ addone col(), 1, 14
 End If
  pos2 = k - Len(a$) + 1
 Wend
+End If
 drop$ = "@(": kind = Abs(FastSymbol(a$, drop$, , 2)) * 4
 If kind = 0 Then
 If IsSymbol(a$, "@") Then
@@ -1882,7 +1902,9 @@ If IsSymbol(a$, "@") Then
      pos2 = k - Len(a$) + 1
 End If
 End If
+again500:
 kind = IsLabelDot("", a$, drop$)
+
 If kind = 0 Then drop$ = "$(": kind = Abs(FastSymbol(a$, drop$, , 2)) * 4
 If kind = 0 Then drop$ = "~(": kind = Abs(FastSymbol(a$, drop$, , 2)) * 4
 If kind = 0 Then drop$ = "->": kind = Abs(FastSymbol(a$, drop$, , 2))
@@ -1935,12 +1957,25 @@ If kind > 0 Then
     
    Else
                 lastcol = 10
+             If Len(a$) > 0 Then
+              If AscW("/") Then
+             ' If Not onetime Then FastSymbol a$, "\": If AscW(a$) <> 32 Then lastkind = 1: GoTo again2
+             lastkind = 1
+         
+              End If
+              End If
                 If pos2 > 0 Then
+                        
+         
+                
+                
                  addone col(), pos2, 10
                 Else
+                lastkind = 0
                  addone col(), k - Len(a$) - Len(drop$) + 1, 10
                 
                  End If
+         
   End If
   pos2 = k - Len(a$) + 1
   If kind > 3 Then
@@ -1972,8 +2007,16 @@ GoTo marvel2
   End If
   End If
 '' or here for again4
+here3:
 If FastSymbol(a$, ".") Then
+If FastSymbol(a$, ".") Then
+lastcol = 10
+lastkind = 1
+addone col(), pos2, lastcol
+GoTo here3
+Else
   addone col(), pos2, lastcol
+  End If
     pos2 = k - Len(a$) + 1
 End If
 If FastSymbol(a$, "<=", , 2) Then
@@ -2020,6 +2063,11 @@ feedback = 0
  ColorizeExpressions drop$, col(), k - Len(a$) + pos1 - 1, pos2, feedback
 
  ''If feedthis Then Exit Sub
+ If feedback = 10 Then
+  a$ = Mid$(a$, pos1)
+ GoTo again112
+ End If
+ If pos1 > 1 And Mid$(a$, pos1 - 1, 1) = " " Then lastkind = 0
   a$ = Mid$(a$, pos1)   '''was pos1
 ''  If InStr(DROP$, " ") = 0 Then
 
@@ -2029,35 +2077,61 @@ again112:
     If MaybeIsSymbol(a$, ",;", , True) Then
      addone col(), pos2, 14
     pos2 = k - Len(a$) + 1
+    lastkind = 0
     onetime = False
     ElseIf FastSymbol(a$, "}") Then
+    lastkind = 0
          addone col(), pos2, 14
     pos2 = k - Len(a$) + 1
     onetime = True
     GoTo again112
     Else
    onetime = True
+   
    Exit Do
    End If
    Loop
 
 GoTo again
-ElseIf MaybeIsSymbol(a$, "\'") Then
-If pos2 > 0 Then
- addone col(), pos2, 7
+ElseIf MaybeIsSymbol(a$, "\", , True) Then
 
-Else
-addone col(), 1, 7
-End If
+If lastkind = 1 Then
+ pos2 = k - Len(a$) + 1
+ If AscW(a$ + ".") <> 32 Then
+ If MaybeIsSymbol(a$, ".", ".", True) Then
+ 
+ End If
+ If MaybeIsSymbolNoSpace(a$, "\") Then GoTo again
+    pos2 = k - Len(a$) + 1
+    
+    lastkind = 0
+  If MaybeIsSymbol(a$, "\", , True) Then GoTo here1
+  GoTo again
+ 
+  End If
+ Else
+here1:
+ 
+ If pos2 > 0 Then
+     addone col(), pos2, 7
+    
+    Else
+    addone col(), 1, 7
+    End If
  pos2 = k - Len(a$) + 1
  Exit Sub
-''If pos2 > 0 Then
-''addone col(), pos2 + 1, 7
- 
-''Exit Sub
-''Else
-''addone col(), k - Len(a$) + 1, 7
-''End If
+ End If
+
+ElseIf MaybeIsSymbol(a$, "'") Then
+    If pos2 > 0 Then
+     addone col(), pos2, 7
+    
+    Else
+    addone col(), 1, 7
+    End If
+ pos2 = k - Len(a$) + 1
+ Exit Sub
+
 ElseIf Not onetime Then
 If FastSymbol(a$, ",") Then
 Exit Sub  ' stop

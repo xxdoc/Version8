@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 4
-Global Const Revision = 6
+Global Const Revision = 7
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -1013,7 +1013,7 @@ Dim pa$, w$, s$, col As Long, prg$, x1 As Long, par As Boolean, i As Long
 On Error Resume Next
 If lckfrm <> 0 Then MyEr "Save is locked", "Η αποθήκευση είναι κλειδωμένη": rest$ = "": Exit Function
 
-x1 = Abs(IsLabelBig(basestack, rest, pa$, , s$))
+x1 = Abs(IsLabelFileName(basestack, rest, pa$, , s$))
 
 If x1 <> 1 Then
 rest$ = pa$ + rest$: x1 = IsStrExp(basestack, rest$, pa$)
@@ -4789,7 +4789,7 @@ V1& = IsLabelBig(bstack, a$, v$, par, , True)
 Else
 n$ = Space$(256)
     Mid$(n$, 1, 256) = Left$(a$, 256)
-V1& = IsLabelBig(bstack, n$, v$, par)
+V1& = IsLabelBig(bstack, n$, v$, par, , True)
  a$ = n$ + Mid$(a$, 257)
 End If
 
@@ -6534,6 +6534,9 @@ IsNumber = False
     Else
 jumphere:
     LastErNum = 0
+    LastErNum1 = 0
+    LastErNameGR = ""
+    LastErName = ""
     a$ = Mid$(a$, w1)
       IsNumber = FastSymbol(a$, ")")
           r = 0
@@ -9467,33 +9470,6 @@ a$ = NLtrim$(a$)
         Exit Function
         End If
         a$ = Mid$(a$, 2)
-        Case ":"
-            If one Or Not (basestack1 Is bstack) Then
-  
-            Exit Do
-           
-             ElseIf r$ <> "" Then
-            If Len(a$) > 1 Then
-             
-            If Mid$(a$, 2, 1) <> "\" And Mid$(a$, 2, 2) <> vbCrLf Then
-            
-                    
-            Exit Do
-            End If
-            End If
-            
-            If InStr(r$, ":") > 0 Then
-                IsLabelBig = 0
-            Exit Function
-            Else
-            r$ = r$ & Left$(a$, 1)
-            a$ = Mid$(a$, 2)
-            rr& = 1
-            End If
-            Else
-            IsLabelBig = 0
-            Exit Function
-            End If
         Case "."
             
             If one Then
@@ -9535,16 +9511,16 @@ a$ = NLtrim$(a$)
         Case "{" To "~", "^"
             Exit Do
         
-        Case "\"
-           If one Or Not (basestack1 Is bstack) Then
+        Case "\+"
+          ' If one Then
             Exit Do
-            ElseIf r$ <> "" Or dot& Then
-            r$ = r$ & Left$(a$, 1)
-            a$ = Mid$(a$, 2)
-            rr& = 1 'is an identifier or floating point variable
-            Else
-              Exit Do
-            End If
+           ' ElseIf r$ <> "" Or dot& Then
+           ' r$ = r$ & Left$(a$, 1)
+           ' a$ = Mid$(a$, 2)
+           ' rr& = 1 'is an identifier or floating point variable
+           '' Else
+           '   Exit Do
+          '  End If
         Case "0" To "9", "_"  ' old ,"\"
        
            If one Then
@@ -9764,7 +9740,334 @@ Case Is >= "A"
  '' a$ = LTrim(a$)
 
 End Function
+Function IsLabelFileName(bstack As basetask, a$, rrr$, Optional nocommand As Boolean, Optional r$, Optional noconvert As Boolean = False) As Long
+Dim rr&, one As Boolean, c$, dot&, gr As Boolean, skipcase As Boolean, cc As Long
+r$ = ""
+If a$ = "" Then IsLabelFileName = 0: Exit Function
+a$ = NLtrim$(a$)
+    Do While Len(a$) > 0
+     c$ = Left$(a$, 1) 'ANYCHAR HERE
+    If AscW(c$) < 256 Then
+        Select Case c$
+        Case "@"
+           If r$ = "" Then
+              a$ = Mid$(a$, 2)
+              ElseIf Mid$(a$, 2, 1) <> "(" And r$ <> "" Then
+            r$ = r$ & "."
+              a$ = Mid$(a$, 2)
+              Else
+                 IsLabelFileName = 0: Exit Function
+            End If
+        Case "?"
+        If r$ = "" Then
+        rrr$ = "?"
+        
+        IsLabelFileName = 1
+        Exit Function
+        End If
+        a$ = Mid$(a$, 2)
+        Case ":"
+            If one Then
+  
+            Exit Do
+           
+             ElseIf r$ <> "" Then
+            If Len(a$) > 1 Then
+             
+            If Mid$(a$, 2, 1) <> "\" And Mid$(a$, 2, 2) <> vbCrLf Then
+            
+                    
+            Exit Do
+            End If
+            End If
+            
+            If InStr(r$, ":") > 0 Then
+                IsLabelFileName = 0
+            Exit Function
+            Else
+            r$ = r$ & Left$(a$, 1)
+            a$ = Mid$(a$, 2)
+            rr& = 1
+            End If
+            Else
+            IsLabelFileName = 0
+            Exit Function
+            End If
+        Case "."
+            
+            If one Then
+  
+            Exit Do
+           ElseIf r$ <> "" Then
+           
+                    r$ = r$ & Left$(a$, 1)
+                       a$ = Mid$(a$, 2)
+           ''
+           ElseIf Not Mid$(a$, 2, 1) Like "[0-9]" Then
+            
+                       If r$ <> "" Then
+                       r$ = r$ & Left$(a$, 1)
+                      rr& = 1
+                                      
+                            Else
+                            
+                            dot& = dot& + 1
+                    
+                            End If
+                         
+                         a$ = Mid$(a$, 2)
+                        
+                        
+            Else
+                         If r$ = "" And dot& > 0 Then
+                                  nocommand = True
+                                 rrr$ = String$(dot& + 1, ".")     ' i want this only in right position for "dir .. "
+                                 r$ = rrr$
+                                  a$ = Mid$(a$, 2)
+                                 IsLabelFileName = 1
+                         Else
+                              IsLabelFileName = 0
+                        End If
+                    
+            Exit Function
+            End If
+        Case "{" To "~", "^"
+            Exit Do
+        
+        Case "\"
+           If one Then
+            Exit Do
+            ElseIf r$ <> "" Or dot& Then
+            r$ = r$ & Left$(a$, 1)
+            a$ = Mid$(a$, 2)
+            rr& = 1 'is an identifier or floating point variable
+            Else
+              Exit Do
+            End If
+        Case "0" To "9", "_"  ' old ,"\"
+       
+           If one Then
+            Exit Do
+            ElseIf r$ <> "" Then
+            r$ = r$ & Left$(a$, 1)
+            a$ = Mid$(a$, 2)
+             nocommand = True
+            rr& = 1 'is an identifier or floating point variable
+            Else
+            If dot& > 0 Then a$ = "." + a$: dot& = 0
+            
+            Exit Do
+            End If
+Case Is >= "A"
+            If one Then
+            Exit Do
+            Else
+            r$ = r$ & Left$(a$, 1)
+            a$ = Mid$(a$, 2)
+            rr& = 1 'is an identifier or floating point variable
+            End If
+        Case "&"
+        
+            If one Then Exit Do
+            
+            If r$ <> "" Then
+                'ERROR
+                rr& = 0
+                '' r$ = ""
+                rrr$ = ""
+                Exit Function
+            Else
+           nocommand = True
+                
+                If noconvert Then
+                IsLabelFileName = 0
+                Exit Function
+                Else
+                a$ = Mid$(a$, 2)
+                rr& = Abs(IsLabelFileName(bstack, a$, r$))
+                End If
+                skipcase = True
+                If rr& < 5 Then
+            Dim i As Long
+         
+                    If GetlocalVar(r$, i) Then
+                        a$ = Chr(34) + here$ & "." & r$ & Chr(34) + a$
+                    ElseIf Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
+                        If bstack.UseGroupname <> "" Then
+                                 c$ = bstack.UseGroupname + Mid$(r$, 6)
+                                 
+                         Else
+                             c$ = StripThis2(here$)
+                             If c$ <> "" Then c$ = c$ & "." & Mid(r$, 6) Else c$ = here$ & "." & r$
+                         End If
+                    a$ = Chr(34) + c$ + Chr(34) + a$
+                    
+                  ElseIf varhash.Find(r$, cc) Then
+                         a$ = Chr(34) + r$ & Chr(34) + a$
+                    Else
+                    '' r$ = myUcase(r$, gr)
+                    
+                    If r$ = "THIS" Or r$ = "ΑΥΤΟ" Then
+                    rrr$ = r$
+                   IsLabelFileName = -100
+                   
+                   Exit Function
+                    Else
+                If GetSub(r$ + ")", rr&) Then
+                
+                                 r$ = "{" + sbf(rr&).sb + "} " + sbf(rr&).sbgroup
+                                 
+                    rr& = 2
+                    Exit Do
+                    Else
+                 If Not bstack.NoError Then MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    End If
+                    End If
+                    End If
+                Else
+                    If FastSymbol(a$, ")") Then
+                           '' r$ = myUcase(r$, gr)
+                            rr& = 0
+                            If Left$(r$, 5) = "ΑΥΤΟ." Or Left$(r$, 5) = "THIS." Then
+                            If varhash.ExistKey(bstack.UseGroupname & Mid(r$, 6)) Then
+                       
+                                    a$ = Chr(34) + bstack.UseGroupname & Mid(r$, 6, Len(r$) - 6) + Chr(34) + a$
+                                    Else
+                                    rr& = 2
+                                    End If
+                                ElseIf varhash.ExistKey(here$ & "." & r$) Then
+                               a$ = Chr(34) + here$ & "." & Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
+  
+                                ElseIf varhash.ExistKey(r$) Then
+                                    a$ = Chr(34) + Mid$(r$, 1, Len(r$) - 1) + Chr(34) + a$
+                                Else
+                                   rr& = 3
+                                End If
+                                 If rr& > 0 Then
+                                 If rr& = 2 Then
+                                 If bstack.UseGroupname <> "" Then
+                                 r$ = bstack.UseGroupname + Mid$(r$, 6)
+                                 End If
+                                 End If
+                                 rr& = 1
+                                 If GetSub(r$ + ")", rr&) Then
+                            r$ = "{" + sbf(rr&).sb + "}" + sbf(rr&).sbgroup
+                                 
+                    rr& = 2
+     
+                    Exit Do
+                    
+                    Else
+                    MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    End If
+               
+                                 
+                                 End If
+                                 rr& = 0
+                                 r$ = ""
+                                Exit Do
+                            End If
+                    End If
+                    
+                    r$ = ""
+                    rr& = 0
+                    Exit Do
+            End If
+            
+        Case "$"
+       If one Then Exit Do
+            If r$ <> "" Then
+            one = True
+            rr& = 3 ' is string variable
+            r$ = r$ & Left$(a$, 1)
+            a$ = Mid$(a$, 2)
+            Else
+            Exit Do
+            End If
+        Case "%"
+            If one Then Exit Do
+            If r$ <> "" Then
+            one = True
+            rr& = 4 ' is long variable
+            r$ = r$ & Left$(a$, 1)
+            nocommand = True
+            a$ = Mid$(a$, 2)
+            Else
+            Exit Do
+            End If
+        Case "("
+            If r$ <> "" Then
+                If Mid$(a$, 2, 2) = ")@" Then
+                 r$ = r$ & "()."
+              a$ = Mid$(a$, 4)
+                Else
+                Select Case rr&
+                Case 1
+                rr& = 5 ' float array or function
+                Case 3
+                rr& = 6 'string array or function
+                Case 4
+                rr& = 7 ' long array
+                Case Else
+                Exit Do
+                End Select
+                r$ = r$ & Left$(a$, 1)
+                a$ = Mid$(a$, 2)
+               Exit Do
+            
+            End If
+           Else
+           Exit Do
+            End If
+        Case Else
+        Exit Do
+        End Select
+        Else
+            If one Then
+            Exit Do
+            Else
+            gr = True
+            r$ = r$ & Left$(a$, 1)
+            a$ = Mid$(a$, 2)
+            rr& = 1 'is an identifier or floating point variable
+            End If
+        End If
+    Loop
+    If skipcase Then
+    rrr$ = r$
+    Else
+    rrr$ = myUcase(r$, gr)
+    End If
+   If dot& Then
+   nocommand = True
+                           If r$ <> "" Then
+     If Left$(rrr$, 1) = "\" Then
+                     r$ = String$(dot&, ".") + rrr$
+                          rrr$ = r$
+                          rr& = 1
+     Else
+                        rr& = bstack.GetDotNew(rrr$, dot&) * rr&
+                        End If
 
+                        nocommand = rr&
+                           Else
+                           
+                         
+                          'rrr$ = String$(dot&, ".") + rrr$: If rr& = 0 Then rr& = 1
+                          r$ = String$(dot&, ".") + rrr$
+                          rrr$ = r$
+                          rr& = 1
+                          
+                          End If
+    
+    
+   End If
+   
+    IsLabelFileName = rr&
+    nocommand = IsLabelFileName And (Len(r$) = 1 Or nocommand)
+ '' a$ = LTrim(a$)
+
+End Function
 Function IsLabel(bstack As basetask, a$, rrr$, Optional skipdot As Boolean) As Long
 Dim buf$
 If Len(a$) < 257 Then IsLabel = innerIsLabel(bstack, a$, rrr$, , , skipdot): Exit Function
@@ -14222,6 +14525,9 @@ Exit Function
 Case 1
 
     If sss = LLL Then
+  If comhash.Find2(w$, i, v) Then
+  GoTo PROCESSCOMMAND
+  End If
     ss$ = ""
     If MaybeIsSymbol(b$, "/*-+=~^&|<>") Then
         If FastOperator(b$, "<=", i, 2, False) Then
@@ -15776,12 +16082,23 @@ If MaybeIsSymbol(b$, "\'") Then
 SetNextLine b$
  sss = Len(b$)
 lbl = True
- GoTo AGAIN1
+If sss > 0 Then GoTo AGAIN1
+here$ = ohere$
+GoTo jumphere
+
+ElseIf FastSymbol(b$, ":") Then
+    NewStat = False
+    VarStat = False
+ sss = Len(b$)
+If sss > 0 Then GoTo AGAIN1
+here$ = ohere$
+GoTo jumphere
 End If
 jumpforCR:
 
 If FastSymbol(b$, vbCrLf, , 2) Then
-        While FastSymbol(b$, vbCrLf, , 2)
+i = 1
+        While FastOperator(b$, vbCrLf, i, 2)
         Wend
     If NocharsInLine(b$) Then GoTo jumphere
     NewStat = False
@@ -15792,6 +16109,7 @@ If FastSymbol(b$, vbCrLf, , 2) Then
     End If
     UINK$ = ""
 Else
+
     If lbl Then
     If IsNumberLabel(b$, w$) Then
     
@@ -15816,6 +16134,7 @@ If VarStat Or NewStat Then
 If FastSymbol(b$, ",") Then
 sss = LLL: lbl = False: jump = False
 ElseIf FastOperator(b$, ":", 1) Then
+entry1:
 NewStat = False
 VarStat = False
 GoTo comeforVarstatOrNewStat
@@ -15849,8 +16168,8 @@ GoTo contcase7
 Case Else
 GoTo errstat
 End Select
-'ElseIf FastSymbol(b$, ":") Then
-ElseIf FastOperator(b$, ":", 1) Then
+ElseIf FastSymbol(b$, ":") Then
+'ElseIf FastOperator(b$, ":", 1) Then
 comeforVarstatOrNewStat:
 If linebyline Then Exit Do
 contconthere:
@@ -15860,7 +16179,6 @@ End If
 again2:
 If MaybeIsSymbol(b$, "@") Then w$ = "": GoTo parsecommand
 again3:
-
 Select Case IsLabelDotSub(here$, b$, w$, ss$, lang, nchr)
 Case 1234
 GoTo jumpforCR
@@ -15992,6 +16310,7 @@ ElseIf Form2.Visible Then
     End If
 End If
 iscom = False
+lbl = False
 If Left$(w$, 1) = "." Then
  ss$ = w$
 IsLabel bstack, ss$, w$
@@ -16871,6 +17190,7 @@ End If
                             If NeoGetArrayItem(pppp, bstack, w$, v, b$) Then
                              
                                     If Typename$(pppp.item(v)) = "Group" Then
+                                    
 startwithgroup:
 
                                       Execute = SpeedGroup(bstack, pppp, "FOR", w$, b$, v)
@@ -16891,8 +17211,12 @@ startwithgroup:
                                 Execute = 0
                                 Exit Function
                                 Else
-                                
+               If Right$(w$, 1) = ")" Then
+               
+               Else
+               
                                 Execute = 0
+                                End If
                                 Exit Function
                     End If
         
@@ -19868,6 +20192,7 @@ End If
 End Select
 loopcontinue:
 here$ = ohere$
+
 If Once And Not jump Then Exit Do
 loopagain:
 If linebyline Then Exit Do
@@ -21971,6 +22296,7 @@ Else
                         Set ga = New mArray
                         Set ga.GroupRef = var(k)
                         ga.Arr = False
+                        
                         neoGetArray = True
                         Exit Function
                     End If
@@ -23653,6 +23979,9 @@ If noObject And PP.IHaveClass Then Exit Function
 Dim dn As Long, dd As Long, W3 As Long, sp$
 Dim p As Double
 If v$ <> "" Then sp$ = ")"
+again123:
+dd = 0
+dn = 0
 If Not PP.Arr Then
 Dim ppp$
     If TypeOf PP.GroupRef Is mHandler Then
@@ -23697,9 +24026,15 @@ contlabel1:
                         MyEr "Index out of limits", "Δείκτης εκτός ορίων"
                     Else
                         offset = -.Index - 2
+                        
                     End If
+                    If FastSymbol(rst, ")(", , 2) Then
+                    Set PP = .ValueObj
+                    GoTo again123
+                     End If
                 End With
-            End If
+             End If
+
         Else
             Dim aprop As PropReference
             Set aprop = PP.GroupRef
@@ -23750,6 +24085,23 @@ PP.SerialItem W3, dn, 6
     dn = dn + 1
 Loop
 End If
+If FastSymbol(rst, "(") Then
+If Typename(PP.item(offset)) = "mArray" Then
+    Set PP = PP.item(offset)
+    NeoGetArrayItem = False
+    GoTo again123
+ElseIf Typename(PP.item(offset)) = "mHandler" Then
+
+    Set bstack.lastobj = PP.item(offset)
+    Set PP = New mArray
+    Set PP.GroupRef = bstack.lastobj
+    Set bstack.lastobj = Nothing
+    PP.Arr = False
+    NeoGetArrayItem = False
+    GoTo again123
+End If
+End If
+
 End Function
 Sub getfirstpage()
 If UBound(MyDM) = 1 Then
@@ -35315,7 +35667,7 @@ MyDeclare = False
                          ii = GlobalVar(ChrW(&HFFBF) + "_" + w$, s$, , y1 = True)
                          Set var(ii) = ev
                          Else
-                         MyEr "Can't handle events here", "Δεν μπορώ να χειρστώ γεγονότα"
+                         MyEr "Can't handle events here", "Δεν μπορώ να χειριστώ γεγονότα"
                             MyDeclare = False
             
                          End If
@@ -36439,6 +36791,7 @@ MyFunction = True
                 y1 = True
         ElseIf entrypoint = 2 Then
         ' operators
+        par = IsLabelSymbolNew(rest$, "ΝΕΑ", "NEW", lang)
         i = InStr(rest$, " ")
         If i = 1 Then
         i = InStr(2, rest$, " ")
@@ -36498,6 +36851,7 @@ MyFunction = True
 operators:
                 what$ = what$ & "()"
                 MakeThisSub bstack, what$
+                
                 If y1 Then  ' We have a global function
                         If Not GetGlobalSubAfterHere(bstack, what$, x1) Then
                                 If FastSymbol(rest$, "{") Then
@@ -36848,7 +37202,7 @@ Dim s$, w$, x As Double
 ProcBrowser = True
 If Not IsStrExp(bstack, rest$, s$) Then
 
-    If Not Abs(IsLabelBig(bstack, rest$, s$, , w$)) = 1 Then
+    If Not Abs(IsLabelFileName(bstack, rest$, s$, , w$)) = 1 Then
          If NOEDIT Then
                 If Form1.view1.Visible Then
                     Form1.KeyPreview = True
@@ -37152,13 +37506,13 @@ Function ProcName(bstack As basetask, rest$, lang As Long) As Boolean
 Dim s$, w$, x1 As Long, y1 As Long, ss$
 ProcName = True
 
-x1 = Abs(IsLabelBig(bstack, rest$, s$, , w$))
+x1 = Abs(IsLabelFileName(bstack, rest$, s$, , w$))
 
 If x1 = 1 Then
 s$ = w$
  If Not IsLabelSymbolNew(rest$, "ΩΣ", "AS", lang) Then ProcName = False: Exit Function
 
- y1 = Abs(IsLabelBig(bstack, rest$, ss$, , w$))
+ y1 = Abs(IsLabelFileName(bstack, rest$, ss$, , w$))
 
  If y1 = 0 Then
 rest$ = w$ + rest$
@@ -39310,7 +39664,7 @@ Function ProcWin(basestack As basetask, rest$) As Boolean
 Dim s$, w$, x1 As Long
 If IsSupervisor Then
 
-x1 = Abs(IsLabelBig(basestack, rest$, s$, , w$))
+x1 = Abs(IsLabelFileName(basestack, rest$, s$, , w$))
 
 If x1 = 1 Then
 s$ = w$
@@ -39340,7 +39694,7 @@ Dim s$, w$, x1 As Long, p As Double
 If IsSupervisor Then
 On Error Resume Next
 
-x1 = Abs(IsLabelBig(basestack, rest$, s$, , w$))
+x1 = Abs(IsLabelFileName(basestack, rest$, s$, , w$))
 
 If x1 = 1 Then
 s$ = w$
@@ -40739,7 +41093,7 @@ End Function
 Function ProcSubDir(basestack As basetask, rest$, lang As Long) As Boolean
 Dim x1 As Long, ss$, w$
 
-x1 = Abs(IsLabelBig(basestack, rest$, ss$, , w$))
+x1 = Abs(IsLabelFileName(basestack, rest$, ss$, , w$))
 
 If x1 = 1 Then
     ss$ = w$
@@ -40863,7 +41217,7 @@ s$ = ""
                 End If
             End If
 Else
-x1 = Abs(IsLabelBig(basestack, rest$, ss$, , w$))
+x1 = Abs(IsLabelFileName(basestack, rest$, ss$, , w$))
 If x1 = 1 Then
 ss$ = w$
 ElseIf x1 = 0 Or x1 = 3 Or x1 = 6 Then
@@ -40871,8 +41225,8 @@ rest$ = ss$ + rest$
 x1 = IsStrExp(basestack, rest$, ss$)
 End If
 
-If Left$(ss$, 1) = "." Then x1 = 1
-If ss$ = ".." And mcd = userfiles And Not IsSupervisor Then ProcDir = True: Exit Function ' no error
+'If Left$(ss$, 1) = "." Then x1 = 1
+If Left$(ss$, 2) = ".." And mcd = userfiles And Not IsSupervisor Then ProcDir = True: Exit Function ' no error
 FixPath ss$
 If x1 = 0 Then
 IsSymbol3 rest$, "."
@@ -41061,7 +41415,7 @@ Function ProcLoad(basestack As basetask, rest$) As Boolean
 Dim x1 As Long, s$, w$, ss$, par As Boolean, vvl As Variant
 ProcLoad = True
 Do
-x1 = Abs(IsLabelBig(basestack, rest$, s$, , w$))
+x1 = Abs(IsLabelFileName(basestack, rest$, s$, , w$))
 If x1 = 1 Then
 s$ = w$
 Else

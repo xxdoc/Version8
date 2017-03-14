@@ -187,7 +187,6 @@ FunclistTotal = Replace(FuncRef + Sm$, Chr$(2), Chr$(2) + mName$)
 End If
 End Function
 Public Property Get FuncList() As String
-
 FuncList = FuncRef$
 End Property
 Public Property Let FuncList(ByVal vNewValue As String)
