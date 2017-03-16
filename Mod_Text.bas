@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 5
-Global Const Revision = 1
+Global Const Revision = 2
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -22534,11 +22534,15 @@ Else
                         Exit Function
                     End If
             Else
-                If var(k).HasParameters Then
+                If Typename(var(k)) = "Group" Then
+                    If var(k).HasParameters Then
                     Set ga = New mArray
                     Set ga.GroupRef = var(k)
                     ga.Arr = False
                     neoGetArray = True
+                    Else
+                    Exit Function
+                    End If
                 Else
                    ' MyEr "Group has no parameters", "Η ομάδα δεν έχει παραμέτρους"
                     Exit Function
