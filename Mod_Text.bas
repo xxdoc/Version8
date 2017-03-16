@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 5
-Global Const Revision = 0
+Global Const Revision = 1
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -8684,7 +8684,7 @@ Else
 If neoGetArray(bstack, v$, pppp, , , True) Then
 
     GoTo contAr2
-ElseIf LastErNum1 <> 0 Then
+ElseIf LastErNum <> 0 Then
 Exit Function
 ElseIf GetlocalSub(s1$, V1&) Then
     GoTo contAr1
@@ -17937,6 +17937,7 @@ ContTry:
          NOEXECUTION = False
          NERR = False
          LastErNum = 0
+      '   LastErNum1 = 0
          If LastErName <> "" Then LastErName = Chr(0) + LastErName
          If LastErNameGR <> "" Then LastErNameGR = Chr(0) + LastErNameGR
             Execute = 1
@@ -20076,7 +20077,7 @@ Exit Do
 End If
 Loop
 Else
-If LastErNum1 <> 0 Then Execute = 0: Exit Function
+If LastErNum <> 0 Then Execute = 0: Exit Function
 If GetSub(w$ + ")", i) Then
 Else
 b$ = ss$ + b$
