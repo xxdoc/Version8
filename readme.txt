@@ -1,6 +1,6 @@
 M2000 Interpreter and Environment
 
-Version 8.4 rev 7 active-X
+Version 8.5 active-X
 
 
 http://georgekarras.blogspot.gr/

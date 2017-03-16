@@ -24,7 +24,7 @@ Dim bank As mArray
 Dim mTeam As Boolean
 Dim LinkToGroup As Object
 Dim mTag As String
-Public HasValue As Boolean, HasSet As Boolean, HasStrValue As Boolean
+Public HasValue As Boolean, HasSet As Boolean, HasStrValue As Boolean, HasParameters As Boolean
 Public Function PrepareSoros(ByRef v(), ByVal topname$) As mStiva
 Dim i As Long, AllSoros As New mStiva, s As String, vv As mStiva
 For i = 1 To OwnSoros.Total

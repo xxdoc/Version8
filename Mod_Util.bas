@@ -4032,7 +4032,7 @@ againquery:
  a$ = INKEY$
  
 If a$ = "" Then
- 
+
     If TaskMaster.QueueCount > 0 Then
   ProcTask2 bstack
   If Not NOEDIT Or Not QRY Then
@@ -5270,6 +5270,7 @@ ElseIf TaskMaster.PlayMusic Then
                  End If
 TaskMaster.rest
 DoEvents
+If TaskMaster Is Nothing Then Exit Function
 TaskMaster.RestEnd
 End Function
 

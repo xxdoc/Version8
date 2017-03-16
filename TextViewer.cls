@@ -2013,6 +2013,7 @@ If FastSymbol(a$, ".") Then
 lastcol = 10
 lastkind = 1
 addone col(), pos2, lastcol
+pos2 = k - Len(a$) + 1
 GoTo here3
 Else
   addone col(), pos2, lastcol

@@ -606,7 +606,10 @@ Else
 ''Stop
 End If
 Else
-If curitem < 0 Then
+If curitem = -2 Then
+Set item = GroupRef
+ElseIf curitem < 0 Then
+'If TypeOf GroupRef Is Group Then Set item = GroupRef: Exit Property
 If GroupRef.objref.Done Then
 If GroupRef.objref.IsObj Then
 Set item = GroupRef.objref.ValueObj
@@ -716,6 +719,7 @@ Dim subgroup As Object, sub2 As Object
                 myobject2.HasStrValue = myobject.HasStrValue
                 myobject2.HasValue = myobject.HasValue
                 myobject2.HasSet = myobject.HasSet
+                myobject2.HasParameters = myobject.HasParameters
                 Set myobject2.LinkRef = myobject
                 End If
             End With
