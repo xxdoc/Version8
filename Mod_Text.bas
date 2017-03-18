@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 5
-Global Const Revision = 2
+Global Const Revision = 3
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -1772,7 +1772,9 @@ isanumber:
                 If Typename(basestack.lastobj) = "mArray" Then
                 Set myobject = basestack.lastobj
                 Set basestack.lastobj = Nothing
+                Counterend = -1
                 counter = 0
+                countDir = 1
                 bck$ = rest$
                 rest$ = ""
                 GoTo takeone
@@ -2521,11 +2523,28 @@ RetStackSize = bstack.RetStackTotal
     Else
         If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr(Abs(v))
         Set dd = New Group
+        If GetVar(bstack, w$, y1) Then
+                 
+        GoTo mer123
+        
+        
+        End If
          y1 = GlobalVar(w$, dd)
          If Not IsObject(pppp.item(v)) Then
             GoTo fastexit
         End If
+        On Error Resume Next
         UnFloatGroup bstack, w$, y1, pppp.item(v)
+If Err.Number > 0 Then
+mer123:
+MyEr "This For can't be done", " Αυτή η Για δεν μπορεί να γίνει"
+
+        Err.Clear
+        Exit Function
+        End If
+        
+conthere145:
+        
         bstack.MoveNameDot myUcase(w$)
     End If
 
@@ -9644,7 +9663,20 @@ Case Is >= "A"
                 Exit Function
                 Else
                 a$ = Mid$(a$, 2)
+
+                Dim rrrr$
+                rrrr$ = ""
+                
+again1947:
                 rr& = Abs(IsLabelBig(bstack, a$, r$))
+                If Left$(a$, 2) = ")." Then
+                rrrr$ = rrrr$ + r$ + ")."
+                Mid$(a$, 1, 2) = "  "
+                GoTo again1947
+                Else
+                rrrr$ = rrrr$ + r$
+                End If
+                r$ = rrrr$
                 End If
                 skipcase = True
                 If rr& < 5 Then
@@ -9718,7 +9750,7 @@ Case Is >= "A"
                     Exit Do
                     
                     Else
-                    MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    If Not bstack.NoError Then MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
                     End If
                
                                  
@@ -10041,7 +10073,7 @@ Case Is >= "A"
                     Exit Do
                     
                     Else
-                    MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    If Not bstack.NoError Then MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
                     End If
                
                                  
@@ -10337,7 +10369,7 @@ Case Is >= "A"
                     rr& = 2
                     Exit Do
                     Else
-                    MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    If Not bstack.NoError Then MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
                     End If
                     End If
                     End If
@@ -10373,7 +10405,7 @@ Case Is >= "A"
                     Exit Do
                     
                     Else
-                    MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    If Not bstack.NoError Then MyErMacro a$, "can't pass reference", "δεν μπορώ να βάλω αναφορά"
                     End If
                
                                  
@@ -10642,7 +10674,7 @@ Case Is >= "A"
                     rr& = 2
                     Exit Do
                     Else
-                    MyEr "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    If Not bstack.NoError Then MyEr "can't pass reference", "δεν μπορώ να βάλω αναφορά"
                     End If
                     End If
                     End If
@@ -10676,7 +10708,7 @@ Case Is >= "A"
                     Exit Do
                     
                     Else
-                    MyEr "can't pass reference", "δεν μπορώ να βάλω αναφορά"
+                    If Not bstack.NoError Then MyEr "can't pass reference", "δεν μπορώ να βάλω αναφορά"
                     End If
                
                                  
@@ -16439,11 +16471,11 @@ ElseIf Form2.Visible Then
     End If
 End If
 iscom = False
-lbl = False
 If Left$(w$, 1) = "." Then
  ss$ = w$
 IsLabel bstack, ss$, w$
 iscom = True
+lbl = False
 GoTo varonly
 ElseIf Not NoOptimum Then
 
@@ -16452,6 +16484,7 @@ ElseIf Not NoOptimum Then
     ' If Not comhash.Find(w$, i) Then
 If Not comhash.Find2(w$, i, v) Then
                 iscom = True
+                lbl = False
                 GoTo varonly
 
           ElseIf v > 0 Then
@@ -25436,7 +25469,7 @@ End Sub
 
 Function ExecuteVarOnly(bstack As basetask, ohere$, vvv As Long, rest$, lang As Long, Optional glob As Boolean = False) As Long
 Dim w$, p As Double, v As Long, ss$, b$, i As Long, lcl As Boolean, j As Long, nm$, x1 As Long, y1 As Long, frm$
-Dim prv As Boolean, stripstack1 As New basetask, hlp As String, vl As String
+Dim prv As Boolean, stripstack1 As New basetask, hlp As String, vl As String, NoRec As Boolean
 Const TT$ = "=-+*/<!,{" + vbCr
 If Trim(rest$) = "" Then
     var(vvv) = CLng(0)
@@ -25461,6 +25494,7 @@ OvarnameLen = varhash.Count + 1 ' new way
    ExecuteVarOnly = 1
 Do
 there100:
+nm$ = "": frm$ = ""
 ClearSpace rest$
 
 there12345:
@@ -25738,18 +25772,23 @@ Exit Function
 End If
 prv = True
 GoTo there100
+
 Case "PUBLIC", "ΔΗΜΟΣΙΟ"
 If Not IsOperator(rest$, ":") Then
 ExecuteVarOnly = False
 Exit Function
 End If
+NoRec = False
 prv = False
 GoTo there100
 Case "LOCAL", "ΤΟΠΙΚΑ", "ΤΟΠΙΚΗ", "ΤΟΠΙΚΕΣ"
 lcl = True
 GoTo there12345
 Case "CLASS", "ΚΛΑΣΗ"
-If IsLabelSymbolNew(rest$, "ΓΕΝΙΚΗ", "GLOBAL", lang) Then
+If IsOperator(rest$, ":") Then
+NoRec = True
+GoTo there100
+ElseIf IsLabelSymbolNew(rest$, "ΓΕΝΙΚΗ", "GLOBAL", lang) Then
 MyEr "GLOBAL can't used in a CLASS", "Η κλάση στην ομάδα δεν μπορεί να είναι γενική"
 ExecuteVarOnly = False
 Exit Function
@@ -25915,10 +25954,12 @@ BYPASS3:
    
   If GetSub(bstack.GroupName + f$ + "()", i) Then
    '''εδω να βάλω το group name μαζί!!!!! στο σχετικό με το i
+   If Not NoRec Then
    If Not lcl Then
    var(vvv).FuncList = Chr$(1) + Chr$(2) + f$ + "() " + CStr(i) + Chr$(1) + var(vvv).FuncList
    Else
    var(vvv).LocalList = var(vvv).LocalList + vbCrLf + "Local Function " + f$ + "{" + sbf(i).sb + "}"
+   End If
    End If
    If here$ = "" Then
    sbf(i).sbgroup = bstack.GroupName
@@ -26018,13 +26059,13 @@ BYPASS4:
  ExecuteVarOnly = Abs(Identifier(bstack, w$, rest$, , lang))
 ' ExecuteVarOnly = Abs(MyModule(bstack, rest$, lang))
   If GetSub(bstack.GroupName + f$, i) Then
-
+If Not NoRec Then
  If Not lcl Then
  var(vvv).FuncList = Chr$(1) + Chr$(3) + f$ + " " + CStr(i) + Chr$(1) + var(vvv).FuncList
  Else
   var(vvv).LocalList = var(vvv).LocalList + vbCrLf + "Local Module " + f$ + "{" + sbf(i).sb + "}"
  End If
-
+End If
         If here$ = "" Then
    sbf(i).sbgroup = bstack.GroupName
    Else
@@ -26054,7 +26095,9 @@ If w$ = "GROUP" Or w$ = "ΟΜΑΔΑ" Then
                                                                                         If IsStrExp(bstack, rest$, ss$) Then
                                                                                         frm$ = bstack.GroupName
                                                                                         prepareGroup bstack, w$, y1, glob, hlp <> ""
-                                                                                        LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+                                                                                      
+                                                                                        LogGroup bstack, vvv, ohere$, OvarnameLen, lcl, NoRec
+                                                                                        
                                                                                         bstack.priveflag = prv
                                                                                          ExecuteVarOnly = Abs(ExecuteVarOnly(bstack, bstack.GroupName & w$, y1, ss$, lang, glob))
                                                                                         bstack.priveflag = False
@@ -26069,7 +26112,7 @@ If w$ = "GROUP" Or w$ = "ΟΜΑΔΑ" Then
                                                                                     '  ss$ = block(rest$)
                                                                                       frm$ = bstack.GroupName
                                                                                       prepareGroup bstack, w$, y1, glob, hlp <> ""
-                                                                                    LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+                                                                                    LogGroup bstack, vvv, ohere$, OvarnameLen, lcl, NoRec
                                                                                     
                                                                                     If Not Abs(ExecuteVarOnly(bstack, bstack.GroupName & w$, y1, rest$, lang, glob)) = 0 Then
                                                                                         ExecuteVarOnly = FastSymbol(rest$, "}")
@@ -26081,7 +26124,7 @@ If w$ = "GROUP" Or w$ = "ΟΜΑΔΑ" Then
                                                                                      
                                                                                   Else
                                                                                   prepareGroup bstack, w$, y1, glob, hlp <> ""
-                                                                                    LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+                                                                                    LogGroup bstack, vvv, ohere$, OvarnameLen, lcl, NoRec
                                                                         End If
                                                                     End If
                                                          End If
@@ -26157,7 +26200,7 @@ Case 1
                 If TypeOf stripstack1.lastobj Is lambda Then
                     Set var(v) = stripstack1.lastobj
                     Set stripstack1.lastobj = Nothing
-                    LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+                    LogGroup bstack, vvv, ohere$, OvarnameLen, lcl, NoRec
                     If here$ = "" Or glob Then
                         GlobalSub w$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
                     Else
@@ -26167,7 +26210,7 @@ Case 1
                 ElseIf TypeOf stripstack1.lastobj Is Group Then
                     Set myobject = stripstack1.lastobj
 againgroup:
-                    LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+                    LogGroup bstack, vvv, ohere$, OvarnameLen, lcl, NoRec
                         If IsObject(var(v)) Then
                             If TypeOf var(v) Is Group Then
                              If nm$ <> "" Then
@@ -26365,7 +26408,7 @@ If ss$ <> "" Then
                                          v = GlobalVar(w$, Empty)
                                 Set var(v) = stripstack1.lastobj
                                 Set stripstack1.lastobj = Nothing
-                                LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+                                LogGroup bstack, vvv, ohere$, OvarnameLen, lcl, NoRec
                                  If here$ = "" Or glob Then
                                                 GlobalSub w$ + "()", "CALL EXTERN " & CStr(v), bstack.GroupName
                                             Else
@@ -26624,7 +26667,7 @@ End Select
 End Select
 continuehere:
 ''\\\\\\\\\\\\\\\\
-LogGroup bstack, vvv, ohere$, OvarnameLen, OarrnameLen, lcl
+LogGroup bstack, vvv, ohere$, OvarnameLen, lcl, NoRec
 continuehere22:
 If MaybeIsSymbol(rest$, "}") Then
 
@@ -27692,7 +27735,9 @@ conthere2:
                         x1 = IsLabelA("", s$, ss$)
                         If MyModule(bstack, sss$, 1) Then
                          x1 = bstack.IndexSub
+                         'If Typename(var(i)) = "Group" Then
                               var(i).FuncList = Chr$(1) + Chr$(2) + ss$ + Str(x1) + Chr$(1) + var(i).FuncList
+                             ' End If
                               sbf(x1).sbgroup = here$ + "."
                       Else
                         x1 = 0
@@ -28135,7 +28180,8 @@ Set pppp = var(val(b$(1)))
       dimString = b$(0) + a$(0) + ")=" + vl$
       End If
 End Function
-Sub LogGroup(bstack As basetask, vvv As Long, ohere$, OvarnameLen As Long, OarrnameLen As Long, lcl As Boolean)
+Sub LogGroup(bstack As basetask, vvv As Long, ohere$, OvarnameLen As Long, lcl As Boolean, ByPass As Boolean)
+If ByPass Then GoTo bye
 Dim ss$, w$, i As Long, nm$, nt$, CM$, nt1$, j As Long, k As Long, dropit As Long
 Dim s() As String
       With var(vvv)
@@ -28199,6 +28245,7 @@ Dim s() As String
            
 
 End With
+bye:
 OvarnameLen = varhash.Count + 1 'Len(VarName$) + 1   'we record ...AGAIN
 
 End Sub
@@ -42046,10 +42093,10 @@ Do
         Exit Function
             End If
     End If
-    it = IsLabelDot(ohere$, rest$, ss$)
+        it = IsLabelDot(ohere$, rest$, ss$)
     If it = 2 Then it = IsLabelDot(ohere$, rest$, ss$)
-    If it = 0 Then If IsStrExp(basestack, rest$, ss$) Then x1 = 1: basestack.soros.DataStr ss$: GoTo contlink2
-    If it <> 0 And ss$ <> "" Then
+    If it = 0 Then IsStrExp basestack, rest$, ss$  'Then x1 = 1: basestack.soros.DataStr ss$: GoTo contlink2
+    If ss$ <> "" Then
         If Left$(ss$, 1) = "&" Then ss$ = Mid$(ss$, 2)
             If it < 0 Then IsLabel basestack, (ss$), ss$
             If it > 4 Then
@@ -42058,14 +42105,57 @@ Do
             End If
             x1 = 1
             aheadstatus rest$, False, x1
-            s$ = "&" + ss$ + Mid$(rest$, 1, x1 - 1)
-            If x1 > 1 Then rest$ = Mid$(rest$, x1)
-            If Not MyData(basestack, s$) Then
-            Set basestack.Sorosref = myobject
+            basestack.NoError = True
+             ss$ = "&" + ss$
+            bck$ = ss$
+            If IsStrExp(basestack, ss$, s$) Then
+                 basestack.soros.DataStr s$
+                 GoTo contLoop
+            Else
+     
+            If it > 4 Then
+                  it = rinstr(bck$, ".")
+                bck$ = Left$(bck$, it) + ChrW(&HFFBF) + Mid$(bck$, it + 1)
+       
+               If IsStrExp(basestack, bck$, s$) Then
+                If basestack.UseGroupname = "" Then
+            MyLink = False
+            MyEr "Can't make reference, it's hidden", "Δεν μπορώ να φτιάξω αναφορά, είναι κρυμμένο"
             Exit Function
-        End If
+            End If
+                 basestack.soros.DataStr s$
+                 GoTo contLoop
+                 End If
+                
+            Else
+            it = rinstr(bck$, ".")
+            
+            
+                ss$ = Left$(bck$, it) + ChrW(&HFFBF) + Mid$(bck$, it + 1)
+                
+            End If
+            If IsStrExp(basestack, ss$, s$) Then
+            
+            If basestack.UseGroupname = "" Then
+            MyLink = False
+            MyEr "Can't make reference, it's hidden", "Δεν μπορώ να φτιάξω αναφορά, είναι κρυμμένο"
+            Exit Function
+            End If
+            End If
+            End If
+            basestack.NoError = False
+            basestack.soros.DataStr s$
+            
+            's$ = "&" + s$ + Mid$(rest$, 1, x1 - 1)
+            
+           ' If x1 > 1 Then rest$ = Mid$(rest$, x1)
+           ' If Not MyData(basestack, s$) Then
+           ' Set basestack.Sorosref = myobject
+           ' Exit Function
+        'End If
     End If
-    If s$ <> "" Then rest$ = s$ + rest$
+    'If s$ <> "" Then rest$ = s$ + rest$
+contLoop:
 Loop While FastSymbol(rest$, ",")
 contlink2:
 basestack.NoError = False

@@ -463,7 +463,12 @@ Dim subgroup As Object, sub2 As Object
      
                 Next x1
                 End If
-               '' Set myobject2.LinkRef = Nothing ' .Link
+
+                myobject2.HasStrValue = .HasStrValue
+                myobject2.HasValue = .HasValue
+                myobject2.HasSet = .HasSet
+                myobject2.HasParameters = .HasParameters
+                      '' Set myobject2.LinkRef = Nothing ' .Link
             End With
 End Sub
 Function Copy() As mStiva

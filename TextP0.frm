@@ -1818,7 +1818,9 @@ If NERR Then Exit Do
         ' look last error
                 If Left$(LastErName & " ", 1) <> "?" Then
                         closeAll
+                        crNew basestack1, mybasket
                         If basestack1.Owner.Font.charset <> 161 Then
+                        
                         wwPlain basestack1, mybasket, " ? " & LastErName, basestack1.Owner.Width, 1000, True
                         If Left$(FK$(13), 4) = "EDIT" Then crNew basestack1, mybasket: wwPlain basestack1, mybasket, "Use SHIFT F1, edit, ESC to return", basestack1.Owner.Width, 1000, True
                         Else
