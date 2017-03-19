@@ -52,8 +52,8 @@ Public UKEY$
 Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, WaitShow As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
-Global Const VerMinor = 5
-Global Const Revision = 3
+Global Const VerMinor = 6
+Global Const Revision = 0
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -5481,8 +5481,14 @@ Case "NUMBER", "ΑΡΙΘΜΟΣ", "ΤΙΜΗ"
     IsNumber = False
     End If
     Exit Function
-Case "LAMBDA", "ΛΑΜΔΑ"
-    Set bstack.lastobj = ProcLambda(bstack, a$)
+Case "ΛΑΜΔΑ"
+    Set bstack.lastobj = ProcLambda(bstack, a$, 0)
+    r = 0
+    
+    IsNumber = Not bstack.lastobj Is Nothing
+Exit Function
+Case "LAMBDA"
+    Set bstack.lastobj = ProcLambda(bstack, a$, 1)
     r = 0
     
     IsNumber = Not bstack.lastobj Is Nothing
@@ -9303,10 +9309,10 @@ Else
     End If
 End If
 End Function
-Function ProcLambda(bstack As basetask, rest$) As Object
+Function ProcLambda(bstack As basetask, rest$, lang As Long) As Object
 ' no named functio- object
 Dim body As New lambda, k As Long, n$, dummy As Variant, er As Boolean, pos1 As Long, p As Double, s$
-Dim pppp As mArray, pppp2 As mArray
+Dim pppp As mArray, pppp2 As mArray, frm$
 ' need fixed param...with &
 AGAIN1:
 If Not FastSymbol(rest$, "->", , 2) Then
@@ -9314,7 +9320,21 @@ If Not FastSymbol(rest$, "->", , 2) Then
 If er Then Exit Function
 Do
 k = IsPureLabel(rest$, n$)
-If k = 0 Then Exit Function
+If k = 0 Then
+If frm$ <> "" Then Exit Function
+If FastSymbol(rest$, "(") Then
+                                frm$ = BlockParam(rest$)
+                            If frm$ <> "" Then Mid$(rest$, 1, Len(frm$) + 2) = Space$(Len(frm$) + 1)
+                            If Not FastSymbol(")", rest$) Then
+                       
+                            
+                            End If
+                           frm$ = Trim$(frm$)
+                           GoTo AGAIN1
+Else
+Exit Function
+ End If
+End If
 If k > 4 Then If Not FastSymbol(rest$, ")") Then Exit Function
 n$ = myUcase(n$, True)
 
@@ -9422,19 +9442,54 @@ Else
         End If
     End If
 Loop Until Not FastSymbol(rest$, ",")
+If frm$ <> "" Then Exit Function
+If FastSymbol(rest$, "(") Then
+                                frm$ = BlockParam(rest$)
+                            If frm$ <> "" Then Mid$(rest$, 1, Len(frm$) + 2) = Space$(Len(frm$) + 1)
+                            If Not FastSymbol(")", rest$) Then
+                       
+                            
+                            End If
+                           frm$ = Trim$(frm$)
+                           GoTo AGAIN1
+Else
+Exit Function
+ End If
+
 er = True
 GoTo AGAIN1
+
 ElseIf FastSymbol(rest$, "{") Then
 ' get block
+getfunc:
+If frm$ <> "" Then
+                                If lang = 1 Then
+                                frm$ = "Read " + frm$ + vbCrLf
+                                Else
+                                frm$ = "Διάβασε " + frm$ + vbCrLf
+                                End If
+body.code = frm$ + vbCrLf + block(rest$)
+Else
 body.code = block(rest$)
+End If
 If Trim$(body.code) = "" Then Exit Function
 If Not FastSymbol(rest$, "}") Then Exit Function
 Else
+getline:
 ' get one line only
  pos1 = 1
 body.code = aheadstatus(rest$, False, pos1)
 If pos1 = 1 Then Exit Function
+If frm$ <> "" Then
+                                If lang = 1 Then
+                                frm$ = "Read " + frm$ + vbCrLf
+                                Else
+                                frm$ = "Διάβασε " + frm$ + vbCrLf
+                                End If
+body.code = frm$ + ": =" + Left$(rest$, pos1 - 1)
+Else
 body.code = "=" + Left$(rest$, pos1 - 1)
+End If
 rest$ = Mid$(rest$, pos1)
 End If
 Set ProcLambda = body
@@ -11983,8 +12038,13 @@ End If
                 IsString = True
                 Exit Function
                 End If
-    Case "LAMBDA$", "ΛΑΜΔΑ$"
-        Set bstackstr.lastobj = ProcLambda(bstackstr, a$)
+    Case "ΛΑΜΔΑ$"
+        Set bstackstr.lastobj = ProcLambda(bstackstr, a$, 0)
+        r$ = ""
+        IsString = Not bstackstr.lastobj Is Nothing
+    Exit Function
+Case "LAMBDA$"
+        Set bstackstr.lastobj = ProcLambda(bstackstr, a$, 1)
         r$ = ""
         IsString = Not bstackstr.lastobj Is Nothing
     Exit Function
@@ -16883,9 +16943,9 @@ ContEnd:
                 b$ = ""   ' no more syntax error
                 Execute = 1
                 
-            '     If Not App.StartMode = vbSModeStandalone Then
+            
                  MOUT = True
-                 
+                
                  'ProcTitle bstack, Chr$(34) + Chr$(34) + ",0", 0
 'End If
                 Exit Function
@@ -17967,6 +18027,7 @@ ContTry:
           TraceRestore bstack, x1
    bstack.nokillvars = False
          Once = False
+         MOUT = False
          NOEXECUTION = False
          NERR = False
          LastErNum = 0
@@ -17990,7 +18051,7 @@ ContTry:
           b$ = NLtrim$(Mid$(b$, 2))
                      Call executeblock(Execute, bstack, ss$, Once, ok)
      var(v) = Execute = 1
-                 
+        MOUT = False
          NOEXECUTION = False
          NERR = False
          LastErNum = 0
@@ -20653,7 +20714,7 @@ End If
         If Right$(here$, 1) = ")" Then
         MyEr "in function " & Left$(what$, Len(what$) - 1), "στη συνάρτηση " & Left$(what$, Len(what$) - 1)
         Else
-        MyEr "in module " & here$, "στο τμημα " & here$
+        MyEr "in module " & here$, "στο τμήμα " & here$
         End If
         
         End If
@@ -25544,7 +25605,7 @@ If FastSymbol(rest$, "{") Then
                 frm$ = BlockParam(nm$)
                 If frm$ = "" Then GoTo errBlock
                 
-                If FastOperator(nm$, "{", Len(ss$) + 2) Then
+                If FastOperator(nm$, "{", Len(frm$) + 2) Then
                     nm$ = "{" + Mid$(nm$, Len(frm$) + 2)
                 Else
                     GoTo errDef
@@ -30295,7 +30356,7 @@ End If
                     pa$ = Mid$(GetNextLine(sbf(x1).sb), 7)
                     sbf(x1).sb = Mid$(sbf(x1).sb, 3)
                     Set sbf(x1).subs = Nothing
-                    MyEr "in module " & ohere$ & "." & here$, "στο τμημα " & ohere$ & "." & here$
+                    MyEr "in module " & ohere$ & "." & here$, "στο τμήμα " & ohere$ & "." & here$
                     Else
                     
                     End If
@@ -30303,7 +30364,7 @@ End If
                     If here$ = "" Then
                     MyEr "in command prompt", "στην εισαγωγή εντολών"
                     Else
-                    MyEr "in module " & here$, "στο τμημα " & here$
+                    MyEr "in module " & here$, "στο τμήμα " & here$
                     End If
                     End If
                     If InStr(FK$(13), ",") > 0 Then
@@ -37148,7 +37209,7 @@ Set mDir = Nothing
 RepPlain bstack, bstack.Owner, ss$
 End Function
 Function MyFunction(entrypoint As Long, bstack As basetask, rest$, lang As Long) As Boolean
-Dim y1 As Long, par As Boolean, what$, s$, ss$, pa$, x1 As Long, i As Long
+Dim y1 As Long, par As Boolean, what$, s$, ss$, pa$, x1 As Long, i As Long, frm$
 Dim ohere$
 ohere$ = here$
 MyFunction = True
@@ -37205,7 +37266,6 @@ MyFunction = True
                                                                 s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
                                                         End If
                                                 End If
-                                   
                                         bstack.IndexSub = GlobalSub(what$, s$ + ss$)
                                 End If
                                 Exit Function
@@ -37220,6 +37280,15 @@ operators:
                 
                 If y1 Then  ' We have a global function
                         If Not GetGlobalSubAfterHere(bstack, what$, x1) Then
+                          If FastSymbol(rest$, "(") Then
+                                frm$ = BlockParam(rest$)
+                            If frm$ <> "" Then Mid$(rest$, 1, Len(frm$) + 2) = Space$(Len(frm$) + 1)
+                            If Not FastSymbol(")", rest$) Then
+                       
+                            End If
+                            
+                        frm$ = Trim$(frm$)
+                        End If
                                 If FastSymbol(rest$, "{") Then
                                         ss$ = block(rest$)
                                         i = Len(rest$)
@@ -37240,6 +37309,13 @@ operators:
                                                         If Left$(ss$, 10) <> "'11001EDIT" Then
                                                                 s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
                                                         End If
+                                                End If
+                                                If frm$ <> "" Then
+                                                If lang = 1 Then
+                                                s$ = s$ + vbCrLf + "Read " + frm$ + vbCrLf
+                                                Else
+                                                s$ = s$ + vbCrLf + "Διάβασε " + frm$ + vbCrLf
+                                                End If
                                                 End If
                                              bstack.IndexSub = GlobalSub(what$, s$ + ss$)
                                     
@@ -37276,6 +37352,12 @@ jump1:
                                             rest$ = ""
                                             MyFunction = False: Exit Function
                                 End If
+                                If FastSymbol(rest$, "(") Then
+                                    frm$ = BlockParam(rest$)
+                                    If Not FastSymbol(")", rest$) Then
+                                    End If
+                                    frm$ = Trim$(frm$)
+                                End If
                                 If FastSymbol(rest$, "{") Then
                                           ''  I = Len(Rest$)      'function point in source
                                             what$ = block(rest$) + " "
@@ -37297,7 +37379,12 @@ jump1:
                                     Exit Function
                         ElseIf GetlocalSub(bstack.GroupName & what$, x1) Then
                      
-
+                                If FastSymbol(rest$, "(") Then
+                                    frm$ = BlockParam(rest$)
+                                    If Not FastSymbol(")", rest$) Then
+                                    End If
+                                frm$ = Trim$(frm$)
+                                End If
                                     If FastSymbol(rest$, "{") Then
                                     If bstack.OriginalCode > x1 Then
                                             GoTo jumpheretoo
@@ -37328,6 +37415,13 @@ jump1:
                                             rest$ = ":" & bstack.GroupName & what$ & " " & rest$
                                     End If
                                     Exit Function
+                        ElseIf FastSymbol(rest$, "(") Then
+                            frm$ = BlockParam(rest$)
+                            If frm$ <> "" Then Mid$(rest$, 1, Len(frm$) + 2) = Space$(Len(frm$) + 1)
+                            If Not FastSymbol(")", rest$) Then
+                            End If
+                            frm$ = Trim$(frm$)
+                            If FastSymbol(rest$, "{") Then GoTo jumpheretoo
                         ElseIf FastSymbol(rest$, "{") Then
 jumpheretoo:
                         
@@ -37355,6 +37449,13 @@ jumpheretoo:
                                                         If Left$(ss$, 10) <> "'11001EDIT" Then
                                                                 s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
                                                         End If
+                                                End If
+                                                If frm$ <> "" Then
+                                                If lang = 1 Then
+                                                s$ = s$ + vbCrLf + "Read " + frm$ + vbCrLf
+                                                Else
+                                                s$ = s$ + vbCrLf + "Διάβασε " + frm$ + vbCrLf
+                                                End If
                                                 End If
 
                                                 bstack.IndexSub = GlobalSub(here$ & "." & bstack.GroupName & what$, s$ + ss$)
@@ -41058,7 +41159,7 @@ End If
   
 End Function
 Function MyModule(basestack As basetask, rest$, lang As Long) As Boolean
-Dim s$, pa$, ss$, x1 As Long, par As Boolean, what$, ohere$, i As Long, X3 As Long
+Dim s$, pa$, ss$, x1 As Long, par As Boolean, what$, ohere$, i As Long, X3 As Long, frm$
 ohere$ = here$
 MyModule = True
 x1 = IsLabelSymbolNew(rest$, "ΓΕΝΙΚΟ", "GLOBAL", lang)
@@ -41082,6 +41183,17 @@ BYPASS1:
                 If Not GetGlobalSubAfterHere(basestack, what$, x1) Then
                         x1 = GlobalSub(what$, "", , what$): basestack.IndexSub = x1
                 End If
+                If FastSymbol(rest$, "(") Then
+                                frm$ = BlockParam(rest$)
+                            If frm$ <> "" Then Mid$(rest$, 1, Len(frm$) + 2) = Space$(Len(frm$) + 1)
+                            If Not FastSymbol(")", rest$) Then
+                       
+                            
+                            End If
+                           frm$ = Trim$(frm$)
+
+                        End If
+                        
                 If FastSymbol(rest$, "{") Then
                 ss$ = block(rest$)
                 i = Len(rest$)
@@ -41100,6 +41212,14 @@ BYPASS1:
                                 s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
                         End If
                 End If
+                            If frm$ <> "" Then
+                                If lang = 1 Then
+                                s$ = s$ + vbCrLf + "Read " + frm$ + vbCrLf
+                                Else
+                                s$ = s$ + vbCrLf + "Διάβασε " + frm$ + vbCrLf
+                                End If
+                                End If
+                
                  sbf(x1).sb = s$ + ss$: basestack.IndexSub = x1
                  Set sbf(x1).subs = Nothing
                          If Not FastSymbol(rest$, "}") Then MyModule = False
@@ -41170,6 +41290,13 @@ JUMP0:
                                 rest$ = ":" & basestack.GroupName & what$ & " " & rest$
                         End If
                         Exit Function
+                        ElseIf FastSymbol(rest$, "(") Then
+                            frm$ = BlockParam(rest$)
+                            If frm$ <> "" Then Mid$(rest$, 1, Len(frm$) + 2) = Space$(Len(frm$) + 1)
+                            If Not FastSymbol(")", rest$) Then
+                            End If
+                            frm$ = Trim$(frm$)
+                            If FastSymbol(rest$, "{") Then GoTo jumpheretoo
                 ElseIf FastSymbol(rest$, "{") Then
 jumpheretoo:
                         If here$ = "" Then
@@ -41195,6 +41322,13 @@ jumpheretoo:
                                         If Left$(ss$, 10) <> "'11001EDIT" Then
                                                 s$ = "'11001EDIT " & StripRVAL(ohere$) & ",-" & CStr(i) + vbCrLf
                                         End If
+                                End If
+                                If frm$ <> "" Then
+                                If lang = 1 Then
+                                s$ = s$ + vbCrLf + "Read " + frm$ + vbCrLf
+                                Else
+                                s$ = s$ + vbCrLf + "Διάβασε " + frm$ + vbCrLf
+                                End If
                                 End If
                                 basestack.IndexSub = GlobalSub(here$ & "." & basestack.GroupName & what$, s$ + ss$, , what$)
                         End If
