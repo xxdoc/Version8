@@ -4637,71 +4637,71 @@ s$ = mylcasefILE(s$)
                  ''   LoadFont (mcd & "TT6492M_.TTF")
                  ' LoadFont (mcd & "TITUSCBZ.TTF")
                     
-               cc.Value = "Monospac821Greek BT"
+               cc.value = "Monospac821Greek BT"
             ElseIf d$ = "LINESPACE" Then
                 cc.ValueKey = "LINESPACE"
                     cc.ValueType = REG_DWORD
                
-                  cc.Value = 0
+                  cc.value = 0
             ElseIf d$ = "SIZE" Then
                 cc.ValueKey = "SIZE"
                     cc.ValueType = REG_DWORD
                
-                  cc.Value = 15
+                  cc.value = 15
                  
                  
             ElseIf d$ = "PEN" Then
                 cc.ValueKey = "PEN"
                     cc.ValueType = REG_DWORD
-                  cc.Value = 0
+                  cc.value = 0
                       cc.ValueKey = "PAPER"
                     cc.ValueType = REG_DWORD
-                  cc.Value = 7
+                  cc.value = 7
                   
             ElseIf d$ = "BOLD" Then
              cc.ValueKey = "BOLD"
                    cc.ValueType = REG_DWORD
                  
-                  cc.Value = 0
+                  cc.value = 0
                  
             
             ElseIf d$ = "PAPER" Then
                 cc.ValueKey = "PAPER"
                     cc.ValueType = REG_DWORD
-                  cc.Value = 7
+                  cc.value = 7
                    cc.ValueKey = "PEN"
                     cc.ValueType = REG_DWORD
-                  cc.Value = 0
+                  cc.value = 0
                    
             ElseIf d$ = "GREEK" Then
             cc.ValueKey = "COMMAND"
                  cc.ValueType = REG_SZ
-                    cc.Value = "LATIN"
+                    cc.value = "LATIN"
             ElseIf d$ = "DARK" Then
             cc.ValueKey = "HTML"
                  cc.ValueType = REG_SZ
-                    cc.Value = "BRIGHT"
+                    cc.value = "BRIGHT"
             ElseIf d$ = "CASESENSITIVE" Then
             cc.ValueKey = "CASESENSITIVE"
              cc.ValueType = REG_SZ
-                    cc.Value = "NO"
+                    cc.value = "NO"
             ElseIf d$ = "PRI" Then
             cc.ValueKey = "PRIORITY-OR"
             cc.ValueType = REG_DWORD
-            cc.Value = False
+            cc.value = False
             priorityOr = False
             ElseIf d$ = "REG" Then
             gsb_file False
             ElseIf d$ = "DEC" Then
             cc.ValueKey = "DEC"
              cc.ValueType = REG_DWORD
-                    cc.Value = CLng(True)
+                    cc.value = CLng(True)
                     mNoUseDec = True
                     CheckDec
             ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
-                    cc.Value = 300
+                    cc.value = 300
                     funcdeep = 300
             Else
             s$ = "-" & d$ & s$
@@ -4735,70 +4735,70 @@ If IsLabel(basestack1, s$, d$) > 0 Then
     ' + LOAD NEW
         cc.ValueKey = "FONT"
             cc.ValueType = REG_SZ
-            If ISSTRINGA(s$, w$) Then cc.Value = w$
+            If ISSTRINGA(s$, w$) Then cc.value = w$
         ElseIf d$ = "LINESPACE" Then
             cc.ValueKey = "LINESPACE"
                 cc.ValueType = REG_DWORD
-            If IsNumberLabel(s$, w$) Then If val(w$) >= 0 And val(w$) <= 60 * dv15 Then cc.Value = CLng(val(w$) * 2)
+            If IsNumberLabel(s$, w$) Then If val(w$) >= 0 And val(w$) <= 60 * dv15 Then cc.value = CLng(val(w$) * 2)
                
         ElseIf d$ = "SIZE" Then
             cc.ValueKey = "SIZE"
             cc.ValueType = REG_DWORD
-            If IsNumberLabel(s$, w$) Then If val(w$) >= 8 And val(w$) <= 28 Then cc.Value = CLng(val(w$))
+            If IsNumberLabel(s$, w$) Then If val(w$) >= 8 And val(w$) <= 28 Then cc.value = CLng(val(w$))
           
         ElseIf d$ = "PEN" Then
             cc.ValueKey = "PAPER"
             cc.ValueType = REG_DWORD
-            p = cc.Value
+            p = cc.value
             cc.ValueKey = "PEN"
             cc.ValueType = REG_DWORD
             If IsNumberLabel(s$, w$) Then
                 If p = val(w$) Then p = 16 - p Else p = val(w$) Mod 16
-                cc.Value = CLng(val(p))
+                cc.value = CLng(val(p))
             End If
         ElseIf d$ = "BOLD" Then
                 cc.ValueKey = "BOLD"
                 cc.ValueType = REG_DWORD
-                If IsNumberLabel(s$, w$) Then cc.Value = CLng(val(w$) Mod 16)
+                If IsNumberLabel(s$, w$) Then cc.value = CLng(val(w$) Mod 16)
                 
         ElseIf d$ = "PAPER" Then
                 cc.ValueKey = "PEN"
                 cc.ValueType = REG_DWORD
-                p = cc.Value
+                p = cc.value
                 cc.ValueKey = "PAPER"
                 cc.ValueType = REG_DWORD
                 If IsNumberLabel(s$, w$) Then
                 If p = val(w$) Then p = 16 - p Else p = val(w$) Mod 16
-                    cc.Value = CLng(val(p))
+                    cc.value = CLng(val(p))
                 End If
         ElseIf d$ = "GREEK" Then
                 cc.ValueKey = "COMMAND"
                 cc.ValueType = REG_SZ
-                cc.Value = "GREEK"
+                cc.value = "GREEK"
         ElseIf d$ = "DARK" Then
             cc.ValueKey = "HTML"
                  cc.ValueType = REG_SZ
-                    cc.Value = "DARK"
+                    cc.value = "DARK"
         ElseIf d$ = "CASESENSITIVE" Then
                 cc.ValueKey = "CASESENSITIVE"
                 cc.ValueType = REG_SZ
-                cc.Value = "YES"
+                cc.value = "YES"
         ElseIf d$ = "PRI" Then
         cc.ValueKey = "PRIORITY-OR"
                 cc.ValueType = REG_DWORD
-                cc.Value = CLng(True)
+                cc.value = CLng(True)
             priorityOr = True
         ElseIf d$ = "DEC" Then
             cc.ValueKey = "DEC"
              cc.ValueType = REG_DWORD
-                    cc.Value = CLng(0)
+                    cc.value = CLng(0)
                     mNoUseDec = False
                     CheckDec
         ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
              funcdeep = 3375
-                    cc.Value = 3375 ' SET REVISION DEFAULT
+                    cc.value = 3375 ' SET REVISION DEFAULT
         Else
             s$ = "+" & d$ & s$
             Exit Do
@@ -5256,7 +5256,16 @@ endevents:
 DoEvents
 End Sub
 
-
+Public Function CheckStackObj(bstack As basetask, anything As Object, vvv() As Variant, Optional counter As Long) As Boolean
+If TypeOf bstack.lastobj Is mHandler Then
+        If bstack.lastobj.t1 <> 3 Then Exit Function
+        counter = bstack.lastobj.index_cursor + 1
+        Set anything = bstack.lastobj
+        Set bstack.lastobj = Nothing
+        If CheckDeepAny(anything, vvv()) Then CheckStackObj = True
+End If
+        
+End Function
 
 Public Function MyDoEvents()
 

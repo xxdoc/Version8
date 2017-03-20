@@ -16,6 +16,9 @@ Option Explicit
 Private mstack As New Collection
 Private mMany As Long
 Dim BeginFrom As Long
+' interface for iteration
+Public Index As Long
+
 ' Generic is base 0 in Stack Item
 ' Here we have base 1
 'Stiva.PushStr   string or reference
@@ -98,11 +101,65 @@ mstack.Add aa, , 1
 End If
 Inc
 End Sub
+Public Function CopyMe() As mStiva
+Set CopyMe = New mStiva
+CopyMe.Copy2TopNItems2FromStiva Me.Total, Me
+End Function
+Public Function CopyMe2(ByVal many As Long) As mStiva
+Set CopyMe2 = New mStiva
+If many < 0 Then
+many = -many
+CopyMe2.Copy2BottomNItems2FromStiva many, Me
+Else
+CopyMe2.Copy2TopNItems2FromStiva many, Me
+End If
+End Function
+Public Function MergeFromOther(That As Object) As mStiva
+Dim mm As mStiva
+Set mm = That
+Set MergeFromOther = CopyMe()
+MergeFromOther.MergeBottom mm
+End Function
 Public Sub Copy2TopNItems2FromStiva(many As Long, Source As mStiva)
 'we pick an item and to the top
 Dim aa As VarItem, mm As Object, mn As mArray, work As Object
 On Error Resume Next
 For many = many To 1 Step -1
+Set work = Source.objref(many)
+Select Case Typename(work)
+Case "Group"
+Set aa = New VarItem
+aa.Typename = "*"
+CopyGroup work, mm
+Set aa.ObjectRef = mm
+Case "mArray"
+Set aa = New VarItem
+aa.Typename = "*"
+Set mn = New mArray
+work.CopyArray mn
+Set aa.ObjectRef = mn
+Case Else
+If Source.Total >= many Then
+
+Set aa = Source.StackPickRef(many)
+Else
+Exit For
+End If
+End Select
+Set work = Nothing
+If mstack.Count = 0 Then
+mstack.Add aa
+Else
+mstack.Add aa, , 1
+End If
+Inc
+Next many
+End Sub
+Public Sub Copy2BottomNItems2FromStiva(many1 As Long, Source As mStiva)
+' reverse order
+Dim aa As VarItem, mm As Object, mn As mArray, work As Object, many As Long
+On Error Resume Next
+For many = Source.Total - many1 + 1 To Source.Total
 Set work = Source.objref(many)
 Select Case Typename(work)
 Case "Group"
@@ -168,7 +225,9 @@ End Property
 Public Property Get Total() As Long
 Total = mMany
 End Property
-
+Public Property Get Count() As Long
+Count = mMany
+End Property
 Private Sub Inc()
 mMany = mMany + 1
 End Sub
@@ -479,3 +538,19 @@ For i = Total To 1 Step -1
 Copy.PushStr Me.StackItem(i)
 Next i
 End Function
+
+Property Get value() As Variant
+Dim aa As VarItem
+If Index >= 0 And Index <= mMany Then
+    Set aa = StackPickRef(Index + 1)
+    If aa.ObjectRef Is Nothing Then
+        If aa.Typename = "S" Then
+            value = aa.ItemStr
+        Else
+            value = aa.ItemDouble
+        End If
+    Else
+        Set value = aa.ObjectRef
+    End If
+End If
+End Property

@@ -2808,7 +2808,7 @@ Case "SCALE.Y", "SCAN", "SCORE", "SCREEN.PIXELS", "SCREEN.X", "SCREEN.Y", "SCRIP
 Case "SEEK", "SEEK(", "SELECT", "SEQUENTIAL", "SET", "SETTINGS", "SGN(", "SHIFT", "SHIFTBACK", "SHORTDIR$("
 Case "SHOW", "SHOW$(", "SIN(", "SINGLE", "SINT(", "SIZE", "SIZE.X(", "SIZE.Y(", "SLOW"
 Case "SND$(", "SORT", "SOUND", "SOUNDREC", "SOUNDS", "SPEECH", "SPEECH$(", "SPLIT", "SPRITE"
-Case "SPRITE$", "SQRT(", "STACK", "STACK$(", "STACK.SIZE", "STACKITEM$(", "STACKITEM(", "STACKTYPE$(", "START", "STATIC"
+Case "SPRITE$", "SQRT(", "STACK", "STACK(", "STACK$(", "STACK.SIZE", "STACKITEM$(", "STACKITEM(", "STACKTYPE$(", "START", "STATIC"
 Case "STEP", "STEREO", "STOCK", "STOP", "STR$(", "STREAM", "STRING$(", "STRUCTURE", "SUB", "SUBDIR"
 Case "SWAP", "SWEEP", "SWITCHES", "TAB", "TAB(", "TABLE", "TAN(", "TARGET"
 Case "TARGETS", "TASK.MAIN", "TEMPNAME$", "TEMPORARY$", "TEST", "TEST(", "TEXT", "THEN", "THIS"
@@ -2868,7 +2868,7 @@ Case "сеияа", "сеияиайос.дисйоу(", "секида", "семаяио", "сгл", "сгл(", "сглади",
 Case "стг", "стгкг", "стгкг(", "стгм", "сто", "стой", "стовои", "стовос", "стяоцц(", "суццяажеас"
 Case "суццяажг", "суцйяиме(", "суцйяоусг(", "суцвымеусе.еццяажо", "сулпиесг", "сулпкгяысг", "сум(", "сумаятгсг", "сумаятгсг$("
 Case "сумаятгсг(", "сумевисе", "сумхгла", "сус", "сусйеуг.пяобокгс$", "сустгла", "сувмотгта(", "свд$(", "сведиа"
-Case "сведио.мглатым", "сыяос", "сыяос$(", "сыяоутупос$(", "сысе", "сысе.еццяажо", "таимиа", "таимиа.летягтгс", "таимиес"
+Case "сведио.мглатым", "сыяос", "сыяос(", "сыяос$(", "сыяоутупос$(", "сысе", "сысе.еццяажо", "таимиа", "таимиа.летягтгс", "таимиес"
 Case "танг", "танимолгсг", "таутисг(", "таутовяомо", "текестгс", "текос", "текос(", "тий", "тиктос.аявеиоу$(", "тилг"
 Case "тилг(", "тилгсыяоу$(", "тилгсыяоу(", "типота", "титкос", "тлгла", "тлгла(", "тлгла$", "тлглата", "томос"
 Case "тон.еж(", "топийа", "топийес", "топийг", "топийо", "топийо$(", "топийо(", "топос$(", "топос.аявеиоу$("
@@ -3681,7 +3681,7 @@ myid() = Array("THIS", "ауто", "RND", "туваиос", "PEN", "пема", "HWND", "паяахуя
 , "PLAYSCORE", "паифеижымг", "MOVIE", "MEDIA", "MUSIC", "таимиа", "лоусийг", "DURATION", "диаяйеиа" _
 , "VOLUME", "емтасг", "TAB", "стгкг", "HEIGHT", "уьос", "POS", "хесг", "ROW", "цяаллг", "TIMECOUNT", "жоятос" _
 , "TICK", "тий", "TODAY", "сглеяа", "NOW", "тыяа", "MENU.VISIBLE", "епикоцес.жамеяес", "MENUITEMS", "епикоцес" _
-, "MENU", "епикоцг", "NUMBER", "аяихлос", "тилг", "LAMBDA", "калда", "APPLICATION", "ежаялоцг", "GROUP", "олада", "ARRAY", "пимайас", "[]")
+, "MENU", "епикоцг", "NUMBER", "аяихлос", "тилг", "LAMBDA", "калда", "APPLICATION", "ежаялоцг", "GROUP", "олада", "ARRAY", "пимайас", "[]", "сыяос", "STACK")
 For i = 0 To UBound(myid())
     aHash.ItemCreator CStr(myid(i)), i
 Next i
@@ -3703,7 +3703,7 @@ myfun() = Array("PARAM(", "паяал(", "STACKITEM(", "тилгсыяоу(", "SGN(", "сгл(", 
 , "BINARY.AND(", "дуадийо.йаи(", "BINARY.XOR(", "дуадийо.апо(", "HILOWWORD(", "дуолиса(", "BINARY.SHIFT(", "дуадийо.окисхгсг(" _
 , "BINARY.ROTATE(", "дуадийг.пеяистяожг(", "SINT(", "айеяаио.дуадийо(", "USGN(", "дуадийо(", "UINT(", "дуадийо.айеяаио(", "ROUND(", "стяоцц(" _
 , "INT(", "ай(", "SEEK(", "летахесг(", "EOF(", "текос(", "RANDOM(", "туваиос(", "CHRCODE(", "ваяйыд(", "ASC(", "йыд(" _
-, "GROUP(", "олада(", "TEST(", "дойилг(", "CONS(", "емысг(", "CAR(", "пяыто(", "CDR(", "еполема(")
+, "GROUP(", "олада(", "TEST(", "дойилг(", "CONS(", "емысг(", "CAR(", "пяыто(", "CDR(", "еполема(", "сыяос(", "STACK(")
 For i = 0 To UBound(myfun())
     bHash.ItemCreator CStr(myfun(i)), i
 Next i
