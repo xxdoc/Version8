@@ -2885,6 +2885,7 @@ End Select
 End Function
 Private Function IsNumberQuery(a$, fr As Long, r As Double, lR As Long, skipdecimals As Boolean) As Boolean
 Dim SG As Long, sng As Long, n$, ig$, DE$, sg1 As Long, ex$   ', e$
+
 ' ti kanei to e$
 If a$ = "" Then IsNumberQuery = False: Exit Function
 SG = 1
@@ -3013,7 +3014,7 @@ Function ValidNum(a$, final As Boolean, Optional cutdecimals As Boolean = False)
 Dim r As Long
 Dim r1 As Long
 r1 = 1
-
+If "." <> NowDec$ Then a$ = Replace(a$, NowDec$, ".")
 Dim v As Double, b$
 If final Then
 r1 = IsNumberOnly(a$, r1, v, r, cutdecimals)
@@ -3035,6 +3036,7 @@ Else
  End If
  End If
  End If
+If "." <> NowDec$ Then a$ = Replace(a$, ".", NowDec$)
 ValidNum = r1
 End Function
 Function ValidNumberOnly(a$, r As Double, skipdec As Boolean) As Boolean

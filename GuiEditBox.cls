@@ -662,8 +662,6 @@ Dim selstart2 As Long, checklistindex As Long
 
 If NumberOnly Then
 If Not ValidNum(content, False, NumberIntOnly) Then
-
-
 undotext = ""
 content = mdoc.TextLine(item + 1)
 Exit Sub

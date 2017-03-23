@@ -4094,12 +4094,15 @@ If RealLen(a$) = 1 Or Len(a$) = 1 Or (RealLen(a$) = 0 And Len(a$) = 1 And Len(s$
    If Len(a$) = 1 Then
     If InStr(endchars, a$) > 0 Then
      If a$ = vbCr Then
-        
+     If a$ <> Left$(endchars, 1) Then
+    
+    a$ = Left$(endchars, 1)
+     Else
       LCTCB dq, prive, -1: DestroyCaret
  oldLCTCB dq, prive, 0
 
         Exit Do
-
+End If
      End If
      End If
      ElseIf a$ = vbCr Then
@@ -4174,7 +4177,12 @@ cont12345:
                     If (s$ = "" And a$ = "-") Or IsNumberQuery(s$ + a$, fr1, p, fr2) Then
                             If fr2 - 1 = RealLen(s$) + 1 Or (s$ = "" And a$ = "-") Then
    If ShowCaret(dq.hWnd) <> 0 Then DestroyCaret
-                   PlainBaSket dq, prive, a$, , , 0: s$ = s$ & a$
+                If a$ = "." Then
+                PlainBaSket dq, prive, NowDec$, , , 0
+                Else
+                   PlainBaSket dq, prive, a$, , , 0
+                   End If
+                   s$ = s$ & a$
                  
               oldLCTCB dq, prive, 0
                   LCTCB dq, prive, 0
@@ -4187,7 +4195,7 @@ GdiFlush
                    If safe$ <> "" Then
         a$ = safe$: safe$ = ""
 End If
-                PlainBaSket dq, prive, a$, , , 0: s$ = s$ & a$
+ If InStr(endchars, a$) = 0 Then PlainBaSket dq, prive, a$, , , 0: s$ = s$ & a$
               If .curpos >= .mx Then
                                 .curpos = 0
                                 .currow = .currow + 1
@@ -4637,71 +4645,71 @@ s$ = mylcasefILE(s$)
                  ''   LoadFont (mcd & "TT6492M_.TTF")
                  ' LoadFont (mcd & "TITUSCBZ.TTF")
                     
-               cc.value = "Monospac821Greek BT"
+               cc.Value = "Monospac821Greek BT"
             ElseIf d$ = "LINESPACE" Then
                 cc.ValueKey = "LINESPACE"
                     cc.ValueType = REG_DWORD
                
-                  cc.value = 0
+                  cc.Value = 0
             ElseIf d$ = "SIZE" Then
                 cc.ValueKey = "SIZE"
                     cc.ValueType = REG_DWORD
                
-                  cc.value = 15
+                  cc.Value = 15
                  
                  
             ElseIf d$ = "PEN" Then
                 cc.ValueKey = "PEN"
                     cc.ValueType = REG_DWORD
-                  cc.value = 0
+                  cc.Value = 0
                       cc.ValueKey = "PAPER"
                     cc.ValueType = REG_DWORD
-                  cc.value = 7
+                  cc.Value = 7
                   
             ElseIf d$ = "BOLD" Then
              cc.ValueKey = "BOLD"
                    cc.ValueType = REG_DWORD
                  
-                  cc.value = 0
+                  cc.Value = 0
                  
             
             ElseIf d$ = "PAPER" Then
                 cc.ValueKey = "PAPER"
                     cc.ValueType = REG_DWORD
-                  cc.value = 7
+                  cc.Value = 7
                    cc.ValueKey = "PEN"
                     cc.ValueType = REG_DWORD
-                  cc.value = 0
+                  cc.Value = 0
                    
             ElseIf d$ = "GREEK" Then
             cc.ValueKey = "COMMAND"
                  cc.ValueType = REG_SZ
-                    cc.value = "LATIN"
+                    cc.Value = "LATIN"
             ElseIf d$ = "DARK" Then
             cc.ValueKey = "HTML"
                  cc.ValueType = REG_SZ
-                    cc.value = "BRIGHT"
+                    cc.Value = "BRIGHT"
             ElseIf d$ = "CASESENSITIVE" Then
             cc.ValueKey = "CASESENSITIVE"
              cc.ValueType = REG_SZ
-                    cc.value = "NO"
+                    cc.Value = "NO"
             ElseIf d$ = "PRI" Then
             cc.ValueKey = "PRIORITY-OR"
             cc.ValueType = REG_DWORD
-            cc.value = False
+            cc.Value = False
             priorityOr = False
             ElseIf d$ = "REG" Then
             gsb_file False
             ElseIf d$ = "DEC" Then
             cc.ValueKey = "DEC"
              cc.ValueType = REG_DWORD
-                    cc.value = CLng(True)
+                    cc.Value = CLng(True)
                     mNoUseDec = True
                     CheckDec
             ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
-                    cc.value = 300
+                    cc.Value = 300
                     funcdeep = 300
             Else
             s$ = "-" & d$ & s$
@@ -4735,70 +4743,70 @@ If IsLabel(basestack1, s$, d$) > 0 Then
     ' + LOAD NEW
         cc.ValueKey = "FONT"
             cc.ValueType = REG_SZ
-            If ISSTRINGA(s$, w$) Then cc.value = w$
+            If ISSTRINGA(s$, w$) Then cc.Value = w$
         ElseIf d$ = "LINESPACE" Then
             cc.ValueKey = "LINESPACE"
                 cc.ValueType = REG_DWORD
-            If IsNumberLabel(s$, w$) Then If val(w$) >= 0 And val(w$) <= 60 * dv15 Then cc.value = CLng(val(w$) * 2)
+            If IsNumberLabel(s$, w$) Then If val(w$) >= 0 And val(w$) <= 60 * dv15 Then cc.Value = CLng(val(w$) * 2)
                
         ElseIf d$ = "SIZE" Then
             cc.ValueKey = "SIZE"
             cc.ValueType = REG_DWORD
-            If IsNumberLabel(s$, w$) Then If val(w$) >= 8 And val(w$) <= 28 Then cc.value = CLng(val(w$))
+            If IsNumberLabel(s$, w$) Then If val(w$) >= 8 And val(w$) <= 28 Then cc.Value = CLng(val(w$))
           
         ElseIf d$ = "PEN" Then
             cc.ValueKey = "PAPER"
             cc.ValueType = REG_DWORD
-            p = cc.value
+            p = cc.Value
             cc.ValueKey = "PEN"
             cc.ValueType = REG_DWORD
             If IsNumberLabel(s$, w$) Then
                 If p = val(w$) Then p = 16 - p Else p = val(w$) Mod 16
-                cc.value = CLng(val(p))
+                cc.Value = CLng(val(p))
             End If
         ElseIf d$ = "BOLD" Then
                 cc.ValueKey = "BOLD"
                 cc.ValueType = REG_DWORD
-                If IsNumberLabel(s$, w$) Then cc.value = CLng(val(w$) Mod 16)
+                If IsNumberLabel(s$, w$) Then cc.Value = CLng(val(w$) Mod 16)
                 
         ElseIf d$ = "PAPER" Then
                 cc.ValueKey = "PEN"
                 cc.ValueType = REG_DWORD
-                p = cc.value
+                p = cc.Value
                 cc.ValueKey = "PAPER"
                 cc.ValueType = REG_DWORD
                 If IsNumberLabel(s$, w$) Then
                 If p = val(w$) Then p = 16 - p Else p = val(w$) Mod 16
-                    cc.value = CLng(val(p))
+                    cc.Value = CLng(val(p))
                 End If
         ElseIf d$ = "GREEK" Then
                 cc.ValueKey = "COMMAND"
                 cc.ValueType = REG_SZ
-                cc.value = "GREEK"
+                cc.Value = "GREEK"
         ElseIf d$ = "DARK" Then
             cc.ValueKey = "HTML"
                  cc.ValueType = REG_SZ
-                    cc.value = "DARK"
+                    cc.Value = "DARK"
         ElseIf d$ = "CASESENSITIVE" Then
                 cc.ValueKey = "CASESENSITIVE"
                 cc.ValueType = REG_SZ
-                cc.value = "YES"
+                cc.Value = "YES"
         ElseIf d$ = "PRI" Then
         cc.ValueKey = "PRIORITY-OR"
                 cc.ValueType = REG_DWORD
-                cc.value = CLng(True)
+                cc.Value = CLng(True)
             priorityOr = True
         ElseIf d$ = "DEC" Then
             cc.ValueKey = "DEC"
              cc.ValueType = REG_DWORD
-                    cc.value = CLng(0)
+                    cc.Value = CLng(0)
                     mNoUseDec = False
                     CheckDec
         ElseIf d$ = "REC" Then
                cc.ValueKey = "FUNCDEEP"  ' RESET
              cc.ValueType = REG_DWORD
              funcdeep = 3375
-                    cc.value = 3375 ' SET REVISION DEFAULT
+                    cc.Value = 3375 ' SET REVISION DEFAULT
         Else
             s$ = "+" & d$ & s$
             Exit Do
@@ -5910,6 +5918,34 @@ If TypeOf obj Is mHandler Then
 End If
 If Not obj Is Nothing Then Set oldobj = Nothing: CheckDeepAny = True: Exit Function
 Set obj = oldobj
+End Function
+Public Function CheckLastHandler(obj As Object, vv() As Variant) As Boolean
+Dim oldobj As Object, first As Object
+If obj Is Nothing Then Exit Function
+Set first = obj
+
+Dim kk As Long
+again:
+If kk > 20 Then Set obj = first: Exit Function
+If TypeOf obj Is mHandler Then
+    'If obj.t1 = 3 Then
+        If obj.indirect >= 0 And obj.indirect <= var2used Then
+                Set oldobj = obj
+                Set obj = vv(obj.indirect)
+                kk = kk + 1
+                GoTo again
+        Else
+                kk = kk + 1
+                Set oldobj = obj
+                Set obj = obj.objref
+                GoTo again
+        End If
+
+    'End If
+    
+End If
+If Not oldobj Is Nothing Then Set obj = oldobj: Set oldobj = Nothing: CheckLastHandler = True: Exit Function
+Set obj = first
 End Function
 Public Function IfierVal()
 If LastErNum <> 0 Then LastErNum = 0: IfierVal = True

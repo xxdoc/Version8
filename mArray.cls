@@ -599,6 +599,7 @@ Else
 Set item = actualdata(curitem)
 End If
 Else
+
 item = actualdata(curitem)
 End If
 Exit Property
@@ -623,6 +624,40 @@ End If
 there1:
 
 End Property
+Public Property Get itemnumeric(curitem As Long) As Double
+On Error GoTo there1
+If Arr Then
+If maxitems1 >= curitem Then
+If IsObject(actualdata(curitem)) Then
+If Typename(actualdata(curitem)) = "PropReference" Then
+itemnumeric = CDbl(actualdata(curitem))
+Else
+itemnumeric = 0
+End If
+Else
+
+itemnumeric = CDbl(actualdata(curitem))
+End If
+Exit Property
+Else
+''Stop
+End If
+Else
+If curitem = -2 Then
+ElseIf curitem < 0 Then
+If GroupRef.objref.Done Then
+If GroupRef.objref.IsObj Then
+itemnumeric = 0
+Else
+itemnumeric = GroupRef.objref.Value
+End If
+End If
+End If
+End If
+there1:
+
+End Property
+
 Public Property Let item(curitem As Long, item As Variant)
 On Error Resume Next
 If Not IsObject(actualdata(curitem)) Then
@@ -755,4 +790,8 @@ GetMem2 VarPtr(v), n
 If n < 2 Then Exit Function
 MyIsNumeric = n < 8
 End Function
-
+Function MyIsObject(v As Variant) As Boolean
+Dim n As Integer
+GetMem2 VarPtr(v), n
+MyIsObject = n = 9
+End Function

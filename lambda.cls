@@ -36,9 +36,9 @@ For i = 0 To used - 1
     If Typename(myVar(where).Value) = "lambda" Then
          
                         If glb Then
-                        GlobalSub nm$ + "()", "CALL EXTERN " & CStr(myVar(where).there)
+                        GlobalSub nm$ + "()", "CALL EXTERN " & Str(myVar(where).there)
                     Else
-                        GlobalSub here$ & "." & bstack.GroupName & nm$ + "()", "CALL EXTERN " & CStr(myVar(where).there)
+                        GlobalSub here$ & "." & bstack.GroupName & nm$ + "()", "CALL EXTERN " & Str(myVar(where).there)
                 End If
     Set v(myVar(where).there) = myVar(where).Value
     ElseIf Typename(myVar(where).Value) = "Group" Then
@@ -141,11 +141,11 @@ Next i
 End If
 Erase myVar()
 End Sub
-Public Sub CopyTo(A As lambda, v() As Variant)
+Public Sub CopyTo(a As lambda, v() As Variant)
 ' only for new
 Dim b As lambda, VR As Variant, where As Long
-Set A = New lambda
-A.code$ = Me.code$
+Set a = New lambda
+a.code$ = Me.code$
 Dim i As Long
 If used > 0 Then
 For i = 0 To used - 1
@@ -156,22 +156,22 @@ If Typename(v(myVar(where).there)) = "lambda" Then
     .CopyTo b, v()
     End With
     Set VR = b
-    A.FeedNonLocal nm$, VR, v()
+    a.FeedNonLocal nm$, VR, v()
     Set VR = Nothing
     Set b = Nothing
 Else
-    A.FeedNonLocal nm$, v(myVar(where).there), v()
+    a.FeedNonLocal nm$, v(myVar(where).there), v()
 End If
 Else
 If Typename(myVar(where).Value) = "lambda" Then
 On Error Resume Next
     myVar(where).Value.CopyTo b, v()
     Set VR = b
-    A.FeedNonLocal nm$, VR, v()
+    a.FeedNonLocal nm$, VR, v()
     Set VR = Nothing
     Set b = Nothing
 Else
-    A.FeedNonLocal nm$, myVar(where).Value, v()
+    a.FeedNonLocal nm$, myVar(where).Value, v()
 End If
 End If
 Next i
