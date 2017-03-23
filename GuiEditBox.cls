@@ -500,7 +500,7 @@ End Sub
 
 
 Private Sub glistN_CheckGotFocus()
-If Not Locked Then
+If Not locked Then
 glistN.HideCaretOnexit = False
 If glistN.ListIndex < 0 And glistN.listcount > 0 Then glistN.ListindexPrivateUse = 0
 'RaiseEvent GotFocus
@@ -525,7 +525,7 @@ End If
 End Sub
 Private Sub glistN_CheckLostFocus()
 
-If Not Locked Then
+If Not locked Then
 If mStayOpen And Not SkipProcAtExitFocus Then
 glistN.NoCaretShow = NoMark
 glistN.HideCaretOnexit = True
@@ -722,6 +722,7 @@ Else
       End If
 End If
 ''glistN.PrepareToShow
+On Error Resume Next
 glistN.ShowMe
 End Sub
 
@@ -3935,11 +3936,11 @@ TextPixelOffset = Int(glistN.TextHeightOffset)
 End If
 End Sub
 
-Public Property Get Locked() As Boolean
-Locked = Not glistN.enabled
+Public Property Get locked() As Boolean
+locked = Not glistN.enabled
 End Property
 
-Public Property Let Locked(ByVal RHS As Boolean)
+Public Property Let locked(ByVal RHS As Boolean)
 glistN.enabled = Not RHS
 End Property
 Public Property Get Index() As Long

@@ -2916,6 +2916,7 @@ If MsgBoxN("Break Key - Hard Reset" + vbCrLf + "Μ2000 - Execution Stop / Τερματι
                                 List1.LeaveonChoose = False
                                 INK$ = ""
                 End If
+                
                 mybreak1 = True
 End If
  

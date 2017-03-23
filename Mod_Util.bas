@@ -2540,7 +2540,7 @@ SetTextBasketBack dq, mybasket
                                                                         BLOCKkey = False
                         NOEXECUTION = False
                         Exit Do
-                Case 32 To 126, 128 To 255
+                       Case 32 To 126, Is > 128
            
                         .currow = y&
                         .curpos = c& + x&

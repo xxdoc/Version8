@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 6
-Global Const Revision = 3
+Global Const Revision = 4
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -30653,7 +30653,9 @@ thh1:
                     i = 1
                     If frm$ <> "" Then
                             If frm$ = "BREAK" Then
-                              Exit Do
+                            
+                            GoTo thh1
+                              'Exit Do
                              ElseIf frm$ = Chr$(0) Then
                              
                                      If bs.IsInRetStackNumber(p) Then
