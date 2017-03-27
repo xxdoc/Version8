@@ -2889,7 +2889,7 @@ End If
 iText = v$
 End With
 End Function
-Sub ScreenEditDOC(bstack As basetask, aaa As Variant, x&, y&, x1&, y1&, Optional l As Long = 0, Optional usecol As Boolean = False, Optional col As Long)
+Sub ScreenEditDOC(bstack As basetask, AAA As Variant, x&, y&, x1&, y1&, Optional l As Long = 0, Optional usecol As Boolean = False, Optional col As Long)
 On Error Resume Next
 Dim ot As Boolean, back As New Document, i As Long, d As Object
 Dim prive As basket
@@ -2900,9 +2900,9 @@ Dim oldesc As Boolean
 oldesc = escok
 escok = False
 ' we have a limit here
-If Not aaa.IsEmpty Then
-For i = 1 To aaa.DocParagraphs
-back.AppendParagraph aaa.TextParagraph(i)
+If Not AAA.IsEmpty Then
+For i = 1 To AAA.DocParagraphs
+back.AppendParagraph AAA.TextParagraph(i)
 Next i
 End If
 i = back.LastSelStart
@@ -2988,7 +2988,7 @@ If d.ForeColor = tcol Then
 Form1.TEXT1.glistN.RepaintFromOut d.image, d.Left, d.top
 End If
 
-Set .mdoc = aaa
+Set .mdoc = AAA
 .nowrap = False
 
 
@@ -3009,14 +3009,14 @@ NOEDIT = False
 .SetFocus
 If l <> 0 Then
     If l > 0 Then
-        If aaa.SizeCRLF < l Then l = aaa.SizeCRLF
+        If AAA.SizeCRLF < l Then l = AAA.SizeCRLF
         
         .SelStart = l
         Else
         .SelStart = 0
     End If
 Else
-If aaa.SizeCRLF < .LastSelStart Then
+If AAA.SizeCRLF < .LastSelStart Then
 .SelStart = 1
 Else
  .SelStart = .LastSelStart
@@ -3060,7 +3060,7 @@ End If
 If Not CancelEDIT Then
 
 Else
-Set aaa = back
+Set AAA = back
 back.LastSelStart = i
 End If
 Set Form1.TEXT1.mdoc = New Document
@@ -6044,6 +6044,9 @@ End Sub
 Public Sub Expected(w1$, w2$)
  MyEr "Expected object type " + w1$, "Περίμενα αντικείμενο τύπου " + w2$
 End Sub
+Public Sub InternalEror()
+MyEr "Internal error", "Εσωτερικό λάθος"
+End Sub
 Public Sub NotArray()  ' this is for identifier or execute part
 MyEr "Expected Array", "Περίμενα πίνακα"
 End Sub
@@ -6108,6 +6111,13 @@ MyEr "missing " & wht$, "λείπει " & wht$
 End Sub
 Public Sub BadCommand()
  MyEr "Command for supervisor rights", "Εντολή μόνο για επόπτη"
+End Sub
+Public Sub ErrInExponet(a$)
+MyErMacro a$, "Error in exponet", "Λάθος στον εκθέτη"
+End Sub
+
+Public Sub LambdaOnly(a$)
+MyErMacro a$, "Only in lambda function", "Μόνο σε λάμδα συνάρτηση"
 End Sub
 Public Sub FilePathNotForUser()
 MyEr "Filepath is not valid for user", "Ο τόπος του αρχείου δεν είναι έγκυρος για τον χρήστη"
