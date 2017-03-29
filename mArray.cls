@@ -319,6 +319,10 @@ End Sub
 
 Public Sub AppendArray(k As mArray)
 'append this to k
+If k.Count = 0 Then
+Me.CopyArray k
+Exit Sub
+End If
 Dim v As Variant, i As Long, obj As Object, obj2 As Object, spare As lambda
 Dim fromhere As Long
 fromhere = k.UpperMonoLimit + 1

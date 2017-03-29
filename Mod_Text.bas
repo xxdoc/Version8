@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 6
-Global Const Revision = 6
+Global Const Revision = 7
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -6173,6 +6173,7 @@ check123678:
                         Set bstack.lastobj = pppp.item(w1)
                         r = 0
                     Else
+                        Set bstack.lastobj = Nothing
                         r = SG * pppp.itemnumeric(w1)
                     End If
                 Else
@@ -6180,9 +6181,10 @@ check123678:
                     MyEr "Empty Array", "Άδειος Πίνακας"
                 End If
             Else
+                 Set bstack.lastobj = Nothing
                 NotArray
             End If
-                  Set bstack.lastobj = Nothing
+
                  Exit Function
             
         ElseIf TypeOf bstack.lastobj Is mArray Then
@@ -6208,6 +6210,7 @@ check123678:
                     End If
                     GoTo check123678
                 Else
+                     Set bstack.lastobj = Nothing
                     NotArray
                 End If
             ElseIf TypeOf bstack.lastobj Is mArray Then
@@ -8609,6 +8612,7 @@ againcons:
                     If CheckIsmArray(anything, var()) Then
 a13415:
                         pppp.processAppend anything
+                       
                         Set pppp = Nothing
                         Set bstack.lastobj = anything
                         r = 0
@@ -12957,22 +12961,27 @@ check1236789:
                     If MyIsObject(pppp.item(w)) Then
                         If TypeOf pppp.item(w) Is Document Then
                             r$ = pppp.item(w)
+                            Set bstackstr.lastobj = Nothing
                         Else
                             Set bstackstr.lastobj = pppp.item(w)
+                           r$ = ""
                         End If
-                        r$ = ""
+                        
                     Else
                         r$ = CStr(pppp.item(w))
+                        Set bstackstr.lastobj = Nothing
                     End If
                     
                 Else
+                    Set bstackstr.lastobj = Nothing
                     MyEr "Empty Array", "Άδειος Πίνακας"
                 End If
                 
             Else
+                Set bstackstr.lastobj = Nothing
                 NotArray
             End If
-            Set bstackstr.lastobj = Nothing
+            
             Exit Function
         ElseIf TypeOf bstackstr.lastobj Is mArray Then
                 Set pppp = bstackstr.lastobj
@@ -12991,6 +13000,7 @@ If Not bstackstr.lastobj Is Nothing Then
                     Set pppp = bstackstr.lastobj.objref
                     GoTo check1236789
                 Else
+                 Set bstackstr.lastobj = Nothing
                 NotArray
                 End If
             ElseIf TypeOf bstackstr.lastobj Is mArray Then
@@ -23590,10 +23600,10 @@ If InStr(ah, "N") > 0 Then
 logical = IsNumber(basestack, s$, d)
 ''End If
 Else
-If par = 1 Then
+If par > 0 Then
 logical = GetArr(basestack, s$, d, s2$, 0)
 If logical Then
-par = 0
+par = par - 1
 End If
 Exit Function
 Else
@@ -26257,7 +26267,7 @@ If x1 <> 0 Then
    If FastSymbol(ss$, "(") Then
                          hlp$ = BlockParam(ss$)
                             If hlp$ <> "" Then Mid$(ss$, 1, Len(ss$) + 2) = Space$(Len(ss$) + 1)
-                            If Not FastSymbol(")", ss$) Then
+                            If Not FastSymbol(ss$, ")") Then
                        
                             End If
                             
@@ -26404,7 +26414,7 @@ v = 123
    If FastSymbol(ss$, "(") Then
                          hlp$ = BlockParam(ss$)
                             If hlp$ <> "" Then Mid$(ss$, 1, Len(ss$) + 2) = Space$(Len(ss$) + 1)
-                            If Not FastSymbol(")", ss$) Then
+                            If Not FastSymbol(ss$, ")") Then
                        
                             End If
                             
@@ -37689,7 +37699,7 @@ operators:
                           If FastSymbol(rest$, "(") Then
                                 frm$ = BlockParam(rest$)
                             If frm$ <> "" Then Mid$(rest$, 1, Len(frm$)) = Space$(Len(frm$))
-                            If Not FastSymbol(")", rest$) Then
+                            If Not FastSymbol(rest$, ")") Then
                        
                             End If
                             
@@ -37760,7 +37770,7 @@ jump1:
                                 End If
                                 If FastSymbol(rest$, "(") Then
                                     frm$ = BlockParam(rest$)
-                                    If Not FastSymbol(")", rest$) Then
+                                    If Not FastSymbol(rest$, ")") Then
                                     End If
                                     frm$ = Trim$(frm$)
                                 End If
@@ -37787,7 +37797,7 @@ jump1:
                      
                                 If FastSymbol(rest$, "(") Then
                                     frm$ = BlockParam(rest$)
-                                    If Not FastSymbol(")", rest$) Then
+                                    If Not FastSymbol(rest$, ")") Then
                                     End If
                                 frm$ = Trim$(frm$)
                                 End If
@@ -37824,7 +37834,7 @@ jump1:
                         ElseIf FastSymbol(rest$, "(") Then
                             frm$ = BlockParam(rest$)
                              If frm$ <> "" Then Mid$(rest$, 1, Len(frm$)) = Space$(Len(frm$))
-                            If Not FastSymbol(")", rest$) Then
+                            If Not FastSymbol(rest$, ")") Then
                             End If
                             frm$ = Trim$(frm$)
                             If FastSymbol(rest$, "{") Then GoTo jumpheretoo
@@ -41600,7 +41610,7 @@ BYPASS1:
                 If FastSymbol(rest$, "(") Then
                                 frm$ = BlockParam(rest$)
                              If frm$ <> "" Then Mid$(rest$, 1, Len(frm$)) = Space$(Len(frm$))
-                            If Not FastSymbol(")", rest$) Then
+                            If Not FastSymbol(rest$, ")") Then
                        
                             
                             End If
@@ -41707,7 +41717,7 @@ JUMP0:
                         ElseIf FastSymbol(rest$, "(") Then
                             frm$ = BlockParam(rest$)
                              If frm$ <> "" Then Mid$(rest$, 1, Len(frm$)) = Space$(Len(frm$))
-                            If Not FastSymbol(")", rest$) Then
+                            If Not FastSymbol(rest$, ")") Then
                             End If
                             frm$ = Trim$(frm$)
                             If FastSymbol(rest$, "{") Then GoTo jumpheretoo
