@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 6
-Global Const Revision = 7
+Global Const Revision = 8
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -5531,7 +5531,7 @@ foundprivate:
                     nBstack.UseGroupname = sbf(V1&).sbgroup
                     If GoFunc(nBstack, s1$, ")", p) Then
                         If Not nBstack.StaticCollection Is Nothing Then
-                            bstack.SetVarobJ "%_" + s1$, nBstack.StaticCollection
+                            bstack.SetVarobJ "%_" + nBstack.StaticInUse, nBstack.StaticCollection
                         End If
                         Set bstack.lastobj = nBstack.lastobj
                         Set nBstack = Nothing
@@ -8839,7 +8839,7 @@ Else
     nBstack.UseGroupname = sbf(V1&).sbgroup
     If GoFunc(nBstack, s1$, a$, p) Then
         If Not nBstack.StaticCollection Is Nothing Then
-        bstack.SetVarobJ "%_" + s1$, nBstack.StaticCollection
+      bstack.Parent.SetVarobJ "%_" + nBstack.StaticInUse, nBstack.StaticCollection
         End If
     Set bstack.lastobj = nBstack.lastobj
     Set nBstack = Nothing
@@ -9164,7 +9164,7 @@ conthereGroupValue:
                     nBstack.UseGroupname = sbf(V1&).sbgroup
                     If GoFunc(nBstack, s1$, a$, p) Then
                         If Not nBstack.StaticCollection Is Nothing Then
-                            bstack.SetVarobJ "%_" + s1$, nBstack.StaticCollection
+                            bstack.Parent.SetVarobJ "%_" + nBstack.StaticInUse, nBstack.StaticCollection
                         End If
                         Set bstack.lastobj = nBstack.lastobj
                         Set nBstack = Nothing
@@ -12135,7 +12135,7 @@ foundprivate:
                                 nBstack.UseGroupname = sbf(w1).sbgroup
                                 If GoFunc(nBstack, q1$, ")", r$) Then
                                     If Not nBstack.StaticCollection Is Nothing Then
-                                        bstackstr.SetVarobJ "%_" + q1$, nBstack.StaticCollection
+                                        bstackstr.Parent.SetVarobJ "%_" + nBstack.StaticInUse, nBstack.StaticCollection
                                     End If
                                     Set bstackstr.lastobj = nBstack.lastobj
                                     Set nBstack = Nothing
@@ -13948,7 +13948,7 @@ contStrFun:
                 nBstack.OriginalCode = w1&
                 If GoFunc(nBstack, q1$, a$, s$, , , True) Then
                     If Not nBstack.StaticCollection Is Nothing Then
-                        bstackstr.SetVarobJ "%_" + q1$, nBstack.StaticCollection
+                        bstackstr.SetVarobJ "%_" + nBstack.StaticInUse, nBstack.StaticCollection
                     End If
                     Set bstackstr.lastobj = nBstack.lastobj
                     r$ = s$
@@ -14127,7 +14127,7 @@ contlambdastr:
                                 nBstack.UseGroupname = sbf(w1).sbgroup
                                 If GoFunc(nBstack, q1$, a$, r$) Then
                                     If Not nBstack.StaticCollection Is Nothing Then
-                                        bstackstr.SetVarobJ "%_" + q1$, nBstack.StaticCollection
+                                        bstackstr.SetVarobJ "%_" + nBstack.StaticInUse, nBstack.StaticCollection
                                     End If
                                     Set bstackstr.lastobj = nBstack.lastobj
                                     Set nBstack = Nothing
@@ -16140,6 +16140,7 @@ Dim p As Double, ii As Long, ss$
 If bstack.StaticCollection Is Nothing Then
 
 Set bstack.StaticCollection = New FastCollection
+bstack.Parent.SetVarobJ "%_" + bstack.StaticInUse, bstack.StaticCollection
 End If
 Do
     Select Case IsLabel(bstack, b$, w$)
@@ -19495,7 +19496,15 @@ somethingelse:
                             Mid$(b$, i, 1) = " "
                         End If
                     End If
+                    If Left$(ss$, 1) = "=" Then
+                    If IsExp(bstack, b$, p) Then
                  If Not bstack.AlterVar(w$, p, ss$, False) Then Execute = 0: Exit Function
+                 Else
+                 GoTo aproblem1
+                 End If
+                 Else
+                 If Not bstack.AlterVar(w$, p, ss$, False) Then Execute = 0: Exit Function
+                 End If
                 GoTo loopcontinue
                 End If
                 
@@ -20771,104 +20780,82 @@ Dim basestack As basetask
 Set basestack = mystack.Parent
 If basestack Is Nothing Then Set basestack = mystack
 ohere$ = here$
-
 If iRVAL(here$, 1) > funcdeep Then
     MyEr "Function's Stack is Full - 15", "Η στοίβα των συναρτήσεων έχει γεμίσει - 15"
     Set basestack = Nothing
     GoFunc = False: Exit Function
 End If
-' get parameters here
-' if we can expose Rest$ to functions in functions then we can programmaticaly
-' change how to interpret the parameter list or whatever is...Maybe. Is a think
 pa$ = mystack.UseGroupname
 mystack.UseGroupname = basestack.UseGroupname
-'' CHECK THIS -- WHY ??
-mystack.StaticInUse = basestack.StaticInUse
-Set mystack.StaticCollection = basestack.StaticCollection
-mystack.Look2Parent = True  ' new workaround for passing &this to function
- If Not PushParamGeneralV7(mystack, rest$) Then
- mystack.Look2Parent = False
- Exit Function
- End If
- mystack.strg = strg
- 
- mystack.fHere = here$
- mystack.Look2Parent = False
-  mystack.UseGroupname = pa$
-If choosethis >= 0 Then
-x1 = choosethis
-'ohere$ = HERE$
-''If what$ = "" Then here$ = RVAL(here$, 1) + mystack.OriginalName
-
-If what$ = "" Then
-here$ = RVAL(here$, 1) + mystack.OriginalName
-Else
-'here$ = RVAL(here$, 1)
+mystack.Look2Parent = True
+If Not PushParamGeneralV7(mystack, rest$) Then
+    mystack.Look2Parent = False
+    Exit Function
 End If
+mystack.strg = strg
+mystack.fHere = here$
+mystack.Look2Parent = False
+mystack.UseGroupname = pa$
+If choosethis >= 0 Then
+    x1 = choosethis
+    If what$ = "" Then
+        here$ = RVAL(here$, 1) + mystack.OriginalName
+        
+    End If
 Else
-If InStr(what$, "(") > 0 Then
-If GetSub(what$, x1) Then  'get the reference x1 for function (functions and modules are in an array)
-    ' here we change NameSpace
-    If here$ = "" Then  ' from the command line
-If ohere$ = "" Then here$ = what$
-    Else  ' from other...maybe the same... so make an increment by 1 to an index in the name.
-    
-
-    here$ = RVAL(here$, 1) & "." & Trim$(what$)
+    If InStr(what$, "(") > 0 Then
+        If GetSub(what$, x1) Then
+            If here$ = "" Then
+                If ohere$ = "" Then here$ = what$
+            Else
+                here$ = RVAL(here$, 1) & "." & Trim$(what$)
+            End If
+        End If
+    Else
+        If here$ = "" Then
+            If GetSub(what$, x1) Then
+                here$ = RVAL(here$, 1)
+            End If
+        ElseIf GetlocalSub(what$, x1) Then
+            here$ = RVAL(here$, 1)
+        ElseIf GetSub(what$, x1) Then
+            here$ = RVAL(here$, 1)
+        ElseIf recursive > 0 Then
+            here$ = RVAL(here$, 1)
+            x1 = recursive
+        End If
     End If
 End If
-Else
-If here$ = "" Then
-If GetSub(what$, x1) Then
-  here$ = RVAL(here$, 1)
-End If
-ElseIf GetlocalSub(what$, x1) Then
- here$ = RVAL(here$, 1)
- ElseIf GetSub(what$, x1) Then
-  here$ = RVAL(here$, 1)
- ElseIf recursive > 0 Then
-  here$ = RVAL(here$, 1)
-  x1 = recursive
-End If
-End If
-End If
-If Not basestack.StaticCollection Is Nothing Then
-If what$ <> mystack.StaticInUse Then
-If StripRVAL(here$) & "." & mystack.StaticInUse = what$ Then
+ ' prepare function for static variables
+If iRVAL(basestack.StaticInUse, 0) = 0 Then
+    mystack.StaticInUse = RVAL(basestack.StaticInUse, 1) + "." + what$ + mystack.StaticInUse
+    If Not basestack.Parent Is Nothing Then
+        If Not basestack.Parent.StaticCollection Is Nothing Then
+            If basestack.Parent.ExistVar("%_" + mystack.StaticInUse$) Then
+                basestack.Parent.ReadVar "%_" + mystack.StaticInUse$, vvv
+                If MyIsObject(vvv) Then Set mystack.StaticCollection = vvv
+                Set vvv = Nothing
+            End If
+        End If
+    End If
+ElseIf basestack.OriginalCode = mystack.OriginalCode Then
+    mystack.StaticInUse = basestack.StaticInUse
     Set mystack.StaticCollection = basestack.StaticCollection
-     mystack.StaticInUse$ = what$
-    
 Else
-    Set mystack.StaticCollection = Nothing
-            If basestack.ExistVar("%_" + what$) Then
-            If basestack.StaticCollection.IsObj Then
-                Set mystack.StaticCollection = basestack.StaticCollection.ValueObj
-                   
-             End If
-             
-            
+    mystack.StaticInUse = RVAL(basestack.StaticInUse, 1) + "." + what$ + mystack.StaticInUse
+    If Not basestack.Parent Is Nothing Then
+        If Not basestack.Parent.StaticCollection Is Nothing Then
+            If basestack.Parent.ExistVar("%_" + mystack.StaticInUse$) Then
+                basestack.Parent.ReadVar "%_" + mystack.StaticInUse$, vvv
+                If MyIsObject(vvv) Then Set mystack.StaticCollection = vvv
+                Set vvv = Nothing
+            End If
         End If
-       
-                mystack.StaticInUse$ = what$
+    End If
 End If
-Else
-    Set mystack.StaticCollection = Nothing
-            If basestack.ExistVar("%_" + what$) Then
-            If basestack.StaticCollection.IsObj Then
-                Set mystack.StaticCollection = basestack.StaticCollection.ValueObj
-                   
-             End If
-             
-            
-        End If
-       
-                mystack.StaticInUse$ = what$
-End If
- End If
+
 If here$ <> ohere$ Or mystack.IamChild Then     ' so now we check that we are in an new namespace...
-
 ' this system must change.. and become member of a basetask
-
 ' these are for safety
 vname = varhash.Count
 Vars = var2used
@@ -20927,21 +20914,28 @@ GoTo there1234
 End If
 
         End If
-    ''pa$ = "EDIT " & what$ & ", 1" ''& CStr(Len(sbf(x1).sb))
      pa$ = "EDIT " & StripRVAL(here$) & "," + Str(Len(sbf(x1).sb))
         If Left$(sbf(x1).sb, 10) = "'11001EDIT" Then
           pa$ = Mid$(GetNextLine(sbf(x1).sb), 7) ''+ "+1"
              sbf(x1).sb = Mid$(sbf(x1).sb, 3) ' needed because we measure length...look the preparation of Shift F1 below
              Set sbf(x1).subs = Nothing
+            If what$ <> "" Then
             If InStrRev(here$, ".") > 0 Then
             ' any fucntion defined inside module or function has this direction
                 MyEr "in function " & Mid$(what$, InStrRev(what$, ".") + 1), "στη συνάρτηση " & Mid$(what$, InStrRev(what$, ".") + 1)
             Else
                 MyEr "in function " & what$, "στη συνάρτηση " & what$
             End If
+            Else
+                MyEr "in function ", "στη συνάρτηση "
+            End If
         Else
         If Right$(here$, 1) = ")" Then
-        MyEr "in function " & Left$(what$, Len(what$) - 1), "στη συνάρτηση " & Left$(what$, Len(what$) - 1)
+        If what$ <> "" Then
+            MyEr "in function " & Left$(what$, Len(what$) - 1), "στη συνάρτηση " & Left$(what$, Len(what$) - 1)
+        Else
+                MyEr "in function ", "στη συνάρτηση "
+        End If
         Else
         MyEr "in module " & here$, "στο τμήμα " & here$
         End If
@@ -20986,11 +20980,6 @@ there1234:
        If LastErNum = 0 Then MyErMacro rest$, "", ""
     End If
     GoFunc = False
-  If what$ <> mystack.StaticInUse Then
-  ElseIf Not mystack.StaticCollection Is Nothing Then
-   basestack.SetVarobJ "%_" + mystack.StaticInUse, mystack.StaticCollection
-   End If
-
     here$ = ohere$
 
     var2used = Vars
@@ -33709,7 +33698,7 @@ End If
         Call GoFunc(bs, ss$, rest$, vvl)
         End If
             If Not bs.StaticCollection Is Nothing Then
-        basestack.SetVarobJ "%_" + ss$, bs.StaticCollection
+        basestack.SetVarobJ "%_" + bs.StaticInUse, bs.StaticCollection
         End If
         Set bs = Nothing
         If Not par Then
@@ -33867,9 +33856,9 @@ x1 = GlobalSub("A_()", ss$, Trim$(s$))
        Set basestack = Nothing:  Exit Sub
        End If
        End If
-       ' If Not bs.StaticCollection Is Nothing Then
-       ' basestack.SetVarobJ "%_" + what$, bs.StaticCollection
-       ' End If
+        If Not bs.StaticCollection Is Nothing Then
+        basestack.Parent.SetVarobJ "%_" + bs.StaticInUse, bs.StaticCollection
+        End If
         ''
         Set bs = Nothing
         basestack.nokillvars = False
@@ -33943,16 +33932,19 @@ End If
             If flag Then
                 bs.UseGroupname = basestack.UseGroupname
                 bs.GroupName = basestack.GroupName
+                  bs.StaticInUse = basestack.StaticInUse
                 Call GoFunc(bs, "()", rest$, vvl, , x1)
             Else
                 bs.UseGroupname = sbf(x1).sbgroup
+                bs.StaticInUse = what$
                 Call GoFunc(bs, "", rest$, vvl, , x1)
+                
             End If
         Else
             Call GoFunc(bs, what$, rest$, vvl)
         End If
         If Not bs.StaticCollection Is Nothing Then
-            basestack.SetVarobJ "%_" + what$, bs.StaticCollection
+            basestack.Parent.SetVarobJ "%_" + bs.StaticInUse, bs.StaticCollection
         End If
         Set bs = Nothing
         basestack.nokillvars = False
@@ -34022,10 +34014,11 @@ ElseIf i > 3 Then
              Call GoFunc(bs, ss$, rest$, vvl, , x1)
              Else
              bs.UseGroupname = sbf(x1).sbgroup
-        Call GoFunc(bs, ss$, rest$, vvl)
+            
+            Call GoFunc(bs, ss$, rest$, vvl)
         End If
             If Not bs.StaticCollection Is Nothing Then
-        basestack.SetVarobJ "%_" + ss$, bs.StaticCollection
+        basestack.Parent.SetVarobJ "%_" + bs.StaticInUse, bs.StaticCollection
         End If
         Set bs = Nothing
         If Not par Then

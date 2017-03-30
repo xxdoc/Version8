@@ -84,7 +84,13 @@ Public Sub SetVar(ByVal name$, var As Variant)
    StaticCollection.Value = var
 End Sub
 Public Sub SetVarobJ(ByVal name$, var As Variant)
-    If StaticCollection Is Nothing Then Set StaticCollection = New FastCollection
+    If StaticCollection Is Nothing Then
+    Set StaticCollection = New FastCollection
+    If Parent Is Nothing Then
+    Else
+    Parent.SetVarobJ "%_" + StaticInUse, StaticCollection
+    End If
+    End If
     If Not StaticCollection.Find(name$) Then StaticCollection.AddKey name$
     Set StaticCollection.ValueObj = var
 End Sub
@@ -116,13 +122,13 @@ If Not StaticCollection.Find(name$) Then Exit Function
             .Value = -.Value
             Case "=", "g"
             .Value = p
-            Case "+"
+            Case "+", "+="
             .Value = p + .Value
-            Case "*"
+            Case "*", "*="
             .Value = p * .Value
-            Case "-"
+            Case "-", "-="
             .Value = .Value - p
-            Case "/"
+            Case "/", "/="
             If p = 0 Then
             
              Exit Function
