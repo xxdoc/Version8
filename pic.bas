@@ -3190,6 +3190,7 @@ Dim p2 As Long, p1 As Integer, p4 As Long
   Next i
  MyTrimL = l + 2
 End Function
+
 Public Function excludespace(s$) As Long
 Dim i&, l As Long
 Dim p2 As Long, p1 As Integer, p4 As Long
