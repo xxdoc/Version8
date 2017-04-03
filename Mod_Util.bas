@@ -5990,6 +5990,9 @@ End Sub
 Public Sub BadFilename()
 MyEr "Bad filename", "Λάθος στο όνομα αρχείου"
 End Sub
+Public Sub ReadOnly()
+MyEr "Read Only", "Μόνο για ανάγνωση"
+End Sub
 Public Sub MissDir()
 MyEr "Missing directory name", "Λείπει όνομα φακέλου"
 End Sub
@@ -6062,6 +6065,21 @@ End Sub
 Public Sub MissingDocRef()  ' this is for identifier or execute part
 MyEr "invalid document pointer", "μη έγκυρος δείκτης εγγράφου"
 End Sub
+Public Sub MissingObjReturn()
+MyEr "Missing Object", "Δεν βρήκα αντικείενο"
+End Sub
+Public Sub NoNewLambda()
+    MyEr "No New statement for lambda", "Όχι δήλωση νέου για λαμδα"
+End Sub
+Public Sub ExpectedObj(nn$)
+MyEr "Expected object type " + nn$, "Περίμενα αντικείμενο τύπου " + nn$
+End Sub
+Public Sub MisOperatror(ss$)
+MyEr "Group not support operator " + ss$, "Η ομάδα δεν υποστηρίζει το τελεστή " + ss$
+End Sub
+Public Sub ExpectedObjInline(nn$)
+MyErMacro nn$, "Expected Object", "Περίμενα αντικείμενο"
+End Sub
 Public Sub MissingObj()
 MyEr "missing object type variable", "λείπει μεταβλητή τύπου αντικειμένου"
 End Sub
@@ -6111,6 +6129,51 @@ MyEr "missing " & wht$, "λείπει " & wht$
 End Sub
 Public Sub BadCommand()
  MyEr "Command for supervisor rights", "Εντολή μόνο για επόπτη"
+End Sub
+Public Sub NoClauseInThread()
+MyEr "can't find ERASE or HOLD or RESTART or INTERVAL clause", "Δεν μπορώ να βρω όρο όπως το ΣΒΗΣΕ ή το ΚΡΑΤΑ ή το ΞΕΚΙΝΑ ή το ΚΑΘΕ"
+End Sub
+Public Sub NoThisInThread()
+MyEr "Clause This can't used outside a thread", "Ο όρος ΑΥΤΟ δεν μπορεί να χρησιμοποιηθεί έξω από ένα νήμα"
+End Sub
+Public Sub MisInterval()
+MyEr "Expected number for interval, miliseconds", "Περίμενα αριθμό για ορισμό τακτικού διαστήματος εκκίνησης νήματος (χρόνο σε χιλιοστά δευτερολέπτου)"
+End Sub
+Public Sub NoRef2()
+MyEr "No with reference in left side of assignment", "Όχι με αναφορά στην εκχώρηση τιμής"
+End Sub
+Public Sub WrongObject()
+MyEr "Wrong object type", "λάθος αντικείμενο τύπου"
+End Sub
+Public Sub GroupWrongUse()
+MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
+End Sub
+Public Sub GroupCantSetValue()
+    MyEr "Group can't set value", "Η ομάδα δεν μπορεί να θέσει τιμή"
+End Sub
+Public Sub PropCantChange()
+MyEr "Property can't change", "Η ιδιότητα δεν μπορεί να αλλάξει"
+End Sub
+Public Sub NeedAGroupInRightExpression()
+MyEr "Need a group from right expression", "Χρειάζομαι μια ομάδα από την δεξιά έκφραση"
+End Sub
+Public Sub NoRef()
+MyEr "No with reference (&)", "Όχι με αναφορά (&)"
+End Sub
+Public Sub NoMoreDeep(deep As Double)
+MyEr "No more" + Str(deep) + " levels gosub allowed", "Δεν επιτρέπονται πάνω από" + Str(deep) + " επίπεδα για εντολή ΔΙΑΜΕΣΟΥ"
+End Sub
+Public Sub CantFind(w$)
+MyEr "Can't find " + w$, "Δεν μπορώ να βρω τo " + w$
+End Sub
+Public Sub OverflowLong()
+MyEr "OverFlow Long", "Yπερχείλιση μακρύ"
+End Sub
+Public Sub BadUseofReturn()
+MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+End Sub
+Public Sub DevZero()
+    MyEr "division by zero", "διαίρεση με το μηδέν"
 End Sub
 Public Sub ErrInExponet(a$)
 MyErMacro a$, "Error in exponet", "Λάθος στον εκθέτη"

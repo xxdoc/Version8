@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 6
-Global Const Revision = 9
+Global Const Revision = 10
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2477,7 +2477,10 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
         End If
         UnFloatGroup bstack, w$, y1, pppp.item(v)
         var(y1).FloatGroupName = ec$
-        If var(y1).HasValue Then
+        If Left$(b$, 1) = "." Then
+            b$ = w$ + b$
+        If IsStrExp(bstack, b$, bb$) Then GoTo conthere
+        ElseIf var(y1).HasValue Then
             If var(y1).HasParameters Then
                 b$ = w$ + "$(" + b$
                 If IsStrExp(bstack, b$, bb$) Then GoTo conthere
@@ -5679,7 +5682,7 @@ w1 = Len(s1$)
 Loop Until Trim$(s1) = "" Or w1 = Len(s1$)
 ElseIf IsExp(bstack, a$, p) Then
     If bstack.lastobj Is Nothing Then
-        MyErMacro a$, "Expected Object", "Περίμενα αντικείμενο"
+        ExpectedObjInline a$
     ElseIf TypeOf bstack.lastobj Is mHandler Then
         Set anything = bstack.lastobj
         Set bstack.lastobj = Nothing
@@ -5701,7 +5704,7 @@ ElseIf IsExp(bstack, a$, p) Then
                 End If
                 Set anything = Nothing
             Else
-            MyErMacro a$, "Expected Object", "Περίμενα αντικείμενο"
+            ExpectedObjInline a$
             End If
         End If
     End If
@@ -14858,7 +14861,7 @@ Select Case i1
 Case 1234
 GoTo jumpforCR1
 Case 2
-MyEr "No with reference in left side of assignment", "Όχι με αναφορά στην εκχώρηση τιμής"
+NoRef2
 interpret = False
 Exit Function
 Case 1
@@ -14979,7 +14982,7 @@ assignvalue3:
                                 End If
                                 NeoCall objptr(bstack), w$ + "." + ChrW(&H1FFF) + ":=()", lang, ok
                             ElseIf bstack.lastobj Is Nothing Then
-                                MyEr "Need a group from right expression", "Χρειάζομαι μια ομάδα από την δεξιά έκφραση"
+                                NeedAGroupInRightExpression
                                 interpret = False
                                 Exit Function
                             ElseIf TypeOf bstack.lastobj Is Group Then
@@ -14999,7 +15002,7 @@ assignvalue3:
                                         w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
                                         UnFloatGroupReWriteVars bstack, w$, v, myobject
                                     Else
-                                        MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
+                                        GroupWrongUse
                                         interpret = 0
                                         Exit Function
                                     End If
@@ -15008,7 +15011,7 @@ assignvalue3:
                                 Set myobject = Nothing
                                 bstack.GroupName = ss$
                             Else
-                                MyEr "Wrong object type", "λάθος αντικείμενο τύπου"
+                                WrongObject
                                 interpret = False
                                 Exit Function
                             End If
@@ -15057,11 +15060,11 @@ noexpression:
                     ElseIf TypeOf var(v) Is mHandler Then  ' CHECK IF IT IS A HANDLER
                         If IsExp(bstack, b$, p) Then
                             If var(v).ReadOnly Then
-                                MyEr "Read Only", "Μόνο για ανάγνωση"
+                                ReadOnly
                                 interpret = False: Exit Function
                             End If
                             If bstack.lastobj Is Nothing Then
-                                MyEr "Missing Object", "Δεν βρήκα αντικείενο"
+                                MissingObjReturn
                                 interpret = False: Exit Function
                             ElseIf Typename(bstack.lastobj) = "mHandler" Then   '' CheckGarbage bstack
                                 Set myobject = New mHandler
@@ -15155,7 +15158,7 @@ somethingelse:
                     Case "/="
                         If IsExp(bstack, b$, p) Then
                             If p = 0 Then
-                                MyEr "Division by zero", "Διαίρεση με το μηδέν"
+                                DevZero
                                 interpret = False
                                 Exit Function
                             End If
@@ -15190,7 +15193,7 @@ somethingelse:
                     NeoCall objptr(bstack), w$ + "." + ChrW(&H1FFF) + ss$ + "()", lang, ok
                     If Not ok Then
                         If LastErNum = 0 Then
-                            MyEr "Group not support operator " + ss$, "Η ομάδα δεν υποστηρίζει το τελεστή " + ss$
+                            MisOperatror (ss$)
                         End If
                         interpret = False
                         Exit Function
@@ -15382,7 +15385,7 @@ PROCESSCOMMAND:
                
 err123456:
                 If Err.Number = 6 Then
-                MyEr "Overflow", "Υπερχείλιση"
+                OverflowLong
                 interpret = False: here$ = ohere$: Exit Function
                 
                 End If
@@ -15440,7 +15443,7 @@ Case "RETURN", "ΕΠΙΣΤΡΟΦΗ"
     LastErNum = 0
        If IsExp(bstack, b$, p) Then
                 If bstack.lastobj Is Nothing Then
-                 MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+                 BadUseofReturn
                  interpret = False
                  Exit Function
                 ElseIf Typename(bstack.lastobj) = "mHandler" Then
@@ -15451,11 +15454,11 @@ Case "RETURN", "ΕΠΙΣΤΡΟΦΗ"
                           End If
                          
                 End If
-            MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+            BadUseofReturn
             interpret = False
             Exit Function
        Else
-      MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+      BadUseofReturn
        interpret = False
                 End If
 
@@ -15573,7 +15576,7 @@ If ss$ <> "" Then
                     
                     If sw$ = "g" Then
                            sw$ = ":="
-                           If Not var(v).HasSet Then MyEr "Group can't set value", "Η ομάδα δεν μπορεί να θέσει τιμή": interpret = False: Exit Function
+                           If Not var(v).HasSet Then GroupCantSetValue: interpret = False: Exit Function
                            End If
                            If bstack.lastobj Is Nothing Then
                                 bstack.soros.PushStr ss$
@@ -15584,7 +15587,7 @@ If ss$ <> "" Then
                             NeoCall objptr(bstack), Left$(w$, Len(w$) - 1) + "." + ChrW(&H1FFF) + sw$ + "()", lang, ok
                     If Not ok Then
                         If LastErNum = 0 Then
-                            MyEr "Group not support operator " + ss$, "Η ομάδα δεν υποστηρίζει το τελεστή " + ss$
+                            MisOperatror (ss$)
                         End If
                         interpret = False
                         Exit Function
@@ -15594,7 +15597,7 @@ If ss$ <> "" Then
                     Else
                          
                          If CheckVarOnlyNo(var(v), ss$) Then
-                           MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                           ExpectedObj Typename(var(v))
                            Exit Function
                          End If
                         End If
@@ -15668,7 +15671,7 @@ If FastSymbol(b$, "=") Then '................................
                        SyntaxError
                         End If
                         ElseIf MyIsObject(var(v)) Then
-                           MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                           ExpectedObj Typename(var(v))
                            Exit Function
                         Else
                         var(v) = Int(p)
@@ -15822,7 +15825,7 @@ With pppp
         ElseIf IsOperator0(b$, "/=", 2) Then
             If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
             If p = 0 Then
-             MyEr "division by zero", "διαίρεση με το μηδέν"
+             DevZero
              Else
              .item(v) = pppp.itemnumeric(v) / p
             End If
@@ -16100,7 +16103,7 @@ pppp.item(v) = pppp.itemnumeric(v) * Int(p)
 ElseIf IsOperator0(b$, "/=", 2) Then
 If Not IsExp(bstack, b$, p) Then interpret = False: here$ = ohere$: Exit Function
 If p = 0 Then
- MyEr "division by zero", "διαίρεση με το μηδέν"
+ DevZero
  Else
  pppp.item(v) = Int(pppp.itemnumeric(v) / Int(p))
 End If
@@ -16502,7 +16505,7 @@ IsLabel bstack, ss$, w$
 End If
 GoTo varonly
 Case 2
-MyEr "No with reference (&)", "Όχι με αναφορά (&)"
+NoRef
 Execute = 0
 Exit Function
 Case 3
@@ -16533,7 +16536,7 @@ Select Case IsLabelDotSub(temphere$, b$, w$, ss$, lang, nchr)
 Case 1234
 GoTo jumpforCR
 Case 2
-MyEr "No with reference in left side of assignment", "Όχι με αναφορά στην εκχώρηση τιμής"
+NoRef2
 Execute = 0
 Exit Function
 Case 1
@@ -16955,7 +16958,7 @@ ElseIf IsLabelSymbolNewExp(b$, "ΑΥΤΟ", "THIS", lang, Us$) Then
       If bstack.Process Is Nothing Then
 dothesame:
                 b$ = ""
-                MyEr "Clause This can't used outside a thread", "Ο όρος ΑΥΤΟ δεν μπορεί να χρησιμοποιηθεί έξω από ένα νήμα"
+                NoThisInThread
                 Execute = 0: Exit Function
                 Once = False
             ElseIf IsLabelSymbolNewExp(b$, "ΣΒΗΣΕ", "ERASE", lang, Us$) Then
@@ -16975,12 +16978,12 @@ dothesame:
                                      bstack.Process.Interval = p
                                      Else
                                      b$ = ""
-                                     MyEr "Expected number for interval, miliseconds", "Περίμενα αριθμό για ορισμό τακτικού διαστήματος εκκίνησης νήματος (χρόνο σε χιλιοστά δευτερολέπτου)"
+                                     MisInterval
                                      Execute = 0: Exit Function
                                 End If
                Else
                                     b$ = ""
-                                    MyEr "can't find ERASE or HOLD or RESTART or INTERVAL clause", "Δεν μπορώ να βρω όρο όπως το ΣΒΗΣΕ ή το ΚΡΑΤΑ ή το ΞΕΚΙΝΑ ή το ΚΑΘΕ"
+                                    NoClauseInThread
                                     Execute = 0: Exit Function
             End If
             
@@ -17037,7 +17040,7 @@ ContReturn:
     LastErNum = 0
        If IsExp(bstack, b$, p) Then
        If bstack.lastobj Is Nothing Then
-          MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+          BadUseofReturn
        Execute = 0
        Exit Function
        ElseIf Typename(bstack.lastobj) = "mHandler" Then
@@ -17048,7 +17051,7 @@ ContReturn:
         End If
        
        End If
-       MyEr "Wrong Use of Return", "Κακή χρήση της επιστροφής"
+       BadUseofReturn
        Execute = 0
        Exit Function
        ElseIf IsStrExp(bstack, b$, ss$) Then
@@ -17197,7 +17200,7 @@ cont10456:
           
              If Err.Number = 6 Then
                  Execute = 0
-        MyEr "OverFlow Long", "Yπερχείλιση μακρύ"
+        OverflowLong
         Exit Function
              End If
              End If
@@ -17329,7 +17332,7 @@ If x1 = 1 Then
                                                           GoTo AGAIN1
                                                     Else
                                                             Execute = 0
-                                                            MyEr "Can't find " + w$, "Δεν μπορώ να βρω τo " + w$
+                                                            CantFind w$
                                                             Exit Function
                                                     End If
                                             End If
@@ -17408,7 +17411,7 @@ Do
             GoTo AGAIN1
             Else
             Execute = 0
-            MyEr "Can't find " + w$, "Δεν μπορώ να βρω τo " + w$
+            CantFind w$
             Exit Function
             End If
             End If
@@ -17477,7 +17480,7 @@ Do
             GoTo AGAIN1
             Else
             Execute = 0
-            MyEr "Can't find " + w$, "Δεν μπορώ να βρω τo " + w$
+            CantFind w$
             Exit Function
             End If
             End If
@@ -18793,7 +18796,7 @@ ContOn:
             On Error Resume Next
                 p = CLng(p)
                         If Err.Number = 6 Then
-                                MyEr "Overflow", "υπερχείλιση"
+                                OverflowLong
                                 Execute = 0
                                 Exit Function
                                 End If
@@ -18843,7 +18846,7 @@ ContOn:
                 If bstack.SubLevel > deep And deep <> 0 Then
 ' GO BACK TO FIRST CALL
 If bstack.RetStackTotal >= 9 * deep Then
-             MyEr "No more" + Str(deep) + " levels gosub allowed", "Δεν επιτρέπονται πάνω από" + Str(deep) + " επίπεδα για εντολή ΔΙΑΜΕΣΟΥ"
+             NoMoreDeep deep
 
              Execute = 0
              Exit Function
@@ -18906,7 +18909,7 @@ If myexit(bstack) Then Execute = 1: Exit Function
 If bstack.SubLevel > deep And deep <> 0 Then
 ' GO BACK TO FIRST CALL
 If bstack.RetStackTotal >= 9 * deep Then
-             MyEr "No more" + Str(deep) + " levels gosub allowed", "Δεν επιτρέπονται πάνω από" + Str(deep) + " επίπεδα για εντολή ΔΙΑΜΕΣΟΥ"
+             NoMoreDeep deep
 
              Execute = 0
              Exit Function
@@ -19244,7 +19247,7 @@ assigngroup:
                                 End If
                                 NeoCall objptr(bstack), w$ + "." + ChrW(&H1FFF) + ":=()", lang, ok
                             ElseIf bstack.lastobj Is Nothing Then
-                                MyEr "Need a group from right expression", "Χρειάζομαι μια ομάδα από την δεξιά έκφραση"
+                                NeedAGroupInRightExpression
                                 Execute = 0
                                 Exit Function
                             ElseIf TypeOf bstack.lastobj Is Group Then
@@ -19252,7 +19255,7 @@ assigngroup:
                                 Set bstack.lastobj = Nothing
                                 ss$ = bstack.GroupName
                                 If var(v).HasValue Or var(v).HasSet Then
-                                MyEr "Property can't change", "Η ιδιότητα δεν μπορεί να αλλάξει"
+                                PropCantChange
                                 Execute = 0
                                 Exit Function
                                 Else
@@ -19264,7 +19267,7 @@ assigngroup:
                                         w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
                                         UnFloatGroupReWriteVars bstack, w$, v, myobject
                                     Else
-                                        MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
+                                        GroupWrongUse
                                         Execute = 0
                                         Exit Function
                                     End If
@@ -19273,7 +19276,7 @@ assigngroup:
                                 Set myobject = Nothing
                                 bstack.GroupName = ss$
                             Else
-                                MyEr "Wrong object type", "λάθος αντικείμενο τύπου"
+                                WrongObject
                                 Execute = 0
                                 Exit Function
                             End If
@@ -19322,11 +19325,11 @@ noexpression:
                     ElseIf TypeOf var(v) Is mHandler Then  ' CHECK IF IT IS A HANDLER
                         If IsExp(bstack, b$, p) Then
                             If var(v).ReadOnly Then
-                                MyEr "Read Only", "Μόνο για ανάγνωση"
+                                ReadOnly
                                 Execute = 0: Exit Function
                             End If
                             If bstack.lastobj Is Nothing Then
-                                MyEr "Missing Object", "Δεν βρήκα αντικείμενο"
+                                MissingObjReturn
                                 Execute = 0: Exit Function
                             ElseIf Typename(bstack.lastobj) = "mHandler" Then   '' CheckGarbage bstack
                                 Set myobject = New mHandler
@@ -19388,7 +19391,12 @@ somethingelse:
                 If InStr("/*-+=~^&|<>", Mid$(b$, i, 1)) > 0 Then
                     If InStr("/*-+=~^&|<>!", Mid$(b$, i + 1, 1)) > 0 Then
                         ss$ = Mid$(b$, i, 2)
+                        If ss$ = "=&" Then
+                        ss$ = "="
+                        Mid$(b$, i, 1) = " "
+                        Else
                         Mid$(b$, i, 2) = "  "
+                        End If
                     Else
                         ss$ = Mid$(b$, i, 1)
                         Mid$(b$, i, 1) = " "
@@ -19423,7 +19431,7 @@ somethingelse:
                     Case "/="
                         If IsExp(bstack, b$, p) Then
                             If p = 0 Then
-                                MyEr "Division by zero", "Διαίρεση με το μηδέν"
+                                DevZero
                                 Execute = 0
                                 Exit Function
                             End If
@@ -19459,7 +19467,7 @@ somethingelse:
                     If Not ok Then
 here1234:
                         If LastErNum = 0 Then
-                            MyEr "Group not support operator " + ss$, "Η ομάδα δεν υποστηρίζει το τελεστή " + ss$
+                            MisOperatror (ss$)
                         End If
                         Execute = 0
                         Exit Function
@@ -19642,10 +19650,17 @@ End If
         End If
         i = MyTrimL(b$)
         If InStr("/*-+=~^&|<>", Mid$(b$, i, 1)) > 0 Then
+        
                     If InStr("/*-+=~^&|<>!", Mid$(b$, i + 1, 1)) > 0 Then
                         ss$ = Mid$(b$, i, 2)
+                        If ss$ = "=&" Then
+                        ss$ = "="
+                        Mid$(b$, i, 1) = " "
+                        Else
                         Mid$(b$, i, 2) = "  "
+                        End If
                         If ss$ = "<=" Then ss$ = "g"
+                        
                     Else
                         ss$ = Mid$(b$, i, 1)
                         Mid$(b$, i, 1) = " "
@@ -19705,7 +19720,7 @@ If ss$ <> "" Then
                    Else
                   
                              If bstack.lastobj Is Nothing Then
-                                MyEr "Need a group from right expression", "Χρειάζομαι μια ομάδα από την δεξιά έκφραση"
+                                NeedAGroupInRightExpression
                                 Execute = 0
                                 Exit Function
                             ElseIf TypeOf bstack.lastobj Is Group Then
@@ -19713,7 +19728,7 @@ If ss$ <> "" Then
                                 Set bstack.lastobj = Nothing
                                 ss$ = bstack.GroupName
                                 If var(v).HasValue Or var(v).HasSet Then
-                                MyEr "Property can't change", "Η ιδιότητα δεν μπορεί να αλλάξει"
+                                PropCantChange
                                 Execute = 0
                                 Exit Function
                                 Else
@@ -19726,7 +19741,7 @@ If ss$ <> "" Then
                                         w$ = Left$(var(v).GroupName, Len(var(v).GroupName) - 1)
                                         UnFloatGroupReWriteVars bstack, w$, v, myobject
                                     Else
-                                        MyEr "Something wrong with group", "Κάτι πάει στραβά με την ομάδα"
+                                        GroupWrongUse
                                         Execute = 0
                                         Exit Function
                                     End If
@@ -19735,14 +19750,14 @@ If ss$ <> "" Then
                                 Set myobject = Nothing
                                 bstack.GroupName = ss$
                             Else
-                              MyEr "Group can't set value", "Η ομάδα δεν μπορεί να θέσει τιμή"
+                              GroupCantSetValue
                             End If
                    
                         
                    End If
                   Else
                                   If CheckVarOnlyNo(var(v), ss$) Then
-                                    MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                                    ExpectedObj Typename(var(v))
                                     Execute = 0: Exit Function
                                   End If
                 End If
@@ -19763,7 +19778,7 @@ cont184575:
             Else
             If Typename$(bstack.lastobj) = "lambda" Then
                   If NewStat Then
-                                            MyEr "No New statement for lambda", "Όχι δήλωση νέου για λαμδα"
+                                            NoNewLambda
                                             Exit Function
                                         Else
                                             If Not GetVar(bstack, w$, x1, True) Then x1 = GlobalVar(w$, p, , VarStat, temphere$)
@@ -19824,7 +19839,7 @@ again12345:
                     ElseIf Typename$(var(v)) = "Group" Then
                            If sw$ = "g" Then
                            sw$ = ":="
-                           If Not var(v).HasSet Then MyEr "Group can't set value", "Η ομάδα δεν μπορεί να θέσει τιμή": Execute = 0: Exit Function
+                           If Not var(v).HasSet Then GroupCantSetValue: Execute = 0: Exit Function
                            End If
                            If bstack.lastobj Is Nothing Then
                                 bstack.soros.PushStr ss$
@@ -19832,6 +19847,8 @@ again12345:
                                 bstack.soros.PushObj bstack.lastobj
                                 Set bstack.lastobj = Nothing
                             End If
+a325674:
+                            
                             NeoCall objptr(bstack), Left$(w$, Len(w$) - 1) + "." + ChrW(&H1FFF) + sw$ + "()", lang, ok
                             If Not ok Then GoTo here1234
                                 
@@ -19839,6 +19856,8 @@ again12345:
                CheckVar var(v), ss$
                End If
                Else
+               ' check
+               If Typename$(var(v)) = "Group" Then GoTo a325674
                NoValueForVar w$
                End If
             Else
@@ -19906,12 +19925,13 @@ If MaybeIsSymbol(b$, "=-+*/<~") Then
                             End If
                             Set bstack.lastobj = Nothing
                         Else
-                            MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                            
+                            ExpectedObj Typename(var(v))
                             Execute = 0
                             Exit Function
                             End If
                ElseIf MyIsObject(var(v)) Then
-                                       MyEr "Expected object type " + Typename(var(v)), "Περίμενα αντικείμενο τύπου " + Typename(var(v))
+                                       ExpectedObj Typename(var(v))
                                     Execute = 0
                                     Exit Function
                 Else
@@ -19935,7 +19955,7 @@ abc2345:
             If TypeOf bstack.lastobj Is lambda Then
                             v = GlobalVar(w$, p, , VarStat, temphere$)
                             If NewStat Then  '' ???
-                                            MyEr "No New statement for lambda", "Όχι δήλωση νέου για λαμδα"
+                                            NoNewLambda
                                             Exit Function
                                         Else
                                                If here$ = "" Or VarStat Then
@@ -20178,6 +20198,7 @@ Set myobject = bstack.soros
 Else
 End If
  Else
+a1297654:
   i = MyTrimL(b$)
        If MaybeIsSymbol(Mid$(b$, i + 1, 1), "/*-+=~^&|<>?") Then
             ss$ = Mid$(b$, i, 2)
@@ -20198,6 +20219,10 @@ GoTo loopcontinue
 End If
 End If
 End If
+Else
+Set myobject = .item(v)
+If TypeOf myobject Is Group Then GoTo a1297654
+Set myobject = Nothing
 End If
 End If
 
@@ -20220,7 +20245,7 @@ If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
 ElseIf FastSymbol(b$, "/=", , 2) Then
 If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
 If p = 0 Then
- MyEr "division by zero", "διαίρεση με το μηδέν"
+ DevZero
  Else
  .item(v) = .itemnumeric(v) / p
 End If
@@ -20707,7 +20732,7 @@ If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
 ElseIf FastSymbol(b$, "/=", , 2) Then
 If Not IsExp(bstack, b$, p) Then Execute = 0: Exit Function
 If Int(p) = 0 Then
- MyEr "division by zero", "διαίρεση με το μηδέν"
+ DevZero
  Else
  .item(v) = Int(.itemnumeric(v) / Int(p))
 End If
@@ -20799,7 +20824,7 @@ MyEr "Missing variable name", "Λείπει όνομα μεταβλητής"
 LONGERR:
     If Err.Number = 6 Then
             Execute = 0
-            MyEr "OverFlow Long", "Yπερχείλιση μακρύ"
+            OverflowLong
     ElseIf Err.Number = 450 Then
             Execute = 0
             MyEr "Wrong operator", "λάθος τελεστής"
@@ -26107,7 +26132,10 @@ var(vvv).HasSet = True
 w$ = "&"
 GoTo funcoperator
 Case "VALUE", "ΑΞΙΑ"
-If FastSymbol(rest$, "(") Then
+If MaybeIsSymbol(rest$, "=") Then
+
+GoTo conthereplease
+ElseIf FastSymbol(rest$, "(") Then
 If varhash.Find(here$ + "." + Left$(var(vvv).GroupName, Len(var(vvv).GroupName) - 1) + "(", i) Then
 MyEr "Array with same name", "Πίνακας με ίδιο όνομα"
 ExecuteVarOnly = False
@@ -26610,7 +26638,7 @@ End If
        ''LogGroup bstack, vvv, oHere$, OvarnameLen, OarrnameLen, lcl
 Case Else
 ' check if we have a class
-
+conthereplease:
 nm$ = ""
 If prv Then w$ = ChrW(&HFFBF) + w$
 If Len(rest$) > 0 Then
@@ -34723,12 +34751,11 @@ chekInterval:
             If x < 2 Then x = 2
             TaskMaster.Message CLng(p), 3, CLng(x)
         Else
-            MyEr "Expected number for interval, miliseconds", "Περίμενα αριθμό για ορισμό τακτικού διαστήματος εκκίνησης νήματος (χρόνο σε χιλιοστά δευτερολέπτου)"
-           
+            MisInterval
             MyThread = False
         End If
     Else
-        MyEr "can't find ERASE or HOLD or RESTART or INTERVAL clause", "Δεν μπορώ να βρω όρο όπως το ΣΒΗΣΕ ή το ΚΡΑΤΑ ή το ΞΕΚΙΝΑ ή το ΚΑΘΕ"
+        NoClauseInThread
       
         MyThread = False
 
@@ -35720,7 +35747,7 @@ Case 1
                     ElseIf Typename$(var(i)) = "mHandler" Then
                         If var(i).ReadOnly Then
                             MyRead = False
-                           MyEr "Read Only", "Μόνο για ανάγνωση"
+                           ReadOnly
                            Exit Function
                         ElseIf var(i).t1 = myobject.t1 Or myobject.t1 = 3 Then
                            Set var(i) = myobject
@@ -35762,7 +35789,7 @@ Case 1
             If MyIsObject(var(i)) Then
                     If TypeOf var(i) Is mHandler Then
                     If var(i).ReadOnly Then
-                        MyEr "Read Only", "Μόνο για ανάγνωση"
+                        ReadOnly
                         MyRead = False
                        Exit Function
                         End If
@@ -36151,7 +36178,7 @@ ElseIf y1 < 5 And y1 > 0 Then
        ElseIf Typename(var(i)) = "mHandler" Then
        If var(i).t1 = 1 Then
        If var(i).ReadOnly Then
-            MyEr "Read Only", "Μόνο για ανάγνωση"
+            ReadOnly
             MyClear = False
             
             End If
@@ -40083,7 +40110,7 @@ Else
 If Not basestack.lastobj Is Nothing Then
 If TypeOf basestack.lastobj Is mHandler Then
     If basestack.lastobj.ReadOnly Then
-        MyEr "Read Only", "Μόνο για ανάγνωση"
+        ReadOnly
         Exit Function
     End If
     If basestack.lastobj.t1 <> 1 Then Exit Function
@@ -40258,7 +40285,7 @@ desc = IsLabelSymbolNew(rest$, "ΦΘΙΝΟΥΣΑ", "DESCENDING", lang)
          If GetVar(basestack, s$, i) Then
                 If Typename(var(i)) = "mHandler" Then
                         If var(i).ReadOnly Then
-                        MyEr "Read Only", "Μόνο για ανάγνωση"
+                        ReadOnly
                         Exit Function
                         End If
                             If var(i).t1 = 1 Then
@@ -41147,7 +41174,7 @@ If IsExp(basestack, rest$, p) Then
      If Typename(var(it)) = "mHandler" Then
     
         If var(it).ReadOnly Then
-                     MyEr "Read Only", "Μόνο για ανάγνωση"
+                     ReadOnly
                              GoTo ex123
                      End If
         End If
@@ -41167,7 +41194,7 @@ If IsExp(basestack, rest$, p) Then
     If Not Typename(var(it)) = "mHandler" Then GoTo ex123
         
            If var(it).ReadOnly Then
-                        MyEr "Read Only", "Μόνο για ανάγνωση"
+                        ReadOnly
                                 GoTo ex123
                         End If
         Set myobject = var(it)
@@ -41622,16 +41649,18 @@ If x1 = 1 Then
                     If IsExp(basestack, rest$, p) Then
                         If Not basestack.lastobj Is Nothing Then
                             If Typename(basestack.lastobj) = "Group" Then
-conthere:
-                                s$ = here$: here$ = ""
+                                's$ = here$: here$ = ""
                                 UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj
-                                here$ = s$
+                               ' here$ = s$
                                 Set basestack.lastobj = Nothing
                             End If
                         End If
                     End If
                 ElseIf entrypoint = 100 Then
-                GoTo conthere
+                                         '     s$ = here$: here$ = ""
+                                UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj
+                              ' here$ = s$
+                                Set basestack.lastobj = Nothing
                 Else
                 var(i).GroupName = what$ + "."
                 End If
