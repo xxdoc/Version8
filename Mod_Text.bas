@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 6
-Global Const Revision = 10
+Global Const Revision = 11
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -20397,13 +20397,21 @@ End If
         bstack.soros.PushVal p
             Execute = SpeedGroup(bstack, pppp, "@READ", w$, b$, v)
         Else
-        Stop
+     NoNumberAssign
         End If
      Else
         pppp.item(v) = p
      End If
      ElseIf Typename(pppp.GroupRef) Like "Pro*" Then
      pppp.GroupRef.Value = p
+     ElseIf Typename(pppp.item(v)) = "Group" Then
+      If pppp.item(v).HasSet Then
+        bstack.soros.PushVal p
+            Execute = SpeedGroup(bstack, pppp, "@READ", w$, b$, v)
+        Else
+     NoNumberAssign
+        End If
+     
      
      End If
     End If
