@@ -664,7 +664,9 @@ End Property
 
 Public Property Let item(curitem As Long, item As Variant)
 On Error Resume Next
-If Not IsObject(actualdata(curitem)) Then
+If curitem < 0 Then
+
+ElseIf Not IsObject(actualdata(curitem)) Then
 actualdata(curitem) = item
 Else
 If Not IsObject(item) Then

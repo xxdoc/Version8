@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 6
-Global Const Revision = 11
+Global Const Revision = 12
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -2395,12 +2395,14 @@ where = AllocVar()  '' var(where)
 w$ = ChrW(&H1FFF) + CStr(where)
 If here$ <> "" Then
 varhash.ItemCreator here$ + "." + bstack.GroupName + w$, where
+UnFloatGroup bstack, w$, where, bstack.lastobj
 Else
 varhash.ItemCreator w$, where
+UnFloatGroup bstack, w$, where, bstack.lastobj, True
 End If
 
 
-UnFloatGroup bstack, w$, where, bstack.lastobj
+
  bstack.MoveNameDot w$
 var(where).FloatGroupName = w$
 
@@ -2439,6 +2441,7 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
         If Not MyIsObject(pppp.item(v)) Then
             GoTo fastexit
         End If
+        ' check for iamglobal ??
         UnFloatGroup bstack, w$, y1, pppp.item(v)
         
         var(y1).FloatGroupName = ec$
@@ -2475,6 +2478,7 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
           If Not MyIsObject(pppp.item(v)) Then
             GoTo fastexit
         End If
+       ' check for iamglobal ??
         UnFloatGroup bstack, w$, y1, pppp.item(v)
         var(y1).FloatGroupName = ec$
         If Left$(b$, 1) = "." Then
@@ -2544,6 +2548,7 @@ RetStackSize = bstack.RetStackTotal
             GoTo fastexit
         End If
         On Error Resume Next
+               ' check for iamglobal ??
         UnFloatGroup bstack, w$, y1, pppp.item(v)
 If Err.Number > 0 Then
 mer123:
@@ -2572,6 +2577,7 @@ w$ = myUcase(w$)
                                              w$ = pppp.CodeName + CStr(v)
                                                 Set dd = New Group
                                                  y1 = GlobalVar(w$, dd)
+                                                        ' check for iamglobal ??
                                                 UnFloatGroup bstack, w$, y1, pppp.item(v)
                                                 bstack.MoveNameDot myUcase(w$)
                                                 depth = depth + 1
@@ -2793,7 +2799,7 @@ If v >= 0 Then w$ = pppp.CodeName + CStr(v) Else w$ = pppp.CodeName + "_" + CStr
 
         Set dd = New Group
          y1 = GlobalVar(w$, dd)
-
+       ' check for iamglobal ??
         UnFloatGroup bstack, w$, y1, pppp.item(v)
 
         If Prefix <> "" Then
@@ -9065,12 +9071,12 @@ contlambdahere:
                        IsNumber = FastSymbol(a$, ")")
                        If Left$(a$, 1) = "." Then
                        
-                       w2 = -p - 2
+                       w2 = -Int(p) - 100
                        GoTo contgroup
                        ElseIf FastSymbol(a$, "(") Then
                        If .IsObj Then
                        
-                       w2 = -.Index - 2
+                       w2 = -.Index - 100
                        If TypeOf .ValueObj Is lambda Then GoTo contlambdahere
                        If TypeOf .ValueObj Is mArray Then
                         Set pppp = .ValueObj
@@ -9141,7 +9147,8 @@ contlabel:
                        If Typename(pppp.GroupRef.objref.ValueObj) = "Group" Then
                                            
                        
-                       w2 = -p - 2
+                       'w2 = -p - 2
+                       w2 = -.Index - 100
                        GoTo contgroup
                     Else
                      r = SG * rValue(bstack, pppp.GroupRef.objref.ValueObj)
@@ -14898,7 +14905,7 @@ assignvalue3:
                         Set myobject = bstack.lastobj
                             If TypeOf bstack.lastobj Is Group Then ' oh is a group
                                 Set bstack.lastobj = Nothing
-                                UnFloatGroup bstack, w$, v, myobject  ' global??
+                                UnFloatGroup bstack, w$, v, myobject, True ' global??
                                 Set myobject = Nothing
                             ElseIf CheckIsmArray(myobject, var()) Then
                                     Set var(v) = New mHandler
@@ -19157,7 +19164,7 @@ assignvalue3:
                         Set myobject = bstack.lastobj
                             If TypeOf bstack.lastobj Is Group Then ' oh is a group
                                 Set bstack.lastobj = Nothing
-                                UnFloatGroup bstack, w$, v, myobject  ' global??
+                                UnFloatGroup bstack, w$, v, myobject, VarStat  ' global??
                                 Set myobject = Nothing
                             ElseIf CheckIsmArray(myobject, var()) Then
                                     Set var(v) = New mHandler
@@ -19798,10 +19805,13 @@ cont184575:
                                             
                                         End If
             ElseIf Typename$(bstack.lastobj) = "Group" Then
-            If Not ProcGroup(100, bstack, w$, lang) Then
+            
+            
+            If Not ProcGroup(100 + VarStat, bstack, w$, lang) Then
             Execute = 0
             Exit Function
             End If
+            
            
             End If
             End If
@@ -28088,7 +28098,7 @@ End With
 Set bstack.lastobj = k
 End Sub
 
-Sub UnFloatGroup(bstack As basetask, what$, i As Long, myobject As Object)
+Sub UnFloatGroup(bstack As basetask, what$, i As Long, myobject As Object, Optional glob As Boolean = False)
 While Right$(what$, 1) = "."
 what$ = Left$(what$, Len(what$) - 1)
 Wend
@@ -28098,13 +28108,15 @@ If Not TypeOf myobject Is Group Then Exit Sub
 
  Dim ps As mStiva, v As Long, s$, frm$, vvl As Variant, x1 As Long, ss$, frmarr$, sss$, j As Long
  Dim grtype As Variant, ps2push As String
+ 
  Set var(i) = New Group
- Set ps = var(i).soros
+ var(i).IamGlobal = glob
+  Set ps = var(i).soros
  Dim subgroup As Object, pppp As mArray
  Dim ohere$, oldgroupname$
  ohere$ = here$
 
-If bstack.UseGroupname <> "" Then
+If bstack.UseGroupname <> "" Or glob Then
 here$ = ""
 End If
  oldgroupname$ = bstack.GroupName
@@ -28185,7 +28197,7 @@ With myobject
                                             
                                              v = GlobalVar(bstack.GroupName & Mid$(s$, 2), 0)
                                                    Set spare = vvl
-                                                        UnFloatGroup bstack, Mid$(s$, 2), v, spare
+                                                        UnFloatGroup bstack, Mid$(s$, 2), v, spare, glob
                                                     '    vvl.EndFloat
                                                         Set spare = Nothing
                                              ps.DataStr s$ + Str(v)
@@ -28195,7 +28207,7 @@ With myobject
                                              
                                              v = GlobalVar(bstack.GroupName & s$, 0)
                                                  Set spare = vvl
-                                                        UnFloatGroup bstack, s$, v, spare
+                                                        UnFloatGroup bstack, s$, v, spare, glob
                                                     
                                                         Set spare = Nothing
                                              
@@ -28227,7 +28239,7 @@ conthere2:
                             End If  ' rom instr
                  Next x1
            
-                        If ohere$ = "" Or bstack.UseGroupname <> "" Then
+                        If ohere$ = "" Or bstack.UseGroupname <> "" Or glob Then
                         here$ = ""
                         Else
                         here$ = ohere$
@@ -28247,7 +28259,7 @@ conthere2:
            
                 bstack.GroupName = ""
               While s$ <> ""
-                 If ohere$ = "" Or bstack.UseGroupname <> "" Then
+                 If ohere$ = "" Or bstack.UseGroupname <> "" Or glob Then
                here$ = oldgroupname$ + what$
               Else
               here$ = ohere$ + "." + oldgroupname$ + what$
@@ -28299,7 +28311,7 @@ conthere2:
                     SetNextLine sss$
                     sss$ = NLtrim$(sss$) + " "
                 Wend
-                    If bstack.UseGroupname <> "" Then
+                    If bstack.UseGroupname <> "" Or glob Then
                                 here$ = ""
                     Else
                             here$ = ohere$
@@ -28349,9 +28361,10 @@ If Not TypeOf myobject Is Group Then Exit Sub
  Dim grtype As Variant, ps2push As String, TT As Long, ff$
  Set ps = var(i).soros
  Dim subgroup As Object, pppp As mArray
- Dim ohere$, oldgroupname$
+ Dim ohere$, oldgroupname$, glob As Boolean
  ohere$ = here$
-If bstack.UseGroupname <> "" Then
+ glob = var(i).IamGlobal
+If bstack.UseGroupname <> "" Or glob Then
 ' check this please..
 here$ = ""
 End If
@@ -28437,7 +28450,7 @@ If myobject Is Nothing Then GoTo exithere1
                                                         Dim spare As Object
                                                         Set spare = vvl
                                                                     If Typename(var(v)) <> "Group" Then
-                                                                                UnFloatGroup bstack, s$, v, spare
+                                                                                UnFloatGroup bstack, s$, v, spare, here$ = ""
                                                                     Else
                                                                                 UnFloatGroupReWriteVars bstack, s$, v, spare
                                                                     End If
@@ -28479,7 +28492,7 @@ If myobject Is Nothing Then GoTo exithere1
                             End If
                  Next x1
                 End If
-                 If ohere$ = "" Or bstack.UseGroupname <> "" Then
+                 If ohere$ = "" Or bstack.UseGroupname <> "" Or glob Then
                                 here$ = ""
               Else
                                  here$ = ohere$
@@ -28497,7 +28510,7 @@ If myobject Is Nothing Then GoTo exithere1
            
                 bstack.GroupName = ""
               While s$ <> ""
-                 If ohere$ = "" Or bstack.UseGroupname <> "" Then
+                 If ohere$ = "" Or bstack.UseGroupname <> "" Or glob Then
                here$ = oldgroupname$ + what$
               Else
      here$ = ohere$ + "." + oldgroupname$ + what$
@@ -28545,7 +28558,7 @@ If myobject Is Nothing Then GoTo exithere1
                     SetNextLine sss$
                     sss$ = NLtrim$(sss$) + " "
                 Wend
-                        If bstack.UseGroupname <> "" Then
+                        If bstack.UseGroupname <> "" Or glob Then
                     here$ = ""
                     Else
                                   here$ = ohere$
@@ -35744,13 +35757,16 @@ Case 1
         MyRead = True
         If flag Then
             p = 0
-            GlobalVar what$, p
+           i = GlobalVar(what$, p)
+           GoTo contread123
         End If
         If GetVar(bstack, what$, i, , , flag) Then
+contread123:
                 If Typename$(myobject) = Typename(var(i)) Then
                     If Typename$(var(i)) = "Group" Then
                     '' we cannot place a group over another group
                     '' once we read it we make it..in that place
+                    
                     UnFloatGroupReWriteVars bstack, what$, i, myobject
                     ElseIf Typename$(var(i)) = "mHandler" Then
                         If var(i).ReadOnly Then
@@ -35783,7 +35799,7 @@ Case 1
         Else
             i = GlobalVar(what$, 0)
             If Typename$(myobject) = "Group" Then
-                UnFloatGroup bstack, what$, i, myobject
+                UnFloatGroup bstack, what$, i, myobject, here$ = ""
             ElseIf Typename$(myobject) = "mEvent" Then
                 Set var(i) = myobject
             ElseIf Typename$(myobject) = "lambda" Then
@@ -41618,6 +41634,7 @@ If x1 = 1 Then
         If IsStrExp(basestack, rest$, ss$) Then
             s$ = basestack.GroupName
             prepareGroup basestack, what$, y1, flag, HasStrName
+            var(y1).IamGlobal = flag
             ProcGroup = ExecuteVarOnly(basestack, basestack.GroupName & what$, y1, ss$, lang) <> 0
             basestack.GroupName = s$
         End If
@@ -41628,9 +41645,10 @@ If x1 = 1 Then
             '' GROUP
                 s$ = basestack.GroupName
                 prepareGroup basestack, what$, y1, flag, HasStrName
-                
+                var(y1).IamGlobal = flag
                 If flag Then ss$ = here$: here$ = ""
                 If ExecuteVarOnly(basestack, basestack.GroupName & what$, y1, rest$, lang, flag) = 0 Then
+                    If flag Then here$ = ss$
                     var(y1).edittag = "'11001EDIT " + here$ + ", " + CStr(Len(rest$))
                 End If
                 If flag Then here$ = ss$
@@ -41639,7 +41657,9 @@ If x1 = 1 Then
             '' CLASS
                     ss$ = block(rest$)
                     s$ = basestack.GroupName
+                    
                     prepareGroup basestack, what$, y1, flag, HasStrName
+                    var(y1).IamGlobal = flag
                     If ExecuteVarOnly(basestack, basestack.GroupName & what$, y1, ss$, lang, flag) = 0 Then
                        rest$ = ss$ + rest$
                     Else
@@ -41653,21 +41673,29 @@ If x1 = 1 Then
             Else
                 i = GlobalVar(basestack.GroupName & what$, CLng(0), False, flag)
                 Set var(i) = New Group
+                var(i).IamGlobal = flag
                 If FastSymbol(rest$, "=") Then
                     If IsExp(basestack, rest$, p) Then
                         If Not basestack.lastobj Is Nothing Then
                             If Typename(basestack.lastobj) = "Group" Then
-                                's$ = here$: here$ = ""
-                                UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj
-                               ' here$ = s$
-                                Set basestack.lastobj = Nothing
+                                
+                               
+                                UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj, flag
+                               Set basestack.lastobj = Nothing
                             End If
                         End If
                     End If
+                ElseIf entrypoint = 99 Then
+
+                                var(i).IamGlobal = True
+                                UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj, True
+  
+
+                                Set basestack.lastobj = Nothing
                 ElseIf entrypoint = 100 Then
-                                         '     s$ = here$: here$ = ""
-                                UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj
-                              ' here$ = s$
+                          
+                                UnFloatGroup basestack, basestack.GroupName & what$, i, basestack.lastobj, here$ = ""
+                            
                                 Set basestack.lastobj = Nothing
                 Else
                 var(i).GroupName = what$ + "."
