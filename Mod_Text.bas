@@ -53,7 +53,7 @@ Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, Wa
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
 Global Const VerMinor = 7
-Global Const Revision = 0
+Global Const Revision = 1
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -3439,7 +3439,7 @@ Public Sub NeoSubMain()
 On Error Resume Next
 '' ADDITION
 INK$ = ""
-UINK$ = ""
+'UINK$ = ""
 MINK$ = ""
 MKEY$ = ""
 RandomizeIt rndbase, 0
@@ -4892,8 +4892,11 @@ End If
 Select Case V1&
 Case 1
 If Not numid.Find(v$, w1) Then GoTo LOOKFORVARNUM
-On w1 GoTo num1, num2, num3, num4, num5, num6, num7, num8, num9, num10, num11, num12, num13, num14, num15, num16, num17, num18, num19, num20, num21, num22, num23, num24, num25, num26, num27, num28, num29, num30, num31, num32, num33, num34, num35, num36, num37, num38, num39, num40, num41, num42, num43, num44, num45, num46, num47, num48, num49, num50, num51, num52, num53, num54, num55, num56, num57, num58, num59, num60, num61, num62, num63, num64, num65, num66, num67, num68, num69, num70, num71, num72, num73, num74, num75, num76, num77, num78, num79, num80, num81, num83, num84, num85, num86
-
+On w1 GoTo num1, num2, num3, num4, num5, num6, num7, num8, num9, num10, num11, num12, num13, num14, num15, num16, num17, num18, num19, num20, num21, num22, num23, num24, num25, num26, num27, num28, num29, num30, num31, num32, num33, num34, num35, num36, num37, num38, num39, num40, num41, num42, num43, num44, num45, num46, num47, num48, num49, num50, num51, num52, num53, num54, num55, num56, num57, num58, num59, num60, num61, num62, num63, num64, num65, num66, num67, num68, num69, num70, num71, num72, num73, num74, num75, num76, num77, num78, num79, num80, num81, num82, num83, num84, num85, num86
+num82:
+IsNumber = 0
+MyEr "Internal Error", "Εσωτερικό Πρόβλημα"
+Exit Function
 ' Select Case v$
 num1: 'Case "THIS", "ΑΥΤΟ"   ' 1
 IsNumber = This1(bstack, r)
@@ -4916,9 +4919,8 @@ End If
 Next w1
 r = SG * -.mypen
 IsNumber = True
-Exit Function
 End With
-
+Exit Function
 num4: 'Case "HWND", "ΠΑΡΑΘΥΡΟ"
 If Typename(bstack.Owner) = "GuiM2000" Then
 r = SG * bstack.Owner.hWnd
@@ -5417,11 +5419,15 @@ num78: 'Case "MENU", "ΕΠΙΛΟΓΗ"
     
     Exit Function
 num85: 'Case "[]"
-Set bstack.lastobj = bstack.soros
-Set bstack.Sorosref = New mStiva
-r = 0
-        IsNumber = True
-        Exit Function
+ Set anything = New mHandler
+    anything.t1 = 3
+    Set anything.objref = New mStiva
+     anything.objref.MergeBottom bstack.soros
+    '  Set bstack.Sorosref = New mStiva
+    Set bstack.lastobj = anything
+    r = 0
+    IsNumber = True
+    Exit Function
 
 num84: 'Case "ARRAY", "ΠΙΝΑΚΑΣ"
 If bstack.soros.Total = 0 Then
@@ -5440,7 +5446,7 @@ If bstack.soros.Total = 0 Then
   
     IsNumber = False
     End If
-    
+Exit Function
 num83: 'Case "GROUP", "ΟΜΑΔΑ"
 If bstack.soros.Total = 0 Then
     
@@ -5458,6 +5464,7 @@ If bstack.soros.Total = 0 Then
   
     IsNumber = False
     End If
+    Exit Function
 num79: 'Case "NUMBER", "ΑΡΙΘΜΟΣ", "ΤΙΜΗ"
     If bstack.soros.Total = 0 Then
     
@@ -5666,6 +5673,8 @@ Case 5
 If Not funid.Find(v$, w1) Then GoTo LOOKFORSUBNUM
 'Select Case v$
 On w1 GoTo fun1, fun2, fun3, fun4, fun5, fun6, fun7, fun8, fun9, fun10, fun11, fun12, fun13, fun14, fun15, fun16, fun17, fun18, fun19, fun20, fun21, fun22, fun23, fun24, fun25, fun26, fun27, fun28, fun29, fun30, fun31, fun32, fun33, fun34, fun35, fun36, fun37, fun38, fun39, fun40, fun41, fun42, fun43, fun44, fun45, fun46, fun47, fun48, fun49, fun50, fun51, fun52, fun53, fun54, fun55, fun56, fun57, fun58, fun59, fun60, fun61, fun62, fun63, fun64, fun65, fun66, fun67, fun68, fun69, fun70, fun71, fun72, fun73, fun74, fun75, fun76, fun77, fun78, fun79, fun80, fun81, fun82, fun83, fun84, fun85, fun86, fun87, fun88, fun89, fun90, fun91, fun92, fun93, fun94, fun95, fun96
+IsNumber = False
+Exit Function
 fun1: 'Case "PARAM(", "ΠΑΡΑΜ("
 v$ = ""
 If IsStrExp(bstack, a$, s1$) Then
@@ -6444,6 +6453,7 @@ fun28: 'Case "JOYPAD.DIRECTION(", "ΛΑΒΗ.ΚΑΤΕΥΘΥΝΣΗ("
        Else
         MissParam a$
   End If
+  Exit Function
 fun29: 'Case "JOYPAD.ANALOG.X(", "ΛΑΒΗ.ΑΝΑΛΟΓΙΚΟ.Χ("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
@@ -6471,6 +6481,7 @@ fun29: 'Case "JOYPAD.ANALOG.X(", "ΛΑΒΗ.ΑΝΑΛΟΓΙΚΟ.Χ("
        Else
         MissParam a$
   End If
+  Exit Function
 fun30: 'Case "JOYPAD.ANALOG.Y(", "ΛΑΒΗ.ΑΝΑΛΟΓΙΚΟ.Υ("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
@@ -6498,6 +6509,7 @@ fun30: 'Case "JOYPAD.ANALOG.Y(", "ΛΑΒΗ.ΑΝΑΛΟΓΙΚΟ.Υ("
        Else
             MissParam a$
   End If
+  Exit Function
 fun31: 'Case "IMAGE.X(", "ΕΙΚΟΝΑ.Χ("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
@@ -8590,7 +8602,12 @@ Exit Function
 fun90: 'Case "CHRCODE(", "ΧΑΡΚΩΔ("
  IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
-    r = SG * AscW(s$)
+    If s$ = "" Then
+        r = -1
+    Else
+        r = SG * AscW(s$)
+    End If
+  
     
    
   
@@ -8604,7 +8621,12 @@ fun90: 'Case "CHRCODE(", "ΧΑΡΚΩΔ("
 fun91: 'Case "ASC(", "ΚΩΔ("
  IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
+    If s$ = "" Then
+    r = -1
+    Else
     r = SG * Asc(s$)
+    End If
+
     
    
   
@@ -11879,7 +11901,7 @@ lit1:
             r$ = feedback$
             feedback$ = ""
              IsString = True
-                              Exit Function
+              Exit Function
 lit2: '    Case "CONTROL$"
                   On Error Resume Next
                   If Screen.ActiveForm Is Nothing Then
@@ -12092,7 +12114,7 @@ lit28: '    Case "KEY$", "ΚΟΜ$"
                   End If
                 r$ = INKEY$  ' (inkey$ has autorepeat...)
                 Loop Until r$ <> ""
-                UINK$ = UINK$ & r$   ' so we send it there
+              ''  UINK$ = UINK$ & r$   ' so we send it there
                 End If
                 IsString = True
                 Exit Function
@@ -12117,23 +12139,24 @@ End If
               ''MyDoEvents
           
                     r$ = INKEY$
-                     If r$ = "" Then
-                     UINK$ = UINK$ & Chr(0) + Chr(0)
-                     Else
-                     UINK$ = UINK$ & r$
-                     End If
-                ElseIf r$ = Chr(0) + Chr(0) Then
-                r$ = ""
+                    ' If r$ = "" Then
+                    ' UINK$ = UINK$ & Chr(0) + Chr(0)
+                    ' Else
+                    ' UINK$ = UINK$ & r$
+                    ' End If
+                'ElseIf r$ = Chr(0) + Chr(0) Then
+                'r$ = ""
                 End If
                 IsString = True
                 Exit Function
 lit30: '    Case "LETTER$", "ΓΡΑΜΜΑ$"
                 If bstackstr.soros.Total = 0 Then
+                IsString = False
                 ElseIf bstackstr.soros.PopType = "S" Then
                 r$ = bstackstr.soros.PopStr
                 IsString = True
-                Exit Function
                 End If
+                Exit Function
 lit35: '    Case "ΛΑΜΔΑ$"
         Set bstackstr.lastobj = ProcLambda(bstackstr, a$, 0)
         r$ = ""
@@ -12442,8 +12465,9 @@ Else
 W3 = 1
 GoTo backitem1
 End If
-
+Exit Function
 fstr4: 'STACKITEM$(", "ΤΙΜΗΣΩΡΟΥ$("
+W3 = 1
 If IsExp(bstackstr, a$, p) Then
 If bstackstr.lastobj Is Nothing Then
     Set anything = bstackstr.soros
@@ -12451,6 +12475,10 @@ If bstackstr.lastobj Is Nothing Then
 ElseIf Not CheckStackObj(bstackstr, anything, var(), W3) Then
     MyEr "Not a stack object", "Δεν είναι αντικείμενο σωρού"
     Exit Function
+ElseIf FastSymbol(a$, ",") Then
+If IsExp(bstackstr, a$, p) Then
+    W3 = Abs(CLng(p))
+End If
 End If
 backitem2:
     If anything.Total < W3 Then
@@ -12461,6 +12489,11 @@ backitem2:
 
     ElseIf anything.StackItemType(W3) = "S" Then
     r$ = anything.StackItem(W3)
+    IsString = FastSymbol(a$, ")", True)
+    Exit Function
+    ElseIf anything.StackItemType(W3) = "*" Then
+    r = 0
+    Set bstackstr.lastobj = anything.StackPickRef(W3).ObjectRef
     IsString = FastSymbol(a$, ")", True)
     Exit Function
     Else
@@ -13748,35 +13781,32 @@ fstr56: '"FIELD$(", "ΠΕΔΙΟ$("
         r$ = r$ & Space$(p - Len(r$))
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
-        Exit Function
+      
     Else
 
         IsString = False
-    Exit Function
+   
     End If
-    
+    Exit Function
 fstr57: '"DRW$(", "ΣΧΔ$("
     If IsStrExp(bstackstr, a$, q$) Then
         r$ = CFname(q$ & ".WMF")
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
-        Exit Function
-    Else
 
+    Else
         IsString = False
-    Exit Function
     End If
+    Exit Function
 fstr58: '"TIME$(", "ΧΡΟΝΟΣ$("
     If IsExp(bstackstr, a$, p) Then
        r$ = Format(p, "SHORT TIME")
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
-        Exit Function
     Else
-
         IsString = False
-    Exit Function
     End If
+    Exit Function
 fstr59: ' "DATE$(", "ΗΜΕΡΑ$("
     If IsExp(bstackstr, a$, p) Then
 
@@ -13784,12 +13814,10 @@ fstr59: ' "DATE$(", "ΗΜΕΡΑ$("
         
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
-        Exit Function
     Else
-
         IsString = False
-    Exit Function
     End If
+    Exit Function
 fstr60: '"STR$(", "ΓΡΑΦΗ$("
     If IsExp(bstackstr, a$, p) Then
         If FastSymbol(a$, ",") Then
@@ -13854,21 +13882,21 @@ fstr60: '"STR$(", "ΓΡΑΦΗ$("
         End If
             If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
     IsString = True
-    Exit Function
     Else
     IsString = False
-    Exit Function
     End If
+    Exit Function
+   
 fstr61: '"CHRCODE$(", "ΧΑΡΚΩΔ$("
     If IsExp(bstackstr, a$, p) Then
     r$ = ChrW$(cUint(p))
     If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
     IsString = True
-    Exit Function
     Else
     IsString = False
-    Exit Function
     End If
+    Exit Function
+    
 fstr62: ' "CHR$(", "ΧΑΡ$("
     If IsExp(bstackstr, a$, p) Then
         If FastSymbol(a$, ",") Then
@@ -13905,11 +13933,10 @@ fstr62: ' "CHR$(", "ΧΑΡ$("
         End If
     If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
     IsString = True
-    Exit Function
     Else
     IsString = False
-    Exit Function
     End If
+    Exit Function
 fstr63: ' "GROUP$(", "ΟΜΑΔΑ$("
         w1 = Abs(IsLabel(bstackstr, a$, s$))
         If w1 = 1 Or w1 = 3 Then
@@ -14821,7 +14848,7 @@ jumpforCR1:
 If FastSymbol(b$, vbCrLf, , 2) Then
         While FastSymbol(b$, vbCrLf, , 2)
         Wend
-        UINK$ = ""
+     ''   UINK$ = ""
         sss = LLL
         End If
 
@@ -14832,17 +14859,17 @@ While MaybeIsSymbol(b$, "\'")
 Wend
 If FastSymbol(b$, ":") Then
 sss = LLL
-UINK$ = ""
+''UINK$ = ""
 End If
 If NOEXECUTION Then interpret = False: here$ = ohere$: Exit Function
 
 If NocharsInLine(b$) Then interpret = True: here$ = ohere$: Exit Function
 If IsSymbol(b$, "@") Then
-i1 = IsLabelAnew(here$, b$, w$, lang)
+i1 = IsLabelAnew("", b$, w$, lang)  '' NO FORM AA@BBB ALLOWED HERE
 w$ = "@" + w$
 GoTo PROCESSCOMMAND   'IS A COMMAND
 Else
-i1 = IsLabelAnew(here$, b$, w$, lang)
+i1 = IsLabelAnew("", b$, w$, lang) '' NO FORM AA@BBB ALLOWED HERE
 End If
   If trace And (bstack.Process Is Nothing) Then
     Form2.Label1(0) = here$
@@ -14918,7 +14945,7 @@ Case 1
             Exit Function
         End If
         ' do something here
-        ElseIf varhash.Find(here$ & "." & myUcase(w$), v) Then
+        ElseIf varhash.Find(myUcase(w$), v) Then
         ' CHECK VAR
             If FastOperator(b$, "=", i) Then
 assignvalue:
@@ -15500,7 +15527,7 @@ Case "RETURN", "ΕΠΙΣΤΡΟΦΗ"
                 Case "ΤΕΛΟΣ", "END"
    
                     If NORUN1 Then NORUN1 = False: interpret = True: b$ = "": Exit Function   ' send environment....to hell
-                    ExTarget = True: INK$ = Chr(27):   UINK$ = Chr(27)     ' send escape...for any good reason...
+                    ExTarget = True: INK$ = Chr(27): UKEY$ = Chr$(27)  ': UINK$ = Chr(27)    ' send escape...for any good reason...
                 Case Else
                     LastErNum = 0 ' LastErNum1 = 0
                     LastErName = ""   ' every command from Query call identifier
@@ -16309,7 +16336,7 @@ Dim w$, LLL As Long, sss As Long, v As Long, p As Double, ss$, lbl As Boolean, D
 Dim y As Double, sx As Double, VarStat As Boolean, NewStat As Boolean
 Dim x1 As Long, y1 As Long, x2 As Long, y2 As Long, sbb$, nd&, lang As Long, kolpo As Boolean, iscom As Boolean
 Dim temphere$
-UINK$ = ""  ' εδώ θέλω να σβήνω...τι;
+'' UINK$ = ""  ' εδώ θέλω να σβήνω...τι;
 If loopthis Then Execute = 2 Else Execute = 1
 If NocharsInLine(b$) Then
 checkrefresh:
@@ -16495,7 +16522,7 @@ i = 1
     If IsNumberLabel(b$, w$) Then
     sss = Len(b$): sss = LLL: lbl = False: jump = False:  If sss = 0 Then sss = 2: b$ = vbCrLf
     End If
-    UINK$ = ""
+   '' UINK$ = ""
 Else
 
     If lbl Then
@@ -16710,7 +16737,7 @@ lbl = False
 VarStat = True
 GoTo varonly
 ElseIf Not NoOptimum Then
-
+contherecom:
       '
       v = 0
     ' If Not comhash.Find(w$, i) Then
@@ -16735,75 +16762,14 @@ myerr1:
                Else
               GoTo parsecommand
                End If
-        ElseIf v > 0 Then
-              ' If VarStat Or NewStat Then GoTo errstat
-                Select Case v
-                Case 50
-                GoTo contif
-                Case 51
-                GoTo ContElse
-                Case 52
-                GoTo contElseIf
-                Case 53
-                GoTo contSelect
-                Case 60
-                GoTo ContTry
-                Case 100 ' For
-                GoTo ForCont
-                Case 199
-                GoTo contNext
-                Case 200
-                GoTo contRefr
-                Case 300
-                GoTo contWhile
-                Case 301
-                GoTo ContRepeat
-                Case 400
-                GoTo ContGoto
-                Case 401
-                GoTo contSub
-                Case 402
-                GoTo autogosub
-                Case 403
-                GoTo ContOn
-                Case 600
-                GoTo contLoop
-                Case 601
-                GoTo contBreak
-                Case 602
-                GoTo ContContinue
-                Case 603
-                GoTo ContRestart
-                Case 604
-                GoTo ContReturn
-                Case 605
-                GoTo ContEnd
-                Case 606
-                GoTo ContExit
-                Case 650
-                GoTo ContInline
-                Case 651
-                GoTo contUpdate
-                Case 700
-                GoTo contThread
-                Case 701
-                GoTo contAfter
-                Case 702
-                GoTo contPart
-                Case 800
-                GoTo contStatic
-                Case 850
-                GoTo contEvery
-                Case 851
-                GoTo contTask
-                Case 900
-                GoTo ContScan
-                Case 1000
-                GoTo contTarg
-                Case 1500
+        ElseIf v <> 0 Then
+                On v GoTo contif, ContElse, contElseIf, contSelect, ContTry, ForCont, contNext, contRefr, contWhile, ContRepeat, ContGoto, contSub, autogosub, ContOn, contLoop, contBreak, ContContinue, ContRestart, ContReturn, ContEnd, ContExit, ContInline, contUpdate, contThread, contAfter, contPart, contStatic, contEvery, contTask, ContScan, contTarg, BypassGlobalComm, BypassComm, contNegLocal, contNegGlobal
+                Execute = 0: Exit Function
+                
+BypassGlobalComm:
                 iscom = True
                 GoTo parsecommand
-                Case 2000
+BypassComm:
                 If bstack.commnum = 0 Then
                 w$ = "@" + w$
                 ElseIf bstack.commnum > comhash.Index Then
@@ -16812,15 +16778,6 @@ myerr1:
                 iscom = True
                 End If
                 GoTo parsecommand
-                End Select
-             ElseIf v < 0 Then
-             Select Case v
-                Case -100  ' local
-                GoTo contNegLocal
-                Case -200
-                GoTo contNegGlobal
-                
-             End Select
              Else
                 If lbl And MaybeIsSymbol(b$, "<=") Then GoTo varonly
                 If GetlocalVar(w$, nd&) Then GoTo varonly
@@ -23180,9 +23137,9 @@ If sbgroupname = "" Then
     If comhash.Find(nameonly$, where) Then
     'comhash.RenameKey  n$, "_" + n$
     If n$ = nameonly$ Then
-    comhash.ItemCreator2 nameonly$, 0, 1500
+    comhash.ItemCreator2 nameonly$, 0, 32
     Else
-    comhash.ItemCreator2 nameonly$, 0, 2000
+    comhash.ItemCreator2 nameonly$, 0, 33
     End If
     End If
     End If
@@ -35147,16 +35104,16 @@ If par Then
     scr.FillStyle = vbSolid
     scr.FillColor = mycolor(x)
     If sx = sy Or Abs(sx - sy) + 0.0001 > PI2 Then
-        scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), , , y
+        If x1 > 0 Then scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), , , y
     Else
         If sx = 0 Then sx = 0.0001
         If sy = 0 Then sy = PI2
-        scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), -sx, -sy, y
+        If x1 > 0 Then scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), -sx, -sy, y
     End If
     scr.FillStyle = 1
 Else
     scr.FillStyle = 1
-    scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), sx, sy, y
+    If x1 > 0 Then scr.Circle (.XGRAPH, .YGRAPH), x1, mycolor(col), sx, sy, y
 End If
 End With
 MyDoEvents1 scr
@@ -39236,7 +39193,8 @@ conthere:
             
                 End If
             Else
-                MyEr "No Block {}", "Δεν υπάρχει μπλοκ εντολών { }"
+            bstack.soros.MergeBottom myobject
+                'MyEr "No Block {}", "Δεν υπάρχει μπλοκ εντολών { }"
             End If
         Else
             MyEr "Nothing found", "Δεν βρήκα τίποτα"
@@ -40138,7 +40096,7 @@ If x1 < 0 Then
             End With
     ListChoise bstack, frm$, x1, y1, f + x1, it + y1 - 1
     INK$ = ""
-    UINK$ = ""
+    ''UINK$ = ""
     MINK$ = ""
     End If
     '------------------------
@@ -44133,6 +44091,7 @@ Dim s1$, W3 As Long, v$
 End Function
 Function StackItem(bstack As basetask, a$, SG, r) As Boolean
 Dim p As Double, W3 As Long, anything As Object
+W3 = 1
 If IsExp(bstack, a$, p) Then
 If bstack.lastobj Is Nothing Then
     Set anything = bstack.soros
@@ -44140,6 +44099,10 @@ If bstack.lastobj Is Nothing Then
 ElseIf Not CheckStackObj(bstack, anything, var(), W3) Then
     MyEr "Not a stack object", "Δεν είναι αντικείμενο σωρού"
     Exit Function
+ElseIf FastSymbol(a$, ",") Then
+If IsExp(bstack, a$, p) Then
+    W3 = Abs(CLng(p))
+End If
 End If
     
 backitem:
@@ -44154,6 +44117,15 @@ backitem:
     
     StackItem = FastSymbol(a$, ")", True)
     Exit Function
+    ElseIf anything.StackItemType(W3) = "*" Then
+    ''If anything.StackItemTypeObjectType(W3) = "mHandler" Then
+    r = 0
+    Set bstack.lastobj = anything.StackPickRef(W3).ObjectRef
+    StackItem = FastSymbol(a$, ")", True)
+    Exit Function
+    'Else
+    'MyErMacro a$, "Stack item isn't a proper object " & CStr(W3), "Η τιμή του σωρού δεν έχει κατάλληλο αντικείμενο " & CStr(W3)
+    'End If
     Else
      
             MyErMacro a$, "Stack item isn't number at position " & CStr(W3), "Η τιμή του σωρού δεν είναι αριθμός στη θέση " & CStr(W3)
@@ -44167,3 +44139,4 @@ W3 = 1
 GoTo backitem
 End If
 End Function
+

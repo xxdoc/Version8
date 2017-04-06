@@ -188,7 +188,7 @@ Public NoAction As Boolean
 Public StartLine As Boolean
 Public www&
 Public WWX&, ins&
-Public INK$, UINK$, MINK$
+Public INK$, MINK$
 Public MKEY$
 Public Type target
     Comm As String

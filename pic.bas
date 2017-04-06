@@ -3904,71 +3904,71 @@ aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoShift)
 Case "DROP", "пета"
 aHash.ItemCreator CStr(mycommands(i)), ProcPtr(AddressOf NeoDrop)
 Case "IF", "ам"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 50
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 1
 Case "ELSE", "аккиыс"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 51
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 2
 Case "ELSE.IF", "аккиыс.ам"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 52
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 3
 Case "SELECT", "епекене", "епикене"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 53
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 4
 Case "TRY", "дес"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 60
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 5
 Case "FOR", "циа"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 100
-Case "DO", "REPEAT", "епамакабе", "епамекабе"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 301
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 6
 Case "NEXT", "еполемо"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 199
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 7
 Case "REFRESH", "амамеысг"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 200
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 8
 Case "емы", "WHILE"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 300
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 9
+Case "DO", "REPEAT", "епамакабе", "епамекабе"
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 10
 Case "GOTO", "пяос"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 400
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 11
 Case "SUB", "яоутима"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 401
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 12
 Case "GOSUB", "диалесоу"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 402
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 13
 Case "апо", "ON"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 403
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 14
 Case "LOOP", "йуйкийа"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 600
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 15
 Case "BREAK", "диейоье"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 601
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 16
 Case "CONTINUE", "сумевисе"
-     aHash.ItemCreator2 CStr(mycommands(i)), 0, 602
+     aHash.ItemCreator2 CStr(mycommands(i)), 0, 17
 Case "RESTART", "нейима"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 603
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 18
 Case "RETURN", "епистяожг"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 604
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 19
 Case "END", "текос"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 605
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 20
 Case "енодос", "EXIT"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 606
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 21
 Case "INLINE", "емхесг"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 650
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 22
 Case "UPDATE", "епийаияо"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 651
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 23
 Case "мгла", "THREAD"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 700
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 24
 Case "AFTER", "лета"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 701
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 25
 Case "леяос", "PART"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 702
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 26
 Case "статийг", "статийес", "STATIC"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 800
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 27
 Case "йахе", "EVERY"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 850
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 28
 Case "йуяио.еяцо", "MAIN.TASK", "TASK.MAIN"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 851
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 29
 Case "SCAN", "саяысе"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 900
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 30
 Case "TARGET", "стовос"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, 1000
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 31
 Case "LOCAL", "топийа", "топийг", "топийес"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, -100  ' Local A, B, C=10, K
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 34  ' Local A, B, C=10, K
 Case "GLOBAL", "цемийо", "цемийг", "цемийес"
-    aHash.ItemCreator2 CStr(mycommands(i)), 0, -200   'Global A, B=6, X
+    aHash.ItemCreator2 CStr(mycommands(i)), 0, 35   'Global A, B=6, X
 Case Else
     aHash.ItemCreator CStr(mycommands(i)), 0
 End Select

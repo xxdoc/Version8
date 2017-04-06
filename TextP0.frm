@@ -548,7 +548,7 @@ MyDoEvents
 Refresh
 Wend
 INK$ = ""
-UINK$ = ""
+''UINK$ = ""
 End If
 
 End Select

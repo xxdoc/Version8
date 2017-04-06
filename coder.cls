@@ -20,7 +20,9 @@ Dim i As Long, j As Long
 j = Len(Key)
 If ReduceKey(item) Then
 For i = 1 To Len(item)
-
+' old function - but needed to stay as is
+' possible problem..decode a greek coded file but Asc() use other than greek language.
+' so a password must be in latin (standard language) to used everywhere.
 
 Mid(item, i, 1) = ChrW(AscW(Mid$(item, i, 1)) Xor Asc(Mid$(Key, (counter Mod j) + 1)))
 
@@ -54,9 +56,9 @@ Mid$(Key, i, 2) = ChrW(c1 + 128 + k + (c And &HF) * 8) + ChrW(c2 + 128 + k + (c 
 Next i
 
 End Sub
-Private Function UINT(ByVal A As Long) As Long
+Private Function UINT(ByVal a As Long) As Long
  Dim b As Integer
- b = A And &HFFFF
+ b = a And &HFFFF
  If b < 0 Then
  UINT = CLng(&H10000 + b)
  Else
