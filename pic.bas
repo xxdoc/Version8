@@ -3633,34 +3633,35 @@ End Function
 Public Function StringId(aHash As sbHash, bHash As sbHash) As Boolean
 Dim myid(), i As Long
 Dim myfun()
-myid() = Array("ABOUT$", "пеяи$", "CONTROL$", "THREADS$", "мглата$", "LAN$", "дийтуо$", "GRABFRAME$", "паяейаяе$" _
-, "емаомола$", "TEMPNAME$", "TEMPORARY$", "пяосыяимо$", "USER.NAME$", "омола.вягстг$" _
-, "COMPUTER$", "упокоцистгс$", "CLIPBOARD$", "пяовеияо$", "CLIPBOARD.IMAGE$", "пяовеияо.еийома$" _
-, "паяалетяои$", "PARAMETERS$", "OS$", "кс$", "емтокг$", "COMMAND$", "кахос$", "ERROR$", "MODULE$", "тлгла$" _
-, "PRINTERNAME$", "ейтупытгс$", "PROPERTIES$", "идиотгтес$", "MOVIE.STATUS$", "йатастасг.таимиас$" _
-, "MOVIE.DEVICE$", "сусйеуг.пяобокгс$", "MOVIE.ERROR$", "кахос.таимиас$", "PLATFORM$", "пкатжояла$" _
-, "FONTNAME$", "цяаллатосеияа$", "BROWSER$", "амакоцио$", "SPRITE$", "диажамеиа$" _
-, "APPDIR$", "ежаялоцг.йат$", "DIR$", "йат$", "KEY$", "йол$", "INKEY$", "емйол$", "LETTER$", "цяалла$", "LAMBDA$", "калда$")
-For i = 0 To UBound(myid())
-    aHash.ItemCreator CStr(myid(i)), i
+myid() = Array("ABOUT$", 1, "пеяи$", 1, "CONTROL$", 2, "THREADS$", 3, "мглата$", 33, "LAN$", 4, "дийтуо$", 4, "GRABFRAME$", 5, "паяейаяе$", 5 _
+, "емаомола$", 6, "TEMPNAME$", 6, "TEMPORARY$", 7, "пяосыяимо$", 7, "USER.NAME$", 8, "омола.вягстг$", 8 _
+, "COMPUTER$", 9, "упокоцистгс$", 9, "CLIPBOARD$", 10, "пяовеияо$", 10, "CLIPBOARD.IMAGE$", 11, "пяовеияо.еийома$", 11 _
+, "паяалетяои$", 12, "PARAMETERS$", 12, "OS$", 13, "кс$", 13, "емтокг$", 14, "COMMAND$", 14, "кахос$", 15, "ERROR$", 34, "MODULE$", 16, "тлгла$", 16 _
+, "PRINTERNAME$", 17, "ейтупытгс$", 17, "PROPERTIES$", 18, "идиотгтес$", 18, "MOVIE.STATUS$", 19, "йатастасг.таимиас$", 19 _
+, "MOVIE.DEVICE$", 20, "сусйеуг.пяобокгс$", 20, "MOVIE.ERROR$", 21, "кахос.таимиас$", 21, "PLATFORM$", 22, "пкатжояла$", 22 _
+, "FONTNAME$", 23, "цяаллатосеияа$", 23, "BROWSER$", 24, "амакоцио$", 24, "SPRITE$", 25, "диажамеиа$", 25 _
+, "APPDIR$", 26, "ежаялоцг.йат$", 26, "DIR$", 27, "йат$", 27, "KEY$", 28, "йол$", 28, "INKEY$", 29, "емйол$", 29, "LETTER$", 30, "цяалла$", 30, "LAMBDA$", 31, "калда$", 35, "жояла$", 32)
+For i = 0 To UBound(myid()) Step 2
+    aHash.ItemCreator CStr(myid(i)), CLng(myid(i + 1))
 Next i
-myfun() = Array("FORMAT$(", "лояжг$(", "EVAL$(", "ейжя$(", "ейжяасг$(", "STACKTYPE$(", "сыяоутупос$(" _
-, "STACKITEM$(", "тилгсыяоу$(", "исвмг$(", "WEAK$(", "коцос$(", "SPEECH$(", "ASK$(", "яыта$(" _
-, "LOCALE$(", "топийо$(", "SHORTDIR$(", "лийяос.йатакоцос$(", "FILTER$(", "жиктяо$(", "коцос$(", "SPEECH$(" _
-, "аявеио$(", "FILE$(", "PARAM$(", "паяал$(", "LAZY$(", "ойм$(", "INPUT$(", "еисацыцг$(" _
-, "MEMBER.TYPE$(", "лекоус.тупос$(", "MEMBER$(", "лекос$(", "PIPENAME$(", "аукос$(", "FILE.TYPE$(", "тупос.аявеиоу$(", "FILE.NAME.ONLY$(", "омола.аявеиоу.ломо$(", "FILE.NAME$(", "омола.аявеиоу$(" _
-, "FILE.PATH$(", "топос.аявеиоу$(", "одгцос$(", "DRIVE$(", "тиктос.аявеиоу$(", "FILE.TITLE$(" _
-, "ежаялоцг.аявеиоу$(", "FILE.APP$(", "HIDE$(", "йяужо$(", "LEFTPART$(", "аяистеяолеяос$(" _
-, "RIGHTPART$(", "денилеяос$(", "ARRAY$(", "пимайас$(", "TYPE$(", "тупос$(", "PARAGRAPH$(", "паяацяажос$(" _
-, "UNION.DATA$(", "емысг.сеияас$(", "MAX.DATA$(", "лецако.сеияас$(", "MIN.DATA$(", "лийяо.сеияас$(" _
-, "FUNCTION$(", "сумаятгсг$(", "HEX$(", "дейаен$(", "SHOW$(", "жамеяо$(", "MENU$(", "епикоцг$(", "епикоцес$(" _
-, "REPLACE$(", "аккацг$(", "PATH$(", "топос$(", "UCASE$(", "йеж$(", "LCASE$(", "пеф$(", "STRING$(", "епам$(", "MID$(", "лес$(" _
-, "LEFT$(", "аяис$(", "RIGHT$(", "дени$(", "SND$(", "гво$(", "BMP$(", "еий$(", "JPG$(", "жыто$(" _
-, "TRIM$(", "апой$(", "QUOTE$(", "паяахесг$(", "сыяос$(", "STACK$(", "ADD.LICENCE$(", "баке.адеиа$(" _
-, "ENVELOPE$(", "жайекос$(", "FIELD$(", "педио$(", "DRW$(", "свд$(", "TIME$(", "вяомос$(", "DATE$(", "глеяа$(" _
-, "STR$(", "цяажг$(", "CHRCODE$(", "ваяйыд$(", "CHR$(", "вая$(", "GROUP$(", "олада$(")
-For i = 0 To UBound(myfun())
-    bHash.ItemCreator CStr(myfun(i)), i
+myfun() = Array("FORMAT$(", 1, "лояжг$(", 1, "EVAL$(", 2, "ейжя$(", 2, "ейжяасг$(", 2, "STACKTYPE$(", 3, "сыяоутупос$(", 3 _
+, "STACKITEM$(", 4, "тилгсыяоу$(", 4, "исвмг$(", 5, "WEAK$(", 5, "коцос$(", 6, "SPEECH$(", 6, "ASK$(", 7, "яыта$(", 7 _
+, "LOCALE$(", 8, "топийо$(", 8, "SHORTDIR$(", 9, "лийяос.йатакоцос$(", 9, "FILTER$(", 10, "жиктяо$(", 10, "коцос$(", 11, "SPEECH$(", 11 _
+, "аявеио$(", 12, "FILE$(", 12, "PARAM$(", 13, "паяал$(", 13, "LAZY$(", 14, "ойм$(", 14, "INPUT$(", 15, "еисацыцг$(", 15 _
+, "MEMBER.TYPE$(", 16, "лекоус.тупос$(", 16, "MEMBER$(", 17, "лекос$(", 17, "PIPENAME$(", 18, "аукос$(", 18, "FILE.TYPE$(", 20, "тупос.аявеиоу$(", 20, "FILE.NAME.ONLY$(", 21, "омола.аявеиоу.ломо$(", 21, "FILE.NAME$(", 22, "омола.аявеиоу$(", 22 _
+, "FILE.PATH$(", 23, "топос.аявеиоу$(", 23, "одгцос$(", 24, "DRIVE$(", 19, "тиктос.аявеиоу$(", 25, "FILE.TITLE$(", 25 _
+, "ежаялоцг.аявеиоу$(", 26, "FILE.APP$(", 26, "HIDE$(", 27, "йяужо$(", 27, "LEFTPART$(", 28, "аяистеяолеяос$(", 28 _
+, "RIGHTPART$(", 29, "денилеяос$(", 29, "ARRAY$(", 30, "пимайас$(", 30, "TYPE$(", 31, "тупос$(", 31, "PARAGRAPH$(", 32, "паяацяажос$(", 32 _
+, "UNION.DATA$(", 33, "емысг.сеияас$(", 33, "MAX.DATA$(", 34, "лецако.сеияас$(", 34, "MIN.DATA$(", 35, "лийяо.сеияас$(", 35 _
+, "FUNCTION$(", 36, "сумаятгсг$(", 36, "HEX$(", 37, "дейаен$(", 37, "SHOW$(", 38, "жамеяо$(", 38, "MENU$(", 39, "епикоцг$(", 39, "епикоцес$(", 39 _
+, "REPLACE$(", 40, "аккацг$(", 40, "PATH$(", 41, "топос$(", 41, "UCASE$(", 42, "йеж$(", 42, "LCASE$(", 43, "пеф$(", 43, "STRING$(", 44, "епам$(", 44, "MID$(", 45, "лес$(", 45 _
+, "LEFT$(", 46, "аяис$(", 46, "RIGHT$(", 47, "дени$(", 47, "SND$(", 48, "гво$(", 48, "BMP$(", 49, "еий$(", 49, "JPG$(", 50, "жыто$(", 50 _
+, "TRIM$(", 51, "апой$(", 51, "QUOTE$(", 52, "паяахесг$(", 52, "сыяос$(", 53, "STACK$(", 53, "ADD.LICENCE$(", 54, "баке.адеиа$(", 54 _
+, "ENVELOPE$(", 55, "жайекос$(", 55, "FIELD$(", 56, "педио$(", 56, "DRW$(", 57, "свд$(", 57, "TIME$(", 58, "вяомос$(", 58, "DATE$(", 59, "глеяа$(", 59 _
+, "STR$(", 60, "цяажг$(", 60, "CHRCODE$(", 61, "ваяйыд$(", 61, "CHR$(", 62, "вая$(", 62, "GROUP$(", 63, "олада$(", 63)
+
+For i = 0 To UBound(myfun()) Step 2
+    bHash.ItemCreator CStr(myfun(i)), CLng(myfun(i + 1))
 Next i
 StringId = True
 
@@ -3668,47 +3669,47 @@ End Function
 Public Function NumberId(aHash As sbHash, bHash As sbHash) As Boolean
 Dim myid(), i As Long
 Dim myfun()
-myid() = Array("THIS", "ауто", "RND", "туваиос", "PEN", "пема", "HWND", "паяахуяо", "LOCALE", "топийо", "CODEPAGE", "йыдийосекида" _
-, "SPEECH", "коцос", "ERROR", "кахос", "SCREEN.Y", "амакусг.у", "SCREEN.X", "амакусг.в", "TWIPSY", "уьос.сглеиоу" _
-, "TWIPSX", "пкатос.сглеиоу", "REPORTLINES", "цяаллесамажояас", "LINESPACE", "диастиво", "MODE", "тупос" _
-, "MEMORY", "лмглг", "CHARSET", "ваяайтгяес", "ITALIC", "пкациа", "BOLD", "жаядиа", "COLORS", "вяылата" _
-, "ауноуса", "ASCENDING", "жхимоуса", "DESCENDING", "BOOLEAN", "коцийос", "BYTE", "ьгжио" _
-, "INTEGER", "айеяаиос", "LONG", "лайяус", "CURRENCY", "коцистийо", "SINGLE", "апкос", "DOUBLE", "дипкос" _
-, "DATEFIELD", "глеяолгмиа", "BINARY", "дуадийо", "TEXT", "йеилемо", "OLE", "MEMO", "уполмгла", "REVISION", "амахеыягсг", "BROWSER", "амакоцио", "VERSION", "ейдосг", "MOTION.X", "йимгсг.в", "MOTION.Y", "йимгсг.у", "MOTION.XW", "йимгсг.вп", "MOTION.WX", "йимгсг.пв", "MOTION.YW", "йимгсг.уп", "MOTION.WY", "йимгсг.пу" _
-, "FIELD", "педио", "MOUSE.KEY", "деийтгс.йол", "MOUSE", "деийтгс", "MOUSE.X", "деийтгс.в" _
-, "MOUSE.Y", "деийтгс.у", "MOUSEA.X", "деийтгса.в", "MOUSEA.Y", "деийтгса.у", "TRUE", "акгхес", "акгхгс" _
-, "FALSE", "ьеудес", "ьеудгс", "STACK.SIZE", "лецехос.сыяоу", "ISNUM", "еимая", "PI", "пи" _
-, "NOT", "ови", "дем", "ISLET", "еимця", "WIDTH", "пкатос", "POINT", "сглеио", "POS.X", "хесг.в", "POS.Y", "хесг.у" _
-, "SCALE.X", "йкилан.в", "в.сглеиа", "X.TWIPS", "SCALE.Y", "йкилан.у", "у.сглеиа", "Y.TWIPS", "EMPTY", "йемо" _
-, "MOVIE.COUNTER", "MEDIA.COUNTER", "MUSIC.COUNTER", "таимиа.летягтгс", "лоусийг.летягтгс" _
-, "PLAYSCORE", "паифеижымг", "MOVIE", "MEDIA", "MUSIC", "таимиа", "лоусийг", "DURATION", "диаяйеиа" _
-, "VOLUME", "емтасг", "TAB", "стгкг", "HEIGHT", "уьос", "POS", "хесг", "ROW", "цяаллг", "TIMECOUNT", "жоятос" _
-, "TICK", "тий", "TODAY", "сглеяа", "NOW", "тыяа", "MENU.VISIBLE", "епикоцес.жамеяес", "MENUITEMS", "епикоцес" _
-, "MENU", "епикоцг", "NUMBER", "аяихлос", "тилг", "LAMBDA", "калда", "APPLICATION", "ежаялоцг", "GROUP", "олада", "ARRAY", "пимайас", "[]", "сыяос", "STACK")
-For i = 0 To UBound(myid())
-    aHash.ItemCreator CStr(myid(i)), i
+myid() = Array("THIS", 1, "ауто", 1, "RND", 2, "туваиос", 2, "PEN", 3, "пема", 3, "HWND", 4, "паяахуяо", 4, "LOCALE", 5, "топийо", 5, "CODEPAGE", 6, "йыдийосекида", 6 _
+, "SPEECH", 7, "коцос", 7, "ERROR", 8, "кахос", 8, "SCREEN.Y", 9, "амакусг.у", 9, "SCREEN.X", 10, "амакусг.в", 10, "TWIPSY", 11, "уьос.сглеиоу", 11 _
+, "TWIPSX", 12, "пкатос.сглеиоу", 12, "REPORTLINES", 13, "цяаллесамажояас", 13, "LINESPACE", 14, "диастиво", 14, "MODE", 15, "тупос", 15 _
+, "MEMORY", 16, "лмглг", 16, "CHARSET", 17, "ваяайтгяес", 17, "ITALIC", 18, "пкациа", 18, "BOLD", 19, "жаядиа", 19, "COLORS", 20, "вяылата", 20 _
+, "ауноуса", 21, "ASCENDING", 21, "жхимоуса", 22, "DESCENDING", 22, "BOOLEAN", 23, "коцийос", 23, "BYTE", 24, "ьгжио", 24 _
+, "INTEGER", 25, "айеяаиос", 25, "LONG", 26, "лайяус", 26, "CURRENCY", 27, "коцистийо", 27, "SINGLE", 28, "апкос", 28, "DOUBLE", 29, "дипкос", 29 _
+, "DATEFIELD", 30, "глеяолгмиа", 30, "BINARY", 31, "дуадийо", 31, "TEXT", 32, "йеилемо", 32, "OLE", 33, "MEMO", 34, "уполмгла", 34, "REVISION", 35, "амахеыягсг", 35, "BROWSER", 36, "амакоцио", 36, "VERSION", 37, "ейдосг", 37, "MOTION.X", 38, "йимгсг.в", 38, "MOTION.Y", 39, "йимгсг.у", 39, "MOTION.XW", 40, "йимгсг.вп", 40, "MOTION.WX", 40, "йимгсг.пв", 40, "MOTION.YW", 41, "йимгсг.уп", 41, "MOTION.WY", 41, "йимгсг.пу", 41 _
+, "FIELD", 42, "педио", 42, "MOUSE.KEY", 43, "деийтгс.йол", 43, "MOUSE", 44, "деийтгс", 44, "MOUSE.X", 45, "деийтгс.в", 45 _
+, "MOUSE.Y", 46, "деийтгс.у", 46, "MOUSEA.X", 47, "деийтгса.в", 47, "MOUSEA.Y", 48, "деийтгса.у", 48, "TRUE", 49, "акгхес", 49, "акгхгс", 49 _
+, "FALSE", 50, "ьеудес", 50, "ьеудгс", 50, "STACK.SIZE", 51, "лецехос.сыяоу", 51, "ISNUM", 52, "еимая", 52, "PI", 53, "пи", 53 _
+, "NOT", 54, "ови", 54, "дем", 54, "ISLET", 55, "еимця", 55, "WIDTH", 56, "пкатос", 56, "POINT", 57, "сглеио", 57, "POS.X", 58, "хесг.в", 58, "POS.Y", 59, "хесг.у", 59 _
+, "SCALE.X", 60, "йкилан.в", 60, "в.сглеиа", 60, "X.TWIPS", 60, "SCALE.Y", 61, "йкилан.у", 61, "у.сглеиа", 61, "Y.TWIPS", 61, "EMPTY", 62, "йемо", 62 _
+, "MOVIE.COUNTER", 63, "MEDIA.COUNTER", 63, "MUSIC.COUNTER", 63, "таимиа.летягтгс", 63, "лоусийг.летягтгс", 63 _
+, "PLAYSCORE", 64, "паифеижымг", 64, "MOVIE", 65, "MEDIA", 65, "MUSIC", 65, "таимиа", 65, "лоусийг", 65, "DURATION", 66, "диаяйеиа", 66 _
+, "VOLUME", 67, "емтасг", 67, "TAB", 68, "стгкг", 68, "HEIGHT", 69, "уьос", 69, "POS", 70, "хесг", 70, "ROW", 71, "цяаллг", 71, "TIMECOUNT", 72, "жоятос", 72 _
+, "TICK", 73, "тий", 73, "TODAY", 74, "сглеяа", 74, "NOW", 75, "тыяа", 75, "MENU.VISIBLE", 76, "епикоцес.жамеяес", 76, "MENUITEMS", 77, "епикоцес", 77 _
+, "MENU", 78, "епикоцг", 78, "NUMBER", 79, "аяихлос", 79, "тилг", 79, "LAMBDA", 80, "калда", 81, "GROUP", 83, "олада", 83, "ARRAY", 84, "пимайас", 84, "[]", 85, "сыяос", 86, "STACK", 86)
+For i = 0 To UBound(myid()) Step 2
+    aHash.ItemCreator CStr(myid(i)), CLng(myid(i + 1))
 Next i
-myfun() = Array("PARAM(", "паяал(", "STACKITEM(", "тилгсыяоу(", "SGN(", "сгл(", "FRAC(", "дей(", "MATCH(", "таутисг(" _
-, "LOCALE(", "топийо(", "FILELEN(", "аявеиоу.лгйос(", "TAB(", "стгкг(", "KEYPRESS(", "патглемо(", "INKEY(", "емйол(" _
-, "тлгла(", "MODULE(", "басг(", "MDB(", "ASK(", "яыта(", "суцйяоусг(", "COLLIDE(", "лецехос.у(", "SIZE.Y(", "лецехос.в(", "SIZE.X(" _
-, "WRITABLE(", "еццяаьило(", "COLOR(", "COLOUR(", "вяыла(", "DIMENSION(", "диастасг(", "ARRAY(", "пимайас(" _
-, "FUNCTION(", "сумаятгсг(", "DRIVE.SERIAL(", "сеияиайос.дисйоу(", "FILE.STAMP(", "аявеиоу.сталпа(", "EXIST.DIR(", "упаявеи.йатакоцос(" _
-, "EXIST(", "упаявеи(", "JOYPAD(", "кабг(", "JOYPAD.DIRECTION(", "кабг.йатеухумсг(", "JOYPAD.ANALOG.X(", "кабг.амакоцийо.в(" _
-, "JOYPAD.ANALOG.Y(", "кабг.амакоцийо.у(", "IMAGE.X(", "еийома.в(", "IMAGE.Y(", "еийома.у(", "IMAGE.X.PIXELS(", "еийома.в.сглеиа(" _
-, "IMAGE.Y.PIXELS(", "еийома.у.сглеиа(", "VALID(", "ецйуяо(", "EVAL(", "ейжя(", "ейжяасг(", "POINT(", "сглеио(" _
-, "CTIME(", "упыяа(", "CDATE(", "уплея(", "TIME(", "вяомос(", "DATE(", "глеяа(", "VAL(", "тилг(", "аниа(", "RINSTR(", "хесгдениа(" _
-, "INSTR(", "хесг(", "RECORDS(", "еццяажес(", "GROUP.COUNT(", "олада.сумоко(", "PARAGRAPH(", "паяацяажос(", "PARAGRAPH.INDEX(", "аяихлос.паяацяажоу(" _
-, "BACKWARD(", "писы(", "FORWARD(", "лпяоста(", "DOC.PAR(", "еццяажоу.пая(", "MAX.DATA(", "лецако.сеияас(", "MIN.DATA(", "лийяо.сеияас(" _
-, "MAX(", "лецако(", "MIN(", "лийяо(", "COMPARE(", "суцйяиме(", "DOC.UNIQUE.WORDS(", "еццяажоу.ломадийес.кенеис(", "DOC.WORDS(", "еццяажоу.кенеис(" _
-, "DOC.LEN(", "еццяажоу.лгйос(", "LEN.DISP(", "лгйос.елж(", "LEN(", "лгйос(", "SQRT(", "яифа(", "FREQUENCY(", "сувмотгта(" _
-, "LOG(", "коц(", "LN(", "кж(", "ATN(", "тон.еж(", "TAN(", "ежап(", "COS(", "сум(", "SIN(", "гл(", "ABS(", "апок(", "LOWORD(", "LOWWORD(", "йахе(", "EACH(", "йатылисо(" _
-, "HIWORD(", "HIGHWORD(", "памылисо(", "BINARY.NEG(", "дуадийо.амти(", "дуадийо.амтистяожо(", "BINARY.OR(", "дуадийо.г(" _
-, "BINARY.AND(", "дуадийо.йаи(", "BINARY.XOR(", "дуадийо.апо(", "HILOWWORD(", "дуолиса(", "BINARY.SHIFT(", "дуадийо.окисхгсг(" _
-, "BINARY.ROTATE(", "дуадийг.пеяистяожг(", "SINT(", "айеяаио.дуадийо(", "USGN(", "дуадийо(", "UINT(", "дуадийо.айеяаио(", "ROUND(", "стяоцц(" _
-, "INT(", "ай(", "SEEK(", "летахесг(", "EOF(", "текос(", "RANDOM(", "туваиос(", "CHRCODE(", "ваяйыд(", "ASC(", "йыд(" _
-, "GROUP(", "олада(", "TEST(", "дойилг(", "CONS(", "емысг(", "CAR(", "пяыто(", "CDR(", "еполема(", "сыяос(", "STACK(")
-For i = 0 To UBound(myfun())
-    bHash.ItemCreator CStr(myfun(i)), i
+myfun() = Array("PARAM(", 1, "паяал(", 1, "STACKITEM(", 2, "тилгсыяоу(", 2, "SGN(", 3, "сгл(", 3, "FRAC(", 4, "дей(", 4, "MATCH(", 5, "таутисг(", 5 _
+, "LOCALE(", 6, "топийо(", 6, "FILELEN(", 7, "аявеиоу.лгйос(", 7, "TAB(", 8, "стгкг(", 8, "KEYPRESS(", 9, "патглемо(", 9, "INKEY(", 10, "емйол(", 10 _
+, "тлгла(", 11, "MODULE(", 11, "басг(", 12, "MDB(", 12, "ASK(", 13, "яыта(", 13, "суцйяоусг(", 14, "COLLIDE(", 14, "лецехос.у(", 15, "SIZE.Y(", 15, "лецехос.в(", 16, "SIZE.X(", 16 _
+, "WRITABLE(", 17, "еццяаьило(", 17, "COLOR(", 18, "COLOUR(", 18, "вяыла(", 18, "DIMENSION(", 19, "диастасг(", 19, "ARRAY(", 20, "пимайас(", 20 _
+, "FUNCTION(", 21, "сумаятгсг(", 21, "DRIVE.SERIAL(", 22, "сеияиайос.дисйоу(", 22, "FILE.STAMP(", 23, "аявеиоу.сталпа(", 23, "EXIST.DIR(", 25, "упаявеи.йатакоцос(", 25 _
+, "EXIST(", 26, "упаявеи(", 26, "JOYPAD(", 27, "кабг(", 27, "JOYPAD.DIRECTION(", 28, "кабг.йатеухумсг(", 28, "JOYPAD.ANALOG.X(", 29, "кабг.амакоцийо.в(", 29 _
+, "JOYPAD.ANALOG.Y(", 30, "кабг.амакоцийо.у(", 30, "IMAGE.X(", 31, "еийома.в(", 31, "IMAGE.Y(", 32, "еийома.у(", 32, "IMAGE.X.PIXELS(", 33, "еийома.в.сглеиа(", 33 _
+, "IMAGE.Y.PIXELS(", 34, "еийома.у.сглеиа(", 34, "VALID(", 35, "ецйуяо(", 35, "EVAL(", 36, "ейжя(", 36, "ейжяасг(", 36, "POINT(", 37, "сглеио(", 37 _
+, "CTIME(", 38, "упыяа(", 38, "CDATE(", 39, "уплея(", 39, "TIME(", 40, "вяомос(", 40, "DATE(", 41, "глеяа(", 41, "VAL(", 42, "тилг(", 42, "аниа(", 42, "RINSTR(", 43, "хесгдениа(", 43 _
+, "INSTR(", 44, "хесг(", 44, "RECORDS(", 45, "еццяажес(", 45, "GROUP.COUNT(", 46, "олада.сумоко(", 46, "PARAGRAPH(", 47, "паяацяажос(", 47, "PARAGRAPH.INDEX(", 48, "аяихлос.паяацяажоу(", 48 _
+, "BACKWARD(", 49, "писы(", 49, "FORWARD(", 50, "лпяоста(", 50, "DOC.PAR(", 51, "еццяажоу.пая(", 51, "MAX.DATA(", 52, "лецако.сеияас(", 52, "MIN.DATA(", 53, "лийяо.сеияас(", 53 _
+, "MAX(", 54, "лецако(", 54, "MIN(", 55, "лийяо(", 55, "COMPARE(", 56, "суцйяиме(", 56, "DOC.UNIQUE.WORDS(", 57, "еццяажоу.ломадийес.кенеис(", 57, "DOC.WORDS(", 58, "еццяажоу.кенеис(", 58 _
+, "DOC.LEN(", 59, "еццяажоу.лгйос(", 59, "LEN.DISP(", 60, "лгйос.елж(", 60, "LEN(", 61, "лгйос(", 61, "SQRT(", 62, "яифа(", 62, "FREQUENCY(", 63, "сувмотгта(", 63 _
+, "LOG(", 64, "коц(", 64, "LN(", 65, "кж(", 65, "ATN(", 66, "тон.еж(", 66, "TAN(", 67, "ежап(", 67, "COS(", 68, "сум(", 68, "SIN(", 69, "гл(", 69, "ABS(", 70, "апок(", 70, "LOWORD(", 71, "LOWWORD(", 71, "йатылисо(", 71, "йахе(", 72, "EACH(", 73 _
+, "HIWORD(", 74, "HIGHWORD(", 74, "памылисо(", 74, "BINARY.NEG(", 75, "дуадийо.амти(", 75, "дуадийо.амтистяожо(", 75, "BINARY.OR(", 76, "дуадийо.г(", 76 _
+, "BINARY.AND(", 77, "дуадийо.йаи(", 77, "BINARY.XOR(", 78, "дуадийо.апо(", 78, "HILOWWORD(", 79, "дуолиса(", 79, "BINARY.SHIFT(", 80, "дуадийо.окисхгсг(", 80 _
+, "BINARY.ROTATE(", 81, "дуадийг.пеяистяожг(", 81, "SINT(", 82, "айеяаио.дуадийо(", 82, "USGN(", 83, "дуадийо(", 83, "UINT(", 84, "дуадийо.айеяаио(", 84, "ROUND(", 85, "стяоцц(", 85 _
+, "INT(", 86, "ай(", 86, "SEEK(", 87, "летахесг(", 87, "EOF(", 88, "текос(", 88, "RANDOM(", 89, "туваиос(", 89, "CHRCODE(", 90, "ваяйыд(", 90, "ASC(", 91, "йыд(", 91 _
+, "GROUP(", 92, "олада(", 92, "TEST(", 93, "дойилг(", 93, "CONS(", 94, "емысг(", 94, "CAR(", 95, "пяыто(", 95, "CDR(", 96, "еполема(", 96, "сыяос(", 24, "STACK(", 24)
+For i = 0 To UBound(myfun()) Step 2
+    bHash.ItemCreator CStr(myfun(i)), CLng(myfun(i + 1))
 Next i
 NumberId = True
 End Function
@@ -4000,55 +4001,4 @@ On Error Resume Next
 InternalLeadingSpace = (tm.tmInternalLeading = 0) Or Not (tm.tmInternalLeading > 0)
 End With
 End Function
-Sub testme()
-Dim n As Long, jjj As Long
-n = 200
-Dim a As New FastCollection, i As Long, key1 As Long, k As Long, m As Variant, pos As Variant
-For i = 1 To n
-a.AddKey i - 1
-Next i
-Dim cc As Long, kk As Boolean, TT As Long, old As Long
-For cc = 1 To 1
-Set a = New FastCollection
-For i = 1 To n
-a.AddKey i - 1
-Next i
-Debug.Print "(ord)   (key)       (hash position)   (pure)   (left)"
-old = a.problem("test" + Str$(a.Count))
 
-For k = 0 To a.Count - 1
-TT = Int((a.Count - 1) * Rnd)
-'tt = 13
-If TT < 0 Or TT >= a.Count Then Stop
-pos = Int((a.Count - 1) * Rnd)
-a.Index = pos
-m = a.KeyToString
-'Debug.Print "key to remove:" + m + " at position " + Str$(pos)
-If m = "" Then Stop
-old = a.Count
-a.Remove a.KeyToString
-If old = a.Count Then Stop
-If Not a.Done Then
-Debug.Print "error ", pos, m
-If a.Count > 0 Then
-For jjj = 0 To a.Count - 1
-a.Index = jjj
-Debug.Print a.KeyToString2
-Next jjj
-End If
-End If
-Next k
-
-'a.ToStart
-'a.Remove a.KeyToString
-Debug.Print "final:", a.Count
-If a.Count <> 0 Then Exit For
-Next cc
-End Sub
-Sub test(a$)
-Dim pos1 As Long
-pos1 = 1
-Debug.Print aheadstatus(a$, False, pos1)
-Debug.Print a$
-Debug.Print Mid$(a$ + "***", pos1)
-End Sub

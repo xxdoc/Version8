@@ -52,8 +52,8 @@ Public UKEY$
 Public TestShowCode As Boolean, TestShowSub As String, TestShowStart As Long, WaitShow As Long
 Public feedback$, FeedbackExec$, feednow$ ' for about$
 Global Const VerMajor = 8
-Global Const VerMinor = 6
-Global Const Revision = 12
+Global Const VerMinor = 7
+Global Const Revision = 0
 Private Const doc = "Document"
 Public UserCodePage As Long
 Public cLine As String  ' it was public in form1
@@ -4809,7 +4809,7 @@ Dim PP As Double, pppp As mArray, nBstack As basetask, pppp1 As mArray, rB As By
 Dim anything As Object, n$, anything2 As Object
 
 If a$ = "" Then IsNumber = False: Exit Function
-On Error Resume Next
+'On Error Resume Next
 Dim sng&, SG As Double, ig$, DE$, sg1 As Boolean, ex$, s$
 Dim r2 As Double, r3 As Double, r4 As Double, par As Boolean
 SG = 1
@@ -4891,18 +4891,20 @@ End If
 
 Select Case V1&
 Case 1
-If Not numid.ExistKey(v$) Then GoTo LOOKFORVARNUM
-Select Case v$
-Case "THIS", "ауто"
+If Not numid.Find(v$, w1) Then GoTo LOOKFORVARNUM
+On w1 GoTo num1, num2, num3, num4, num5, num6, num7, num8, num9, num10, num11, num12, num13, num14, num15, num16, num17, num18, num19, num20, num21, num22, num23, num24, num25, num26, num27, num28, num29, num30, num31, num32, num33, num34, num35, num36, num37, num38, num39, num40, num41, num42, num43, num44, num45, num46, num47, num48, num49, num50, num51, num52, num53, num54, num55, num56, num57, num58, num59, num60, num61, num62, num63, num64, num65, num66, num67, num68, num69, num70, num71, num72, num73, num74, num75, num76, num77, num78, num79, num80, num81, num83, num84, num85, num86
+
+' Select Case v$
+num1: 'Case "THIS", "ауто"   ' 1
 IsNumber = This1(bstack, r)
 Exit Function
-Case "RND", "туваиос"
+
+num2: 'Case "RND", "туваиос"
 r = SG * RndM(rndbase)
 IsNumber = True
-
 Exit Function
 
-Case "PEN", "пема"
+num3: 'Case "PEN", "пема"
 
 With players(GetCode(bstack.Owner))
 For w1 = 0 To 15
@@ -4914,12 +4916,10 @@ End If
 Next w1
 r = SG * -.mypen
 IsNumber = True
-
 Exit Function
 End With
-'myCompEq("С","Р")
 
-Case "HWND", "паяахуяо"
+num4: 'Case "HWND", "паяахуяо"
 If Typename(bstack.Owner) = "GuiM2000" Then
 r = SG * bstack.Owner.hWnd
 Else
@@ -4932,61 +4932,61 @@ End If
 
 IsNumber = True
 Exit Function
-Case "LOCALE", "топийо"
+num5: ' Case "LOCALE", "топийо"
 r = SG * cLid
     
     IsNumber = True
     Exit Function
 
-Case "CODEPAGE", "йыдийосекида"
+num6: 'Case "CODEPAGE", "йыдийосекида"
 r = SG * UserCodePage
     
     IsNumber = True
     Exit Function
-Case "SPEECH", "коцос"
+num7: 'Case "SPEECH", "коцос"
   r = SG * NumVoices
 
     
     IsNumber = True
     Exit Function
-Case "ERROR", "кахос"
+num8: 'Case "ERROR", "кахос"
   r = SG * LastErNum1
  LastErNum1 = 0  'reset when readed
     
     IsNumber = True
     Exit Function
-Case "SCREEN.Y", "амакусг.у"
+num9: 'Case "SCREEN.Y", "амакусг.у"
   r = SG * ScrY()
     
     IsNumber = True
     Exit Function
-Case "SCREEN.X", "амакусг.в"
+num10: 'Case "SCREEN.X", "амакусг.в"
   r = SG * ScrX()
      
     IsNumber = True
     Exit Function
-Case "TWIPSY", "уьос.сглеиоу"
+num11: 'Case "TWIPSY", "уьос.сглеиоу"
   r = SG * Screen.TwipsPerPixelY
 
     
     IsNumber = True
     Exit Function
-Case "TWIPSX", "пкатос.сглеиоу"
+num12: 'Case "TWIPSX", "пкатос.сглеиоу"
   r = SG * Screen.TwipsPerPixelX
     
     IsNumber = True
     Exit Function
-Case "REPORTLINES", "цяаллесамажояас"
+num13: 'Case "REPORTLINES", "цяаллесамажояас"
   r = SG * players(GetCode(bstack.Owner)).LastReportLines
     
     IsNumber = True
     Exit Function
-Case "LINESPACE", "диастиво"
+num14: 'Case "LINESPACE", "диастиво"
     r = SG * players(GetCode(bstack.Owner)).uMineLineSpace '' bstack.linespace
     
     IsNumber = True
     Exit Function
-Case "MODE", "тупос"
+num15: 'Case "MODE", "тупос"
 With players(GetCode(bstack.Owner))
 If bstack.toprinter Then
     If .uMineLineSpace > .MineLineSpace Then
@@ -5007,122 +5007,122 @@ If bstack.toprinter Then
     
     IsNumber = True
     Exit Function
-Case "MEMORY", "лмглг"
+num16: 'Case "MEMORY", "лмглг"
     r = SG * check_mem
     
     IsNumber = True
     Exit Function
-Case "CHARSET", "ваяайтгяес"   ' charset of the object to display
+num17: 'Case "CHARSET", "ваяайтгяес"   ' charset of the object to display
   r = SG * players(GetCode(bstack.Owner)).charset
     
     IsNumber = True
     Exit Function
-    Case "ITALIC", "пкациа"  ' charset of the object to display
+num18: 'Case "ITALIC", "пкациа"  ' charset of the object to display
     
     r = SG * players(GetCode(bstack.Owner)).italics
     
     IsNumber = True
     Exit Function
-    Case "BOLD", "жаядиа"  ' charset of the object to display
+num19: 'Case "BOLD", "жаядиа"  ' charset of the object to display
 
     r = SG * players(GetCode(bstack.Owner)).bold
     
     IsNumber = True
     Exit Function
 
-Case "COLORS", "вяылата"
+num20: 'Case "COLORS", "вяылата"
     r = SG * 2# ^ bitsPerPixel
     
     IsNumber = True
     Exit Function
-Case "ауноуса", "ASCENDING"
+num21: 'Case "ауноуса", "ASCENDING"
     r = 0
     
     IsNumber = True
     Exit Function
-Case "жхимоуса", "DESCENDING"
+num22: 'Case "жхимоуса", "DESCENDING"
     r = SG
     
     IsNumber = True
     Exit Function
 
-Case "BOOLEAN", "коцийос"
+num23: 'Case "BOOLEAN", "коцийос"
     r = SG * 1
         
     IsNumber = True
     Exit Function
-Case "BYTE", "ьгжио"
+num24: 'Case "BYTE", "ьгжио"
     r = SG * 2
         
     IsNumber = True
     Exit Function
-Case "INTEGER", "айеяаиос"
+num25: 'Case "INTEGER", "айеяаиос"
     r = SG * 3
         
     IsNumber = True
     Exit Function
-Case "LONG", "лайяус"
+num26: 'Case "LONG", "лайяус"
     r = SG * 4
         
     IsNumber = True
     Exit Function
-Case "CURRENCY", "коцистийо"
+num27: 'Case "CURRENCY", "коцистийо"
     r = SG * 5
         
     IsNumber = True
     Exit Function
-Case "SINGLE", "апкос"
+num28: 'Case "SINGLE", "апкос"
     r = SG * 6
         
     IsNumber = True
     Exit Function
-Case "DOUBLE", "дипкос"
+num29: 'Case "DOUBLE", "дипкос"
     r = SG * 7
         
     IsNumber = True
     Exit Function
-Case "DATEFIELD", "глеяолгмиа"
+num30: 'Case "DATEFIELD", "глеяолгмиа"
     r = SG * 8
         
     IsNumber = True
     Exit Function
-Case "BINARY", "дуадийо"
+num31: 'Case "BINARY", "дуадийо"
     r = SG * 9
         
     IsNumber = True
     Exit Function
-Case "TEXT", "йеилемо"
+num32: 'Case "TEXT", "йеилемо"
     r = SG * 10
         
     IsNumber = True
     Exit Function
-Case "OLE"
+num33: 'Case "OLE"
     r = SG * 11
         
     IsNumber = True
     Exit Function
-Case "MEMO", "уполмгла"
+num34: 'Case "MEMO", "уполмгла"
     r = SG * 12
         
     IsNumber = True
     Exit Function
-Case "REVISION", "амахеыягсг"
+num35: 'Case "REVISION", "амахеыягсг"
     r = SG * Revision
     
     IsNumber = True
     Exit Function
-  Case "BROWSER", "амакоцио"
+num36: 'Case "BROWSER", "амакоцио"
         
         r = SG * (Trim(LCase(Form1.view1.LocationURL)) = "about:blank" Or Form1.view1.Visible = False)
     
     IsNumber = True
     Exit Function
-Case "VERSION", "ейдосг"
+num37: 'Case "VERSION", "ейдосг"
     r = SG * val(CStr(VerMajor) & "." & CStr(VerMinor))
     
     IsNumber = True
     Exit Function
-Case "MOTION.X", "йимгсг.в"
+num38: 'Case "MOTION.X", "йимгсг.в"
 With bstack
 If .toprinter Then
     r = 0
@@ -5133,7 +5133,7 @@ Else
     
     IsNumber = True
     Exit Function
-Case "MOTION.Y", "йимгсг.у"
+num39: ' Case "MOTION.Y", "йимгсг.у"
 With bstack
 If .toprinter Then
     r = 0
@@ -5146,23 +5146,23 @@ Else
     IsNumber = True
 
     Exit Function
-Case "MOTION.XW", "йимгсг.вп", "MOTION.WX", "йимгсг.пв"
+num40: 'Case "MOTION.XW", "йимгсг.вп", "MOTION.WX", "йимгсг.пв"
     r = SG * Form1.Left
     
     IsNumber = True
     Exit Function
-Case "MOTION.YW", "йимгсг.уп", "MOTION.WY", "йимгсг.пу"
+num41: 'Case "MOTION.YW", "йимгсг.уп", "MOTION.WY", "йимгсг.пу"
     r = SG * Form1.top
     
     IsNumber = True
     Exit Function
-Case "FIELD", "педио"
+num42: 'Case "FIELD", "педио"
     r = SG * result
     
     
     IsNumber = True
     Exit Function
-Case "MOUSE.KEY", "деийтгс.йол"
+num43: 'Case "MOUSE.KEY", "деийтгс.йол"
   
     r = SG * mouse
 
@@ -5170,7 +5170,7 @@ Case "MOUSE.KEY", "деийтгс.йол"
        
     IsNumber = True
     Exit Function
-Case "MOUSE", "деийтгс"
+num44: 'Case "MOUSE", "деийтгс"
 
 If Not releasemouse Then
 If Not Form1.Visible Then Form1.Visible = True
@@ -5184,7 +5184,7 @@ MyDoEvents
 
     IsNumber = True
     Exit Function
-Case "MOUSE.X", "деийтгс.в"
+num45: 'Case "MOUSE.X", "деийтгс.в"
 
 With bstack
 If .toprinter Then
@@ -5201,7 +5201,7 @@ End With
       
     IsNumber = True
     Exit Function
-Case "MOUSE.Y", "деийтгс.у"
+num46: 'Case "MOUSE.Y", "деийтгс.у"
 With bstack
 If .toprinter Then
 
@@ -5217,14 +5217,14 @@ End With
        
     IsNumber = True
     Exit Function
-Case "MOUSEA.X", "деийтгса.в"
+num47: 'Case "MOUSEA.X", "деийтгса.в"
   
     r = SG * MOUSEX(Form1.Left)
     
       
     IsNumber = True
     Exit Function
-Case "MOUSEA.Y", "деийтгса.у"
+num48: 'Case "MOUSEA.Y", "деийтгса.у"
  
     r = SG * MOUSEY(Form1.top)
    
@@ -5232,22 +5232,22 @@ Case "MOUSEA.Y", "деийтгса.у"
     IsNumber = True
     Exit Function
 
-Case "TRUE", "акгхес", "акгхгс"
+num49: 'Case "TRUE", "акгхес", "акгхгс"
     r = SG * -1
     
     IsNumber = True
     Exit Function
-Case "FALSE", "ьеудес", "ьеудгс"
+num50: 'Case "FALSE", "ьеудес", "ьеудгс"
     r = 0
     
     IsNumber = True
     Exit Function
-Case "STACK.SIZE", "лецехос.сыяоу"
+num51: 'Case "STACK.SIZE", "лецехос.сыяоу"
     IsNumber = True
     r = SG * bstack.soros.Total
     
     Exit Function
-Case "ISNUM", "еимая"
+num52: 'Case "ISNUM", "еимая"
     IsNumber = True
       If bstack.soros.Total > 0 Then
     If bstack.soros.PopType = "N" Then r = SG * True Else r = 0
@@ -5256,29 +5256,29 @@ Case "ISNUM", "еимая"
     End If
     
     Exit Function
-Case "PI", "пи"
+num53: 'Case "PI", "пи"
     r = SG * Pi
     
     IsNumber = True
     Exit Function
-Case "NOT", "ови", "дем"
+num54: 'Case "NOT", "ови", "дем"
     r = SG * -1
     a$ = "-" & a$
     IsNumber = True
     Exit Function
-Case "ISLET", "еимця"
+num55: 'Case "ISLET", "еимця"
     IsNumber = True
     If bstack.soros.Total > 0 Then
     If bstack.soros.PopType = "S" Then r = SG * True Else r = 0
     End If
     
     Exit Function
-Case "WIDTH", "пкатос"
+num56: ' Case "WIDTH", "пкатос"
     IsNumber = True
     r = SG * players(GetCode(bstack.Owner)).mx
     
     Exit Function
-Case "POINT", "сглеио"
+num57: 'Case "POINT", "сглеио"
 '  dsprite ??
     IsNumber = True
     
@@ -5287,17 +5287,17 @@ Case "POINT", "сглеио"
     End With
     
     Exit Function
-Case "POS.X", "хесг.в"
+num58: 'Case "POS.X", "хесг.в"
     IsNumber = True
     r = SG * players(GetCode(bstack.Owner)).XGRAPH
     
     Exit Function
-Case "POS.Y", "хесг.у"
+num59: 'Case "POS.Y", "хесг.у"
     IsNumber = True
     r = SG * players(GetCode(bstack.Owner)).YGRAPH
     
     Exit Function
-Case "SCALE.X", "йкилан.в", "в.сглеиа", "X.TWIPS"
+num60: 'Case "SCALE.X", "йкилан.в", "в.сглеиа", "X.TWIPS"
     IsNumber = True
     If bstack.toprinter Then
     r = SG * Form1.PrinterDocument1.ScaleWidth
@@ -5306,7 +5306,7 @@ Case "SCALE.X", "йкилан.в", "в.сглеиа", "X.TWIPS"
     End If
     
     Exit Function
-Case "SCALE.Y", "йкилан.у", "у.сглеиа", "Y.TWIPS"
+num61: 'Case "SCALE.Y", "йкилан.у", "у.сглеиа", "Y.TWIPS"
     IsNumber = True
     If bstack.toprinter Then
     r = SG * Form1.PrinterDocument1.ScaleHeight
@@ -5315,12 +5315,12 @@ Case "SCALE.Y", "йкилан.у", "у.сглеиа", "Y.TWIPS"
     End If
     
     Exit Function
-Case "EMPTY", "йемо"
+num62: 'Case "EMPTY", "йемо"
     IsNumber = True
     r = SG * (bstack.soros.Total = 0)
     
     Exit Function
-Case "MOVIE.COUNTER", "MEDIA.COUNTER", "MUSIC.COUNTER", "таимиа.летягтгс", "лоусийг.летягтгс"
+num63: 'Case "MOVIE.COUNTER", "MEDIA.COUNTER", "MUSIC.COUNTER", "таимиа.летягтгс", "лоусийг.летягтгс"
     IsNumber = True
     r = SG * MediaPlayer1.getPositionInSec
     If MediaPlayer1.error > 0 Then
@@ -5328,40 +5328,40 @@ Case "MOVIE.COUNTER", "MEDIA.COUNTER", "MUSIC.COUNTER", "таимиа.летягтгс", "лоус
     End If
     
     Exit Function
-Case "PLAYSCORE", "паифеижымг"
+num64: 'Case "PLAYSCORE", "паифеижымг"
     IsNumber = True
     
        r = SG * TaskMaster.PlayMusic
     
     Exit Function
-Case "MOVIE", "MEDIA", "MUSIC", "таимиа", "лоусийг"
+num65: 'Case "MOVIE", "MEDIA", "MUSIC", "таимиа", "лоусийг"
     IsNumber = True
     AVIRUN = MediaPlayer1.isMoviePlaying
     r = SG * AVIRUN
     
     Exit Function
-Case "DURATION", "диаяйеиа"
+num66: 'Case "DURATION", "диаяйеиа"
     IsNumber = True
     r = SG * MediaPlayer1.getLengthInMS / 1000
    
     
     Exit Function
-Case "VOLUME", "емтасг"
+num67: 'Case "VOLUME", "емтасг"
     IsNumber = True
     r = SG * CDbl(CLng(vol))
     
     Exit Function
-Case "TAB", "стгкг"
+num68: 'Case "TAB", "стгкг"
     IsNumber = True
     r = SG * players(GetCode(bstack.Owner)).Column + 1  'CHANGED FROM Ver 7.1
     
     Exit Function
-Case "HEIGHT", "уьос"
+num69: 'Case "HEIGHT", "уьос"
     IsNumber = True
     r = SG * players(GetCode(bstack.Owner)).My
     
     Exit Function
-Case "POS", "хесг"
+num70: 'Case "POS", "хесг"
     IsNumber = True
     
     
@@ -5369,43 +5369,43 @@ Case "POS", "хесг"
     r = SG * GetRealPos(bstack.Owner)
     
     Exit Function
-Case "ROW", "цяаллг"
+num71: 'Case "ROW", "цяаллг"
     IsNumber = True
     r = SG * GetRealRow(bstack.Owner)
     
     Exit Function
-    Case "TIMECOUNT", "жоятос" ' ****************************
+num72: 'Case "TIMECOUNT", "жоятос" ' ****************************
   IsNumber = True
     r = SG * prof.MARKTWO
     
     Exit Function
 
-Case "TICK", "тий" ' ****************************
+num73: 'Case "TICK", "тий" ' ****************************
   IsNumber = True
     r = SG * MasterTimer
     
     Exit Function
-Case "TODAY", "сглеяа"
+num74: 'Case "TODAY", "сглеяа"
     IsNumber = True
     r = SG * CDbl(Date)
     
     Exit Function
-Case "NOW", "тыяа"
+num75: 'Case "NOW", "тыяа"
     IsNumber = True
     r = SG * CDbl(CDate(Time))
     
      Exit Function
-Case "MENU.VISIBLE", "епикоцес.жамеяес"  ' NEW 6.5 REV 8
+num76: 'Case "MENU.VISIBLE", "епикоцес.жамеяес"  ' NEW 6.5 REV 8
     IsNumber = True
     r = SG * Form1.List1.Visible
     
     Exit Function
-Case "MENUITEMS", "епикоцес"
+num77: 'Case "MENUITEMS", "епикоцес"
     IsNumber = True
     r = SG * Form1.List1.listcount
     
     Exit Function
-Case "MENU", "епикоцг"
+num78: 'Case "MENU", "епикоцг"
     IsNumber = True
     r = 0
     With Form1.List1
@@ -5416,14 +5416,14 @@ Case "MENU", "епикоцг"
     End With
     
     Exit Function
-Case "[]"
+num85: 'Case "[]"
 Set bstack.lastobj = bstack.soros
 Set bstack.Sorosref = New mStiva
 r = 0
         IsNumber = True
         Exit Function
 
-Case "ARRAY", "пимайас"
+num84: 'Case "ARRAY", "пимайас"
 If bstack.soros.Total = 0 Then
     
             MyErMacro a$, "Stack is empty", "O СЫЯЭР ЕъМАИ эДЕИОР"
@@ -5441,7 +5441,7 @@ If bstack.soros.Total = 0 Then
     IsNumber = False
     End If
     
-Case "GROUP", "олада"
+num83: 'Case "GROUP", "олада"
 If bstack.soros.Total = 0 Then
     
             MyErMacro a$, "Stack is empty", "O СЫЯЭР ЕъМАИ эДЕИОР"
@@ -5458,7 +5458,7 @@ If bstack.soros.Total = 0 Then
   
     IsNumber = False
     End If
-Case "NUMBER", "аяихлос", "тилг"
+num79: 'Case "NUMBER", "аяихлос", "тилг"
     If bstack.soros.Total = 0 Then
     
             MyErMacro a$, "Stack is empty", "O СЫЯЭР ЕъМАИ эДЕИОР"
@@ -5482,19 +5482,19 @@ Case "NUMBER", "аяихлос", "тилг"
     IsNumber = False
     End If
     Exit Function
-Case "калда"
+num81: 'Case "калда"
     Set bstack.lastobj = ProcLambda(bstack, a$, 0)
     r = 0
     
     IsNumber = Not bstack.lastobj Is Nothing
 Exit Function
-Case "LAMBDA"
+num80: 'Case "LAMBDA"
     Set bstack.lastobj = ProcLambda(bstack, a$, 1)
     r = 0
     
     IsNumber = Not bstack.lastobj Is Nothing
 Exit Function
-Case "STACK", "сыяос"
+num86: ' Case "STACK", "сыяос"
     
     Set anything = New mHandler
     anything.t1 = 3
@@ -5511,7 +5511,7 @@ Case "STACK", "сыяос"
     r = 0
     IsNumber = True
     Exit Function
-Case Else
+
 
 LOOKFORVARNUM:
 
@@ -5631,8 +5631,6 @@ End If
 End If
 Exit Function
 
-
-End Select
 Case 4
 LOOKFORVARNUM4:
 If GetVar(bstack, v$, VR) Then
@@ -5664,10 +5662,11 @@ Exit Function
 Case 7
  GoTo LOOKFORSUBNUM
 Case 5
-On Error Resume Next
-If Not funid.ExistKey(v$) Then GoTo LOOKFORSUBNUM
-Select Case v$
-Case "PARAM(", "паяал("
+'On Error Resume Next
+If Not funid.Find(v$, w1) Then GoTo LOOKFORSUBNUM
+'Select Case v$
+On w1 GoTo fun1, fun2, fun3, fun4, fun5, fun6, fun7, fun8, fun9, fun10, fun11, fun12, fun13, fun14, fun15, fun16, fun17, fun18, fun19, fun20, fun21, fun22, fun23, fun24, fun25, fun26, fun27, fun28, fun29, fun30, fun31, fun32, fun33, fun34, fun35, fun36, fun37, fun38, fun39, fun40, fun41, fun42, fun43, fun44, fun45, fun46, fun47, fun48, fun49, fun50, fun51, fun52, fun53, fun54, fun55, fun56, fun57, fun58, fun59, fun60, fun61, fun62, fun63, fun64, fun65, fun66, fun67, fun68, fun69, fun70, fun71, fun72, fun73, fun74, fun75, fun76, fun77, fun78, fun79, fun80, fun81, fun82, fun83, fun84, fun85, fun86, fun87, fun88, fun89, fun90, fun91, fun92, fun93, fun94, fun95, fun96
+fun1: 'Case "PARAM(", "паяал("
 v$ = ""
 If IsStrExp(bstack, a$, s1$) Then
 
@@ -5696,7 +5695,7 @@ ElseIf IsExp(bstack, a$, p) Then
             If MyIsObject(var(anything.indirect)) Then
                 Set bstack.lastobj = New mHandler
                 On Error Resume Next
-                Err.Clear
+                'Err.Clear
                 ' maybe we want the typelib
                 If FastSymbol(a$, ",") Then
                 
@@ -5708,6 +5707,7 @@ ElseIf IsExp(bstack, a$, p) Then
                    Else
                    bstack.lastobj.t1 = 1
                 End If
+                On Error GoTo 0
                 Set anything = Nothing
             Else
             ExpectedObjInline a$
@@ -5719,7 +5719,7 @@ End If
     IsNumber = FastSymbol(a$, ")", True)
     a$ = Mid$(v$, 2) + a$
     Exit Function
-Case "EACH("
+fun73: 'Case "EACH("
 If iter(bstack, a$, 1) Then
     r = 0
     IsNumber = FastSymbol(a$, ")", True)
@@ -5727,7 +5727,7 @@ Else
         IsNumber = False
 End If
  Exit Function
- Case "йахе("
+fun72: 'Case "йахе("
 If iter(bstack, a$, 0) Then
     r = 0
     IsNumber = FastSymbol(a$, ")", True)
@@ -5735,10 +5735,10 @@ Else
         IsNumber = False
 End If
  Exit Function
-Case "STACKITEM(", "тилгсыяоу("
+fun2: 'Case "STACKITEM(", "тилгсыяоу("
 IsNumber = StackItem(bstack, a$, SG, r)
 Exit Function
-Case "SGN(", "сгл("
+fun3: 'Case "SGN(", "сгл("
 If IsExp(bstack, a$, p) Then
 r = SG * Sgn(MyRound(p, 13))
 
@@ -5749,7 +5749,7 @@ r = SG * Sgn(MyRound(p, 13))
 End If
 Exit Function
 
-Case "FRAC(", "дей("
+fun4: 'Case "FRAC(", "дей("
 If IsExp(bstack, a$, p) Then
 r = SG * MyRound(Abs(Abs(p) - Int(Abs(p))), 13)
 
@@ -5759,7 +5759,7 @@ r = SG * MyRound(Abs(Abs(p) - Int(Abs(p))), 13)
 : MissParam a$: IsNumber = False
 End If
 Exit Function
-Case "MATCH(", "таутисг("
+fun5: 'Case "MATCH(", "таутисг("
 If IsStrExp(bstack, a$, s1$) Then
 If s1$ = "" Then
 r = 0
@@ -5780,7 +5780,7 @@ Else
 MissParam a$
 End If
 Exit Function
-Case "LOCALE(", "топийо("
+fun6: 'Case "LOCALE(", "топийо("
 If IsStrExp(bstack, a$, s1$) Then
 If FastSymbol(a$, ",") Then
 If IsExp(bstack, a$, p) Then
@@ -5796,7 +5796,7 @@ End If
     IsNumber = FastSymbol(a$, ")", True)
 End If
 Exit Function
-Case "FILELEN(", "аявеиоу.лгйос("
+fun7: 'Case "FILELEN(", "аявеиоу.лгйос("
 If IsStrExp(bstack, a$, s1$) Then
 If s1$ = "" Then
 r = 0
@@ -5818,7 +5818,7 @@ Else
 : MissParam a$
 End If
 Exit Function
-Case "TAB(", "стгкг("
+fun8: 'Case "TAB(", "стгкг("
 If IsExp(bstack, a$, p) Then
 
 r = SG * p * (players(GetCode(bstack.Owner)).Column + 1)
@@ -5826,7 +5826,7 @@ r = SG * p * (players(GetCode(bstack.Owner)).Column + 1)
     IsNumber = FastSymbol(a$, ")", True)
 End If
 Exit Function
-Case "KEYPRESS(", "патглемо("
+fun9: 'Case "KEYPRESS(", "патглемо("
 If Not IsExp(bstack, a$, p) Then
 r = 0
 Else
@@ -5837,7 +5837,7 @@ End If
 
     IsNumber = FastSymbol(a$, ")", True)
     Exit Function
-Case "INKEY(", "емйол("
+fun10: 'Case "INKEY(", "емйол("
 
 BLOCKkey = True
 If Not IsExp(bstack, a$, p) Then p = 50: dn = 1
@@ -5899,7 +5899,7 @@ End If
 IsNumber = FastSymbol(a$, ")", True)
 BLOCKkey = False
 Exit Function
-Case "тлгла(", "MODULE("
+fun11: 'Case "тлгла(", "MODULE("
   MakeThisSub bstack, a$
 If IsLabel(bstack, a$, s$) Then
 
@@ -5923,7 +5923,7 @@ Else
     IsNumber = False
 End If
 Exit Function
-Case "басг(", "MDB("
+fun12: 'Case "басг(", "MDB("
 If IsStrExp(bstack, a$, s$) Then
 If ExtractType(s$) = "" Then s$ = s$ & ".MDB"
 s$ = CFname(s$)
@@ -5936,7 +5936,7 @@ End If
     IsNumber = FastSymbol(a$, ")", True)
 End If
 Exit Function
-Case "ASK(", "яыта("
+fun13: 'Case "ASK(", "яыта("
 If IsStrExp(bstack, a$, AskText$) Then
 If UCase(v$) = "ASK(" Then
 DialogSetupLang 1
@@ -5958,7 +5958,7 @@ AskInput = False
     IsNumber = FastSymbol(a$, ")", True)
 End If
 Exit Function
-Case "суцйяоусг(", "COLLIDE("
+fun14: 'Case "суцйяоусг(", "COLLIDE("
 If IsExp(bstack, a$, r) Then
 If FastSymbol(a$, ",") Then
     If Not IsExp(bstack, a$, r2) Then: MissParam a$: IsNumber = False: Exit Function
@@ -5975,7 +5975,7 @@ End If
     IsNumber = FastSymbol(a$, ")", True)
 End If
 Exit Function
-Case "лецехос.у(", "SIZE.Y("
+fun15: 'Case "лецехос.у(", "SIZE.Y("
 
     If IsStrExp(bstack, a$, s$) Then
     If Not FastSymbol(a$, ",") Then: MissParam a$: IsNumber = False: Exit Function
@@ -5992,6 +5992,7 @@ Case "лецехос.у(", "SIZE.Y("
     On Error Resume Next
     r = nTextY(bstack, s$, s1$, CSng(r2), r3)
     If Err.Number > 0 Then r = 0
+    On Error GoTo 0
     r = SG * r
     
  
@@ -5999,7 +6000,7 @@ Case "лецехос.у(", "SIZE.Y("
     IsNumber = FastSymbol(a$, ")", True)
     End If
     Exit Function
-Case "лецехос.в(", "SIZE.X("
+fun16: 'Case "лецехос.в(", "SIZE.X("
     If IsStrExp(bstack, a$, s$) Then
     If Not FastSymbol(a$, ",") Then IsNumber = False: Exit Function
     If Not IsStrExp(bstack, a$, s1$) Then IsNumber = False: Exit Function
@@ -6010,13 +6011,14 @@ Case "лецехос.в(", "SIZE.X("
     On Error Resume Next
     r = nText(bstack, s$, s1$, CSng(r2), r3)
     If Err.Number > 0 Then r = 0
+    On Error GoTo 0
     r = SG * r
     
     
     IsNumber = FastSymbol(a$, ")", True)
     End If
     Exit Function
-Case "WRITABLE(", "еццяаьило("  ' АМ ЛПОЯЧ МА ЦЯэЬЫ СТО ЖэЙЕКО
+fun17: 'Case "WRITABLE(", "еццяаьило("  ' АМ ЛПОЯЧ МА ЦЯэЬЫ СТО ЖэЙЕКО
     If IsStrExp(bstack, a$, s$) Then
       r = SG * WeCanWrite(s$)
    
@@ -6027,7 +6029,7 @@ Case "WRITABLE(", "еццяаьило("  ' АМ ЛПОЯЧ МА ЦЯэЬЫ СТО ЖэЙЕКО
     End If
     IsNumber = False
     Exit Function
-Case "COLOR(", "COLOUR(", "вяыла("
+fun18: 'Case "COLOR(", "COLOUR(", "вяыла("
     
             
     If Not ColorRGB(bstack, a$, r) Then Exit Function
@@ -6036,7 +6038,7 @@ Case "COLOR(", "COLOUR(", "вяыла("
 
         IsNumber = FastSymbol(a$, ")", True)
         Exit Function
-Case "DIMENSION(", "диастасг("
+fun19: 'Case "DIMENSION(", "диастасг("
 IsNumber = False
 
 
@@ -6154,7 +6156,7 @@ Else
         MyErMacro a$, "Can't find array " & s$, "дЕМ БЯъСЙЫ ПъМАЙА " & s$
 End If
     Exit Function
-Case "ARRAY(", "пимайас("
+fun20: 'Case "ARRAY(", "пимайас("
     IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
         If bstack.lastobj Is Nothing Then
@@ -6232,7 +6234,7 @@ check123678:
         SyntaxError
     End If
     Exit Function
-Case "FUNCTION(", "сумаятгсг("
+fun21: 'Case "FUNCTION(", "сумаятгсг("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     If IsSymbolBracket(s$) Then
@@ -6269,13 +6271,14 @@ End If
     r = SG * p
   End If
     Else
-: MissParam a$
+        MissParam a$
     
     End If
     Exit Function
-Case "DRIVE.SERIAL(", "сеияиайос.дисйоу("
+fun22: 'Case "DRIVE.SERIAL(", "сеияиайос.дисйоу("
 IsNumber = DriveSerial1(bstack, a$, r, SG)
-Case "FILE.STAMP(", "аявеиоу.сталпа("
+Exit Function
+fun23: 'Case "FILE.STAMP(", "аявеиоу.сталпа("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     If CFname(s$, p) <> vbNullString Then
@@ -6286,17 +6289,18 @@ IsNumber = False
      r = SG * p
      End If
      Else
-: BadFilename: Exit Function
+        BadFilename
+        Exit Function
      
      End If
      
     
     IsNumber = FastSymbol(a$, ")", True)
     Else
-: MissParam a$
+ MissParam a$
     End If
     Exit Function
-Case "EXIST.DIR(", "упаявеи.йатакоцос("
+fun25: 'Case "EXIST.DIR(", "упаявеи.йатакоцос("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     r = SG * isdir(s$)
@@ -6307,7 +6311,7 @@ IsNumber = False
 : MissParam a$
     End If
     Exit Function
-Case "EXIST(", "упаявеи("
+fun26: 'Case "EXIST(", "упаявеи("
 IsNumber = False
     If IsExp(bstack, a$, p) Then
     If Typename(bstack.lastobj) = "mHandler" Then
@@ -6371,11 +6375,11 @@ IsNumber = False
     
     IsNumber = FastSymbol(a$, ")", True)
     Else
-: MissParam a$
+        MissParam a$
     End If
     Exit Function
     
-Case "JOYPAD(", "кабг("
+fun27: 'Case "JOYPAD(", "кабг("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
         
@@ -6406,11 +6410,11 @@ Case "JOYPAD(", "кабг("
 IsNumber = FastSymbol(a$, ")", True)
        Else
        IsNumber = False
-: MissParam a$
+  MissParam a$
          ' IsNumber = FastSymbol(a$, ")")
   End If
   Exit Function
-Case "JOYPAD.DIRECTION(", "кабг.йатеухумсг("
+fun28: 'Case "JOYPAD.DIRECTION(", "кабг.йатеухумсг("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
     r = SG * Int(r)
@@ -6438,9 +6442,9 @@ Case "JOYPAD.DIRECTION(", "кабг.йатеухумсг("
     r = SG * MYJOYSTAT(r).joyPaD
     IsNumber = FastSymbol(a$, ")", True)
        Else
-: MissParam a$
+        MissParam a$
   End If
-Case "JOYPAD.ANALOG.X(", "кабг.амакоцийо.в("
+fun29: 'Case "JOYPAD.ANALOG.X(", "кабг.амакоцийо.в("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
     r = SG * Int(r)
@@ -6465,9 +6469,9 @@ Case "JOYPAD.ANALOG.X(", "кабг.амакоцийо.в("
     r = SG * MYJOYSTAT(r).AnalogX
     IsNumber = FastSymbol(a$, ")", True)
        Else
-: MissParam a$
+        MissParam a$
   End If
-Case "JOYPAD.ANALOG.Y(", "кабг.амакоцийо.у("
+fun30: 'Case "JOYPAD.ANALOG.Y(", "кабг.амакоцийо.у("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
     r = SG * Int(r)
@@ -6492,9 +6496,9 @@ Case "JOYPAD.ANALOG.Y(", "кабг.амакоцийо.у("
     r = SG * MYJOYSTAT(r).AnalogY
     IsNumber = FastSymbol(a$, ")", True)
        Else
-: MissParam a$
+            MissParam a$
   End If
-Case "IMAGE.X(", "еийома.в("
+fun31: 'Case "IMAGE.X(", "еийома.в("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     If Left$(s$, 4) = "cDIB" And Len(s$) > 12 Then
@@ -6506,10 +6510,10 @@ IsNumber = False
             MyErMacro a$, "мО image in string", "дЕМ УПэЯВЕИ ЕИЙЭМА СТО АКЖАЯИХЛГТИЙЭ"
         End If
     Else
-: MissParam a$
+        MissParam a$
     End If
     Exit Function
-Case "IMAGE.Y(", "еийома.у("
+fun32: 'Case "IMAGE.Y(", "еийома.у("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
         If Left$(s$, 4) = "cDIB" And Len(s$) > 12 Then
@@ -6521,10 +6525,10 @@ IsNumber = False
             MyErMacro a$, "мО image in string", "дЕМ УПэЯВЕИ ЕИЙЭМА СТО АКЖАЯИХЛГТИЙЭ"
         End If
     Else
-: MissParam a$
+        MissParam a$
     End If
     Exit Function
-Case "IMAGE.X.PIXELS(", "еийома.в.сглеиа("
+fun33: 'Case "IMAGE.X.PIXELS(", "еийома.в.сглеиа("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     If Left$(s$, 4) = "cDIB" And Len(s$) > 12 Then
@@ -6536,10 +6540,10 @@ IsNumber = False
             MyErMacro a$, "мО image in string", "дЕМ УПэЯВЕИ ЕИЙЭМА СТО АКЖАЯИХЛГТИЙЭ"
         End If
     Else
-: MissParam a$
+        MissParam a$
     End If
     Exit Function
-Case "IMAGE.Y.PIXELS(", "еийома.у.сглеиа("
+fun34: 'Case "IMAGE.Y.PIXELS(", "еийома.у.сглеиа("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
         If Left$(s$, 4) = "cDIB" And Len(s$) > 12 Then
@@ -6551,10 +6555,10 @@ IsNumber = False
             MyErMacro a$, "мО image in string", "дЕМ УПэЯВЕИ ЕИЙЭМА СТО АКЖАЯИХЛГТИЙЭ"
         End If
     Else
-: MissParam a$
+        MissParam a$
     End If
     Exit Function
-    Case "VALID(", "ецйуяо("
+fun35: 'Case "VALID(", "ецйуяо("
     IsNumber = True
     w1 = 1
     s$ = aheadstatus(a$, True, w1) & "   "  ' version 6.5(11)
@@ -6602,7 +6606,7 @@ jumphere:
     
         LastErNum = 0
     Exit Function
-Case "EVAL(", "ейжя(", "ейжяасг("
+fun36: 'Case "EVAL(", "ейжя(", "ейжяасг("
     IsNumber = False
     If IsExp(bstack, a$, p) Then
         If Typename(bstack.lastobj) = "mHandler" Then
@@ -6626,6 +6630,7 @@ Case "EVAL(", "ейжя(", "ейжяасг("
                         IsNumber = FastSymbol(a$, ")", True)
                     End If
 there12:
+                    On Error GoTo 0
                     Set anything = Nothing
                     Exit Function
                 ElseIf .t1 = 2 Then
@@ -6797,10 +6802,10 @@ there1234459:
             End If
     End If
     Else
-: MissParam a$
+        MissParam a$
     End If
     Exit Function
-Case "POINT(", "сглеио("
+fun37: 'Case "POINT(", "сглеио("
 
     If IsStrExp(bstack, a$, s$) Then
         If Left$(s$, 4) = "cDIB" And Len(s$) > 12 Then
@@ -6813,11 +6818,10 @@ Case "POINT(", "сглеио("
                     
                     IsNumber = FastSymbol(a$, ")", True)
                 Else
-                    
-: MissParam a$: Exit Function
+                    MissParam a$: Exit Function
                 End If
             Else
-: MissParam a$: Exit Function
+                MissParam a$: Exit Function
             End If
         Else
             r = 0
@@ -6830,7 +6834,7 @@ Case "POINT(", "сглеио("
      MissParam a$
     End If
    Exit Function
-Case "CTIME(", "упыяа("
+fun38: 'Case "CTIME(", "упыяа("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
   
@@ -6857,6 +6861,7 @@ Case "CTIME(", "упыяа("
     Err.Clear
     Exit Function
     End If
+    On Error GoTo 0
      IsNumber = FastSymbol(a$, ")", True)
       Else
    
@@ -6864,7 +6869,7 @@ Case "CTIME(", "упыяа("
     End If
     Exit Function
     
-Case "CDATE(", "уплея("
+fun39: 'Case "CDATE(", "уплея("
  IsNumber = False
     If IsExp(bstack, a$, r) Then
    
@@ -6892,7 +6897,7 @@ Case "CDATE(", "уплея("
     Err.Clear
     Exit Function
     End If
-    
+    On Error GoTo 0
  IsNumber = FastSymbol(a$, ")", True)
    Else
    
@@ -6901,7 +6906,7 @@ Case "CDATE(", "уплея("
     End If
     
      Exit Function
-Case "TIME(", "вяомос("
+fun40: 'Case "TIME(", "вяомос("
 IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     On Error Resume Next
@@ -6913,7 +6918,7 @@ IsNumber = False
     Err.Clear
     Exit Function
     End If
-    
+        On Error GoTo 0
     
     IsNumber = FastSymbol(a$, ")", True)
     Else
@@ -6921,7 +6926,7 @@ IsNumber = False
                 MissParam a$
     End If
     Exit Function
-Case "DATE(", "глеяа("
+fun41: 'Case "DATE(", "глеяа("
  IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     On Error Resume Next
@@ -6932,7 +6937,7 @@ Case "DATE(", "глеяа("
     Err.Clear
     Exit Function
     End If
-    
+    On Error GoTo 0
     
     IsNumber = FastSymbol(a$, ")", True)
       Else
@@ -6940,7 +6945,7 @@ Case "DATE(", "глеяа("
                 MissParam a$
     End If
     Exit Function
-Case "VAL(", "тилг(", "аниа("
+fun42: 'Case "VAL(", "тилг(", "аниа("
  IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     On Error Resume Next
@@ -6971,7 +6976,7 @@ Case "VAL(", "тилг(", "аниа("
     Err.Clear
     Exit Function
     End If
-    
+    On Error GoTo 0
     
     IsNumber = FastSymbol(a$, ")", True)
     Else
@@ -6979,7 +6984,7 @@ Case "VAL(", "тилг(", "аниа("
                 MissParam a$
     End If
     Exit Function
-Case "RINSTR(", "хесгдениа("
+fun43: 'Case "RINSTR(", "хесгдениа("
  IsNumber = False
   
       If IsStrExp(bstack, a$, s$) Then
@@ -7016,7 +7021,7 @@ Case "RINSTR(", "хесгдениа("
     End If
     Exit Function
 
-Case "INSTR(", "хесг("
+fun44: 'Case "INSTR(", "хесг("
 IsNumber = False
 
     If IsStrExp(bstack, a$, s$) Then
@@ -7049,7 +7054,7 @@ IsNumber = False
     
     Exit Function
 
-Case "RECORDS(", "еццяажес("
+fun45: 'Case "RECORDS(", "еццяажес("
  IsNumber = False
 
     If IsExp(bstack, a$, r) Then
@@ -7067,7 +7072,7 @@ Case "RECORDS(", "еццяажес("
         MissParam a$
     End If
     Exit Function
-Case "GROUP.COUNT(", "олада.сумоко("
+fun46: 'Case "GROUP.COUNT(", "олада.сумоко("
 
 
         If Abs(IsLabel(bstack, a$, s$)) = 1 Then
@@ -7092,7 +7097,7 @@ Case "GROUP.COUNT(", "олада.сумоко("
         MissingGroup
        End If
        Exit Function
-Case "PARAGRAPH(", "паяацяажос("
+fun47: 'Case "PARAGRAPH(", "паяацяажос("
  IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
                   
@@ -7152,7 +7157,7 @@ Case "PARAGRAPH(", "паяацяажос("
                 MissFuncParameterStringVarMacro a$
     End If
     Exit Function
-Case "PARAGRAPH.INDEX(", "аяихлос.паяацяажоу("
+fun48: 'Case "PARAGRAPH.INDEX(", "аяихлос.паяацяажоу("
  IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
                   
@@ -7231,11 +7236,11 @@ Case "PARAGRAPH.INDEX(", "аяихлос.паяацяажоу("
                 MissFuncParameterStringVarMacro a$
     End If
     Exit Function
-Case "BACKWARD(", "писы("
+fun49: 'Case "BACKWARD(", "писы("
     dd = 1
-    GoTo forward
-Case "FORWARD(", "лпяоста("
-forward:
+    'GoTo forward
+fun50: 'Case "FORWARD(", "лпяоста("
+'forward:
  IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
         If w1 = 3 Then
@@ -7330,7 +7335,7 @@ forward:
                 MissFuncParameterStringVarMacro a$
     End If
     Exit Function
-Case "DOC.PAR(", "еццяажоу.пая("
+fun51: 'Case "DOC.PAR(", "еццяажоу.пая("
  IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
 
@@ -7366,7 +7371,7 @@ Case "DOC.PAR(", "еццяажоу.пая("
                 MissFuncParameterStringVarMacro a$
     End If
     Exit Function
-Case "MAX.DATA(", "лецако.сеияас("
+fun52: 'Case "MAX.DATA(", "лецако.сеияас("
  IsNumber = False
   If IsExp(bstack, a$, r) Then
   
@@ -7379,10 +7384,10 @@ Case "MAX.DATA(", "лецако.сеияас("
     
     IsNumber = FastSymbol(a$, ")", True)
         Else
-: MissNumExpr
+            MissNumExpr
         End If
     Exit Function
-Case "MIN.DATA(", "лийяо.сеияас("
+fun53: 'Case "MIN.DATA(", "лийяо.сеияас("
  IsNumber = False
   If IsExp(bstack, a$, r) Then
   
@@ -7395,16 +7400,16 @@ Case "MIN.DATA(", "лийяо.сеияас("
     
     IsNumber = FastSymbol(a$, ")", True)
         Else
-: MissNumExpr
+        MissNumExpr
         End If
     Exit Function
-Case "MAX(", "лецако("
+fun54: 'Case "MAX(", "лецако("
 dn = 2
 GoTo comp1
-Case "MIN(", "лийяо("
+fun55: 'Case "MIN(", "лийяо("
 dn = 1
-GoTo comp1
-Case "COMPARE(", "суцйяиме("
+'GoTo comp1
+fun56: 'Case "COMPARE(", "суцйяиме("
 comp1:
 IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
@@ -7641,7 +7646,7 @@ IsNumber = False
                 MissParam a$
     End If
     Exit Function
-Case "DOC.UNIQUE.WORDS(", "еццяажоу.ломадийес.кенеис("
+fun57: 'Case "DOC.UNIQUE.WORDS(", "еццяажоу.ломадийес.кенеис("
  IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
         If w1 = 3 Then
@@ -7678,7 +7683,7 @@ Case "DOC.UNIQUE.WORDS(", "еццяажоу.ломадийес.кенеис("
     End If
     Exit Function
     
-Case "DOC.WORDS(", "еццяажоу.кенеис("
+fun58: 'Case "DOC.WORDS(", "еццяажоу.кенеис("
  IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
         If w1 = 3 Then
@@ -7715,7 +7720,7 @@ Case "DOC.WORDS(", "еццяажоу.кенеис("
     End If
     Exit Function
     
-Case "DOC.LEN(", "еццяажоу.лгйос("
+fun59: 'Case "DOC.LEN(", "еццяажоу.лгйос("
  IsNumber = False
     w1 = Abs(IsLabel(bstack, a$, s$))
         If w1 = 3 Then
@@ -7750,7 +7755,7 @@ Case "DOC.LEN(", "еццяажоу.лгйос("
                 MissParam a$
     End If
     Exit Function
-Case "LEN.DISP(", "лгйос.елж("
+fun60: 'Case "LEN.DISP(", "лгйос.елж("
  IsNumber = False
     
     If IsExp(bstack, a$, p) Then
@@ -7789,7 +7794,7 @@ Case "LEN.DISP(", "лгйос.елж("
                 MissParam a$
     End If
     Exit Function
-Case "LEN(", "лгйос("
+fun61: 'Case "LEN(", "лгйос("
  IsNumber = False
     If IsExp(bstack, a$, p) Then
 len1234:
@@ -7857,7 +7862,7 @@ len1234:
         MissParam a$
     End If
     Exit Function
-Case "SQRT(", "яифа("
+fun62: 'Case "SQRT(", "яифа("
  IsNumber = False
     If IsExp(bstack, a$, r) Then
     
@@ -7877,7 +7882,7 @@ Case "SQRT(", "яифа("
     
     End If
      Exit Function
-Case "FREQUENCY(", "сувмотгта("
+fun63: 'Case "FREQUENCY(", "сувмотгта("
 IsNumber = False
     If IsExp(bstack, a$, r) Then
            If FastSymbol(a$, ",") Then
@@ -7898,7 +7903,7 @@ IsNumber = False
                 MissParam a$
      End If
      Exit Function
-Case "LOG(", "коц("
+fun64: 'Case "LOG(", "коц("
 IsNumber = False
     If IsExp(bstack, a$, r) Then
         If r <= 0 Then
@@ -7915,7 +7920,7 @@ IsNumber = False
     
     End If
     Exit Function
- Case "LN(", "кж("
+fun65:  'Case "LN(", "кж("
  IsNumber = False
     If IsExp(bstack, a$, r) Then
     If r <= 0 Then
@@ -7933,7 +7938,7 @@ IsNumber = False
     
     End If
      Exit Function
-Case "ATN(", "тон.еж("
+fun66: 'Case "ATN(", "тон.еж("
 IsNumber = False
     If IsExp(bstack, a$, r) Then
      
@@ -7946,7 +7951,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
     Exit Function
- Case "TAN(", "ежап("
+fun67:  'Case "TAN(", "ежап("
   IsNumber = False
     If IsExp(bstack, a$, r) Then
      
@@ -7969,7 +7974,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
     Exit Function
- Case "COS(", "сум("
+fun68:  'Case "COS(", "сум("
  IsNumber = False
     If IsExp(bstack, a$, r) Then
 
@@ -7986,7 +7991,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
     Exit Function
- Case "SIN(", "гл("
+fun69:  'Case "SIN(", "гл("
  IsNumber = False
     If IsExp(bstack, a$, r) Then
     r = Sin(r * Pi / 180#)
@@ -8002,7 +8007,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
     Exit Function
- Case "ABS(", "апок("
+fun70:  'Case "ABS(", "апок("
    IsNumber = False
     If IsExp(bstack, a$, r) Then
     r = SG * Abs(r)
@@ -8015,7 +8020,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
     Exit Function
-Case "LOWORD(", "LOWWORD(", "йатылисо("
+fun71: 'Case "LOWORD(", "LOWWORD(", "йатылисо("
   IsNumber = False
 If IsExp(bstack, a$, r) Then
     On Error Resume Next
@@ -8027,7 +8032,7 @@ If IsExp(bstack, a$, r) Then
         Exit Function
     
     End If
-    
+    On Error GoTo 0
     
    IsNumber = FastSymbol(a$, ")", True)
         Else
@@ -8035,7 +8040,7 @@ If IsExp(bstack, a$, r) Then
                 MissParam a$
  End If
  Exit Function
-Case "HIWORD(", "HIGHWORD(", "памылисо("
+fun74: 'Case "HIWORD(", "HIGHWORD(", "памылисо("
     If IsExp(bstack, a$, r) Then
     On Error Resume Next
     
@@ -8047,7 +8052,7 @@ Case "HIWORD(", "HIGHWORD(", "памылисо("
     IsNumber = False
     Exit Function
     End If
-    
+    On Error GoTo 0
     
 IsNumber = FastSymbol(a$, ")", True)
       Else
@@ -8056,7 +8061,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
     Exit Function
-    Case "BINARY.NEG(", "дуадийо.амти(", "дуадийо.амтистяожо("
+fun75: 'Case "BINARY.NEG(", "дуадийо.амти(", "дуадийо.амтистяожо("
       IsNumber = False
     If IsExp(bstack, a$, r) Then
             On Error Resume Next
@@ -8068,7 +8073,7 @@ IsNumber = FastSymbol(a$, ")", True)
           
             Exit Function
             End If
-    
+    On Error GoTo 0
     
 IsNumber = FastSymbol(a$, ")", True)
    Else
@@ -8077,7 +8082,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
      Exit Function
-    Case "BINARY.OR(", "дуадийо.г("
+fun76: 'Case "BINARY.OR(", "дуадийо.г("
     IsNumber = False
         If IsExp(bstack, a$, r) Then
         If FastSymbol(a$, ",") Then
@@ -8098,7 +8103,7 @@ IsNumber = FastSymbol(a$, ")", True)
                 MissParam a$
        End If
        Exit Function
-    Case "BINARY.AND(", "дуадийо.йаи("
+fun77: 'Case "BINARY.AND(", "дуадийо.йаи("
         If IsExp(bstack, a$, r) Then
             If FastSymbol(a$, ",") Then
                 If IsExp(bstack, a$, p) Then
@@ -8119,7 +8124,7 @@ IsNumber = FastSymbol(a$, ")", True)
        
        End If
        Exit Function
-           Case "BINARY.XOR(", "дуадийо.апо("
+fun78: 'Case "BINARY.XOR(", "дуадийо.апо("
         If IsExp(bstack, a$, r) Then
             If FastSymbol(a$, ",") Then
                 If IsExp(bstack, a$, p) Then
@@ -8140,7 +8145,7 @@ IsNumber = FastSymbol(a$, ")", True)
        
        End If
 Exit Function
-Case "HILOWWORD(", "дуолиса("
+fun79: 'Case "HILOWWORD(", "дуолиса("
  IsNumber = False
     If IsExp(bstack, a$, r) Then
         If FastSymbol(a$, ",") Then
@@ -8162,7 +8167,7 @@ Case "HILOWWORD(", "дуолиса("
       End If
      
         Exit Function
-Case "BINARY.SHIFT(", "дуадийо.окисхгсг("
+fun80: 'Case "BINARY.SHIFT(", "дуадийо.окисхгсг("
 IsNumber = False
    If IsExp(bstack, a$, r) Then
   
@@ -8198,7 +8203,7 @@ IsNumber = False
             MissParam a$
    End If
          Exit Function
-Case "BINARY.ROTATE(", "дуадийг.пеяистяожг("
+fun81: 'Case "BINARY.ROTATE(", "дуадийг.пеяистяожг("
 IsNumber = False
         If IsExp(bstack, a$, r) Then
              If FastSymbol(a$, ",") Then
@@ -8235,7 +8240,7 @@ IsNumber = False
         End If
        Exit Function
        
-Case "SINT(", "айеяаио.дуадийо("
+fun82: 'Case "SINT(", "айеяаио.дуадийо("
 ' GET AN UNSIGN AND GIVES A SIGN...AS READING BITS
  IsNumber = False
  p = 4
@@ -8313,7 +8318,7 @@ err1256:
     Exit Function
     
     End If
-    
+    On Error GoTo 0
   IsNumber = FastSymbol(a$, ")", True)
     Exit Function
     
@@ -8335,7 +8340,7 @@ contsint1:
     Exit Function
     End If
     End If
-    
+    On Error GoTo 0
   IsNumber = FastSymbol(a$, ")", True)
     Exit Function
       Else
@@ -8343,7 +8348,7 @@ contsint1:
                 MissParam a$
     End If
    Exit Function
-Case "USGN(", "дуадийо("
+fun83: 'Case "USGN(", "дуадийо("
 '
 IsNumber = False
  If IsExp(bstack, a$, r) Then
@@ -8354,7 +8359,7 @@ IsNumber = False
     If r < 0 Then r = 0
     
     r = SG * r
-    
+    On Error GoTo 0
 IsNumber = FastSymbol(a$, ")", True)
     Exit Function
        Else
@@ -8362,7 +8367,7 @@ IsNumber = FastSymbol(a$, ")", True)
                 MissParam a$
     End If
     Exit Function
-Case "UINT(", "дуадийо.айеяаио("
+fun84: 'Case "UINT(", "дуадийо.айеяаио("
 ' READING BITS OF A SIGN AND GIVE AN UNSIGN OF SAME BITS
 IsNumber = False
  If IsExp(bstack, a$, r) Then
@@ -8377,6 +8382,7 @@ IsNumber = False
      IsNumber = False
     Exit Function
     End If
+    
     r = SG * uintnew(r)
     If Err.Number > 0 Then
     MyErMacro a$, "Sign to Unsign long failed", "г ЛЕТАТЯОПч АЙЕЯАъОУ ЛЕ ПЯЭСГЛО СЕ ПКГХИЙЭ (ВЫЯъР ПЯЭСГЛО) АПщТУВЕ"
@@ -8384,7 +8390,7 @@ IsNumber = False
     Exit Function
     
     End If
-    
+    On Error GoTo 0
     
 IsNumber = FastSymbol(a$, ")", True)
     Exit Function
@@ -8393,10 +8399,10 @@ IsNumber = FastSymbol(a$, ")", True)
                 MissParam a$
     End If
     Exit Function
- Case "ROUND(", "стяоцц("
+fun85:  'Case "ROUND(", "стяоцц("
    IsNumber = False
     If IsExp(bstack, a$, r) Then
-    On Error Resume Next
+    ''On Error Resume Next
     If FastSymbol(a$, ")") Then
             
             r = SG * MyRound(r, 13)
@@ -8420,7 +8426,7 @@ IsNumber = FastSymbol(a$, ")", True)
     End If
     Exit Function
    
- Case "INT(", "ай("
+fun86:  'Case "INT(", "ай("
    IsNumber = False
     If IsExp(bstack, a$, r) Then
     On Error Resume Next
@@ -8430,7 +8436,7 @@ IsNumber = FastSymbol(a$, ")", True)
     MyErMacro a$, "long conversion failed", "г ЛЕТАТЯОПч СЕ АЙщЯАИО АПщТУВЕ"
     Exit Function
     End If
-    
+    On Error GoTo 0
  IsNumber = FastSymbol(a$, ")", True)
     Else
                     
@@ -8439,7 +8445,7 @@ IsNumber = FastSymbol(a$, ")", True)
     
     End If
     Exit Function
-Case "SEEK(", "летахесг("
+fun87: 'Case "SEEK(", "летахесг("
  IsNumber = False
   IsSymbol3 a$, "#"  ' drop it
     If IsExp(bstack, a$, r) Then
@@ -8463,7 +8469,7 @@ Case "SEEK(", "летахесг("
     End If
     Exit Function
 
- Case "EOF(", "текос("
+fun88:  'Case "EOF(", "текос("
  IsNumber = False
    IsSymbol3 a$, "#"  ' drop it
     If IsExp(bstack, a$, r) Then
@@ -8483,7 +8489,7 @@ Case "SEEK(", "летахесг("
     End If
     
     Exit Function
-Case "RANDOM(", "туваиос("
+fun89: 'Case "RANDOM(", "туваиос("
 If FastSymbol(a$, "!") Then
 If IsExp(bstack, a$, r) Then
 '' CHOOSE SEED AND SAVEIT TO BASESTACK
@@ -8495,6 +8501,7 @@ If Err Then
 Err.Clear
 r = 0
 End If
+
 Else
 rndbase = simplestack1
 End If
@@ -8511,7 +8518,7 @@ ElseIf IsExp(bstack, a$, r) Then
         End If
     
     r = SG * Int((r - p + 1) * RndM(rndbase) + p)
-       
+     On Error GoTo 0
     IsNumber = True
     Else
       RandomizeIt rndbase, timeGetTime
@@ -8521,7 +8528,7 @@ ElseIf IsExp(bstack, a$, r) Then
     IsNumber = FastSymbol(a$, ")", True)
 
        Exit Function
-Case "STACK(", "сыяос("
+fun24: 'Case "STACK(", "сыяос("
 If IsExp(bstack, a$, r) Then
     If CheckStackObj(bstack, anything, var()) Then
             If Not TypeOf anything Is mStiva Then GoTo stack12948
@@ -8565,7 +8572,8 @@ stack12948:
 Else
         MissParam a$
 End If
-Case "GROUP(", "олада("
+Exit Function
+fun92: 'Case "GROUP(", "олада("
 w1 = Abs(IsLabel(bstack, a$, s$))
 If w1 = 1 Then
 If Not GetVar(bstack, s$, w1) Then GoTo jmp1478
@@ -8578,7 +8586,8 @@ Else
 jmp1478:
 MyErMacro a$, "Expected a group name", "пЕЯъЛЕМА ЭМОЛА ОЛэДАР"
 End If
-Case "CHRCODE(", "ваяйыд("
+Exit Function
+fun90: 'Case "CHRCODE(", "ваяйыд("
  IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     r = SG * AscW(s$)
@@ -8592,7 +8601,7 @@ Case "CHRCODE(", "ваяйыд("
     End If
     Exit Function
 
-Case "ASC(", "йыд("
+fun91: 'Case "ASC(", "йыд("
  IsNumber = False
     If IsStrExp(bstack, a$, s$) Then
     r = SG * Asc(s$)
@@ -8606,7 +8615,7 @@ Case "ASC(", "йыд("
     End If
     Exit Function
     
-Case "CONS(", "емысг("
+fun94: 'Case "CONS(", "емысг("
     IsNumber = False
     If IsExp(bstack, a$, r) Then
         Set anything = bstack.lastobj
@@ -8667,7 +8676,7 @@ a13415:
         MissParam a$
     End If
     Exit Function
-Case "CAR(", "пяыто("
+fun95: 'Case "CAR(", "пяыто("
     IsNumber = False
     If IsExp(bstack, a$, r) Then
 car1023:
@@ -8697,7 +8706,7 @@ car1023:
         MissParam a$
     End If
     Exit Function
-Case "CDR(", "еполема("
+fun96: 'Case "CDR(", "еполема("
     IsNumber = False
     If IsExp(bstack, a$, r) Then
 cdr1022:
@@ -8724,7 +8733,7 @@ cdr1022:
         MissParam a$
     End If
     Exit Function
-Case "TEST(", "дойилг("
+fun93: 'Case "TEST(", "дойилг("
  IsNumber = False
  
  If IsExp(bstack, a$, r) Then
@@ -8747,9 +8756,8 @@ Case "TEST(", "дойилг("
     End If
     Exit Function
 
-Case Else
 LOOKFORSUBNUM:
-On Error Resume Next
+''On Error Resume Next
 s1$ = v$ & ")" ' ANY CHAR HERE
 
 MakeThisSubNum bstack, s1$
@@ -8923,7 +8931,7 @@ PP = 0
                            
                             Else
                          If FastSymbol(a$, ",") Then
-: IsNumber = False
+                        IsNumber = False
                         MyErMacro a$, "too many indexes for array " & v$ & ")", "ПОККОъ ДЕъЙТЕР ЦИА ТО ПъМАЙА " & v$ & ")"
                         Exit Function
                          
@@ -8934,20 +8942,20 @@ PP = 0
                         End If
                             On Error Resume Next
                             If p < -pppp.myarrbase Then
-: IsNumber = False
+                            IsNumber = False
                               MyErMacro a$, "index too low for array " & v$ & ")", "АЯМГТИЙЭР ДЕъЙТГР СТО ПъМАЙА " & v$ & ")"
                             Exit Function
                             End If
                             
                         If Not pppp.PushOffset(w2, dn, CLng(p)) Then
-: IsNumber = False
+                                IsNumber = False
                                 MyErMacro a$, "index too high for array " & v$ & ")", "ДЕъЙТГР УЬГКЭР ЦИА ТО ПъМАЙА " & v$ & ")"
                                 IsNumber = False
                             Exit Function
-                        Else
-                                   
                             End If
+                            On Error GoTo 0
                         Else
+                        
                          IsNumber = False
                         If LastErNum = -2 Then
                         Else
@@ -9033,6 +9041,7 @@ contlambdahere:
     
     r = SG * pppp.itemnumeric(w2)
     If Err Then r = 0: Err.Clear
+    On Error GoTo 0
     Else
      If Typename(pppp.GroupRef) = "mHandler" Then
      
@@ -9240,12 +9249,12 @@ End If
     End If
     
 End Select
-Case Else
-
+''Case Else
+'' THESE THREE STATEMENDS NOT USED ANY MORE
      IsNumber = False
     a$ = v$ + a$
     Exit Function
-End Select
+''End Select
 zerohere:
 ' mid$(a$,sng&,1) like "[123456789.]"
 'If val("0" & Mid$(a$, sng&, 1)) = 0 And Left(Mid$(a$, sng&, 1), sng&) <> "0" And Left(Mid$(a$, sng&, 1), sng&) <> "." Then
@@ -9372,11 +9381,12 @@ Else
                          r = val(ig$ & DE$)
                     End If
                 End If
+                
            ErrInExponet a$
           IsNumber = False
             Exit Function
             End If
-    
+    On Error GoTo 0
   End If
   If sng& > 1 Then Mid$(a$, 1, sng& - 1) = Space$(sng& - 1)
     IsNumber = True
@@ -11859,15 +11869,18 @@ rvalObjectstring:
             End If
     Case 3
     IsString = False
-    If Not strid.ExistKey(q$) Then GoTo itisavar
+    If Not strid.Find(q$, w1) Then GoTo itisavar
     
-    Select Case q$
-    Case "ABOUT$", "пеяи$"
+    'Select Case q$
+    'Case "ABOUT$", "пеяи$"
+On w1 GoTo lit1, lit2, lit3, lit4, lit5, lit6, lit7, lit8, lit9, lit10, lit11, lit12, lit13, lit14, lit15, lit16, lit17, lit18, lit19, lit20, lit21, lit22, lit23, lit24, lit25, lit26, lit27, lit28, lit29, lit30, lit31, lit32, lit33, lit34, lit35
+
+lit1:
             r$ = feedback$
             feedback$ = ""
              IsString = True
                               Exit Function
-    Case "CONTROL$"
+lit2: '    Case "CONTROL$"
                   On Error Resume Next
                   If Screen.ActiveForm Is Nothing Then
                   r$ = ""
@@ -11884,8 +11897,9 @@ rvalObjectstring:
                   End Select
                   End If
                       IsString = True
+                      On Error GoTo 0
                               Exit Function
-     Case "жояла$"
+lit32:   ' Case "жояла$"
                   On Error Resume Next
                   If Screen.ActiveForm Is Nothing Then
                   r$ = ""
@@ -11902,21 +11916,22 @@ rvalObjectstring:
                   End Select
                   End If
                  IsString = True
+                 On Error GoTo 0
                               Exit Function
                            
-    Case "THREADS$"
+lit3: '   Case "THREADS$"
                                r$ = bstackstr.Parent.ThreadsStr(1)
                                IsString = True
                               Exit Function
-  Case "мглата$"
+lit33: '  Case "мглата$"
                                r$ = bstackstr.Parent.ThreadsStr
                                IsString = True
                               Exit Function
-    Case "LAN$", "дийтуо$"
+lit4: '   Case "LAN$", "дийтуо$"
     r$ = getIP
       IsString = True
      Exit Function
-    Case "GRABFRAME$", "паяейаяе$"
+lit5: '    Case "GRABFRAME$", "паяейаяе$"
                               If AVIUP Then
                               If MediaPlayer1.MovieHeight > 0 Then
                               r$ = GrabFrame
@@ -11924,45 +11939,45 @@ rvalObjectstring:
                               End If
                              IsString = True
                             Exit Function
-    Case "емаомола$", "TEMPNAME$"
+lit6: '    Case "емаомола$", "TEMPNAME$"
                              r$ = GetTempFileName
                             IsString = True
                             Exit Function
-    Case "TEMPORARY$", "пяосыяимо$"  ' бя╦хгйе дуо жояес то пяосыяимо$
+lit7: 'Case "TEMPORARY$", "пяосыяимо$"  ' бя╦хгйе дуо жояес то пяосыяимо$
                             r$ = strTemp  'аутос еимаи о жайекос
                             IsString = True
                             Exit Function
-    Case "USER.NAME$", "омола.вягстг$"
+lit8: '    Case "USER.NAME$", "омола.вягстг$"
                              r$ = Originalusername
                             IsString = True
                             Exit Function
-    Case "COMPUTER$", "упокоцистгс$"
+lit9: '    Case "COMPUTER$", "упокоцистгс$"
                              r$ = strMachineName
                             IsString = True
                             Exit Function
-    Case "CLIPBOARD$", "пяовеияо$"
+lit10: '    Case "CLIPBOARD$", "пяовеияо$"
                             r$ = GetTextData(CF_UNICODETEXT)
                             If r$ = "" Then r$ = Clipboard.GetText
                             IsString = True
                             Exit Function
-    Case "CLIPBOARD.IMAGE$", "пяовеияо.еийома$"
+lit11: '    Case "CLIPBOARD.IMAGE$", "пяовеияо.еийома$"
                         r$ = GetImage()
                          IsString = True
                          Exit Function
 
-    Case "паяалетяои$", "PARAMETERS$"
+lit12: '    Case "паяалетяои$", "PARAMETERS$"
                         r$ = para$
                         IsString = True
                         Exit Function
-    Case "OS$", "кс$"
+lit13: '    Case "OS$", "кс$"
                         r$ = os
                         IsString = True
                         Exit Function
-    Case "емтокг$", "COMMAND$"
+lit14: '    Case "емтокг$", "COMMAND$"
                         r$ = LASTPROG$
                     IsString = True
                     Exit Function
-    Case "кахос$"
+lit15: '   Case "кахос$"
         If Left$(LastErNameGR, 1) = Chr(0) Then LastErNameGR = Mid$(LastErNameGR, 2)
                      r$ = LastErNameGR
                       LastErNum1 = 0
@@ -11970,7 +11985,7 @@ rvalObjectstring:
                      LastErName = ""
                     IsString = True
                     Exit Function
-    Case "ERROR$"
+lit34: '    Case "ERROR$"
     If Left$(LastErName, 1) = Chr(0) Then LastErName = Mid$(LastErName, 2)
                      r$ = LastErName
                       LastErNum1 = 0
@@ -11978,7 +11993,7 @@ rvalObjectstring:
                      LastErName = ""
                     IsString = True
                     Exit Function
-    Case "MODULE$", "тлгла$"
+lit16: '    Case "MODULE$", "тлгла$"
                     r$ = here$ ''''''''''''' АМэЦМЫСГ ТОУ Here$ (ПЯОСОВч ЙъМДУМОР)
                                 '''''''''''' ЦИАТъ ЛПОЯЕъ Г ТИЛч МА ЛГМ ЕъМАИ АУТч ПОУ ПЕЯИЛщМАЛЕ
                                 '''''''''''' МА ДОЙИЛэСЫ ДИПКЭ МчЛА, ЭПОУ ТО ДЕЩТЕЯО ЕъМАИ СЕ ТЛчЛА
@@ -11988,11 +12003,11 @@ rvalObjectstring:
                     IsString = True
                     Exit Function
 
-    Case "PRINTERNAME$", "ейтупытгс$"  ' ДЕМ ПАъФЕИ ЯЭКО ПИА Г ПЭЯТА
+lit17: '    Case "PRINTERNAME$", "ейтупытгс$"  ' ДЕМ ПАъФЕИ ЯЭКО ПИА Г ПЭЯТА
                     r$ = pname & " (" & port & ")"
                     IsString = True
                     Exit Function
-    Case "PROPERTIES$", "идиотгтес$"
+lit18: '    Case "PROPERTIES$", "идиотгтес$"
                 If ThereIsAPrinter Then
                 If UBound(MyDM) = 1 Then
                     PrinterDim pw, ph, psw, psh, pwox, phoy
@@ -12003,24 +12018,24 @@ rvalObjectstring:
                 End If
                     IsString = True
                     Exit Function
-    Case "MOVIE.STATUS$", "йатастасг.таимиас$"
+lit19: '    Case "MOVIE.STATUS$", "йатастасг.таимиас$"
                    r$ = MediaPlayer1.getStatus
                 IsString = True
                 Exit Function
-    Case "MOVIE.DEVICE$", "сусйеуг.пяобокгс$"
+lit20: '    Case "MOVIE.DEVICE$", "сусйеуг.пяобокгс$"
                    r$ = MediaPlayer1.getDeviceName
                 IsString = True
                 Exit Function
-    Case "MOVIE.ERROR$", "кахос.таимиас$"
+lit21: '    Case "MOVIE.ERROR$", "кахос.таимиас$"
                    r$ = MediaPlayer1.checkError
                 IsString = True
                 Exit Function
-    Case "PLATFORM$", "пкатжояла$"
+lit22: '    Case "PLATFORM$", "пкатжояла$"
                 r$ = platform
                 IsString = True
                 Exit Function
 
-    Case "FONTNAME$", "цяаллатосеияа$"
+lit23: '    Case "FONTNAME$", "цяаллатосеияа$"
     With bstackstr
                  If .tolayer > 0 And .tolayer < 32 Then
                  r$ = Form1.dSprite(.tolayer).Font.name
@@ -12036,28 +12051,28 @@ rvalObjectstring:
                 End With
                  IsString = True
                  Exit Function
-    Case "BROWSER$", "амакоцио$"
+lit24: '    Case "BROWSER$", "амакоцио$"
                 r$ = Form1.view1.LocationURL
                 IsString = True
                 Exit Function
 
-    Case "SPRITE$", "диажамеиа$"
+lit25: '    Case "SPRITE$", "диажамеиа$"
                 r$ = BACKSPRITE
                 BACKSPRITE = ""
                 IsString = True
                 Exit Function
-    Case "APPDIR$", "ежаялоцг.йат$"
+lit26: '    Case "APPDIR$", "ежаялоцг.йат$"
                 r$ = GetLongName(App.path)
                 If Right(r$, 1) <> "\" Then r$ = r$ + "\"
                 IsString = True
                 Exit Function
-    Case "DIR$", "йат$"
+lit27: '    Case "DIR$", "йат$"
     
                 r$ = UserPath
     
                 IsString = True
                 Exit Function
-    Case "KEY$", "йол$"
+lit28: '    Case "KEY$", "йол$"
                 ' this is because w1 do a pretty new functionality...form1 can minimized..without own titlebar or controls.
 
                     If Not Form1.Visible Then Form1.Visible = True: MyDoEvents
@@ -12081,7 +12096,7 @@ rvalObjectstring:
                 End If
                 IsString = True
                 Exit Function
-    Case "INKEY$", "емйол$"
+lit29: '    Case "INKEY$", "емйол$"
      If Not releasemouse Then
 If Not Form1.Visible Then Form1.Visible = True
  MyDoEvents2 bstackstr.Owner
@@ -12112,24 +12127,24 @@ End If
                 End If
                 IsString = True
                 Exit Function
-    Case "LETTER$", "цяалла$"
+lit30: '    Case "LETTER$", "цяалла$"
                 If bstackstr.soros.Total = 0 Then
                 ElseIf bstackstr.soros.PopType = "S" Then
                 r$ = bstackstr.soros.PopStr
                 IsString = True
                 Exit Function
                 End If
-    Case "калда$"
+lit35: '    Case "калда$"
         Set bstackstr.lastobj = ProcLambda(bstackstr, a$, 0)
         r$ = ""
         IsString = Not bstackstr.lastobj Is Nothing
     Exit Function
-Case "LAMBDA$"
+lit31: 'Case "LAMBDA$"
         Set bstackstr.lastobj = ProcLambda(bstackstr, a$, 1)
         r$ = ""
         IsString = Not bstackstr.lastobj Is Nothing
     Exit Function
-    Case Else
+    
 itisavar:
                 If GetVar(bstackstr, q$, w) Then
                 If MyIsObject(var(w)) Then
@@ -12187,6 +12202,7 @@ foundprivate:
                             MyEr "can't read value", "ДЕМ ЛПОЯЧ МА ДИАБэСЫ ТИЛч"
                             End If
                         End If
+                        On Error GoTo 0
                     End If
                 Else
                     r$ = var(w)
@@ -12212,20 +12228,22 @@ foundprivate:
                     End If
                 
                 Exit Function
-    End Select
+    'End Select
+    '' no used any more ???
                 a$ = q$ & a$
                                
     Exit Function
     
 Case 6
     IsString = False
-If Not strfunid.ExistKey(q$) Then GoTo itisarrayorfunction
-    Select Case q$
-Case "FORMAT$(", "лояжг$("
+If Not strfunid.Find(q$, w2) Then GoTo itisarrayorfunction
+
+On w2 GoTo fstr1, fstr2, fstr3, fstr4, fstr5, fstr6, fstr7, fstr8, fstr9, fstr10, fstr11, fstr12, fstr13, fstr14, fstr15, fstr16, fstr17, fstr18, fstr19, fstr20, fstr21, fstr22, fstr23, fstr24, fstr25, fstr26, fstr27, fstr28, fstr29, fstr30, fstr31, fstr32, fstr33, fstr34, fstr35, fstr36, fstr37, fstr38, fstr39, fstr40, fstr41, fstr42, fstr43, fstr44, fstr45, fstr46, fstr47, fstr48, fstr49, fstr50, fstr51, fstr52, fstr53, fstr54, fstr55, fstr56, fstr57, fstr58, fstr59, fstr60, fstr61, fstr62, fstr63
+fstr1: '"FORMAT$(", "лояжг$("
     r$ = enthesi(bstackstr, a$)
     IsString = FastSymbol(a$, ")", True)
     Exit Function
-Case "EVAL$(", "ейжя$(", "ейжяасг$("
+fstr2: '"EVAL$(", "ейжя$(", "ейжяасг$("
     If IsExp(bstackstr, a$, p) Then
     If bstackstr.lastobj Is Nothing Then Exit Function
     If TypeOf bstackstr.lastobj Is mHandler Then
@@ -12372,7 +12390,7 @@ r$ = ""
 End If
     IsString = FastSymbol(a$, ")", True)
     Exit Function
-Case "STACKTYPE$(", "сыяоутупос$("
+fstr3: ' "STACKTYPE$(", "сыяоутупос$("
 If IsExp(bstackstr, a$, p) Then
 W3 = Abs(CLng(p))
 backitem1:
@@ -12425,7 +12443,7 @@ W3 = 1
 GoTo backitem1
 End If
 
-Case "STACKITEM$(", "тилгсыяоу$("
+fstr4: 'STACKITEM$(", "тилгсыяоу$("
 If IsExp(bstackstr, a$, p) Then
 If bstackstr.lastobj Is Nothing Then
     Set anything = bstackstr.soros
@@ -12455,7 +12473,7 @@ Else
 W3 = 1
 GoTo backitem2
 End If
-Case "исвмг$(", "WEAK$("
+fstr5: ' "исвмг$(", "WEAK$("
                 r$ = Funcweak(bstackstr, a$)
 
                  IsString = FastSymbol(a$, ")") And r$ <> ""
@@ -12463,7 +12481,7 @@ Case "исвмг$(", "WEAK$("
              MyErMacroStr a$, "No variable found or is static", "дЕМ УПэЯВЕИ ЛЕТАБКГТч ч ЕъМАИ СТАТИЙч"
              End If
                 Exit Function
-Case "коцос$(", "SPEECH$("
+fstr6: '"коцос$(", "SPEECH$("
            If IsExp(bstackstr, a$, p) Then
                        
                         r$ = VoiceName(p)
@@ -12472,7 +12490,7 @@ Case "коцос$(", "SPEECH$("
                         IsString = FastSymbol(a$, ")")
              
                 Exit Function
-Case "ASK$(", "яыта$("
+fstr7: ' "ASK$(", "яыта$("
 If IsStrExp(bstackstr, a$, AskText$) Then
 If UCase(q$) = "ASK$(" Then
 DialogSetupLang 1
@@ -12497,7 +12515,7 @@ AskInput = False
     IsString = FastSymbol(a$, ")", True)
 End If
 Exit Function
-    Case "LOCALE$(", "топийо$("
+fstr8: ' "LOCALE$(", "топийо$("
          If IsExp(bstackstr, a$, p) Then
 
     r$ = GetlocaleString(CLng(p))
@@ -12506,7 +12524,7 @@ Exit Function
        
         Exit Function
  
-    Case "SHORTDIR$(", "лийяос.йатакоцос$("
+fstr9: ' "SHORTDIR$(", "лийяос.йатакоцос$("
          If IsStrExp(bstackstr, a$, q$) Then
       
 
@@ -12516,7 +12534,7 @@ Exit Function
        
         Exit Function
  
-     Case "FILTER$(", "жиктяо$("
+fstr10: '"FILTER$(", "жиктяо$("
      If IsStrExp(bstackstr, a$, q$) Then
        If FastSymbol(a$, ",") And IsStrExp(bstackstr, a$, q1$) Then
        
@@ -12527,7 +12545,7 @@ Exit Function
     End If
     If Not FastSymbol(a$, ")") Then IsString = False
     Exit Function
-        Case "коцос$(", "SPEECH$("
+fstr11: '"коцос$(", "SPEECH$("
            If IsExp(bstackstr, a$, p) Then
                        
                         r$ = VoiceName(p)
@@ -12538,7 +12556,7 @@ Exit Function
                 Exit Function
    
     
-     Case "аявеио$(", "FILE$("
+fstr12: ' "аявеио$(", "FILE$("
      If Left$(UCase(q$), 1) = "F" Then
 DialogSetupLang 1
 
@@ -12575,7 +12593,7 @@ End If
                         IsString = FastSymbol(a$, ")")
              
                 Exit Function
-Case "PARAM$(", "паяал$("
+fstr13: ' "PARAM$(", "паяал$("
 q1$ = ""
 If IsStrExp(bstackstr, a$, q2$) Then
 
@@ -12599,7 +12617,7 @@ End If
     IsString = FastSymbol(a$, ")", True)
     a$ = Mid$(q1$, 2) + a$
     Exit Function
-Case "LAZY$(", "ойм$("
+fstr14: ' "LAZY$(", "ойм$("
    If FastSymbol(a$, "&") Then
             If Abs(IsLabelBig(bstackstr, a$, q2$, par)) < 5 Then    ''IsLabelDot(HERE$, A$, q2$)
 
@@ -12675,7 +12693,7 @@ If Trim$(r$ + q2$) <> "" Then
        
        
         Exit Function
-    Case "INPUT$(", "еисацыцг$("
+fstr15: ' "INPUT$(", "еисацыцг$("
       IsSymbol3 a$, "#"  ' drop it
     If IsExp(bstackstr, a$, p) Then
     p = CLng(MyMod(Abs(p), 512))
@@ -12699,8 +12717,9 @@ If Trim$(r$ + q2$) <> "" Then
     If Err.Number = 0 Then
     IsString = FastSymbol(a$, ")")
     End If
+    On Error GoTo 0
      Exit Function
-    Case "MEMBER.TYPE$(", "лекоус.тупос$("
+fstr16: '"MEMBER.TYPE$(", "лекоус.тупос$("
      If Abs(IsLabel(bstackstr, a$, s$)) = 1 Then
             If GetVar(bstackstr, s$, w1) Then
                 If Typename(var(w1)) = "Group" Then
@@ -12767,7 +12786,7 @@ If Trim$(r$ + q2$) <> "" Then
          MissingGroup
        End If
        Exit Function
-    Case "MEMBER$(", "лекос$("
+fstr17: ' "MEMBER$(", "лекос$("
      If Abs(IsLabel(bstackstr, a$, s$)) = 1 Then
             If getvar2(bstackstr, s$, w1) Then   '' we need s$ if this is a "THIS"
                   If Typename(var(w1)) = "Group" Then
@@ -12813,7 +12832,7 @@ If Trim$(r$ + q2$) <> "" Then
        Exit Function
     
     
-     Case "PIPENAME$(", "аукос$("
+fstr18: '"PIPENAME$(", "аукос$("
                 If IsStrExp(bstackstr, a$, r$) Then
                         r$ = validpipename(r$)
                         IsString = True
@@ -12825,47 +12844,7 @@ If Trim$(r$ + q2$) <> "" Then
                 End If
                 If Not FastSymbol(a$, ")") Then IsString = False
                 Exit Function
-    Case "FILE.TYPE$(", "тупос.аявеиоу$("
-                If IsStrExp(bstackstr, a$, r$) Then
-                        r$ = ExtractType(r$)
-                        IsString = True
-                        If Not FastSymbol(a$, ")") Then IsString = False
-                        Exit Function
-                End If
-                Exit Function
-       Case "FILE.NAME.ONLY$(", "омола.аявеиоу.ломо$("
-                If IsStrExp(bstackstr, a$, r$) Then
-                        r$ = ExtractNameOnly(r$)
-                        IsString = True
-                        If Not FastSymbol(a$, ")") Then IsString = False
-                        Exit Function
-                End If
-                Exit Function
-       Case "FILE.NAME$(", "омола.аявеиоу$("
-                If IsStrExp(bstackstr, a$, r$) Then
-                        r$ = ExtractName(r$)
-                        IsString = True
-                        If Not FastSymbol(a$, ")") Then IsString = False
-                        Exit Function
-                End If
-                Exit Function
-    Case "FILE.PATH$(", "топос.аявеиоу$("
-                If IsStrExp(bstackstr, a$, r$) Then
-                        r$ = ExtractPath(r$)  ' ДъМЕИ ВЫЯъР МА ЙОИТэЕИ АМ УПэЯВЕИ!
-                        IsString = True
-                        If Not FastSymbol(a$, ")") Then IsString = False
-                        Exit Function
-                End If
-                Exit Function
-    Case "одгцос$("
-                If IsStrExp(bstackstr, a$, r$) Then
-                        r$ = DriveType(Left$(r$, 3))  'greek response
-                        IsString = True
-                        If Not FastSymbol(a$, ")") Then IsString = False
-                        Exit Function
-                End If
-                Exit Function
-    Case "DRIVE$("
+fstr19: '"DRIVE$("
                 If IsStrExp(bstackstr, a$, r$) Then
                         r$ = DriveTypee(Left$(r$, 3))
                         IsString = True
@@ -12873,21 +12852,61 @@ If Trim$(r$ + q2$) <> "" Then
                         Exit Function
                 End If
                 Exit Function
-    Case "тиктос.аявеиоу$(", "FILE.TITLE$("
+fstr20: '"FILE.TYPE$(", "тупос.аявеиоу$("
+                If IsStrExp(bstackstr, a$, r$) Then
+                        r$ = ExtractType(r$)
+                        IsString = True
+                        If Not FastSymbol(a$, ")") Then IsString = False
+                        Exit Function
+                End If
+                Exit Function
+fstr21: ' "FILE.NAME.ONLY$(", "омола.аявеиоу.ломо$("
+                If IsStrExp(bstackstr, a$, r$) Then
+                        r$ = ExtractNameOnly(r$)
+                        IsString = True
+                        If Not FastSymbol(a$, ")") Then IsString = False
+                        Exit Function
+                End If
+                Exit Function
+fstr22: ' "FILE.NAME$(", "омола.аявеиоу$("
+                If IsStrExp(bstackstr, a$, r$) Then
+                        r$ = ExtractName(r$)
+                        IsString = True
+                        If Not FastSymbol(a$, ")") Then IsString = False
+                        Exit Function
+                End If
+                Exit Function
+fstr23: ' "FILE.PATH$(", "топос.аявеиоу$("
+                If IsStrExp(bstackstr, a$, r$) Then
+                        r$ = ExtractPath(r$)  ' ДъМЕИ ВЫЯъР МА ЙОИТэЕИ АМ УПэЯВЕИ!
+                        IsString = True
+                        If Not FastSymbol(a$, ")") Then IsString = False
+                        Exit Function
+                End If
+                Exit Function
+fstr24: ' "одгцос$("
+                If IsStrExp(bstackstr, a$, r$) Then
+                        r$ = DriveType(Left$(r$, 3))  'greek response
+                        IsString = True
+                        If Not FastSymbol(a$, ")") Then IsString = False
+                        Exit Function
+                End If
+                Exit Function
+fstr25: '"тиктос.аявеиоу$(", "FILE.TITLE$("
                 If IsStrExp(bstackstr, a$, r$) Then
                         If r$ <> "" Then r$ = FileNameType(r$)
                         IsString = True
                         If Not FastSymbol(a$, ")") Then IsString = False
                         Exit Function
                 End If
-    Case "ежаялоцг.аявеиоу$(", "FILE.APP$("
+fstr26: '"ежаялоцг.аявеиоу$(", "FILE.APP$("
                 If IsStrExp(bstackstr, a$, r$) Then
                         If r$ <> "" Then r$ = myRegister(r$)
                         IsString = True
                         If Not FastSymbol(a$, ")") Then IsString = False
                         Exit Function
                 End If
-    Case "HIDE$(", "йяужо$("
+fstr27: '"HIDE$(", "йяужо$("
                 If IsStrExp(bstackstr, a$, r$) Then
                     If FastSymbol(a$, ",") Then
                         If IsStrExp(bstackstr, a$, q$) Then
@@ -12903,21 +12922,7 @@ If Trim$(r$ + q2$) <> "" Then
                     End If
                 End If
                 Exit Function
-        Case "GROUP$(", "олада$("
-        w1 = Abs(IsLabel(bstackstr, a$, s$))
-        If w1 = 1 Or w1 = 3 Then
-        If Not GetVar(bstackstr, s$, w1) Then GoTo jmp1478
-        If Not Typename(var(w1)) = "Group" Then GoTo jmp1478
-        CopyGroup var(w1), bstackstr
-             r$ = ""
-            IsString = FastSymbol(a$, ")", True)
-            Exit Function
-                
-        Else
-jmp1478:
-        MyErMacro a$, "Expected a group name", "пЕЯъЛЕМА ЭМОЛА ОЛэДАР"
-        End If
-    Case "LEFTPART$(", "аяистеяолеяос$("
+fstr28: ' "LEFTPART$(", "аяистеяолеяос$("
      IsString = False
     If IsStrExp(bstackstr, a$, s$) Then
     If FastSymbol(a$, ",") Then
@@ -12934,7 +12939,7 @@ jmp1478:
     End If
 
     Exit Function
-        Case "RIGHTPART$(", "денилеяос$("
+fstr29: '"RIGHTPART$(", "денилеяос$("
      IsString = False
     If IsStrExp(bstackstr, a$, s$) Then
     If FastSymbol(a$, ",") Then
@@ -12952,7 +12957,7 @@ jmp1478:
     End If
 
     Exit Function
-    Case "ARRAY$(", "пимайас$("
+fstr30: ' "ARRAY$(", "пимайас$("
     
     If IsStrExp(bstackstr, a$, s$) Then
         If bstackstr.lastobj Is Nothing Then
@@ -13035,7 +13040,7 @@ If Not bstackstr.lastobj Is Nothing Then
       IsString = False
     End If
     Exit Function
-Case "TYPE$(", "тупос$("
+fstr31: '"TYPE$(", "тупос$("
     w1 = Abs(IsLabel(bstackstr, a$, s$))
     If w1 > 4 Then
     If neoGetArray(bstackstr, s$, pppp) Then
@@ -13153,7 +13158,7 @@ Case "TYPE$(", "тупос$("
     SyntaxError
     End If
     Exit Function
-    Case "PARAGRAPH$(", "паяацяажос$("
+fstr32: ' "PARAGRAPH$(", "паяацяажос$("
  
         w1 = Abs(IsLabel(bstackstr, a$, s$))
         If w1 = 3 Then
@@ -13341,7 +13346,7 @@ Case "TYPE$(", "тупос$("
             End If
         End If
     Exit Function
-Case "UNION.DATA$(", "емысг.сеияас$("
+fstr33: '"UNION.DATA$(", "емысг.сеияас$("
 
 
   
@@ -13360,7 +13365,7 @@ Case "UNION.DATA$(", "емысг.сеияас$("
     IsString = FastSymbol(a$, ")", True)
 
     Exit Function
-Case "MAX.DATA$(", "лецако.сеияас$("
+fstr34: ' "MAX.DATA$(", "лецако.сеияас$("
 
   If IsStrExp(bstackstr, a$, r$) Then
   
@@ -13375,7 +13380,7 @@ Case "MAX.DATA$(", "лецако.сеияас$("
       MissStringExpr
         End If
     Exit Function
-Case "MIN.DATA$(", "лийяо.сеияас$("
+fstr35: ' "MIN.DATA$(", "лийяо.сеияас$("
  IsString = False
   If IsStrExp(bstackstr, a$, r$) Then
   
@@ -13390,7 +13395,7 @@ Case "MIN.DATA$(", "лийяо.сеияас$("
       MissStringExpr
         End If
     Exit Function
-    Case "FUNCTION$(", "сумаятгсг$("
+fstr36: ' "FUNCTION$(", "сумаятгсг$("
     If IsStrExp(bstackstr, a$, s$) Then
         If IsSymbolBracket(s$) Then
             PushStage bstackstr, False
@@ -13427,7 +13432,7 @@ Case "MIN.DATA$(", "лийяо.сеияас$("
      End If
      End If
     Exit Function
-    Case "HEX$(", "дейаен$("
+fstr37: '"HEX$(", "дейаен$("
     If IsExp(bstackstr, a$, p) Then
     r$ = PACKLNG$(p)
     If FastSymbol(a$, ",") Then
@@ -13445,7 +13450,7 @@ Else
                          If Not FastSymbol(a$, ")") Then IsString = False
                         Exit Function
     End If
-    Case "SHOW$(", "жамеяо$("
+fstr38: '"SHOW$(", "жамеяо$("
     If IsStrExp(bstackstr, a$, r$) Then
         If FastSymbol(a$, ",") Then
             If IsStrExp(bstackstr, a$, q$) Then
@@ -13461,7 +13466,7 @@ Else
         End If
     End If
     Exit Function
-    Case "MENU$(", "епикоцг$(", "епикоцес$("
+fstr39: '"MENU$(", "епикоцг$(", "епикоцес$("
     If IsExp(bstackstr, a$, p) Then
     p = Abs(CLng(p))
     With Form1.List1
@@ -13473,7 +13478,7 @@ Else
     End If
     If Not FastSymbol(a$, ")") Then IsString = False
     Exit Function
-    Case "REPLACE$(", "аккацг$("
+fstr40: '"REPLACE$(", "аккацг$("
     
     If IsStrExp(bstackstr, a$, q$) Then
        If FastSymbol(a$, ",") And IsStrExp(bstackstr, a$, q1$) Then
@@ -13485,7 +13490,7 @@ Else
     End If
     If Not FastSymbol(a$, ")") Then IsString = False
     Exit Function
-    Case "PATH$(", "топос$("
+fstr41: '"PATH$(", "топос$("
       If IsExp(bstackstr, a$, p) Then
     IsString = True
     r$ = GetSpecialfolder(CLng(p))
@@ -13497,7 +13502,7 @@ Else
     End If
     If Not FastSymbol(a$, ")") Then IsString = False
     Exit Function
-    Case "UCASE$(", "йеж$("
+fstr42: '"UCASE$(", "йеж$("
     If IsStrExp(bstackstr, a$, q$) Then
       IsString = True
       If FastSymbol(a$, ",") And IsExp(bstackstr, a$, p) Then
@@ -13513,7 +13518,7 @@ Else
     End If
     If Not FastSymbol(a$, ")") Then IsString = False
     Exit Function
-    Case "LCASE$(", "пеф$("
+fstr43: '"LCASE$(", "пеф$("
      If IsStrExp(bstackstr, a$, q$) Then
    IsString = True
       If FastSymbol(a$, ",") And IsExp(bstackstr, a$, p) Then
@@ -13532,7 +13537,7 @@ Else
     
     If Not FastSymbol(a$, ")") Then IsString = False
     Exit Function
-    Case "STRING$(", "епам$("
+fstr44: '"STRING$(", "епам$("
     If IsStrExp(bstackstr, a$, q$) Then
     If FastSymbol(a$, ",") And IsExp(bstackstr, a$, p) Then
     p = Int(Abs(p))
@@ -13548,7 +13553,7 @@ Else
     End If
        IsString = False
     Exit Function
-    Case "MID$(", "лес$("
+fstr45: ' "MID$(", "лес$("
  
     If IsStrExp(bstackstr, a$, q$) Then
     If FastSymbol(a$, ",") And IsExp(bstackstr, a$, p) Then
@@ -13571,8 +13576,7 @@ Else
     IsString = True
     Exit Function
     
-    Case "LEFT$(", "аяис$("
- 
+fstr46: ' "LEFT$(", "аяис$("
     If IsStrExp(bstackstr, a$, q$) Then
     If FastSymbol(a$, ",") And IsExp(bstackstr, a$, p) Then
     p = Abs(p)
@@ -13582,8 +13586,7 @@ Else
     If Not FastSymbol(a$, ")") Then IsString = False
     End If
     Exit Function
-    Case "RIGHT$(", "дени$("
-
+fstr47: ' "RIGHT$(", "дени$("
     If IsStrExp(bstackstr, a$, q$) Then
     If FastSymbol(a$, ",") And IsExp(bstackstr, a$, p) Then
     p = Abs(p)
@@ -13593,7 +13596,7 @@ Else
     If Not FastSymbol(a$, ")") Then IsString = False
     End If
     Exit Function
-    Case "SND$(", "гво$("
+fstr48: ' "SND$(", "гво$("
      If IsStrExp(bstackstr, a$, q$) Then
         r$ = CFname(q$ & ".WAV")
          If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
@@ -13603,7 +13606,7 @@ Else
         IsString = False
     Exit Function
     End If
-    Case "BMP$(", "еий$("
+fstr49: ' "BMP$(", "еий$("
      If IsStrExp(bstackstr, a$, q$) Then
         r$ = CFname(q$ & ".BMP")
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
@@ -13613,7 +13616,7 @@ Else
         IsString = False
     Exit Function
     End If
-     Case "JPG$(", "жыто$("
+fstr50: '"JPG$(", "жыто$("
      If IsStrExp(bstackstr, a$, q$) Then
         r$ = CFname(q$ & ".JPG")
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
@@ -13623,7 +13626,7 @@ Else
         IsString = False
     Exit Function
     End If
-    Case "TRIM$(", "апой$("
+fstr51: '"TRIM$(", "апой$("
     If IsStrExp(bstackstr, a$, q$) Then
         r$ = Trim$(q$)
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
@@ -13634,8 +13637,7 @@ Else
         IsString = False
     Exit Function
     End If
-Case "QUOTE$(", "паяахесг$("
-
+fstr52: '"QUOTE$(", "паяахесг$("
 r$ = ""
 q1$ = ""
 Do
@@ -13653,7 +13655,7 @@ ElseIf IsExp(bstackstr, a$, p) Then
         IsString = True
         Exit Function
  
-Case "сыяос$(", "STACK$("
+fstr53: '"сыяос$(", "STACK$("
 r$ = ""
 Do
 If IsStrExp(bstackstr, a$, q$) Then
@@ -13668,7 +13670,7 @@ ElseIf IsExp(bstackstr, a$, p) Then
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
         Exit Function
-Case "ADD.LICENCE$(", "баке.адеиа$("
+fstr54: '"ADD.LICENCE$(", "баке.адеиа$("
 If IsStrExp(bstackstr, a$, q$) Then
 If FastSymbol(a$, ",") Then
 If IsStrExp(bstackstr, a$, q1$) Then
@@ -13681,6 +13683,7 @@ On Error Resume Next
         End If
         If Err.Number > 0 And Err.Number <> 732 Then MissLicence
         Err.Clear
+        On Error GoTo 0
        If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
 End If
@@ -13690,7 +13693,7 @@ On Error Resume Next
         r$ = Licenses.Add(q$)
         If Err > 0 And Err.Number <> 732 Then MissLicence
         Err.Clear
-        
+        On Error GoTo 0
        If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
 
@@ -13699,7 +13702,7 @@ End If
 End If
 
         Exit Function
-Case "ENVELOPE$(", "жайекос$("
+fstr55: '"ENVELOPE$(", "жайекос$("
 If IsStrExp(bstackstr, a$, q$) Then
     If FastSymbol(a$, ",") Then
             If Not IsStrExp(bstackstr, a$, q1$) Then IsString = False: Exit Function
@@ -13729,7 +13732,7 @@ If IsStrExp(bstackstr, a$, q$) Then
          If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
         IsString = True
         Exit Function
-Case "FIELD$(", "педио$("
+fstr56: '"FIELD$(", "педио$("
     If IsStrExp(bstackstr, a$, q$) Then
         If FastSymbol(a$, ",") Then
            If Not IsExp(bstackstr, a$, p) Then
@@ -13752,7 +13755,7 @@ Case "FIELD$(", "педио$("
     Exit Function
     End If
     
-    Case "DRW$(", "свд$("
+fstr57: '"DRW$(", "свд$("
     If IsStrExp(bstackstr, a$, q$) Then
         r$ = CFname(q$ & ".WMF")
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
@@ -13763,7 +13766,7 @@ Case "FIELD$(", "педио$("
         IsString = False
     Exit Function
     End If
-    Case "TIME$(", "вяомос$("
+fstr58: '"TIME$(", "вяомос$("
     If IsExp(bstackstr, a$, p) Then
        r$ = Format(p, "SHORT TIME")
         If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
@@ -13774,7 +13777,7 @@ Case "FIELD$(", "педио$("
         IsString = False
     Exit Function
     End If
-    Case "DATE$(", "глеяа$("
+fstr59: ' "DATE$(", "глеяа$("
     If IsExp(bstackstr, a$, p) Then
 
         r$ = Format(CDbl(CDate(p)), "SHORT DATE")
@@ -13787,7 +13790,7 @@ Case "FIELD$(", "педио$("
         IsString = False
     Exit Function
     End If
-    Case "STR$(", "цяажг$("
+fstr60: '"STR$(", "цяажг$("
     If IsExp(bstackstr, a$, p) Then
         If FastSymbol(a$, ",") Then
             If IsStrExp(bstackstr, a$, q$) Then
@@ -13856,7 +13859,7 @@ Case "FIELD$(", "педио$("
     IsString = False
     Exit Function
     End If
-    Case "CHRCODE$(", "ваяйыд$("
+fstr61: '"CHRCODE$(", "ваяйыд$("
     If IsExp(bstackstr, a$, p) Then
     r$ = ChrW$(cUint(p))
     If Not FastSymbol(a$, ")") Then IsString = False: Exit Function
@@ -13866,7 +13869,7 @@ Case "FIELD$(", "педио$("
     IsString = False
     Exit Function
     End If
-    Case "CHR$(", "вая$("
+fstr62: ' "CHR$(", "вая$("
     If IsExp(bstackstr, a$, p) Then
         If FastSymbol(a$, ",") Then
                 If IsExp(bstackstr, a$, PP) Then
@@ -13907,7 +13910,21 @@ Case "FIELD$(", "педио$("
     IsString = False
     Exit Function
     End If
-    Case Else
+fstr63: ' "GROUP$(", "олада$("
+        w1 = Abs(IsLabel(bstackstr, a$, s$))
+        If w1 = 1 Or w1 = 3 Then
+        If Not GetVar(bstackstr, s$, w1) Then GoTo jmp1478
+        If Not Typename(var(w1)) = "Group" Then GoTo jmp1478
+        CopyGroup var(w1), bstackstr
+             r$ = ""
+            IsString = FastSymbol(a$, ")", True)
+            Exit Function
+                
+        Else
+jmp1478:
+        MyErMacro a$, "Expected a group name", "пЕЯъЛЕМА ЭМОЛА ОЛэДАР"
+        End If
+Exit Function
     
 itisarrayorfunction:
     MakeThisSubNum bstackstr, q$
@@ -14017,8 +14034,8 @@ contStrArr:
         
             MyErMacroStr a$, "index too high for array " & q$ & ")", "ДЕъЙТГР УЬГКЭР ЦИА ТО ПъМАЙА " & q$ & ")"
             IsString = False: Exit Function
-        Else
             End If
+            On Error GoTo 0
               Else
         IsString = False
         
@@ -14228,7 +14245,7 @@ End If
     Exit Function
     End If
             
-    End Select
+    
 Case Else
 contstr:
 w = 0
@@ -14457,7 +14474,18 @@ If j - i >= Len(d$) - 1 Then
 
 End If
 End Function
-
+Function FastOperator2(a$, c$, i As Long) As Boolean
+If Mid$(a$, i, 1) = c$ Then
+Mid$(a$, i, 1) = " "
+FastOperator2 = True
+End If
+End Function
+Function FastOperator2char(a$, c$, i As Long) As Boolean
+If Mid$(a$, i, 2) = c$ Then
+Mid$(a$, i, 2) = "  "
+FastOperator2char = True
+End If
+End Function
 Function FastOperator(a$, c$, i As Long, Optional cl As Long = 1, Optional Remove As Boolean = True) As Boolean
 Dim j As Long
 If cl = 0 Then Stop
@@ -16691,7 +16719,23 @@ If Not comhash.Find2(w$, i, v) Then
                 lbl = False
                 GoTo varonly
 
-          ElseIf v > 0 Then
+          ElseIf i <> 0 Then
+             If Not IsBadCodePtr(i) Then
+             On Error GoTo myerr1
+                        If CallByPtr(i, bstack, b$, lang) Then
+                            LLL = 0 ' maybe b$ changed inside the call if LLL=len(b$) then we exit from loop
+                            GoTo conthere222
+                        Else
+myerr1:
+
+                             If LastErNum1 = -1 And bstack.IamThread Then Execute = 1 Else Execute = 0
+                             If Err Then GoTo errstat0 Else Exit Function
+                         End If
+                    On Error GoTo errstat0
+               Else
+              GoTo parsecommand
+               End If
+        ElseIf v > 0 Then
               ' If VarStat Or NewStat Then GoTo errstat
                 Select Case v
                 Case 50
@@ -16777,23 +16821,7 @@ If Not comhash.Find2(w$, i, v) Then
                 GoTo contNegGlobal
                 
              End Select
-             ElseIf i <> 0 Then
-             If Not IsBadCodePtr(i) Then
-             On Error GoTo myerr1
-                        If CallByPtr(i, bstack, b$, lang) Then
-                            LLL = 0 ' maybe b$ changed inside the call if LLL=len(b$) then we exit from loop
-                            GoTo conthere222
-                        Else
-myerr1:
-
-                             If LastErNum1 = -1 And bstack.IamThread Then Execute = 1 Else Execute = 0
-                             If Err Then GoTo errstat0 Else Exit Function
-                         End If
-                    On Error GoTo errstat0
-               Else
-              GoTo parsecommand
-               End If
-               Else
+             Else
                 If lbl And MaybeIsSymbol(b$, "<=") Then GoTo varonly
                 If GetlocalVar(w$, nd&) Then GoTo varonly
                GoTo parsecommand
@@ -17209,6 +17237,8 @@ cont10456:
                  Execute = 0
         OverflowLong
         Exit Function
+        On Error GoTo 0
+        
              End If
              End If
             Else
@@ -17443,6 +17473,7 @@ Do
             If myexit(bstack) Then Execute = 1: Exit Do
             On Error Resume Next
             var(x2) = y2
+            On Error GoTo 0
          If st > 0 Then
             If y2 > x1 Then Exit Do
             ElseIf st < 0 Then
@@ -17451,7 +17482,7 @@ Do
             Exit Do
             End If
             Loop
-On Error Resume Next
+''On Error Resume Next
 sss = sp
 Else
 Do
@@ -18087,7 +18118,7 @@ contTask:
                
                
              Loop Until MOUT Or bstack.TaskMain Or NOEXECUTION Or TaskMaster.QueueCount < 2
-            
+           On Error GoTo 0
      bstack.TaskMain = False
    If TaskMaster.PlayMusic Then mute = True
          End If
@@ -18182,7 +18213,7 @@ ContTry:
        TraceStore bstack, x1, b$, 1
          
          b$ = NLtrim$(Mid$(b$, 2))
-                On Error Resume Next
+                'On Error Resume Next
                      Call executeblock(Execute, bstack, ss$, Once, ok)
           TraceRestore bstack, x1
    bstack.nokillvars = False
@@ -18807,6 +18838,7 @@ ContOn:
                                 Execute = 0
                                 Exit Function
                                 End If
+                                On Error GoTo 0
                 If p <= 0 Then ' no exit
                 SetNextLine b$
                 If Execute <> 2 Then Execute = 1 Else Execute = 3
@@ -19099,7 +19131,7 @@ i = MyTrimL(b$)
 If VarStat Then
      ' MAKE A GLOBAL SO ONLY = ALLOWED
      
-          If FastOperator(b$, "=", i) Then
+          If FastOperator2(b$, "=", i) Then
               GoTo jumpiflocal
           Else
               p = 0
@@ -19109,7 +19141,7 @@ If VarStat Then
             
 ElseIf NewStat Then
     ' MAKE A NEW ONE SO ONLY = ALLOWED
-        If FastOperator(b$, "=", i) Then
+        If FastOperator2(b$, "=", i) Then
             GoTo jumpiflocal
         Else
             p = 0
@@ -19120,7 +19152,7 @@ ElseIf NewStat Then
 ElseIf nchr > 31 Then
 
 If MaybeIsSymbol(b$, "/*-+=~^&|<>") Then
-        If FastOperator(b$, "<=", i, 2, False) Then
+        If Mid$(b$, i, 2) = "<=" Then
         ' LOOK GLOBAL
         If GetVar(bstack, w$, v, True) Then
         w$ = varhash.lastkey
@@ -19128,7 +19160,8 @@ If MaybeIsSymbol(b$, "/*-+=~^&|<>") Then
             
             GoTo assignvalue
         Else
-        FastOperator b$, "<", i
+        Mid$(b$, i, 1) = " "
+        i = i + 1
         If AscW(Left$(w$, 1)) = &H1FFF Then
         
         If here$ = "" Then
@@ -19459,7 +19492,7 @@ somethingelse:
                     Mid$(b$, i, Len(ss$)) = ss$
                         GoTo parsecommand
                 End Select
-                On Error Resume Next
+                'On Error Resume Next
                 var(v) = MyRound(var(v), 13)
                 ElseIf TypeOf var(v) Is Group Then
                     If IsExp(bstack, b$, p) Then
@@ -19580,6 +19613,11 @@ jumpiflocal:
             GoTo somethingelse
         End If
     End If
+End If
+If NoOptimum Then
+If GetSub(w$, v) Then
+    iscom = True
+End If
 End If
 parsecommand:
                 'If VarStat Or NewStat Then GoTo errstat
@@ -20162,7 +20200,7 @@ Execute = 0
 Exit Do
 End If
 End If
-On Error Resume Next
+'On Error Resume Next
 
 If MaybeIsSymbol(b$, ":+-*/~") Or v = -2 Then
 With pppp
@@ -20520,7 +20558,7 @@ If neoGetArray(bstack, w$, pppp) Then
         End If
 againstrarr:
 If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then Execute = 0: Exit Function
-On Error Resume Next
+'On Error Resume Next
 ' WHY BEFORE WAS : If Typename(pppp.item(v)) = "mArray" And Not pppp.Arr Then
 If Typename(pppp.item(v)) = "mArray" And pppp.Arr Then
 If FastSymbol(b$, "(") Then
@@ -20725,7 +20763,7 @@ If neoGetArray(bstack, w$, pppp) Then
         End If
 againintarr:
 If Not NeoGetArrayItem(pppp, bstack, w$, v, b$) Then Execute = 0: Exit Function
-On Error Resume Next
+'On Error Resume Next
 If Typename(pppp.item(v)) = "mArray" And pppp.Arr Then
 If FastSymbol(b$, "(") Then
 Set pppp = pppp.item(v)
@@ -20733,6 +20771,7 @@ GoTo againintarr
 End If
 End If
 If MaybeIsSymbol(b$, "+-*/~") Then
+On Error Resume Next
 With pppp
 If IsOperator0(b$, "++", 2) Then
 .item(v) = .itemnumeric(v) + 1
@@ -20760,6 +20799,7 @@ ElseIf IsOperator0(b$, "~") Then
 .item(v) = -1 - (.itemnumeric(v) <> 0)
 End If
 End With
+On Error GoTo 0
 GoTo loopcontinue
 End If
 If Not FastSymbol(b$, "=") Then Execute = 0: Exit Function
@@ -21068,6 +21108,7 @@ On Error Resume Next
     
     ReDim Preserve var(UBound(var()) / 2 + 1) As Variant
 Err.Clear
+On Error GoTo 0
 End If
  
  sb2used = subs
@@ -21113,6 +21154,7 @@ If UBound(var()) / 3 >= var2used And UBound(var()) > 2999 Then
 On Error Resume Next
     ReDim Preserve var(UBound(var()) / 2 + 1) As Variant
     Err.Clear
+    On Error GoTo 0
 End If
 
       sb2used = subs
@@ -21121,6 +21163,7 @@ End If
   On Error Resume Next
   ReDim Preserve sbf(UBound(sbf()) / 2 + 1) As modfun
   Err.Clear
+  On Error GoTo 0
     End If
     End If
     Exit Do
@@ -21729,7 +21772,7 @@ If TaskMaster.PlayMusic Then
 End If
 End If
 ''Debug.Print what$
-On Error GoTo NERR
+'On Error GoTo NERR
 
 
 If what$ = "" Then
@@ -22393,13 +22436,13 @@ conthereplease:
             Else
 NERR:
           
-                        If Err.Number = 6 Then
-                                Err.Clear
-                                MyErMacro rest$, "Overflow long, expect lower than (2147483648)", "уПЕЯВЕъКИСГ АЙЕЯАъОУ, ПЕЯИЛщМЫ ЛИЙЯЭТЕЯО АПЭ (2147483648)"
-                        Else
-                                Err.Clear
+                    '    If Err.Number = 6 Then
+                     '           Err.Clear
+                      '          MyErMacro rest$, "Overflow long, expect lower than (2147483648)", "уПЕЯВЕъКИСГ АЙЕЯАъОУ, ПЕЯИЛщМЫ ЛИЙЯЭТЕЯО АПЭ (2147483648)"
+                       ' Else
+                        '        Err.Clear
                                 MyErMacro rest$, "unknown identifier " & what$, "╒ЦМЫСТО АМАЦМЫЯИСТИЙЭ " & what$
-                        End If
+                        'End If
                         Identifier = True
             End If
 End Select
@@ -43193,6 +43236,7 @@ LASTPROG$ = ""
 Randomize Timer
 Set comhash = New sbHash
 allcommands comhash
+NoOptimum = False
 If lang = 0 Then
 sHelp "л2000 [богхеиа]", "цЯэЬЕ текос ЦИА МА БЦЕъР АПЭ ТО ПЯЭЦЯАЛЛА" & vbCrLf & "дЕР ТА ока (ЙэМЕ ЙКИЙ СТО ока)" & vbCrLf & "George Karras 2016", (ScrX() - 1) * 3 / 5, (ScrY() - 1) * 1 / 7
 Else
