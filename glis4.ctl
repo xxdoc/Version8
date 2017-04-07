@@ -63,7 +63,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 
-'m2000 ver 8.0
+'m2000 ver 8.7
 Option Explicit
 Dim waitforparent As Boolean
 Dim havefocus As Boolean, UKEY$
@@ -95,7 +95,7 @@ Private Type itemlist
     selected As Boolean  ' use this for multiselect or checked
     checked As Boolean  ' use this to use list item as menu
     radiobutton As Boolean  ' use this to checked like radio buttons ..with auto unselect between to lines...or all list if not lines foundit
-    Content As String
+    content As String
     contentID As String
     line As Boolean
 End Type
@@ -213,8 +213,8 @@ Event MarkDelete(preservecursor As Boolean)
 Event WordMarked(ThisWord As String)
 Event ShowExternalCursor()
 Event ChangeSelStart(thisselstart As Long)
-Event ReadListItem(item As Long, Content As String)
-Event ChangeListItem(item As Long, Content As String)
+Event ReadListItem(item As Long, content As String)
+Event ChangeListItem(item As Long, content As String)
 Event HeaderSelected(Button As Integer)
 Event BlockCaret(item As Long, blockme As Boolean, skipme As Boolean)
 Event ScrollSelected(item As Long, y As Long)
@@ -2269,7 +2269,7 @@ If item < 0 Then Exit Property
 If item >= listcount Then
 'Err.Raise vbObjectError + 1050
 Else
-List = mList(item).Content
+List = mList(item).content
 End If
 End Property
 
@@ -2285,8 +2285,8 @@ Exit Property
 End If
 If item >= 0 Then
 With mList(item)
-If Not .Content = b$ Then RaiseEvent ChangeListItem(item, b$)
-.Content = b$
+If Not .content = b$ Then RaiseEvent ChangeListItem(item, b$)
+.content = b$
 .line = False
 .selected = False
 End With
@@ -2574,7 +2574,7 @@ ReDim Preserve mList(0 To Buffer)
 End If
 itemcount = itemcount + 1
 With mList(itemcount - 1)
-.Content = a$
+.content = a$
 .line = False
 .selected = False
 End With
@@ -2593,7 +2593,7 @@ For i = itemcount - 1 To ListIndex + 1 Step -1
 mList(i) = mList(i - 1)
 Next i
 With mList(i)
-.Content = a$
+.content = a$
 .line = False
 .selected = False
 End With
@@ -2623,7 +2623,7 @@ ReDim Preserve mList(0 To Buffer)
 End If
 itemcount = itemcount + 1
 With mList(itemcount - 1)
-.Content = a$
+.content = a$
 .line = False
 .selected = False
 End With

@@ -80,16 +80,22 @@ On Error Resume Next
 Set work = mstack.item(where).ObjectRef
 Select Case Typename(work)
 Case "Group"
-Set aa = New VarItem
-aa.Typename = "*"
-CopyGroup work, mm
-Set aa.ObjectRef = mm
+    Set aa = New VarItem
+    aa.Typename = "*"
+    CopyGroup work, mm
+    Set aa.ObjectRef = mm
+Case "lambda"
+    Set aa = New VarItem
+    aa.Typename = "*"
+    ' use copylambdaAny from module 1
+    CopyLambdaAny work, mm
+    Set aa.ObjectRef = mm
 Case "mArray"
-Set aa = New VarItem
-aa.Typename = "*"
-Set mn = New mArray
-work.CopyArray mn
-Set aa.ObjectRef = mn
+    Set aa = New VarItem
+    aa.Typename = "*"
+    Set mn = New mArray
+    work.CopyArray mn
+    Set aa.ObjectRef = mn
 Case Else
 Set aa = mstack.item(where)
 End Select
@@ -114,9 +120,9 @@ Else
 CopyMe2.Copy2TopNItems2FromStiva many, Me
 End If
 End Function
-Public Function MergeFromOther(That As Object) As mStiva
+Public Function MergeFromOther(that As Object) As mStiva
 Dim mm As mStiva
-Set mm = That
+Set mm = that
 Set MergeFromOther = CopyMe()
 MergeFromOther.MergeBottom mm
 End Function
@@ -128,16 +134,22 @@ For many = many To 1 Step -1
 Set work = Source.objref(many)
 Select Case Typename(work)
 Case "Group"
-Set aa = New VarItem
-aa.Typename = "*"
-CopyGroup work, mm
-Set aa.ObjectRef = mm
+    Set aa = New VarItem
+    aa.Typename = "*"
+    CopyGroup work, mm
+    Set aa.ObjectRef = mm
+Case "lambda"
+    Set aa = New VarItem
+    aa.Typename = "*"
+    ' use copylambdaAny from module 1
+    CopyLambdaAny work, mm
+    Set aa.ObjectRef = mm
 Case "mArray"
-Set aa = New VarItem
-aa.Typename = "*"
-Set mn = New mArray
-work.CopyArray mn
-Set aa.ObjectRef = mn
+    Set aa = New VarItem
+    aa.Typename = "*"
+    Set mn = New mArray
+    work.CopyArray mn
+    Set aa.ObjectRef = mn
 Case Else
 If Source.Total >= many Then
 
@@ -163,16 +175,22 @@ For many = Source.Total - many1 + 1 To Source.Total
 Set work = Source.objref(many)
 Select Case Typename(work)
 Case "Group"
-Set aa = New VarItem
-aa.Typename = "*"
-CopyGroup work, mm
-Set aa.ObjectRef = mm
+    Set aa = New VarItem
+    aa.Typename = "*"
+    CopyGroup work, mm
+    Set aa.ObjectRef = mm
+Case "lambda"
+    Set aa = New VarItem
+    aa.Typename = "*"
+    ' use copylambdaAny from module 1
+    CopyLambdaAny work, mm
+    Set aa.ObjectRef = mm
 Case "mArray"
-Set aa = New VarItem
-aa.Typename = "*"
-Set mn = New mArray
-work.CopyArray mn
-Set aa.ObjectRef = mn
+    Set aa = New VarItem
+    aa.Typename = "*"
+    Set mn = New mArray
+    work.CopyArray mn
+    Set aa.ObjectRef = mn
 Case Else
 If Source.Total >= many Then
 
@@ -538,19 +556,18 @@ For i = Total To 1 Step -1
 Copy.PushStr Me.StackItem(i)
 Next i
 End Function
-
-Property Get value() As Variant
+Property Get Value() As Variant
 Dim aa As VarItem
 If Index >= 0 And Index <= mMany Then
     Set aa = StackPickRef(Index + 1)
     If aa.ObjectRef Is Nothing Then
         If aa.Typename = "S" Then
-            value = aa.ItemStr
+            Value = aa.ItemStr
         Else
-            value = aa.ItemDouble
+            Value = aa.ItemDouble
         End If
     Else
-        Set value = aa.ObjectRef
+        Set Value = aa.ObjectRef
     End If
 End If
 End Property

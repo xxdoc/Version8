@@ -1731,9 +1731,20 @@ If kind > 0 Then
      addone col(), pos2, 14
     pos2 = k - Len(a$) + 1
    ElseIf FastSymbol(a$, "->", , 2) Then
-     addone col(), pos2, 14
+     addone col(), pos2, 11
     pos2 = k - Len(a$) + 1
+    If FastSymbol(a$, "{") Then
+        addone col(), pos2, 14
+    pos2 = k - Len(a$) + 1
+    drop$ = blockString(a$)
     
+     ColorizeExpressions drop$, col(), k - Len(a$), pos2, feedthis
+     drop$ = ""
+     If FastSymbol(a$, "}") Then
+        addone col(), pos2, 14
+    pos2 = k - Len(a$) + 1
+    End If
+    End If
    Else
    Exit Do
    End If

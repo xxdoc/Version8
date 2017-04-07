@@ -21,7 +21,6 @@ Private Type Vars
 End Type
 Private Total As Long, fixed As Long, used As Long
 Private myVar() As Vars, myHash As New Hash
-
 Sub CopyToVar(bstack As basetask, glb As Boolean, v() As Variant)
 Dim i As Long, nm$, where As Long, dummy As Variant, x1 As Long
 bstack.IamLambda = True
